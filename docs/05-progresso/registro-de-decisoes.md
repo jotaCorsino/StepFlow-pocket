@@ -120,6 +120,30 @@ Resultados de acesso a caminhos internos enquanto o desenvolvimento ocorrer fora
 
 Referência: `docs/00-governanca/contexto-ambientes.md`.
 
+### 2026-08-19 — A implantação no servidor seguirá o princípio Pocket / copy-deploy
+
+**Status:** CONSOLIDADA COMO REQUISITO ARQUITETURAL
+
+O servidor Windows da empresa já executa outros serviços e não poderá ser remodelado livremente para receber o StepFlow.
+
+A implantação deve buscar a menor interferência possível no ambiente. O cenário ideal é copiar/arrastar uma pasta pronta do StepFlow para uma pasta fixa do servidor e realizar apenas a configuração/inicialização mínima necessária.
+
+Consequências obrigatórias para as escolhas técnicas:
+
+- evitar instalação tradicional quando possível;
+- evitar dependências globais no servidor;
+- evitar alterações amplas em registro, PATH, políticas ou features do Windows;
+- evitar reinicialização do servidor em implantação/atualização normal;
+- não exigir Node.js, Rust, compiladores ou toolchain de desenvolvimento no servidor de produção;
+- favorecer binários/artefatos self-contained ou equivalentes;
+- manter configuração, dados e logs isolados do restante do sistema;
+- permitir atualização e rollback com substituição controlada de artefatos/pastas;
+- preservar os demais serviços existentes no servidor.
+
+O formato exato do Host ainda será definido, mas qualquer alternativa que exija instalação invasiva deve ser considerada menos aderente ao conceito Pocket e precisa de justificativa explícita.
+
+Referência: `docs/03-arquitetura/implantacao-pocket.md`.
+
 ### 2026-08-19 — Login interno simples continua obrigatório
 
 **Status:** CONSOLIDADA
@@ -224,8 +248,10 @@ O caminho físico real ainda será definido no ambiente corporativo.
 
 WebSocket ou solução equivalente será avaliada para atualização dos clientes.
 
-### 2026-08-19 — StepFlow Host como serviço/processo leve central
+### 2026-08-19 — StepFlow Host como processo/serviço leve e pouco invasivo
 
 **Status:** DIREÇÃO ARQUITETURAL / FORMATO FINAL PENDENTE
 
 O Host é parte consolidada da arquitetura lógica. Tecnologia, empacotamento e modo de inicialização no Windows ainda precisam ser definidos.
+
+Qualquer alternativa deverá respeitar `docs/03-arquitetura/implantacao-pocket.md`: preferir execução a partir da pasta própria do produto, evitar runtime/toolchain global e minimizar alterações permanentes no servidor.
