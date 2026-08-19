@@ -92,15 +92,33 @@ Blocos destinados a comandos, caminhos ou instruções copiáveis utilizarão í
 
 O logo da empresa será pequeno, clássico, alinhado à esquerda e posicionado no topo do menu lateral.
 
-### 2026-08-19 — O StepFlow será iniciado pelo técnico a partir do compartilhamento de rede
+### 2026-08-19 — O StepFlow será iniciado pelo técnico a partir de um ponto de entrada na rede interna
 
 **Status:** CONSOLIDADA COMO REQUISITO DE UX
 
-Cenário de uso desejado:
+O requisito consolidado é a experiência:
 
-`\\192.168.5.7\Arquivos\StepFlow\` → ponto de entrada do StepFlow → duplo clique → login → uso.
+`ponto de entrada interno do StepFlow` → duplo clique → login → uso.
 
-A implementação técnica pode usar launcher/cópia local desde que preserve essa experiência.
+O endereço IP, hostname, nome do compartilhamento e subpasta reais ainda não estão definidos/confirmados.
+
+Até que o ambiente corporativo seja conhecido, usar somente notação conceitual, por exemplo:
+
+`\\<HOST-OU-SERVIDOR-DA-EMPRESA>\<COMPARTILHAMENTO>\<PASTA-STEPFLOW>\`
+
+O exemplo `\\192.168.5.7\Arquivos\StepFlow\` usado anteriormente **não é uma configuração oficial** e não deve ser embutido em código ou tratado como requisito.
+
+A implementação técnica pode usar launcher/cópia local desde que preserve a experiência simples de acesso aprovada.
+
+### 2026-08-19 — Desenvolvimento atual e implantação corporativa são ambientes distintos
+
+**Status:** CONSOLIDADA
+
+O projeto está sendo desenvolvido em um computador pessoal fora da LAN da empresa. Testes de infraestrutura interna, como SMB, Host real, permissões de rede e caminhos corporativos, só terão valor de validação definitiva quando realizados em ambiente conectado à rede da empresa e usando endereços reais confirmados.
+
+Resultados de acesso a caminhos internos enquanto o desenvolvimento ocorrer fora da LAN devem ser classificados como `NÃO APLICÁVEL NESTE AMBIENTE`, e não como bloqueio do produto.
+
+Referência: `docs/00-governanca/contexto-ambientes.md`.
 
 ### 2026-08-19 — Login interno simples continua obrigatório
 
@@ -196,7 +214,9 @@ Tauri é a direção atual para empacotar a UI HTML/CSS/JavaScript como aplicati
 
 **Status:** PROPOSTA / PROTÓTIPO PENDENTE
 
-O ponto de entrada localizado no compartilhamento pode verificar versão, manter cópia local e iniciar o Client local, preservando a experiência de duplo clique para o técnico.
+Um ponto de entrada localizado no compartilhamento ou mecanismo equivalente da rede interna pode verificar versão, manter cópia local e iniciar o Client local, preservando a experiência de duplo clique para o técnico.
+
+O caminho físico real ainda será definido no ambiente corporativo.
 
 ### 2026-08-19 — Canal de eventos em tempo real
 
