@@ -3,7 +3,13 @@
 **Fase:** 1 — Fechamento arquitetural e especificação  
 **Bloco:** 1 — Plataforma Windows, Client e distribuição  
 **Tipo:** preparação controlada de ambiente de desenvolvimento  
-**Status:** PRONTA PARA EXECUÇÃO
+**Status:** CONCLUÍDA EM 2026-08-19
+
+## Fechamento
+
+A execução foi revisada e aprovada em `docs/05-progresso/revisao-f1-b1-t03-toolchain-rust.md`.
+
+O toolchain `stable-x86_64-pc-windows-msvc` foi instalado e validado. A próxima prova deve iniciar em uma nova sessão PowerShell não elevada e confirmar o acesso normal a `rustup`, `rustc` e `cargo` antes de qualquer scaffold.
 
 ## 1. Objetivo
 
@@ -168,18 +174,18 @@ A única alteração esperada no repositório continua sendo a alteração local
 
 ## 10. Critérios de aceite
 
-- [ ] repositório atualizado com segurança ou bloqueio Git reportado antes da instalação;
-- [ ] `winget` verificado;
-- [ ] Rust instalado pelo método autorizado;
-- [ ] `rustup` funcional;
-- [ ] `rustc` funcional;
-- [ ] `cargo` funcional;
-- [ ] toolchain stable MSVC confirmado;
-- [ ] host x64/MSVC confirmado;
-- [ ] nenhum scaffold Tauri criado;
-- [ ] nenhum código de produto criado;
-- [ ] alteração local anterior do diário preservada;
-- [ ] nenhum commit/push realizado.
+- [x] repositório atualizado com segurança ou bloqueio Git reportado antes da instalação;
+- [x] `winget` verificado;
+- [x] Rust instalado pelo método autorizado;
+- [x] `rustup` funcional;
+- [x] `rustc` funcional;
+- [x] `cargo` funcional;
+- [x] toolchain stable MSVC confirmado;
+- [x] host x64/MSVC confirmado;
+- [x] nenhum scaffold Tauri criado;
+- [x] nenhum código de produto criado;
+- [x] alteração local anterior do diário preservada;
+- [x] nenhum commit/push realizado.
 
 ## 11. Relatório final obrigatório
 
