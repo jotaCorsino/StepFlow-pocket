@@ -32,6 +32,22 @@ A pasta local prevista para execução pelo Codex é `C:\dev\StepFlow`.
 
 O método reutilizável está em `docs/00-governanca/metodo-padrao-trabalho-assistido.md`.
 
+### 2026-08-19 — Toda tarefa Codex terá pré-flight de capacidade separado do prompt
+
+**Status:** CONSOLIDADA
+
+Antes de cada nova tarefa destinada ao Codex, o Assistente deve avaliar complexidade, risco e custo da execução e recomendar ao PO o modelo e o nível de raciocínio adequados.
+
+Essa recomendação:
+
+- é destinada somente ao PO/usuário;
+- deve aparecer antes e separada do prompt técnico;
+- não deve ser incorporada ao enunciado enviado ao Codex;
+- deve buscar a menor capacidade que ainda ofereça margem adequada de segurança;
+- deve ser refeita para cada tarefa, sem herdar automaticamente a capacidade da tarefa anterior.
+
+A política genérica e reutilizável está em `docs/00-governanca/politica-capacidade-codex.md` e o formato padrão em `docs/templates/template-preflight-capacidade-codex.md`.
+
 ### 2026-08-19 — A implementação deve ser modular e evitar monólito HTML/JavaScript
 
 **Status:** CONSOLIDADA
