@@ -92,7 +92,13 @@ Nenhum scaffold definitivo do Client será criado antes de a plataforma e a dist
 
 A experiência do técnico deve permanecer:
 
-`\\192.168.5.7\Arquivos\StepFlow\` → duplo clique no ponto de entrada → StepFlow.
+`ponto de entrada interno do StepFlow` → duplo clique → StepFlow.
+
+Nenhum endereço IP, hostname ou caminho SMB específico está consolidado neste momento. Enquanto o ambiente da empresa não for confirmado, usar apenas notação conceitual, por exemplo:
+
+`\\<HOST-OU-SERVIDOR-DA-EMPRESA>\<COMPARTILHAMENTO>\<PASTA-STEPFLOW>\`
+
+O exemplo anteriormente usado `\\192.168.5.7\Arquivos\StepFlow\` é somente ilustrativo e não pode ser embutido em código ou tratado como requisito.
 
 ### Perguntas a fechar
 
@@ -103,7 +109,9 @@ A experiência do técnico deve permanecer:
 - como validar integridade da versão publicada;
 - como fazer rollback mínimo;
 - o que ocorre quando a rede está acessível, mas o Host não;
-- o que ocorre quando o compartilhamento não está acessível.
+- o que ocorre quando o compartilhamento não está acessível;
+- como parametrizar o caminho real sem recompilar desnecessariamente o produto;
+- como validar a solução futuramente em uma estação conectada à LAN corporativa.
 
 ### Entregáveis
 
@@ -111,7 +119,8 @@ A experiência do técnico deve permanecer:
 - fluxo de atualização;
 - manifesto/versionamento;
 - estratégia de rollback;
-- protótipo técnico pequeno, se necessário para validar comportamento SMB.
+- protótipo técnico pequeno, se necessário para validar comportamento SMB;
+- estratégia de configuração do endereço real do ambiente sem hardcode de exemplos.
 
 ## Bloco 4 — Comunicação Client ↔ Host
 
