@@ -12,6 +12,7 @@ Este arquivo orienta o Codex e qualquer agente de implementação que trabalhe n
 - GitHub é a fonte principal de verdade.
 - O desenvolvimento atual ocorre em computador pessoal, fora da LAN da empresa.
 - IPs, hostnames, compartilhamentos SMB e caminhos corporativos usados em exemplos não são configuração oficial enquanto não forem confirmados no ambiente real.
+- A implantação corporativa deve respeitar o princípio Pocket documentado em `docs/03-arquitetura/implantacao-pocket.md`: mínimo impacto no servidor, preferência por copy-deploy e ausência de toolchain de desenvolvimento como requisito de produção.
 - Fase atual: **Fase 1 — Fechamento arquitetural e especificação**.
 - A Fase 1 autoriza investigação, documentação, decisões técnicas e provas descartáveis explicitamente solicitadas; não autoriza antecipar funcionalidades de negócio.
 
@@ -39,10 +40,11 @@ O Codex é executor técnico. Não deve inventar produto, ampliar escopo ou toma
 4. `docs/00-governanca/metodo-padrao-trabalho-assistido.md`
 5. `docs/00-governanca/politica-capacidade-codex.md`
 6. `docs/00-governanca/contexto-ambientes.md`
-7. `docs/05-progresso/registro-de-decisoes.md`
-8. `docs/04-planejamento/roadmap.md`
-9. `docs/04-planejamento/plano-oficial-fase-1.md` enquanto a Fase 1 estiver vigente;
-10. documentos específicos da tarefa, módulo, arquitetura ou tela.
+7. `docs/03-arquitetura/implantacao-pocket.md`
+8. `docs/05-progresso/registro-de-decisoes.md`
+9. `docs/04-planejamento/roadmap.md`
+10. `docs/04-planejamento/plano-oficial-fase-1.md` enquanto a Fase 1 estiver vigente;
+11. documentos específicos da tarefa, módulo, arquitetura ou tela.
 
 ## Regra de pré-flight de capacidade
 
@@ -74,6 +76,8 @@ Esse bloco é orientação operacional ao PO e **não faz parte do prompt técni
 - Protótipo de investigação da Fase 1 deve ser identificado como descartável e não pode ser promovido silenciosamente a código definitivo.
 - Não transformar exemplo de IP, hostname, share ou path em configuração oficial.
 - Se a tarefa depender da LAN corporativa e a execução ocorrer fora dela, marcar a verificação como `NÃO APLICÁVEL NESTE AMBIENTE`, salvo se a tarefa especificar uma simulação local.
+- Não transformar dependências de desenvolvimento em dependências obrigatórias do servidor de produção sem decisão explícita.
+- Ao avaliar uma tecnologia, considerar sempre se o artefato final pode ser implantado em pasta própria, com baixo impacto, sem exigir Node.js, Rust, compiladores ou outras toolchains no servidor.
 
 ## Regras específicas já consolidadas do StepFlow
 
@@ -85,6 +89,8 @@ Esse bloco é orientação operacional ao PO e **não faz parte do prompt técni
 - O cliente deve conversar com o host por contratos definidos, e não por acesso direto ao arquivo de dados.
 - O produto deve continuar simples para o usuário final: acessar um ponto de entrada interno do StepFlow deve exigir, idealmente, apenas duplo clique.
 - O endereço real desse ponto de entrada ainda não está definido e não deve ser hardcoded a partir de exemplos anteriores.
+- A implantação no servidor deve buscar o modelo Pocket: copiar/publicar uma pasta pronta em local fixo, com configuração mínima e sem remodelar o Windows que já hospeda outros serviços.
+- Atualizações e rollback devem favorecer substituição controlada de artefatos/pastas, mantendo dados/configuração persistentes separados dos binários quando apropriado.
 - A interface de documentação de processos deve preservar a metáfora de livro/páginas por etapa.
 - PDF, DOCX e impressão são requisitos do produto; a investigação técnica deve escolher a estratégia, não remover o requisito.
 - O comportamento das marcações do checklist durante uma execução ainda é pendência e não deve ser presumido pelo Codex.
