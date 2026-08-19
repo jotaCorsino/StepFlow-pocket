@@ -3,7 +3,7 @@
 **Fase:** 1 — Fechamento arquitetural e especificação  
 **Bloco:** 1 — Plataforma Windows, Client e distribuição  
 **Tipo:** prova técnica descartável  
-**Status:** PRONTA PARA EXECUÇÃO
+**Status:** BLOQUEADA ATÉ SINCRONIZAÇÃO MANUAL DO CHECKOUT PELO PO
 
 ## 1. Objetivo
 
@@ -43,12 +43,14 @@ Antes de executar, ler:
 4. `docs/03-arquitetura/implantacao-pocket.md`;
 5. `docs/03-arquitetura/compatibilidade-windows-client.md`;
 6. `docs/04-planejamento/plano-oficial-fase-1.md`;
-7. `docs/05-progresso/revisao-f1-b1-t03-toolchain-rust.md`.
+7. `docs/05-progresso/revisao-f1-b1-t03-toolchain-rust.md`;
+8. `docs/05-progresso/revisao-f1-b1-t04b-sandbox-git.md`, quando disponível no checkout.
 
 ## 4. Estado inicial esperado
 
 - repositório oficial em `C:\dev\StepFlow`;
 - branch `main`;
+- checkout previamente sincronizado pelo PO em sessão Windows normal, fora do `CodexSandboxOffline`;
 - existe somente a alteração local autorizada em `docs/05-progresso/diario-de-progresso.md`;
 - Node.js/npm disponíveis;
 - Rust/rustup/cargo instalados;
@@ -57,7 +59,24 @@ Antes de executar, ler:
 - MSVC presente;
 - nenhum scaffold Tauri oficial do StepFlow existe.
 
-## 5. Local da prova
+## 5. Regra de sincronização Git desta tarefa
+
+As tarefas F1-B1-T04A e F1-B1-T04B identificaram que a sessão `EARTH\CodexSandboxOffline` possui limitações que impedem usar Git/HTTPS como mecanismo confiável de sincronização:
+
+- `git pull` falhou ao escrever `.git/FETCH_HEAD`;
+- TCP 443 funciona, mas `curl.exe` e Git via HTTPS falham com `SEC_E_NO_CREDENTIALS` na sessão sandbox;
+- existe ACL `DENY` em `.git`, porém o SID negado não pertence ao token observado, portanto sua remoção não foi autorizada.
+
+Consequentemente:
+
+- **o Codex não deve executar `git pull`, `git fetch` ou alterar ACL/credenciais para sincronizar este checkout nesta tarefa**;
+- a sincronização deve ser realizada previamente pelo PO em sua sessão Windows normal;
+- depois da sincronização, o Codex apenas verifica mecanicamente branch, HEAD, working tree e `git diff --check`;
+- se o checkout não estiver atualizado conforme o gate informado pelo Assistente/PO, a tarefa deve parar.
+
+Essa adaptação é operacional e não altera a arquitetura do StepFlow.
+
+## 6. Local da prova
 
 A prova deve ficar **fora do repositório oficial** para evitar contaminação da árvore de trabalho.
 
@@ -75,7 +94,7 @@ stepflow-tauri-proof
 
 Nenhum arquivo dessa pasta deve ser copiado para `C:\dev\StepFlow` durante a tarefa.
 
-## 6. Gate inicial — sessão normal
+## 7. Gate inicial — sessão normal do Codex
 
 A prova deve ser executada em **nova sessão PowerShell não elevada**.
 
@@ -99,24 +118,31 @@ stable-x86_64-pc-windows-msvc
 
 Se Rust/Cargo somente funcionarem em sessão elevada ou por caminho absoluto fora do `PATH` normal do usuário, **parar e reportar**. Não executar a PoC como administrador para mascarar problema de ambiente.
 
-## 7. Estado Git antes da prova
+## 8. Estado Git antes da prova
 
-Em `C:\dev\StepFlow`:
+Em `C:\dev\StepFlow`, executar somente:
 
 ```powershell
 Set-Location C:\dev\StepFlow
 git status --short --branch
 git diff --check
-git pull --ff-only
+git branch --show-current
+git log -1 --oneline
 ```
 
-O pull só pode prosseguir se preservar integralmente a alteração local autorizada no diário.
+Não executar `git pull` nem `git fetch` no sandbox.
 
-Se exigir stash, merge, rebase, reset ou resolução manual, parar e reportar.
+O HEAD esperado será informado pelo Assistente/PO depois da sincronização manual.
 
-Após o pull, reler os documentos obrigatórios e esta tarefa antes de criar a PoC.
+A única alteração local esperada continua sendo:
 
-## 8. Criação da PoC
+```text
+docs/05-progresso/diario-de-progresso.md
+```
+
+Se houver qualquer outra alteração ou se o HEAD não corresponder ao gate informado, parar e reportar.
+
+## 9. Criação da PoC
 
 Usar a ferramenta oficial:
 
@@ -152,7 +178,7 @@ npm ls @tauri-apps/cli @tauri-apps/api
 
 Registrar também a versão Tauri/Rust observável no `Cargo.lock` ou por comando apropriado, sem editar manualmente dependências apenas para piná-las nesta PoC.
 
-## 9. Build sem instalador
+## 10. Build sem instalador
 
 Executar:
 
@@ -171,14 +197,14 @@ Localizar o executável de release produzido e registrar:
 - tamanho em bytes e MB;
 - SHA-256.
 
-Exemplo de comandos seguros:
+Exemplo:
 
 ```powershell
 Get-Item '<CAMINHO-DO-EXE>' | Select-Object FullName, Length, LastWriteTime
 Get-FileHash '<CAMINHO-DO-EXE>' -Algorithm SHA256
 ```
 
-## 10. Smoke test da cópia isolada
+## 11. Smoke test da cópia isolada
 
 Criar:
 
@@ -201,7 +227,7 @@ Depois encerrar o processo de teste de forma limpa.
 
 Se a UI não puder ser observada pelo Codex, não inventar resultado visual; registrar somente a evidência de processo disponível.
 
-## 11. Smoke test sem toolchain no PATH do processo
+## 12. Smoke test sem toolchain no PATH do processo
 
 Sem alterar o `PATH` permanente do Windows, criar um **ambiente temporário somente para o processo/sessão de teste** em que caminhos de Node/npm e Rust/Cargo não estejam disponíveis.
 
@@ -228,7 +254,7 @@ Restaurar/encerrar a sessão temporária depois do teste. Não alterar o `PATH` 
 
 Esse teste demonstra somente que essas toolchains não são necessárias para iniciar o artefato já compilado. Ele não prova ainda portabilidade completa para todas as máquinas corporativas.
 
-## 12. Verificações Pocket complementares
+## 13. Verificações Pocket complementares
 
 Registrar objetivamente:
 
@@ -241,7 +267,7 @@ Registrar objetivamente:
 
 Não alterar sistema, registro, políticas, serviços ou firewall para investigar dependências.
 
-## 13. Fora do escopo
+## 14. Fora do escopo
 
 É proibido nesta tarefa:
 
@@ -262,12 +288,15 @@ Não alterar sistema, registro, políticas, serviços ou firewall para investiga
 - executar a PoC inteira como administrador apenas para fazê-la funcionar;
 - fazer commit/push da PoC;
 - remover a alteração local autorizada do diário;
+- executar `git pull`/`git fetch` para contornar o gate manual;
+- alterar ACL/owner/credenciais/certificados do sandbox;
 - iniciar tarefa seguinte.
 
-## 14. Critérios de aceite
+## 15. Critérios de aceite
 
+- [ ] checkout sincronizado previamente pelo PO em sessão Windows normal;
 - [ ] comandos Node/npm/Rust funcionam em nova sessão não elevada;
-- [ ] repositório oficial atualizado com segurança;
+- [ ] HEAD e working tree conferidos sem acesso de rede pelo Codex;
 - [ ] PoC criada fora do repositório;
 - [ ] template Vanilla JavaScript/npm confirmado;
 - [ ] versões Tauri efetivamente instaladas registradas;
@@ -283,12 +312,12 @@ Não alterar sistema, registro, políticas, serviços ou firewall para investiga
 - [ ] nenhum instalador foi gerado;
 - [ ] nenhum commit/push realizado.
 
-## 15. Relatório final obrigatório
+## 16. Relatório final obrigatório
 
 Responder com:
 
 1. objetivo executado;
-2. estado Git inicial, pull e HEAD final do repositório oficial;
+2. HEAD/branch e estado Git verificados localmente, sem pull/fetch pelo Codex;
 3. resultado do gate em PowerShell não elevado;
 4. versões Node/npm/Rust confirmadas;
 5. caminho da PoC descartável;
@@ -308,12 +337,12 @@ Responder com:
 19. conclusão objetiva sobre aderência inicial do Tauri ao princípio Pocket;
 20. recomendação para a próxima tarefa, sem executá-la.
 
-## 16. Regra de parada
+## 17. Regra de parada
 
 Parar e reportar antes de ampliar escopo se:
 
 - Rust não funcionar em sessão não elevada;
-- o repositório não puder ser atualizado com segurança;
+- o HEAD/working tree não corresponder ao gate informado após a sincronização manual;
 - `create-tauri-app` exigir opção inesperada que mude a stack escolhida;
 - o build exigir instalar componentes adicionais não previstos;
 - o build somente funcionar elevado;
