@@ -35,7 +35,7 @@ Iniciar o StepFlow Pocket no mesmo modelo de governança e execução utilizado 
 - multiusuário obrigatório;
 - atualização entre clientes;
 - uso por duplo clique a partir do compartilhamento de rede;
-- PDF/DOCX/impressão mantidos no escopo desejado.
+- PDF/DOCX/impressão mantidos no escopo do produto.
 
 ### Decisões arquiteturais refletidas
 
@@ -46,7 +46,7 @@ Iniciar o StepFlow Pocket no mesmo modelo de governança e execução utilizado 
 - detecção de conflito antes de sobrescrita;
 - eventos de atualização entre instâncias.
 
-### Pontos ainda não fechados
+### Pontos deixados para validação
 
 - stack final do Client;
 - formato/stack final do Host;
@@ -59,6 +59,44 @@ Iniciar o StepFlow Pocket no mesmo modelo de governança e execução utilizado 
 - backup/restore;
 - telas detalhadas.
 
-### Próximo passo recomendado
+---
 
-Concluir a Fase 0 com templates e revisão cruzada da documentação. Em seguida abrir a Fase 1 com validação técnica da stack, compatibilidade Windows e launcher, sem ainda implementar funcionalidades de negócio.
+## 2026-08-19 — Revisão cruzada e encerramento da Fase 0
+
+### Objetivo
+
+Comparar os documentos centrais da fundação antes de liberar a fase arquitetural seguinte.
+
+### Validação realizada
+
+Foram revisados de forma cruzada:
+
+- `AGENTS.md`;
+- guia mestre;
+- regras operacionais;
+- visão geral de produto;
+- arquitetura inicial;
+- roadmap;
+- plano da Fase 0;
+- registro de decisões.
+
+A evidência detalhada foi registrada em `docs/05-progresso/revisao-cruzada-fase-0.md`.
+
+### Ajustes decorrentes da revisão
+
+- PDF, DOCX e impressão foram reafirmados como requisitos do produto; a Fase 1 decide a solução técnica, não a existência dessas funções;
+- o estado marcado do checklist durante execução foi retirado da condição de pressuposto e registrado como decisão ainda aberta;
+- soft lock/presença permanece opcional e não pode ser fundamento da integridade concorrente;
+- Tauri, launcher, formato do Host, canal de eventos e demais escolhas tecnológicas continuam corretamente marcados como pendentes de validação.
+
+### Resultado
+
+- Fase 0 encerrada com gate aprovado;
+- nenhuma funcionalidade de negócio implementada;
+- nenhum banco real criado;
+- nenhuma stack definitiva instalada;
+- Fase 1 formalmente autorizada.
+
+### Próximo passo
+
+Executar o `Bloco 1 — Plataforma Windows, Client e distribuição` do plano oficial da Fase 1, começando por pesquisa técnica em fontes primárias antes de qualquer scaffold definitivo.
