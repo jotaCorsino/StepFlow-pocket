@@ -10,7 +10,8 @@ Este arquivo orienta o Codex e qualquer agente de implementação que trabalhe n
 - Branch principal: `main`
 - Pasta local de trabalho prevista: `C:\dev\StepFlow`
 - GitHub é a fonte principal de verdade.
-- O projeto está inicialmente em fase documental e arquitetural.
+- Fase atual: **Fase 1 — Fechamento arquitetural e especificação**.
+- A Fase 1 autoriza investigação, documentação, decisões técnicas e provas descartáveis explicitamente solicitadas; não autoriza antecipar funcionalidades de negócio.
 
 ## Papéis
 
@@ -34,7 +35,8 @@ O Codex é executor técnico. Não deve inventar produto, ampliar escopo ou toma
 4. `docs/00-governanca/metodo-padrao-trabalho-assistido.md`
 5. `docs/05-progresso/registro-de-decisoes.md`
 6. `docs/04-planejamento/roadmap.md`
-7. documentos específicos da tarefa, módulo, arquitetura ou tela
+7. `docs/04-planejamento/plano-oficial-fase-1.md` enquanto a Fase 1 estiver vigente;
+8. documentos específicos da tarefa, módulo, arquitetura ou tela.
 
 ## Regras operacionais obrigatórias
 
@@ -48,6 +50,7 @@ O Codex é executor técnico. Não deve inventar produto, ampliar escopo ou toma
 - Manter documentação e código sincronizados na mesma tarefa quando a mudança justificar atualização documental.
 - Preservar modularidade e baixo acoplamento; evitar arquivos monolíticos e abstrações artificiais sem benefício.
 - Não colocar credenciais, senhas reais, bancos de produção, avatares reais ou dados da empresa sob versionamento.
+- Protótipo de investigação da Fase 1 deve ser identificado como descartável e não pode ser promovido silenciosamente a código definitivo.
 
 ## Regras específicas já consolidadas do StepFlow
 
@@ -59,6 +62,8 @@ O Codex é executor técnico. Não deve inventar produto, ampliar escopo ou toma
 - O cliente deve conversar com o host por contratos definidos, e não por acesso direto ao arquivo de dados.
 - O produto deve continuar simples para o usuário final: abrir o StepFlow a partir da pasta compartilhada deve exigir, idealmente, apenas duplo clique.
 - A interface de documentação de processos deve preservar a metáfora de livro/páginas por etapa.
+- PDF, DOCX e impressão são requisitos do produto; a investigação técnica deve escolher a estratégia, não remover o requisito.
+- O comportamento das marcações do checklist durante uma execução ainda é pendência e não deve ser presumido pelo Codex.
 
 ## Escopo mínimo de uma tarefa Codex
 
@@ -88,4 +93,4 @@ O Codex deve informar, no mínimo:
 
 ## Gate de implementação
 
-Se a documentação da fase declarar que a implementação ainda não está autorizada, o Codex deve limitar-se à tarefa documental/estrutural pedida. Não deve aproveitar a tarefa para criar um app funcional parcial.
+Se a documentação da fase declarar que determinada implementação ainda não está autorizada, o Codex deve limitar-se à tarefa documental, investigativa, estrutural ou de protótipo explicitamente pedida. Não deve aproveitar a tarefa para criar um app funcional parcial.
