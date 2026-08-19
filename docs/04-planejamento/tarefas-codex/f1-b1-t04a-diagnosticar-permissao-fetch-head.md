@@ -3,7 +3,7 @@
 **Fase:** 1 — Fechamento arquitetural e especificação  
 **Bloco:** 1 — Plataforma Windows, Client e distribuição  
 **Tipo:** diagnóstico operacional local, somente leitura  
-**Status:** PRONTA PARA EXECUÇÃO  
+**Status:** CONCLUÍDA / DIAGNÓSTICO CONFIRMADO  
 **Relação:** pré-condição corretiva para `F1-B1-T04 — Prova Mínima Tauri 2 com Critério Pocket`
 
 ## 1. Objetivo
@@ -14,11 +14,9 @@ Diagnosticar, sem modificar permissões ou metadados do repositório, por que um
 error: cannot open '.git/FETCH_HEAD': Permission denied
 ```
 
-A F1-B1-T04 não pode ser iniciada até que a causa seja entendida e a operação normal do Git em sessão não elevada seja restaurada em tarefa posterior explicitamente autorizada.
-
 ## 2. Contexto
 
-O clone local foi originalmente criado durante uma execução que chegou a usar contexto elevado. Existe, portanto, hipótese de diferença de owner/ACL em `.git`, mas isso não deve ser assumido como causa sem evidência.
+O clone local foi originalmente criado durante uma execução que chegou a usar contexto elevado. Existia, portanto, hipótese de diferença de owner/ACL em `.git`, sem assumir previamente que essa seria a causa.
 
 O Git documenta que `git fetch` grava as refs obtidas em `.git/FETCH_HEAD`. O Windows permite inspecionar owner e ACLs com `Get-Acl` e `icacls`.
 
@@ -31,168 +29,103 @@ Fontes de referência:
 ## 3. Estado inicial conhecido
 
 - repositório: `C:\dev\StepFlow`;
-- branch esperada: `main`;
-- HEAD local conhecido antes do bloqueio: `dfb9f4b`;
-- remoto já avançou além desse HEAD;
-- existe somente a alteração local autorizada em `docs/05-progresso/diario-de-progresso.md`;
-- `git diff --check` passou;
-- a tentativa de `git pull --ff-only` em PowerShell não elevado falhou ao abrir `.git/FETCH_HEAD`;
+- branch `main`;
+- HEAD local: `dfb9f4b`;
+- remoto já avançado além desse HEAD;
+- somente a alteração local autorizada em `docs/05-progresso/diario-de-progresso.md`;
+- `git diff --check` sem erros;
+- a tentativa anterior de `git pull --ff-only` em PowerShell não elevado falhou ao abrir `.git/FETCH_HEAD`;
 - a PoC F1-B1-T04 não foi criada.
 
-## 4. Escopo incluído
+## 4. Escopo executado
 
 Somente inspeção/leitura:
 
-- confirmar usuário e contexto não elevado;
-- confirmar repositório, branch, HEAD e remote sem executar pull;
-- localizar o diretório Git efetivo;
-- verificar existência, atributos, owner e ACL de:
-  - `C:\dev\StepFlow`;
-  - `C:\dev\StepFlow\.git`;
-  - `C:\dev\StepFlow\.git\FETCH_HEAD`, se existir;
-- comparar as ACLs do root do repositório, `.git` e `FETCH_HEAD`;
-- procurar entradas `DENY` explícitas ou ausência de permissão de escrita/modificação para o usuário/grupos aplicáveis;
-- listar processos Git relacionados que possam estar ativos;
-- executar somente um `git fetch --dry-run origin` para verificar comunicação com o remoto sem escrever `FETCH_HEAD`;
-- apresentar hipótese causal baseada nas evidências.
+- identidade/contexto da sessão;
+- estado Git local;
+- caminho do Git dir;
+- atributos de root, `.git` e `FETCH_HEAD`;
+- owner e ACLs;
+- inspeção via `icacls`;
+- processos Git/SSH;
+- `git fetch --dry-run origin`.
 
-## 5. Fora do escopo
+Nenhuma ACL, owner, arquivo ou configuração foi modificada.
 
-É proibido nesta tarefa:
+## 5. Resultado obtido
 
-- executar `git pull` novamente;
-- executar `git fetch` sem `--dry-run`;
-- usar `icacls` com `/grant`, `/reset`, `/setowner`, `/remove`, `/inheritance` ou qualquer opção modificadora;
-- usar `Set-Acl`;
-- alterar owner;
-- alterar atributos de arquivos;
-- deletar ou recriar `FETCH_HEAD`;
-- executar PowerShell elevado para contornar o problema;
-- fazer stash, merge, rebase, reset ou checkout destrutivo;
-- reclonar o repositório;
-- editar ou criar arquivos dentro de `.git`;
-- modificar o diário ou qualquer documento local;
-- criar a PoC Tauri;
-- fazer commit ou push.
+A sessão executora era:
 
-## 6. Procedimento obrigatório
-
-Executar em **nova sessão PowerShell não elevada**.
-
-### 6.1. Identidade e estado do checkout
-
-```powershell
-whoami
-Set-Location C:\dev\StepFlow
-git status --short --branch
-git diff --check
-git rev-parse --show-toplevel
-git rev-parse --git-dir
-git branch --show-current
-git log -1 --oneline
-git remote -v
+```text
+earth\codexsandboxoffline
 ```
 
-### 6.2. Existência e atributos
+O root `C:\dev\StepFlow`, `.git` e `.git\FETCH_HEAD` pertencem a `EARTH\Estudos`.
 
-```powershell
-Get-Item C:\dev\StepFlow | Format-List FullName,Attributes,CreationTime,LastWriteTime
-Get-Item C:\dev\StepFlow\.git -Force | Format-List FullName,Attributes,CreationTime,LastWriteTime
+A diferença relevante encontrada foi:
 
-if (Test-Path C:\dev\StepFlow\.git\FETCH_HEAD) {
-  Get-Item C:\dev\StepFlow\.git\FETCH_HEAD -Force |
-    Format-List FullName,Attributes,Length,CreationTime,LastWriteTime
-  attrib C:\dev\StepFlow\.git\FETCH_HEAD
-}
+- o root do repositório possui permissões `Allow` de modificação aplicáveis e não possui `DENY` explícito correspondente;
+- `.git` e `.git\FETCH_HEAD` possuem `DENY` explícito para o SID:
 
-attrib C:\dev\StepFlow\.git
+```text
+S-1-5-21-1439205687-274586611-205630846-3092016610
 ```
 
-### 6.3. Owner e ACL via PowerShell
+- o `DENY` inclui direitos de escrita/remoção, entre eles `Write`, `Delete`, `ReadPermissions` e `DeleteSubdirectoriesAndFiles`;
+- nenhum processo Git/SSH concorrente estava ativo.
 
-```powershell
-Get-Acl C:\dev\StepFlow |
-  Format-List Path,Owner,AccessToString,Sddl
+Portanto, existe **alta confiança** de que a ACE explícita de negação é a causa imediata da falha de escrita em `.git/FETCH_HEAD` para qualquer token ao qual esse SID se aplique.
 
-Get-Acl C:\dev\StepFlow\.git |
-  Format-List Path,Owner,AccessToString,Sddl
+Entretanto, a identidade exata desse SID ainda deve ser formalmente resolvida antes de autorizar qualquer alteração de ACL. Não se deve presumir que seja um erro de configuração, pois a sessão executora é uma conta de sandbox do Codex e a restrição pode ser deliberada.
 
-if (Test-Path C:\dev\StepFlow\.git\FETCH_HEAD) {
-  Get-Acl C:\dev\StepFlow\.git\FETCH_HEAD |
-    Format-List Path,Owner,AccessToString,Sddl
-}
-```
+## 6. Segundo bloqueio independente
 
-### 6.4. ACL via `icacls` — somente exibição
+O comando:
 
-```powershell
-icacls C:\dev\StepFlow
-icacls C:\dev\StepFlow\.git
-
-if (Test-Path C:\dev\StepFlow\.git\FETCH_HEAD) {
-  icacls C:\dev\StepFlow\.git\FETCH_HEAD
-}
-```
-
-Não usar opções modificadoras.
-
-### 6.5. Processos potencialmente relacionados
-
-```powershell
-Get-Process git*,ssh* -ErrorAction SilentlyContinue |
-  Select-Object Id,ProcessName,Path,StartTime
-```
-
-A mera existência de processo não prova lock; registrar apenas como evidência.
-
-### 6.6. Teste de comunicação remota sem escrita de `FETCH_HEAD`
-
-Executar:
-
-```powershell
+```text
 git fetch --dry-run origin
 ```
 
-O Git documenta que, em `--dry-run`, `FETCH_HEAD` não é gravado.
+falhou com:
 
-Se esse comando falhar, registrar a saída exata. Não escalar nem tentar outro método de autenticação nesta tarefa.
+```text
+schannel: AcquireCredentialsHandle failed: SEC_E_NO_CREDENTIALS
+```
 
-## 7. Critérios de aceite
+Assim, além da impossibilidade de escrever em `.git`, existe um segundo bloqueio nessa sessão relacionado ao acesso HTTPS/Schannel.
 
-- [ ] usuário/contexto normal identificado;
-- [ ] root do repo, `.git` e `FETCH_HEAD` inspecionados quando existente;
-- [ ] owner e ACLs registrados;
-- [ ] atributos registrados;
-- [ ] possíveis processos Git/SSH registrados;
-- [ ] `git fetch --dry-run origin` tentado;
-- [ ] nenhuma ACL, owner ou arquivo foi modificado;
-- [ ] alteração local do diário preservada;
-- [ ] PoC não criada;
-- [ ] hipótese causal apresentada com grau de confiança e evidências.
+Esse erro não deve ser automaticamente interpretado como problema de credencial do repositório ou do usuário real. É necessário primeiro determinar se a sessão `codexsandboxoffline` possui restrições próprias de rede/credenciais TLS.
 
-## 8. Relatório final obrigatório
+## 7. Decisão operacional
 
-Responder com:
+**Não alterar ACLs ainda.**
 
-1. objetivo executado;
-2. usuário/contexto do PowerShell;
-3. branch, HEAD e remote;
-4. resultado de `git status` e `git diff --check`;
-5. caminho retornado por `git rev-parse --git-dir`;
-6. existência/atributos de `.git` e `FETCH_HEAD`;
-7. owner/ACL do root do repositório;
-8. owner/ACL de `.git`;
-9. owner/ACL de `FETCH_HEAD`, se existir;
-10. saída relevante de `icacls`;
-11. processos Git/SSH encontrados;
-12. resultado de `git fetch --dry-run origin`;
-13. comparação objetiva entre as permissões do root, `.git` e `FETCH_HEAD`;
-14. hipótese causal mais provável e grau de confiança;
-15. confirmação de que nenhuma permissão/arquivo/configuração foi alterada;
-16. recomendação objetiva para a tarefa corretiva seguinte, sem executá-la.
+Antes de qualquer `icacls /remove:d`, `Set-Acl`, mudança de owner ou outra ação de segurança, deve existir uma tarefa curta de classificação que:
 
-## 9. Regra de parada
+1. resolva formalmente o SID negado para conta/grupo, se possível;
+2. determine se o SID faz parte do token da sessão `codexsandboxoffline`;
+3. confirme se a negação é específica do sandbox;
+4. classifique o erro Schannel como limitação do sandbox ou problema geral do Git/Windows.
 
-Se qualquer comando de inspeção exigir elevação ou alteração persistente, não elevar e não modificar. Registrar a limitação e continuar somente com as leituras disponíveis.
+A F1-B1-T04 permanece bloqueada até essa classificação e eventual correção operacional.
 
-Não executar a F1-B1-T04 nesta tarefa.
+## 8. Restrições preservadas
+
+Durante a F1-B1-T04A não houve:
+
+- `git pull` adicional;
+- `git fetch` sem `--dry-run`;
+- alteração de ACL;
+- alteração de owner;
+- remoção/recriação de `FETCH_HEAD`;
+- elevação para contornar o problema;
+- stash, merge, rebase, reset ou checkout destrutivo;
+- alteração do diário;
+- criação da PoC;
+- commit ou push pelo Codex.
+
+## 9. Próximo passo
+
+Executar `F1-B1-T04B — Classificar SID e Restrições do Sandbox Git`, ainda em modo somente leitura.
+
+Somente depois disso deverá ser decidido se a solução adequada é corrigir ACL, mudar o contexto usado para sincronização Git, ou tratar a restrição como característica operacional do sandbox.
