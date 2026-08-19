@@ -22,6 +22,26 @@ Cada bloco deve seguir esta sequência:
 6. atualizar arquitetura e documentos afetados;
 7. validar o gate do bloco antes de seguir para dependências posteriores.
 
+## Bloco 0 — Bootstrap do ambiente de trabalho
+
+Antes de qualquer investigação executada pelo Codex, `C:\dev\StepFlow` deve corresponder a uma cópia local íntegra do repositório oficial `jotaCorsino/StepFlow-pocket`.
+
+### Entregável
+
+- clone local validado;
+- branch `main` ativa;
+- `origin` correto;
+- working tree limpo;
+- `README.md`, `AGENTS.md` e `docs/` disponíveis localmente.
+
+### Tarefa oficial
+
+`docs/04-planejamento/tarefas-codex/f1-b0-t01-bootstrap-repositorio-local.md`
+
+### Gate
+
+Nenhuma tarefa técnica posterior deve ser executada pelo Codex antes da conclusão desse bootstrap.
+
 ## Bloco 1 — Plataforma Windows, Client e distribuição
 
 ### Perguntas a fechar
@@ -319,6 +339,7 @@ Somente após as decisões anteriores estarem suficientemente fechadas:
 
 ## Critérios de saída da Fase 1
 
+- [ ] bootstrap local validado;
 - [ ] plataforma Client aprovada;
 - [ ] compatibilidade Windows documentada;
 - [ ] Host definido;
@@ -337,6 +358,7 @@ Somente após as decisões anteriores estarem suficientemente fechadas:
 
 ## Ordem inicial autorizada
 
-O primeiro bloco autorizado é **Bloco 1 — Plataforma Windows, Client e distribuição**.
+1. **Bloco 0 — Bootstrap do ambiente de trabalho**;
+2. depois, **Bloco 1 — Plataforma Windows, Client e distribuição**.
 
 Nenhum scaffold definitivo deve ser criado durante essa investigação, salvo prova técnica explicitamente descartável e identificada como tal.
