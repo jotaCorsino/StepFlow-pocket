@@ -2,7 +2,7 @@
 
 **Fase:** 1 — Fechamento arquitetural e especificação  
 **Bloco:** 0 — Preparação do ambiente de trabalho  
-**Status:** PRONTA PARA EXECUÇÃO
+**Status:** CONCLUÍDA EM 2026-08-19
 
 ## 1. Objetivo
 
@@ -12,9 +12,7 @@ Esta tarefa existe antes de todas as demais tarefas Codex da Fase 1.
 
 ## 2. Contexto
 
-O repositório remoto já foi inicializado e contém a documentação oficial do projeto. O ambiente local ainda não foi preparado.
-
-Como o repositório é público, leitura e clone por HTTPS não exigem autenticação GitHub. Credenciais serão necessárias apenas quando uma tarefa futura exigir `push` para o remoto.
+O repositório remoto já havia sido inicializado e continha a documentação oficial do projeto. O ambiente local ainda não havia sido preparado.
 
 Repositório remoto:
 
@@ -28,144 +26,49 @@ Branch principal:
 
 `main`
 
-## 3. Estado inicial esperado
+## 3. Resultado executado
 
-Pode ocorrer um destes cenários:
+- Git detectado: `git version 2.55.0.windows.4`;
+- `C:\dev\StepFlow` já existia e estava completamente vazia;
+- clone do repositório oficial realizado com sucesso;
+- branch atual: `main`;
+- `origin` configurado para `https://github.com/jotaCorsino/StepFlow-pocket.git` em fetch e push;
+- HEAD validado no momento do bootstrap: `39015c0 docs: add local bootstrap as first Phase 1 gate`;
+- working tree validado como limpo e sincronizado com `origin/main`;
+- `README.md`, `AGENTS.md` e `docs/` confirmados;
+- `AGENTS.md` lido pelo Codex;
+- nenhuma dependência, código, banco, pacote ou scaffold criado;
+- nenhum commit ou push executado pelo Codex.
 
-- `C:\dev\StepFlow` não existe;
-- `C:\dev\StepFlow` existe e está vazia;
-- `C:\dev\StepFlow` existe com arquivos não versionados.
+## 4. Ocorrência registrada
 
-O terceiro cenário exige parada antes de apagar ou sobrescrever qualquer conteúdo.
+A primeira tentativa de clone falhou com erro HTTPS:
 
-## 4. Escopo incluído
+`schannel: AcquireCredentialsHandle failed: SEC_E_NO_CREDENTIALS`
 
-- verificar disponibilidade do Git;
-- verificar o estado de `C:\dev\StepFlow`;
-- clonar o repositório oficial quando a pasta não existir ou estiver vazia;
-- confirmar branch `main`;
-- confirmar `origin` apontando para o repositório oficial;
-- confirmar que o checkout contém `README.md`, `AGENTS.md` e `docs/`;
-- confirmar que o working tree está limpo;
-- registrar evidências do bootstrap.
+O clone foi repetido em contexto com permissão elevada e concluído com sucesso.
 
-## 5. Fora do escopo
+A ocorrência não bloqueou o bootstrap, mas deve ser considerada em tarefas futuras que dependam de acesso HTTPS/GitHub a partir deste ambiente.
 
-Não fazer nesta tarefa:
+## 5. Critérios de aceite
 
-- instalar Node.js, Rust, Tauri ou qualquer SDK;
-- criar `package.json`;
-- criar `src-tauri`;
-- criar código do Client ou Host;
-- criar SQLite;
-- criar launcher;
-- editar documentação de produto ou arquitetura;
-- criar nova branch;
-- realizar commit;
-- realizar push;
-- configurar credenciais GitHub;
-- apagar arquivos preexistentes em `C:\dev\StepFlow`.
+- [x] Git disponível no ambiente;
+- [x] `C:\dev\StepFlow` corresponde ao repositório oficial;
+- [x] branch atual é `main`;
+- [x] `origin` aponta para `https://github.com/jotaCorsino/StepFlow-pocket.git`;
+- [x] `README.md` existe;
+- [x] `AGENTS.md` existe;
+- [x] `docs/` existe;
+- [x] `git status` sem alterações locais inesperadas;
+- [x] nenhuma dependência de aplicação instalada;
+- [x] nenhum arquivo preexistente apagado para forçar o clone.
 
-## 6. Procedimento esperado
+## 6. Gate
 
-### 6.1. Verificar Git
+**APROVADO.**
 
-Executar:
+O ambiente local está autorizado a seguir para `F1-B1-T01 — Inventário do Ambiente Windows e Pré-requisitos`.
 
-```powershell
-git --version
-```
+## 7. Observação operacional
 
-Se Git não estiver disponível, parar e reportar o bloqueio. Não instalar automaticamente.
-
-### 6.2. Verificar a pasta local
-
-Inspecionar `C:\dev\StepFlow`.
-
-Se não existir, clonar diretamente para ela:
-
-```powershell
-git clone https://github.com/jotaCorsino/StepFlow-pocket.git C:\dev\StepFlow
-```
-
-Se existir e estiver completamente vazia, o mesmo comando pode ser utilizado.
-
-Se existir e contiver qualquer arquivo ou subpasta, **não apagar, mover ou sobrescrever nada automaticamente**. Registrar o conteúdo encontrado e interromper para decisão.
-
-### 6.3. Validar checkout
-
-Dentro de `C:\dev\StepFlow`, executar:
-
-```powershell
-git status
-git branch --show-current
-git remote -v
-git log -1 --oneline
-```
-
-Também confirmar a existência de:
-
-```text
-README.md
-AGENTS.md
-docs/
-```
-
-## 7. Critérios de aceite
-
-- [ ] Git disponível no ambiente;
-- [ ] `C:\dev\StepFlow` corresponde ao repositório oficial;
-- [ ] branch atual é `main`;
-- [ ] `origin` aponta para `https://github.com/jotaCorsino/StepFlow-pocket.git` ou URL GitHub equivalente do mesmo repositório;
-- [ ] `README.md` existe;
-- [ ] `AGENTS.md` existe;
-- [ ] `docs/` existe;
-- [ ] `git status` não apresenta alterações locais inesperadas;
-- [ ] nenhuma dependência de aplicação foi instalada;
-- [ ] nenhum arquivo existente foi apagado para forçar o clone.
-
-## 8. Validações obrigatórias
-
-Incluir no relatório final as saídas relevantes de:
-
-```powershell
-git --version
-git status
-git branch --show-current
-git remote -v
-git log -1 --oneline
-```
-
-E uma listagem resumida da raiz de `C:\dev\StepFlow`.
-
-## 9. Documentação a atualizar
-
-Nenhuma atualização documental é obrigatória nesta tarefa, porque seu único objetivo é preparar a cópia local da fonte de verdade já existente.
-
-Não editar o diário ou changelog apenas para registrar o clone local.
-
-## 10. Relatório final obrigatório
-
-Informar:
-
-1. versão do Git;
-2. estado inicial encontrado em `C:\dev\StepFlow`;
-3. se o clone foi realizado;
-4. branch atual;
-5. URL(s) de `origin`;
-6. commit atual (`HEAD`);
-7. estado do working tree;
-8. confirmação de `README.md`, `AGENTS.md` e `docs/`;
-9. qualquer bloqueio encontrado.
-
-## 11. Regra de parada
-
-Parar sem alterar conteúdo se:
-
-- Git não estiver instalado;
-- `C:\dev\StepFlow` contiver arquivos preexistentes;
-- o clone apontar para repositório diferente;
-- houver erro de rede que impeça acesso ao GitHub;
-- houver qualquer situação que exija apagar ou sobrescrever arquivos locais.
-
-Não improvisar solução destrutiva.
+Autenticação de escrita no GitHub ainda não foi configurada nem validada. Ela não é requisito para as tarefas de inspeção local atuais e deverá ser tratada separadamente antes da primeira tarefa que exija `push` pelo ambiente local.
