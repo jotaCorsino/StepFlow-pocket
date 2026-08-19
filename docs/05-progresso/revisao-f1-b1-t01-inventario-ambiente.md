@@ -1,11 +1,11 @@
 # Revisão — F1-B1-T01 Inventário do Ambiente Windows
 
 **Data:** 2026-08-19  
-**Status:** EM REVISÃO — UMA PENDÊNCIA TÉCNICA LOCAL IDENTIFICADA
+**Status:** CONCLUÍDA
 
 ## Objetivo
 
-Revisar o relatório produzido pelo Codex na tarefa `F1-B1-T01 — Inventário do Ambiente Windows e Pré-requisitos` antes de considerar o inventário encerrado.
+Revisar o relatório produzido pelo Codex na tarefa `F1-B1-T01 — Inventário do Ambiente Windows e Pré-requisitos` e fechar as pendências locais necessárias antes da preparação da prova Tauri.
 
 ## Contexto correto do ambiente
 
@@ -13,11 +13,11 @@ A estação atualmente usada para desenvolver o StepFlow é um computador pessoa
 
 Consequentemente, qualquer tentativa de acesso a um caminho SMB interno da empresa nesta estação não representa uma validação do ambiente corporativo.
 
-Além disso, o caminho anteriormente utilizado como `\\192.168.5.7\Arquivos\StepFlow\` foi apenas um **exemplo ilustrativo** de como poderá ser o compartilhamento futuramente. O endereço IP, nome do compartilhamento e subpasta reais ainda não foram definidos/confirmados e não devem ser tratados como configuração oficial.
+Além disso, o caminho anteriormente utilizado como `\\192.168.5.7\Arquivos\StepFlow\` foi apenas um **exemplo ilustrativo**. O endereço IP, nome do compartilhamento e subpasta reais ainda não foram definidos/confirmados e não devem ser tratados como configuração oficial.
 
 O contexto de ambientes está documentado em `docs/00-governanca/contexto-ambientes.md`.
 
-## Evidências recebidas
+## Evidências do inventário
 
 - Git `2.55.0.windows.4`;
 - Node.js `v24.14.0`;
@@ -28,62 +28,78 @@ O contexto de ambientes está documentado em `docs/00-governanca/contexto-ambien
 - WebView2 detectado localmente nas versões `151.0.4129.86` e `151.0.4129.93`;
 - arquitetura AMD64/x64;
 - CPU AMD Ryzen 5 5600X;
-- tentativa de acesso ao caminho SMB ilustrativo retornou `Acesso negado`;
+- tentativa histórica de acesso ao caminho SMB ilustrativo retornou `Acesso negado`;
 - nenhuma escrita foi realizada;
-- working tree permaneceu sem código/scaffold, contendo somente a alteração documental autorizada no diário de progresso;
-- consulta WMI do processador foi negada, mas CPU e arquitetura foram confirmadas por outras fontes locais.
+- consulta WMI/CIM apresentou restrições de permissão, mas as informações relevantes foram confirmadas por outras fontes locais.
 
-## Avaliação
+## Fechamento da identidade do Windows
 
-### Pré-requisitos para uma futura prova Tauri
+A tarefa `F1-B1-T02 — Confirmar identidade e versão real do Windows` levantou:
 
-O ambiente de desenvolvimento já possui vários elementos relevantes detectados: WebView2, toolchain Microsoft C++/MSVC, Git e Node/npm.
+- `WindowsProductName`: `Windows 10 Pro`;
+- `EditionID`: `Professional`;
+- `DisplayVersion`: `25H2`;
+- `CurrentBuild`: `26200`;
+- `UBR`: `9168`;
+- arquitetura AMD64/x64.
 
-Rust permanece ausente e deverá ser tratado em tarefa própria quando a prova Tauri for autorizada.
+A validação externa em fontes oficiais da Microsoft confirmou que:
 
-### Inconsistência na identidade do Windows
+- Windows 11 versão 25H2 corresponde à linha de OS build `26200`;
+- a atualização de 11 de agosto de 2026, KB5121003, produz OS build `26200.9168` para Windows 11 versão 25H2.
 
-O relatório informou simultaneamente:
+Fontes:
 
-- `Windows 10 Pro`;
-- versão `25H2`;
-- build `26200`.
+- Microsoft Learn — Windows 11 release information: https://learn.microsoft.com/windows/release-health/windows11-release-information
+- Microsoft Support — KB5121003: https://support.microsoft.com/en-us/servicing/os/windows-11/2026/08/kb5121003-windows-11-24h2-25h2-security-update
 
-Essa combinação precisa de verificação adicional antes de virar registro oficial desta estação de desenvolvimento. A identificação do produto retornada por uma fonte local pode não refletir corretamente o nome comercial do Windows instalado.
+Portanto, para fins do projeto, esta estação de desenvolvimento é registrada como:
 
-A tarefa seguinte deverá confirmar a identidade do sistema por múltiplas fontes locais determinísticas, preservando separadamente os valores retornados por cada mecanismo.
+**Windows 11 Pro, versão 25H2, OS build 26200.9168, x64.**
 
-### Compartilhamento SMB
+O valor literal `Windows 10 Pro` retornado por `ProductName`/`WindowsProductName` deve ser preservado como evidência de uma fonte local divergente, mas não deve prevalecer sobre a correspondência oficial entre versão/build e a linha do produto publicada pela Microsoft.
 
-O resultado `Acesso negado` **não é bloqueio do projeto e não deve gerar tarefa de diagnóstico SMB nesta estação**.
+O valor `WindowsVersion = 2009` também é tratado apenas como identificador legado retornado pela API local, não como versão comercial atual.
+
+## Avaliação dos pré-requisitos para futura prova Tauri
+
+O ambiente de desenvolvimento já possui:
+
+- Git;
+- Node.js/npm;
+- WebView2;
+- toolchain Microsoft C++/MSVC;
+- Windows x64 compatível com a direção arquitetural atual.
+
+O requisito ausente identificado é:
+
+- Rust/rustup/cargo.
+
+A ausência de Rust não é erro do ambiente; ela apenas define o próximo passo de preparação controlada antes de uma prova mínima Tauri.
+
+## Compartilhamento SMB
+
+O resultado histórico `Acesso negado` **não é bloqueio do projeto e não gera tarefa de diagnóstico SMB nesta estação**.
 
 Motivos:
 
 - a estação de desenvolvimento está fora da LAN da empresa;
-- o caminho utilizado foi apenas ilustrativo;
+- o caminho usado foi apenas ilustrativo;
 - o endereço real do compartilhamento corporativo ainda será definido/confirmado;
-- conectividade, permissões e comportamento do SMB só podem ser considerados validados em ambiente realmente conectado à infraestrutura da empresa.
+- conectividade, permissões e comportamento do SMB só poderão ser validados em ambiente realmente conectado à infraestrutura da empresa.
 
-Assim, o teste SMB anterior passa a ser classificado como:
+Classificação do teste anterior:
 
 **NÃO APLICÁVEL AO AMBIENTE DE DESENVOLVIMENTO ATUAL.**
 
-A validação futura deverá utilizar notação conceitual, por exemplo:
-
-`\\<HOST-OU-SERVIDOR-DA-EMPRESA>\<COMPARTILHAMENTO>\<PASTA-STEPFLOW>\`
-
-até que o caminho real seja conhecido.
-
 ## Resultado da revisão
 
-A tarefa F1-B1-T01 foi executada corretamente.
+A tarefa `F1-B1-T01` está encerrada.
 
-Não existe pendência de SMB decorrente do resultado obtido nesta máquina.
+A tarefa `F1-B1-T02` resolveu a única pendência técnica local remanescente do inventário.
 
-Permanece apenas a necessidade de confirmar a identidade comercial/versão real do Windows desta estação antes de usar esse dado como evidência técnica local.
+Não existe bloqueio local conhecido para preparar o toolchain Rust e, posteriormente, executar uma prova Tauri descartável.
 
-## Próxima tarefa autorizada
+## Próximo passo
 
-`F1-B1-T02 — Confirmar identidade e versão real do Windows`.
-
-Nenhuma tarefa de diagnóstico do compartilhamento corporativo deve ser criada enquanto estivermos fora da rede da empresa e sem o endereço real consolidado.
+Preparar, em tarefa separada e delimitada, o toolchain Rust necessário ao desenvolvimento Tauri, sem criar ainda scaffold ou código do StepFlow.
