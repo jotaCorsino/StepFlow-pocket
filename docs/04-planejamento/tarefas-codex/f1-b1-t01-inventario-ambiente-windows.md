@@ -6,6 +6,16 @@
 
 **Tipo:** investigação local, sem implementação de produto
 
+**Status:** AGUARDA PRÉ-REQUISITO
+
+## Pré-requisito obrigatório
+
+Antes desta tarefa, concluir e validar:
+
+`docs/04-planejamento/tarefas-codex/f1-b0-t01-bootstrap-repositorio-local.md`
+
+O Codex só deve iniciar este inventário depois que `C:\dev\StepFlow` for um clone íntegro e limpo de `jotaCorsino/StepFlow-pocket` e após ler `AGENTS.md` e a documentação obrigatória indicada por ele.
+
 ## 1. Objetivo
 
 Levantar de forma mecânica o ambiente Windows disponível em `C:\dev\StepFlow` e os pré-requisitos relevantes para uma futura prova Tauri, sem instalar dependências, sem criar scaffold e sem implementar qualquer funcionalidade do StepFlow.
@@ -36,6 +46,9 @@ Ler antes de executar:
 ## 3. Estado inicial esperado
 
 - repositório clonado/localizado em `C:\dev\StepFlow`;
+- bootstrap local já concluído e validado;
+- branch `main` ativa;
+- working tree limpo;
 - nenhuma aplicação StepFlow funcional existe;
 - nenhuma stack definitiva deve ser presumida como instalada;
 - Tauri 2 é a direção arquitetural recomendada para prova, mas esta tarefa não cria projeto Tauri.
@@ -96,6 +109,7 @@ Não alterar `compatibilidade-windows-client.md` automaticamente apenas para reg
 
 ## 8. Critérios de aceite
 
+- [ ] bootstrap local anterior foi validado;
 - [ ] versão, edição e build do Windows foram identificados;
 - [ ] arquitetura x64/x86/ARM foi identificada;
 - [ ] presença/ausência e versão do WebView2 foram verificadas com evidência;
@@ -185,5 +199,7 @@ Responder com:
 11. recomendação objetiva para a próxima tarefa, sem executá-la.
 
 ## 12. Regra de parada
+
+Se o bootstrap local não estiver concluído, não executar o inventário.
 
 Se `C:\dev\StepFlow` não for o repositório correto, se houver alterações locais inesperadas relevantes ou se a inspeção exigir instalação/modificação do sistema para prosseguir, parar essa parte e reportar o bloqueio. Não corrigir silenciosamente o ambiente nesta tarefa.
