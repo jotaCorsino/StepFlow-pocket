@@ -6,13 +6,13 @@
 
 Definir a separação mínima necessária para manter o StepFlow simples para o usuário, seguro para uso simultâneo em rede e fácil de manter.
 
+O desenvolvimento atual ocorre fora da rede da empresa. Endereços IP, hostnames e caminhos SMB corporativos permanecem conceituais até validação no ambiente real, conforme `docs/00-governanca/contexto-ambientes.md`.
+
 ## 2. Visão geral
 
 ```text
-                Compartilhamento de rede
-        \\192.168.5.7\Arquivos\StepFlow\
-                         │
-                  ponto de entrada
+                Rede interna da empresa
+          ponto de entrada do StepFlow
                          │
           ┌──────────────┼──────────────┐
           │              │              │
@@ -31,6 +31,14 @@ Definir a separação mínima necessária para manter o StepFlow simples para o 
        SQLite         arquivos       backups
 ```
 
+Enquanto o ambiente corporativo não estiver confirmado, qualquer caminho de compartilhamento deve ser representado apenas por placeholder, por exemplo:
+
+```text
+\\<HOST-OU-SERVIDOR-DA-EMPRESA>\<COMPARTILHAMENTO>\<PASTA-STEPFLOW>\
+```
+
+Nenhum exemplo anterior de IP/path deve ser interpretado como configuração oficial.
+
 ## 3. Componentes
 
 ### 3.1. StepFlow Client
@@ -43,7 +51,7 @@ Responsabilidades:
 - enviar comandos de criação/edição/remoção permitidos;
 - apresentar conflitos e erros;
 - receber eventos de atualização;
-- executar interações locais de UX, como copiar texto e manipular checklist temporário;
+- executar interações locais de UX, como copiar texto e manipular o checklist conforme o comportamento que vier a ser consolidado;
 - solicitar exportações ou gerar documentos conforme a estratégia final.
 
 Não é responsabilidade do Client:
@@ -225,16 +233,26 @@ Módulos devem possuir responsabilidade clara e API interna pequena.
 Experiência alvo:
 
 ```text
-\\192.168.5.7\Arquivos\StepFlow\StepFlow.exe
+ponto de entrada interno do StepFlow
+        ↓
+duplo clique
+        ↓
+StepFlow
+```
+
+Caso a estratégia final utilize compartilhamento SMB, representar o local apenas conceitualmente até confirmação do ambiente:
+
+```text
+\\<HOST-OU-SERVIDOR-DA-EMPRESA>\<COMPARTILHAMENTO>\<PASTA-STEPFLOW>\StepFlow.exe
 ```
 
 Direção proposta:
 
-- o arquivo de rede funciona como ponto de entrada/launcher;
+- um arquivo/ponto de entrada na rede funciona como launcher ou mecanismo equivalente;
 - verifica a versão publicada;
 - mantém uma cópia local do Client quando necessário;
 - inicia a cópia local;
-- usuário continua percebendo apenas o duplo clique no arquivo de rede.
+- usuário continua percebendo apenas o duplo clique no ponto de entrada.
 
 Motivações:
 
@@ -243,7 +261,7 @@ Motivações:
 - reduzir arquivos bloqueados no compartilhamento;
 - permitir rollback/versionamento futuro.
 
-Essa estratégia exige protótipo técnico antes de ser consolidada definitivamente.
+Essa estratégia exige protótipo técnico antes de ser consolidada definitivamente e validação posterior em ambiente conectado à LAN real da empresa.
 
 ## 12. Localização do Host
 
@@ -256,7 +274,7 @@ Alternativas a avaliar na fase arquitetural:
 - hostname interno estável;
 - descoberta local controlada.
 
-A opção escolhida deve favorecer simplicidade e manutenção.
+Nenhum endereço real está consolidado ainda. A opção escolhida deve favorecer simplicidade, manutenção e implantação sem hardcode de exemplos de planejamento.
 
 ## 13. Falhas esperadas
 
@@ -309,6 +327,7 @@ Estratégia exata será definida depois de validar a forma de backup do SQLite e
 - mecanismo de eventos;
 - descoberta do Host;
 - launcher/update;
+- endereço/hostname/path reais do ambiente corporativo;
 - paths finais de dados;
 - estratégia de migrations;
 - empacotamento e inicialização automática do Host;
