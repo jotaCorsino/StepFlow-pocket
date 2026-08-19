@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Esta pasta concentra a documentação viva e operacional do StepFlow Pocket. Ela deve permitir que PO, assistente e Codex entendam o estado vigente do produto sem depender da memória de conversas anteriores.
+Esta pasta concentra a documentação viva e operacional do StepFlow Pocket. Ela deve permitir que PO, Assistente e Codex entendam o estado vigente do produto sem depender da memória de conversas anteriores.
 
 ## Princípios
 
@@ -29,19 +29,31 @@ Uma especificação por tela ou superfície relevante. Deve cobrir layout, compo
 
 ### `03-arquitetura`
 
-Arquitetura do sistema, estrutura do repositório, decisões técnicas, modelo de dados, contratos, segurança, concorrência, persistência e ADRs.
+Arquitetura do sistema, estrutura do repositório, decisões técnicas, compatibilidade Windows, modelo de dados, contratos, segurança, concorrência, persistência e ADRs.
+
+Documentos já relevantes:
+
+- `arquitetura-inicial.md` — separação lógica Client/Host/Data;
+- `compatibilidade-windows-client.md` — investigação da Fase 1 sobre Tauri, WebView2, Windows e distribuição do Client.
 
 ### `04-planejamento`
 
-Roadmap, fases, dependências, gates de entrada/saída e planos de implementação.
+Roadmap, fases, dependências, gates de entrada/saída, planos oficiais e tarefas fechadas para o Codex.
+
+Documentos vigentes:
+
+- `roadmap.md`;
+- `plano-oficial-fase-0.md` — concluído;
+- `plano-oficial-fase-1.md` — vigente;
+- `tarefas-codex/` — tarefas investigativas/implementáveis em escopo fechado.
 
 ### `05-progresso`
 
-Registro de decisões, diário de progresso e changelog do projeto.
+Registro de decisões, diário de progresso, changelog e evidências de revisões/gates.
 
 ### `templates`
 
-Modelos reutilizáveis para análises, tarefas, decisões e documentação de telas.
+Modelos reutilizáveis para análises e tarefas.
 
 ## Precedência documental
 
@@ -55,6 +67,14 @@ Em caso de divergência, usar esta ordem prática até que uma decisão específ
 
 Se ainda houver ambiguidade relevante, ela deve ser tratada como pendência, não como licença para o executor escolher sozinho.
 
-## Estado inicial
+## Estado atual
 
-O StepFlow Pocket ainda não possui implementação funcional. A primeira etapa é consolidar documentação, arquitetura e ordem de execução antes de liberar código de negócio.
+A **Fase 0 — Fundação documental e governança** foi concluída em 2026-08-19.
+
+A fase vigente é **Fase 1 — Fechamento arquitetural e especificação**.
+
+O StepFlow ainda não possui implementação funcional. A Fase 1 permite investigação técnica, documentação e provas explicitamente descartáveis, mas continua bloqueando a antecipação de funcionalidades de negócio.
+
+O primeiro bloco vigente é **Plataforma Windows, Client e distribuição**. A primeira tarefa Codex preparada é:
+
+`docs/04-planejamento/tarefas-codex/f1-b1-t01-inventario-ambiente-windows.md`
