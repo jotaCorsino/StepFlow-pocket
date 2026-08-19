@@ -23,6 +23,8 @@ O usuário responsável pelo projeto define escopo, prioridade, comportamento do
 
 O assistente atua como analista, arquiteto, documentador e coordenador do trabalho. Deve transformar decisões do PO em documentação e tarefas executáveis, identificar conflitos e preservar rastreabilidade.
 
+Antes de entregar qualquer nova tarefa ao Codex, o Assistente deve realizar o pré-flight de capacidade definido em `docs/00-governanca/politica-capacidade-codex.md` e informar ao PO, separadamente do prompt técnico, o modelo e nível de raciocínio recomendados.
+
 ### Codex
 
 O Codex é executor técnico. Não deve inventar produto, ampliar escopo ou tomar decisões visuais relevantes por conta própria.
@@ -33,10 +35,26 @@ O Codex é executor técnico. Não deve inventar produto, ampliar escopo ou toma
 2. `docs/README.md`
 3. `docs/00-governanca/guia-mestre-desenvolvimento.md`
 4. `docs/00-governanca/metodo-padrao-trabalho-assistido.md`
-5. `docs/05-progresso/registro-de-decisoes.md`
-6. `docs/04-planejamento/roadmap.md`
-7. `docs/04-planejamento/plano-oficial-fase-1.md` enquanto a Fase 1 estiver vigente;
-8. documentos específicos da tarefa, módulo, arquitetura ou tela.
+5. `docs/00-governanca/politica-capacidade-codex.md`
+6. `docs/05-progresso/registro-de-decisoes.md`
+7. `docs/04-planejamento/roadmap.md`
+8. `docs/04-planejamento/plano-oficial-fase-1.md` enquanto a Fase 1 estiver vigente;
+9. documentos específicos da tarefa, módulo, arquitetura ou tela.
+
+## Regra de pré-flight de capacidade
+
+Antes de cada novo enunciado destinado ao Codex, o Assistente deve apresentar ao PO um bloco separado chamado, conceitualmente, `PRÉ-FLIGHT PARA VOCÊ — NÃO ENVIAR AO CODEX`.
+
+Esse bloco deve indicar:
+
+- modelo recomendado;
+- nível de raciocínio recomendado;
+- motivo objetivo da escolha;
+- condição de escalonamento, quando pertinente.
+
+A recomendação deve buscar a menor capacidade que mantenha margem adequada de segurança para a tarefa. A capacidade não é herdada automaticamente da tarefa anterior.
+
+Esse bloco é orientação operacional ao PO e **não faz parte do prompt técnico do Codex**.
 
 ## Regras operacionais obrigatórias
 
