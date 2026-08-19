@@ -6,15 +6,17 @@
 
 **Tipo:** investigação local, sem implementação de produto
 
-**Status:** AGUARDA PRÉ-REQUISITO
+**Status:** PRONTA PARA EXECUÇÃO
 
 ## Pré-requisito obrigatório
 
-Antes desta tarefa, concluir e validar:
+Concluído e validado em 2026-08-19:
 
 `docs/04-planejamento/tarefas-codex/f1-b0-t01-bootstrap-repositorio-local.md`
 
-O Codex só deve iniciar este inventário depois que `C:\dev\StepFlow` for um clone íntegro e limpo de `jotaCorsino/StepFlow-pocket` e após ler `AGENTS.md` e a documentação obrigatória indicada por ele.
+O ambiente `C:\dev\StepFlow` foi confirmado como clone íntegro e limpo de `jotaCorsino/StepFlow-pocket`, branch `main`, com `AGENTS.md` lido pelo Codex.
+
+Antes de iniciar esta tarefa, executar `git pull --ff-only` para incorporar atualizações documentais remotas posteriores ao bootstrap. Se o pull falhar ou houver alterações locais inesperadas, parar e reportar; não resolver por merge ou reset automático.
 
 ## 1. Objetivo
 
@@ -46,15 +48,17 @@ Ler antes de executar:
 ## 3. Estado inicial esperado
 
 - repositório clonado/localizado em `C:\dev\StepFlow`;
-- bootstrap local já concluído e validado;
+- bootstrap local concluído e validado;
 - branch `main` ativa;
 - working tree limpo;
+- checkout atualizado por `git pull --ff-only` antes da inspeção;
 - nenhuma aplicação StepFlow funcional existe;
 - nenhuma stack definitiva deve ser presumida como instalada;
 - Tauri 2 é a direção arquitetural recomendada para prova, mas esta tarefa não cria projeto Tauri.
 
 ## 4. Escopo incluído
 
+- atualizar o clone somente por fast-forward com `git pull --ff-only`;
 - inspecionar sistema operacional;
 - inspecionar arquitetura CPU/SO;
 - inspecionar WebView2 por meios locais confiáveis, como registro, arquivos/runtime ou mecanismos do Windows;
@@ -81,11 +85,13 @@ Ler antes de executar:
 - criar Host;
 - criar launcher;
 - alterar arquitetura ou roadmap por conta própria;
-- fazer commit/push sem instrução explícita separada do fluxo de trabalho vigente.
+- fazer commit/push sem instrução explícita separada do fluxo de trabalho vigente;
+- resolver divergência Git por merge, rebase, reset ou force.
 
 ## 6. Regras e restrições
 
 - executar somente comandos de leitura/inspeção ou testes de acesso sem alteração persistente relevante;
+- `git pull --ff-only` é a única atualização Git autorizada antes da inspeção;
 - não alterar políticas do Windows;
 - não habilitar features opcionais;
 - não alterar PATH;
@@ -110,6 +116,7 @@ Não alterar `compatibilidade-windows-client.md` automaticamente apenas para reg
 ## 8. Critérios de aceite
 
 - [ ] bootstrap local anterior foi validado;
+- [ ] `git pull --ff-only` foi executado com sucesso antes da inspeção;
 - [ ] versão, edição e build do Windows foram identificados;
 - [ ] arquitetura x64/x86/ARM foi identificada;
 - [ ] presença/ausência e versão do WebView2 foram verificadas com evidência;
@@ -125,7 +132,17 @@ Não alterar `compatibilidade-windows-client.md` automaticamente apenas para reg
 
 ## 9. Validações obrigatórias
 
-Executar equivalentes seguros no PowerShell, adaptando apenas quando necessário:
+Primeiro:
+
+```powershell
+Set-Location C:\dev\StepFlow
+git status --short --branch
+git pull --ff-only
+```
+
+Se houver alterações locais inesperadas ou o pull não puder ser fast-forward, parar.
+
+Depois executar equivalentes seguros no PowerShell, adaptando apenas quando necessário:
 
 ```powershell
 Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsBuildNumber, OsArchitecture
@@ -160,13 +177,14 @@ Get-ChildItem '\\192.168.5.7\Arquivos\StepFlow\' -ErrorAction SilentlyContinue |
 
 Não criar, editar nem remover arquivos nessa pasta.
 
-Verificar o checkout:
+Verificar o checkout ao final:
 
 ```powershell
 Set-Location C:\dev\StepFlow
 git status --short --branch
 git remote -v
 git branch --show-current
+git log -1 --oneline
 ```
 
 ## 10. Documentação a atualizar
@@ -182,24 +200,27 @@ Atualizar `docs/05-progresso/diario-de-progresso.md` com uma entrada curta conte
 
 Não registrar uma nova decisão arquitetural sem que ela decorra diretamente de evidência e esteja prevista na tarefa.
 
+Como commit/push ainda não estão autorizados nesta tarefa, a alteração documental deve permanecer no working tree e ser incluída no relatório final para revisão posterior.
+
 ## 11. Relatório final obrigatório
 
 Responder com:
 
 1. objetivo executado;
-2. Windows/arquitetura identificados;
-3. WebView2 detectado e versão, ou ausência;
-4. ferramentas encontradas e versões;
-5. Build Tools detectados ou não;
-6. resultado do acesso a `\\192.168.5.7\Arquivos\StepFlow\`;
-7. estado Git do checkout;
-8. arquivos alterados;
-9. validações executadas;
-10. bloqueios/pendências;
-11. recomendação objetiva para a próxima tarefa, sem executá-la.
+2. resultado de `git pull --ff-only` e HEAD inspecionado;
+3. Windows/arquitetura identificados;
+4. WebView2 detectado e versão, ou ausência;
+5. ferramentas encontradas e versões;
+6. Build Tools detectados ou não;
+7. resultado do acesso a `\\192.168.5.7\Arquivos\StepFlow\`;
+8. estado Git do checkout;
+9. arquivos alterados;
+10. validações executadas;
+11. bloqueios/pendências;
+12. recomendação objetiva para a próxima tarefa, sem executá-la.
 
 ## 12. Regra de parada
 
 Se o bootstrap local não estiver concluído, não executar o inventário.
 
-Se `C:\dev\StepFlow` não for o repositório correto, se houver alterações locais inesperadas relevantes ou se a inspeção exigir instalação/modificação do sistema para prosseguir, parar essa parte e reportar o bloqueio. Não corrigir silenciosamente o ambiente nesta tarefa.
+Se `git pull --ff-only` falhar, se `C:\dev\StepFlow` não for o repositório correto, se houver alterações locais inesperadas relevantes ou se a inspeção exigir instalação/modificação do sistema para prosseguir, parar essa parte e reportar o bloqueio. Não corrigir silenciosamente o ambiente nesta tarefa.
