@@ -134,17 +134,37 @@ A arquitetura deve combinar ordenação/serialização das escritas necessárias
 
 O mecanismo técnico ainda será definido, mas alterações relevantes devem ser propagadas para as instâncias conectadas.
 
-### 2026-08-19 — Exportação para PDF e DOCX permanece no escopo desejado
+### 2026-08-19 — Exportação para PDF e DOCX permanece no escopo do produto
 
 **Status:** CONSOLIDADA COMO REQUISITO DE PRODUTO
 
-O sistema deverá, se tecnicamente validado na fase correspondente, exportar documentações em PDF e DOCX e permitir impressão. O modelo exportável será separado da tela de execução.
+O sistema deverá oferecer exportação para PDF e DOCX, além de impressão. A Fase 1 deverá validar a estratégia e as bibliotecas para implementar esse requisito de forma offline e manutenível. A existência da função não depende dessa validação; apenas sua solução técnica.
+
+O modelo exportável será separado da tela de execução.
+
+### 2026-08-19 — O estado marcado do checklist durante uma execução ainda não está definido
+
+**Status:** CONSOLIDADA COMO PENDÊNCIA DE PRODUTO
+
+O checklist faz parte da documentação de uma etapa. Porém, ainda será decidido se as marcações feitas pelo técnico durante o uso são apenas temporárias, locais por usuário/dispositivo, persistidas no Host ou registradas como uma entidade formal de execução.
+
+Nenhuma dessas alternativas deve ser implementada como padrão antes da decisão correspondente.
 
 ### 2026-08-19 — O projeto começa por documentação e arquitetura
 
 **Status:** CONSOLIDADA
 
 Nenhuma implementação funcional ampla está autorizada antes do fechamento da fundação documental e do gate arquitetural correspondente.
+
+### 2026-08-19 — A Fase 0 foi concluída e a Fase 1 está autorizada
+
+**Status:** CONSOLIDADA
+
+A revisão cruzada da fundação documental foi concluída e registrada em `docs/05-progresso/revisao-cruzada-fase-0.md`.
+
+A próxima fase autorizada é **Fase 1 — Fechamento arquitetural e especificação**, conforme `docs/04-planejamento/plano-oficial-fase-1.md`.
+
+A Fase 1 autoriza investigação, especificação, decisões técnicas e provas descartáveis quando necessárias, mas não autoriza antecipar funcionalidades de negócio das fases seguintes.
 
 ---
 
