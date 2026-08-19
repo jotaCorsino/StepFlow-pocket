@@ -1,6 +1,6 @@
 # Guia Mestre de Desenvolvimento — StepFlow Pocket
 
-**Status:** INICIAL / EM CONSOLIDAÇÃO
+**Status:** CONSOLIDADO APÓS A FASE 0 — FASE 1 EM ANDAMENTO
 
 ## Objetivo
 
@@ -73,7 +73,7 @@ A solução está sendo planejada em três blocos:
 
 Aplicativo desktop com interface construída em HTML, CSS e JavaScript modular, empacotada como aplicação Windows.
 
-Direção corrente: Tauri como contêiner desktop, sujeita a validação técnica formal antes da fase de implementação.
+Direção corrente: Tauri como contêiner desktop, sujeita a validação técnica formal durante a Fase 1 antes da fundação executável.
 
 ### StepFlow Host
 
@@ -165,7 +165,7 @@ Cada etapa deve funcionar visualmente como uma página de um livro/manual, conte
 
 O botão de copiar deve ser visualmente discreto e representado apenas por ícone. O feedback de cópia deve ser curto e não poluir a página.
 
-O checklist usado durante uma execução não deve, por si só, alterar a documentação oficial.
+O checklist faz parte da documentação da etapa. O estado das marcações feitas por um técnico durante a execução ainda será definido na Fase 1 e não deve ser presumido como temporário ou persistente antes dessa decisão.
 
 ## Direção visual
 
@@ -249,17 +249,15 @@ O sistema não deve sobrescrever silenciosamente uma edição concorrente basead
 
 ## Atualização entre clientes
 
-Direção corrente: clientes conectados devem receber atualização sobre mudanças relevantes sem depender de recarregar manualmente a aplicação.
+Clientes conectados devem receber atualização sobre mudanças relevantes sem depender de recarregar manualmente a aplicação.
 
-Tecnologia/protocolo específico ainda deve ser validado formalmente antes da implementação.
+Tecnologia/protocolo específico será validado formalmente durante a Fase 1.
 
 ## Exportação
 
-Desejado para o produto:
+PDF, DOCX e impressão são requisitos consolidados do produto.
 
-- PDF;
-- DOCX;
-- impressão.
+A Fase 1 deve decidir como implementar esses formatos, quais bibliotecas/estratégias usar e onde a geração ocorrerá.
 
 A exportação deve partir de um modelo de documento próprio, e não simplesmente de uma captura visual da tela de execução.
 
@@ -269,7 +267,7 @@ A exportação deve considerar identidade da empresa e estrutura da documentaç�
 
 O produto deve prever mecanismo simples de backup e restauração dos dados persistentes.
 
-A política final de backup, formato e retenção ainda será detalhada.
+A política final de backup, formato e retenção será detalhada durante a Fase 1.
 
 ## Distribuição e atualização
 
@@ -277,7 +275,7 @@ O técnico deve poder iniciar o StepFlow a partir do compartilhamento de rede co
 
 A direção proposta é usar esse ponto de entrada como launcher, permitindo que o executável real rode localmente e seja sincronizado/atualizado a partir da versão publicada na rede.
 
-Esse mecanismo ainda exige validação técnica antes de virar decisão arquitetural definitiva.
+Esse mecanismo ainda exige validação técnica na Fase 1 antes de virar decisão arquitetural definitiva.
 
 ## Regras de segurança proporcionais ao contexto
 
@@ -301,26 +299,30 @@ Mesmo sendo um sistema interno:
 
 ## Estado atual
 
-Estamos na fase de documentação e consolidação inicial.
+A **Fase 0 — Fundação documental e governança** foi concluída em 2026-08-19 após revisão cruzada registrada em `docs/05-progresso/revisao-cruzada-fase-0.md`.
 
-Ainda não está autorizada implementação funcional ampla.
+A fase vigente é **Fase 1 — Fechamento arquitetural e especificação**, conforme `docs/04-planejamento/plano-oficial-fase-1.md`.
 
-Próximas frentes documentais:
+A Fase 1 autoriza investigação, documentação, decisões técnicas e provas pequenas/descartáveis quando necessárias para validar premissas. Ela não autoriza antecipar CRUD, autenticação definitiva, UI de produção ou demais funcionalidades de negócio das fases seguintes.
 
-- arquitetura detalhada Client/Host/Data;
-- estrutura oficial do repositório;
-- modelo de dados conceitual;
-- contratos Client ↔ Host;
-- fluxo de autenticação/permissões;
+Frentes atuais:
+
+- plataforma Windows, Client e distribuição;
+- StepFlow Host;
+- launcher/atualização;
+- comunicação Client ↔ Host;
+- autenticação/permissões;
+- modelo de dados;
+- concorrência;
 - documentação das telas;
-- estratégia de launcher/atualização;
+- comportamento do checklist durante execução;
 - exportação;
 - backup;
-- plano de implementação da fundação técnica.
+- estrutura oficial do repositório e plano da Fase 2.
 
-## Pendências técnicas que precisam de validação antes do código
+## Pendências técnicas que precisam de validação antes do código definitivo
 
-- versão e configuração final do Tauri;
+- versão e configuração final do Tauri ou alternativa escolhida;
 - suporte alvo real de Windows e requisitos de WebView/runtime;
 - comportamento seguro do launcher iniciado por compartilhamento SMB;
 - protocolo final entre Client e Host;
@@ -329,7 +331,10 @@ Próximas frentes documentais:
 - estratégia de empacotamento do Host;
 - política de execução automática do Host no Windows;
 - algoritmo final de hash de senha e gestão de sessão;
+- modelo de dados e migrations;
+- política de versão/revisão;
+- estado do checklist durante execução;
 - biblioteca/estratégia final para PDF e DOCX;
 - política de backup e restauração.
 
-Nenhuma dessas pendências autoriza improvisação do Codex. Elas devem ser fechadas na fase arquitetural apropriada.
+Nenhuma dessas pendências autoriza improvisação do Codex. Elas devem ser fechadas no bloco apropriado da Fase 1 antes da fundação definitiva correspondente.
