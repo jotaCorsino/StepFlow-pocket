@@ -1,6 +1,6 @@
 # Roadmap do StepFlow Pocket
 
-**Status:** INICIAL
+**Status:** FASE 1 EM ANDAMENTO
 
 ## Objetivo
 
@@ -10,13 +10,13 @@ Organizar a construção do StepFlow Pocket por fases dependentes e verificávei
 
 ## Fase 0 — Fundação documental e governança
 
-**Status:** EM ANDAMENTO
+**Status:** CONCLUÍDA EM 2026-08-19
 
 ### Objetivo
 
 Transformar as decisões já discutidas em fonte de verdade versionada e estabelecer o método de trabalho PO + Assistente + Codex.
 
-### Entregáveis
+### Entregas concluídas
 
 - README inicial;
 - índice de documentação;
@@ -28,41 +28,30 @@ Transformar as decisões já discutidas em fonte de verdade versionada e estabel
 - roadmap;
 - registro inicial de decisões;
 - diário/changelog iniciais;
-- templates de tela e tarefa Codex.
+- templates de tela e tarefa Codex;
+- revisão cruzada final.
 
-### Fora do escopo
+### Resultado do gate
 
-- aplicação funcional;
-- instalação de dependências;
-- banco real;
-- executáveis;
-- UI implementada;
-- API funcional.
-
-### Gate de saída
-
-A fase termina quando:
-
-- documentação-base estiver coerente;
-- decisões já aprovadas estiverem registradas;
-- pendências técnicas estiverem explicitadas;
-- a próxima fase tiver plano de investigação/validação claro.
+A base documental foi considerada coerente e suficiente para permitir continuidade sem dependência do histórico do chat. A evidência está em `docs/05-progresso/revisao-cruzada-fase-0.md`.
 
 ---
 
 ## Fase 1 — Fechamento arquitetural e especificação
 
-**Status:** PENDENTE
+**Status:** EM ANDAMENTO
 
 ### Objetivo
 
 Validar tecnicamente as propostas e transformar arquitetura conceitual em contratos implementáveis.
 
+O plano detalhado está em `docs/04-planejamento/plano-oficial-fase-1.md`.
+
 ### Blocos
 
 #### 1. Stack e compatibilidade
 
-- validar Tauri para o Client;
+- validar Tauri e alternativas para o Client;
 - definir versões suportadas de Windows;
 - validar WebView/runtime e cenário offline;
 - definir formato do Host;
@@ -71,7 +60,7 @@ Validar tecnicamente as propostas e transformar arquitetura conceitual em contra
 #### 2. Launcher e atualização
 
 - validar duplo clique a partir do compartilhamento SMB;
-- testar launcher com cópia local;
+- testar launcher com cópia local quando necessário;
 - definir manifesto de versão;
 - definir atualização e rollback mínimos;
 - definir comportamento quando a rede/Host estiver indisponível.
@@ -109,7 +98,7 @@ Validar tecnicamente as propostas e transformar arquitetura conceitual em contra
 - fila/serialização;
 - optimistic concurrency;
 - eventos;
-- soft lock/presença;
+- soft lock/presença, se aprovado;
 - testes de duas ou mais estações.
 
 #### 7. UI/UX
@@ -129,13 +118,28 @@ Documentar telas principais antes do código:
 - Backup;
 - Exportação.
 
-#### 8. Exportação e backup
+#### 8. Checklist de execução
 
-- estratégia PDF;
-- estratégia DOCX;
+- manter checklist como parte da documentação;
+- decidir se as marcações de execução serão temporárias, locais, persistidas por usuário ou parte de uma entidade formal de execução;
+- evitar complexidade de workflow sem requisito aprovado.
+
+#### 9. Exportação e backup
+
+- definir estratégia PDF;
+- definir estratégia DOCX;
+- definir impressão;
 - template exportável;
 - backup consistente;
 - restore e validação.
+
+#### 10. Estrutura oficial e plano da Fase 2
+
+- fechar árvore oficial do repositório;
+- convenções;
+- contratos compartilhados;
+- testes e scripts;
+- plano de fundação técnica.
 
 ### Gate de saída
 
@@ -145,8 +149,12 @@ Documentar telas principais antes do código:
 - contratos mínimos definidos;
 - modelo de dados conceitual fechado;
 - autenticação/permissões documentadas;
+- concorrência especificada;
+- comportamento do checklist de execução decidido;
 - telas críticas documentadas;
-- estratégia de launcher validada por protótipo;
+- estratégia de launcher validada por investigação/protótipo;
+- PDF, DOCX e impressão definidos tecnicamente;
+- backup/restore definidos;
 - plano oficial de implementação da Fase 2 aprovado.
 
 ---
@@ -265,7 +273,7 @@ Consolidar o diferencial de UX do StepFlow.
 - anterior/próxima;
 - indicador de posição;
 - passos claros;
-- checklist de execução local/temporário na primeira versão, salvo decisão diferente;
+- comportamento do checklist conforme decisão fechada na Fase 1;
 - observações e alertas;
 - blocos copiáveis com ícone;
 - feedback de cópia;
