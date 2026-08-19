@@ -6,7 +6,23 @@
 
 **Tipo:** investigação local, sem implementação de produto
 
-**Status:** PRONTA PARA EXECUÇÃO
+**Status:** CONCLUÍDA / REVISADA
+
+## Nota retrospectiva de contexto
+
+Esta tarefa foi escrita quando o exemplo `\\192.168.5.7\Arquivos\StepFlow\` ainda estava sendo tratado incorretamente como se fosse um caminho confirmado.
+
+Após esclarecimento do PO:
+
+- o desenvolvimento atual ocorre em computador pessoal, fora da LAN da empresa;
+- o caminho citado era apenas exemplo ilustrativo;
+- IP, hostname, compartilhamento e pasta reais ainda não foram confirmados;
+- o teste SMB realizado nesta tarefa não constitui validação do ambiente corporativo;
+- seu resultado deve ser classificado como `NÃO APLICÁVEL NESTE AMBIENTE`, e não como bloqueio.
+
+A fonte de verdade atual sobre ambientes é `docs/00-governanca/contexto-ambientes.md`.
+
+O restante da tarefa abaixo é preservado como registro histórico do que foi executado.
 
 ## Pré-requisito obrigatório
 
@@ -31,8 +47,8 @@ A tarefa deve responder com evidências:
 - se Rust/rustup/cargo já existem;
 - se Microsoft C++ Build Tools/Visual Studio Build Tools são detectáveis;
 - se Git está disponível e qual configuração básica do checkout;
-- se o compartilhamento `\\192.168.5.7\Arquivos\StepFlow\` é acessível a partir desta máquina;
-- se há algum bloqueio óbvio para a próxima prova técnica.
+- tentativa histórica de acesso ao caminho SMB ilustrativo então utilizado;
+- se há algum bloqueio óbvio para a próxima prova técnica local.
 
 ## 2. Contexto e fonte de verdade
 
@@ -64,7 +80,7 @@ Ler antes de executar:
 - inspecionar WebView2 por meios locais confiáveis, como registro, arquivos/runtime ou mecanismos do Windows;
 - inspecionar versões existentes de Git, Node/npm, Rust/rustup/cargo;
 - detectar Visual Studio/Build Tools/C++ quando possível sem instalar nada;
-- verificar acesso de leitura ao compartilhamento `\\192.168.5.7\Arquivos\StepFlow\`;
+- realizar a tentativa histórica de leitura do caminho SMB ilustrativo então informado;
 - verificar estado Git local do repositório;
 - registrar resultados e limitações;
 - atualizar somente documentação de progresso necessária.
@@ -100,7 +116,7 @@ Ler antes de executar:
 - se determinado mecanismo de detecção falhar, tentar alternativa de leitura segura e registrar o método;
 - não mascarar ausência de requisito como sucesso;
 - não considerar Windows 7/8/8.1 como alvo oficial da primeira versão;
-- não concluir que a máquina representa todas as estações da empresa; ela é apenas uma amostra.
+- não concluir que a máquina representa todas as estações da empresa; ela é apenas uma amostra de desenvolvimento.
 
 ## 7. Arquivos/áreas esperadas
 
@@ -115,22 +131,24 @@ Não alterar `compatibilidade-windows-client.md` automaticamente apenas para reg
 
 ## 8. Critérios de aceite
 
-- [ ] bootstrap local anterior foi validado;
-- [ ] `git pull --ff-only` foi executado com sucesso antes da inspeção;
-- [ ] versão, edição e build do Windows foram identificados;
-- [ ] arquitetura x64/x86/ARM foi identificada;
-- [ ] presença/ausência e versão do WebView2 foram verificadas com evidência;
-- [ ] Git foi verificado;
-- [ ] Node/npm foram verificados;
-- [ ] Rust/rustup/cargo foram verificados;
-- [ ] Build Tools/C++ foram verificados na medida possível;
-- [ ] acesso ao caminho `\\192.168.5.7\Arquivos\StepFlow\` foi testado sem escrita;
-- [ ] `git status`, branch e remote do checkout foram registrados;
-- [ ] nenhum pacote ou dependência foi instalado;
-- [ ] nenhum scaffold/código de produto foi criado;
-- [ ] limitações da inspeção foram explicitadas.
+- [x] bootstrap local anterior foi validado;
+- [x] `git pull --ff-only` foi executado com sucesso antes da inspeção;
+- [x] versão, edição e build do Windows foram levantados, com divergência de identificação posteriormente encaminhada para confirmação;
+- [x] arquitetura x64/x86/ARM foi identificada;
+- [x] presença/ausência e versão do WebView2 foram verificadas com evidência;
+- [x] Git foi verificado;
+- [x] Node/npm foram verificados;
+- [x] Rust/rustup/cargo foram verificados;
+- [x] Build Tools/C++ foram verificados na medida possível;
+- [x] tentativa histórica de acesso ao caminho SMB ilustrativo foi feita sem escrita;
+- [x] `git status`, branch e remote do checkout foram registrados;
+- [x] nenhum pacote ou dependência foi instalado;
+- [x] nenhum scaffold/código de produto foi criado;
+- [x] limitações da inspeção foram explicitadas.
 
-## 9. Validações obrigatórias
+**Observação:** o item SMB não é critério válido de prontidão do ambiente corporativo, pois a estação estava fora da rede da empresa e o path usado era apenas exemplo.
+
+## 9. Validações executadas
 
 Primeiro:
 
@@ -140,9 +158,7 @@ git status --short --branch
 git pull --ff-only
 ```
 
-Se houver alterações locais inesperadas ou o pull não puder ser fast-forward, parar.
-
-Depois executar equivalentes seguros no PowerShell, adaptando apenas quando necessário:
+Depois foram executados equivalentes seguros para levantar Windows, arquitetura, CPU e ferramentas, incluindo:
 
 ```powershell
 Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsBuildNumber, OsArchitecture
@@ -151,7 +167,7 @@ Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsBuildNumb
 Get-CimInstance Win32_Processor | Select-Object Name, AddressWidth, DataWidth
 ```
 
-Verificar ferramentas:
+Ferramentas:
 
 ```powershell
 git --version
@@ -162,65 +178,31 @@ rustup --version
 cargo --version
 ```
 
-A ausência de uma ferramenta é um resultado válido; não instalar.
+Também foram inspecionados Visual Studio/Build Tools, MSVC e WebView2.
 
-Tentar detectar Visual Studio/Build Tools com mecanismo disponível, preferindo `vswhere.exe` se existir.
+A tentativa histórica de SMB utilizou o caminho ilustrativo então informado. Essa tentativa não deve ser repetida em tarefas futuras como se fosse configuração oficial.
 
-Verificar WebView2 por pelo menos um método confiável e registrar exatamente qual método foi usado. Pode incluir consulta às chaves de registro oficiais do EdgeUpdate ou inspeção da instalação do runtime.
+## 10. Documentação atualizada na execução
 
-Verificar somente leitura do compartilhamento:
+O Codex alterou localmente:
 
-```powershell
-Test-Path '\\192.168.5.7\Arquivos\StepFlow\'
-Get-ChildItem '\\192.168.5.7\Arquivos\StepFlow\' -ErrorAction SilentlyContinue | Select-Object -First 20 Name, Length, LastWriteTime
-```
+- `docs/05-progresso/diario-de-progresso.md`.
 
-Não criar, editar nem remover arquivos nessa pasta.
+A revisão posterior do Assistente foi registrada em:
 
-Verificar o checkout ao final:
+- `docs/05-progresso/revisao-f1-b1-t01-inventario-ambiente.md`.
 
-```powershell
-Set-Location C:\dev\StepFlow
-git status --short --branch
-git remote -v
-git branch --show-current
-git log -1 --oneline
-```
+## 11. Resultado consolidado
 
-## 10. Documentação a atualizar
+- ambiente local de desenvolvimento inventariado;
+- Git, Node/npm, WebView2 e toolchain Microsoft detectados;
+- Rust ausente;
+- identidade comercial do Windows requer confirmação específica;
+- teste SMB anterior classificado posteriormente como `NÃO APLICÁVEL NESTE AMBIENTE`;
+- nenhuma instalação ou implementação de produto ocorreu.
 
-Atualizar `docs/05-progresso/diario-de-progresso.md` com uma entrada curta contendo:
+## 12. Próximo passo
 
-- objetivo da inspeção;
-- ambiente encontrado;
-- pré-requisitos presentes;
-- pré-requisitos ausentes;
-- resultado do acesso ao compartilhamento;
-- bloqueios para a próxima prova.
+A próxima investigação autorizada é a confirmação da identidade/versão real do Windows desta estação de desenvolvimento.
 
-Não registrar uma nova decisão arquitetural sem que ela decorra diretamente de evidência e esteja prevista na tarefa.
-
-Como commit/push ainda não estão autorizados nesta tarefa, a alteração documental deve permanecer no working tree e ser incluída no relatório final para revisão posterior.
-
-## 11. Relatório final obrigatório
-
-Responder com:
-
-1. objetivo executado;
-2. resultado de `git pull --ff-only` e HEAD inspecionado;
-3. Windows/arquitetura identificados;
-4. WebView2 detectado e versão, ou ausência;
-5. ferramentas encontradas e versões;
-6. Build Tools detectados ou não;
-7. resultado do acesso a `\\192.168.5.7\Arquivos\StepFlow\`;
-8. estado Git do checkout;
-9. arquivos alterados;
-10. validações executadas;
-11. bloqueios/pendências;
-12. recomendação objetiva para a próxima tarefa, sem executá-la.
-
-## 12. Regra de parada
-
-Se o bootstrap local não estiver concluído, não executar o inventário.
-
-Se `git pull --ff-only` falhar, se `C:\dev\StepFlow` não for o repositório correto, se houver alterações locais inesperadas relevantes ou se a inspeção exigir instalação/modificação do sistema para prosseguir, parar essa parte e reportar o bloqueio. Não corrigir silenciosamente o ambiente nesta tarefa.
+Validações do compartilhamento, Host real e LAN corporativa ficam para momento futuro em que exista acesso à infraestrutura da empresa e os endereços reais estejam confirmados.
