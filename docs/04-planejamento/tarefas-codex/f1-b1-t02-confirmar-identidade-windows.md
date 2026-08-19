@@ -3,13 +3,38 @@
 **Fase:** 1 — Fechamento arquitetural e especificação  
 **Bloco:** 1 — Plataforma Windows, Client e distribuição  
 **Tipo:** investigação local, somente leitura  
-**Status:** PRONTA PARA EXECUÇÃO
+**Status:** CONCLUÍDA EM 2026-08-19
 
-## 1. Objetivo
+## Resultado consolidado
+
+A investigação local foi concluída sem alteração do sistema e a validação externa do Assistente fechou a divergência encontrada.
+
+Para fins do StepFlow, a estação de desenvolvimento é identificada como:
+
+**Windows 11 Pro, versão 25H2, OS build 26200.9168, arquitetura x64.**
+
+Evidências locais relevantes:
+
+- `WindowsProductName`: `Windows 10 Pro` — valor literal divergente preservado como evidência;
+- `EditionID`: `Professional`;
+- `DisplayVersion`: `25H2`;
+- `CurrentBuild`: `26200`;
+- `UBR`: `9168`;
+- arquitetura AMD64/x64;
+- `systeminfo` e CIM retornaram acesso negado;
+- `winver` não pôde ser observado de forma confiável pelo Codex.
+
+A Microsoft documenta Windows 11 versão 25H2 como OS build `26200`, e a atualização KB5121003 de 11 de agosto de 2026 como build `26200.9168`. Assim, `ProductName = Windows 10 Pro` não é usado isoladamente para identificar o nome comercial efetivo desta instalação.
+
+A revisão está registrada em `docs/05-progresso/revisao-f1-b1-t01-inventario-ambiente.md`.
+
+---
+
+## 1. Objetivo original
 
 Resolver a inconsistência identificada no inventário anterior, que reportou simultaneamente `Windows 10 Pro`, versão `25H2` e build `26200`.
 
-A tarefa deve identificar, por múltiplas fontes locais e sem alterar o sistema, qual é a edição/nome comercial, versão e build efetivos do Windows instalado nesta estação, preservando separadamente os valores retornados por cada fonte.
+A tarefa deveria identificar, por múltiplas fontes locais e sem alterar o sistema, qual é a edição/nome comercial, versão e build efetivos do Windows instalado nesta estação, preservando separadamente os valores retornados por cada fonte.
 
 ## 2. Contexto e fonte de verdade
 
@@ -30,7 +55,7 @@ Ler antes de executar:
 - não há código de produto, scaffold Tauri ou banco;
 - nenhuma instalação deve ser realizada.
 
-A alteração local do diário não deve ser descartada, sobrescrita ou incluída em commit.
+A alteração local do diário não deveria ser descartada, sobrescrita ou incluída em commit.
 
 ## 4. Escopo incluído
 
@@ -43,13 +68,13 @@ A alteração local do diário não deve ser descartada, sobrescrita ou incluíd
 
 ## 5. Fora do escopo
 
-É proibido nesta tarefa:
+Era proibido nesta tarefa:
 
 - instalar ou atualizar Windows;
 - alterar registro;
 - alterar políticas;
 - instalar Rust, Tauri ou qualquer dependência;
-- diagnosticar o SMB além do que já foi registrado;
+- diagnosticar o SMB além do que já havia sido registrado;
 - criar código;
 - editar `compatibilidade-windows-client.md` como decisão definitiva;
 - fazer commit;
@@ -57,8 +82,6 @@ A alteração local do diário não deve ser descartada, sobrescrita ou incluíd
 - descartar a alteração local existente no diário.
 
 ## 6. Procedimento e fontes locais mínimas
-
-Executar em PowerShell, adaptando apenas quando necessário.
 
 ### 6.1. `Get-ComputerInfo`
 
@@ -75,13 +98,9 @@ Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' |
 
 ### 6.3. `systeminfo`
 
-Executar e capturar ao menos as linhas equivalentes a:
-
 ```powershell
 systeminfo
 ```
-
-Registrar `OS Name`, `OS Version` e `System Type`.
 
 ### 6.4. CIM do sistema operacional
 
@@ -90,71 +109,56 @@ Get-CimInstance Win32_OperatingSystem |
   Select-Object Caption, Version, BuildNumber, OSArchitecture
 ```
 
-Se CIM for negado, registrar a falha; não tentar alterar permissões.
-
 ### 6.5. `winver`
 
-Se for possível obter informação de `winver` de forma segura sem automação invasiva, registrar versão/build exibidos. Se exigir interação gráfica que o Codex não consiga observar com confiança, declarar como não verificado em vez de inventar resultado.
+A informação seria registrada apenas se observável de forma confiável, sem automação invasiva.
 
 ## 7. Regra de interpretação
 
 Não usar apenas `WindowsProductName` como fonte final quando ele conflitar com versão/build.
 
-Comparar os resultados entre si e concluir com base no conjunto de evidências, deixando claro:
+Comparar os resultados entre si e concluir com base no conjunto de evidências, preservando:
 
 - o valor literal retornado por cada fonte;
-- qual nome/versão deve ser adotado na documentação do projeto;
-- por que a fonte divergente não deve ser usada isoladamente.
+- a identificação adotada na documentação do projeto;
+- a explicação da fonte divergente.
 
-Não consultar Internet nesta tarefa. A validação externa já será feita pelo Assistente.
+## 8. Critérios de aceite — resultado
 
-## 8. Critérios de aceite
+- [x] `Get-ComputerInfo` registrado;
+- [x] registro `CurrentVersion` registrado;
+- [x] `systeminfo` tentado e falha registrada;
+- [x] CIM tentado e falha registrada;
+- [x] versão/build/UBR identificados;
+- [x] divergências entre fontes explicitadas;
+- [x] conclusão Windows 10 vs Windows 11 validada externamente pelo Assistente;
+- [x] nenhum software/configuração foi alterado;
+- [x] alteração local anterior no diário foi preservada;
+- [x] nenhum commit/push foi realizado pelo Codex.
 
-- [ ] `Get-ComputerInfo` registrado;
-- [ ] registro `CurrentVersion` registrado;
-- [ ] `systeminfo` registrado;
-- [ ] CIM tentado e resultado/falha registrado;
-- [ ] versão/build/UBR identificados quando disponíveis;
-- [ ] divergências entre fontes explicitadas;
-- [ ] conclusão objetiva sobre Windows 10 vs Windows 11 apresentada;
-- [ ] nenhum software/configuração foi alterado;
-- [ ] alteração local anterior no diário foi preservada;
-- [ ] nenhum commit/push realizado.
+## 9. Estado Git da execução
 
-## 9. Estado Git
+Ao final do relatório do Codex:
 
-Antes e depois da inspeção executar:
+- branch `main`;
+- HEAD `f5e3b14 docs: annotate completed inventory network test context`;
+- `origin` correto;
+- única alteração local: `docs/05-progresso/diario-de-progresso.md` proveniente da tarefa anterior.
 
-```powershell
-Set-Location C:\dev\StepFlow
-git status --short --branch
-git diff --check
-```
+## 10. Documentação
 
-Não executar `git pull` se o working tree local impedir o fast-forward com segurança. Caso o remoto tenha avançado e seja necessário atualizar a tarefa, preservar a alteração local e reportar antes de qualquer ação destrutiva.
+Nenhum arquivo foi alterado pelo Codex nesta tarefa.
 
-## 10. Documentação a atualizar
+O fechamento documental foi realizado pelo Assistente após validar o relatório e as fontes oficiais da Microsoft.
 
-Nenhum arquivo precisa ser alterado nesta tarefa.
+## 11. Limitações observadas
 
-O resultado deve ser entregue no relatório para revisão do Assistente. A documentação oficial será atualizada após validação.
+- `systeminfo`: acesso negado;
+- CIM `Win32_OperatingSystem`: acesso negado;
+- `winver`: janela gráfica não observável com confiança pelo Codex.
 
-## 11. Relatório final obrigatório
+Essas limitações não impediram o fechamento porque `DisplayVersion`, `CurrentBuild`, `UBR`, arquitetura e a correspondência oficial da Microsoft foram suficientes.
 
-Responder com:
+## 12. Encerramento
 
-1. objetivo executado;
-2. saída relevante de `Get-ComputerInfo`;
-3. valores relevantes de `CurrentVersion` no registro;
-4. saída relevante de `systeminfo`;
-5. saída/falha do CIM;
-6. informação de `winver`, se verificável;
-7. conclusão: nome comercial, edição, versão, build e arquitetura;
-8. explicação da divergência anterior;
-9. estado Git final;
-10. bloqueios ou limitações;
-11. confirmação de que nenhuma alteração no sistema/repositório foi feita.
-
-## 12. Regra de parada
-
-Se qualquer verificação exigir elevação, alteração de configuração ou escrita no sistema para funcionar, não escalar privilégios automaticamente. Registrar a limitação e seguir com as demais fontes de leitura disponíveis.
+Tarefa concluída. Nenhuma nova inspeção da identidade do Windows é necessária neste ambiente salvo se o sistema operacional for alterado futuramente.
