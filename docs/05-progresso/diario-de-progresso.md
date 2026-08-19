@@ -100,3 +100,33 @@ A evidência detalhada foi registrada em `docs/05-progresso/revisao-cruzada-fase
 ### Próximo passo
 
 Executar o `Bloco 1 — Plataforma Windows, Client e distribuição` do plano oficial da Fase 1, começando por pesquisa técnica em fontes primárias antes de qualquer scaffold definitivo.
+
+---
+
+## 2026-08-19 — Bootstrap do repositório local concluído
+
+### Objetivo
+
+Preparar `C:\dev\StepFlow` como checkout local íntegro da fonte de verdade remota antes de iniciar inspeções técnicas da Fase 1.
+
+### Resultado
+
+- Git disponível: `2.55.0.windows.4`;
+- pasta `C:\dev\StepFlow` encontrada vazia antes do clone;
+- clone de `https://github.com/jotaCorsino/StepFlow-pocket.git` concluído;
+- branch `main` ativa e sincronizada com `origin/main` no momento da validação;
+- HEAD validado: `39015c0 docs: add local bootstrap as first Phase 1 gate`;
+- working tree limpo;
+- `README.md`, `AGENTS.md` e `docs/` presentes;
+- `AGENTS.md` lido pelo Codex;
+- nenhuma dependência, código, banco, scaffold, commit ou push criado pelo Codex.
+
+### Ocorrência de ambiente
+
+A primeira tentativa de clone retornou `schannel: AcquireCredentialsHandle failed: SEC_E_NO_CREDENTIALS`. Uma nova tentativa em contexto com permissão elevada concluiu o clone com sucesso.
+
+A ocorrência não bloqueia o Bloco 1, mas fica registrada para futuras operações HTTPS/GitHub neste Windows.
+
+### Gate
+
+`F1-B0-T01` concluída. `F1-B1-T01 — Inventário do Ambiente Windows e Pré-requisitos` está liberada para execução.
