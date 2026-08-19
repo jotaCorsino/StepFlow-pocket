@@ -8,6 +8,9 @@
 - criado `AGENTS.md` para orientar o Codex;
 - criada estrutura documental por governança, produto, telas, arquitetura, planejamento e progresso;
 - criado método genérico reutilizável de trabalho PO + Assistente + Codex;
+- criada política genérica reutilizável de dimensionamento de capacidade do Codex;
+- criado template separado de pré-flight de modelo/raciocínio para o PO;
+- consolidada a regra de que toda tarefa Codex deve ser precedida por recomendação de modelo e nível de raciocínio, fora do enunciado técnico;
 - criado guia mestre inicial do StepFlow;
 - criada visão geral do produto;
 - criada arquitetura inicial Client/Host/Data;
@@ -22,7 +25,8 @@
 - Fase 0 encerrada formalmente;
 - Fase 1 aberta formalmente;
 - criado `docs/04-planejamento/plano-oficial-fase-1.md`;
-- roadmap, guia mestre, AGENTS e registros de progresso atualizados para refletir a fase vigente.
+- roadmap, guia mestre, AGENTS e registros de progresso atualizados para refletir a fase vigente;
+- regras operacionais atualizadas para refletir corretamente a Fase 1 como fase vigente.
 
 ### Código
 
