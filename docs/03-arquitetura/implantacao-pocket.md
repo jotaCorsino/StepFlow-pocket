@@ -17,29 +17,63 @@ copiar/arrastar uma pasta
         ↓
 pasta fixa no servidor
         ↓
-iniciar/configurar o mínimo necessário
+configuração mínima
         ↓
-StepFlow disponível
+StepFlow pronto para iniciar sob demanda
 ```
 
-O servidor corporativo não deve ser tratado como uma máquina dedicada ao StepFlow. Ele pode executar outros serviços importantes e deve continuar operando normalmente durante implantação, atualização e manutenção do produto.
+O servidor corporativo não deve ser tratado como uma máquina dedicada ao StepFlow. Ele pode executar outros serviços importantes e deve continuar operando normalmente durante implantação, uso, atualização e manutenção do produto.
 
-## 3. Requisito de baixo impacto
+## 3. Ciclo de vida Pocket obrigatório
 
-A solução deve buscar, nesta ordem de preferência:
+O requisito não é apenas evitar instaladores. O StepFlow também não deve permanecer consumindo recursos do servidor quando não estiver sendo utilizado.
 
-1. não exigir instalação tradicional no servidor;
-2. não exigir alterações amplas no Windows;
-3. não depender de mudanças manuais em registro, políticas, features do sistema ou PATH global;
-4. não exigir múltiplos runtimes/componentes externos instalados apenas para executar o StepFlow;
-5. não exigir reinicialização do Windows em uma implantação normal;
-6. não substituir ou atualizar componentes compartilhados do sistema de forma que possam afetar outros serviços;
-7. manter configurações do StepFlow isoladas da configuração global da máquina;
-8. permitir remoção/rollback com impacto mínimo e previsível.
+Fluxo desejado:
 
-Quando alguma exceção for tecnicamente inevitável, ela deve ser explicitamente validada antes de ser aceita na arquitetura.
+```text
+StepFlow fechado
+        ↓
+nenhum processo StepFlow ativo
+        ↓
+usuário inicia o StepFlow
+        ↓
+processos necessários iniciam sob demanda
+        ↓
+uso normal, inclusive multiusuário
+        ↓
+uso do StepFlow termina
+        ↓
+processos transitórios encerram de forma controlada
+        ↓
+nenhum processo StepFlow residual
+```
 
-## 4. Pasta fixa do produto
+Consequências obrigatórias:
+
+1. não instalar tradicionalmente o StepFlow no servidor como requisito normal;
+2. não registrar Windows Service persistente como solução padrão;
+3. não configurar serviço auto-start;
+4. não usar Task Scheduler, watchdog, tray agent ou daemon residente apenas para manter o StepFlow disponível;
+5. não deixar Host, launcher ou agente StepFlow ativo quando o produto não estiver em uso;
+6. quando fechado, o consumo de CPU/memória do StepFlow deve tender a zero;
+7. todos os componentes de execução devem partir da pasta controlada do produto ou de artefatos temporários explicitamente justificados;
+8. dados persistentes podem permanecer em disco, mas processos não devem permanecer residentes sem necessidade.
+
+Uma exceção futura só poderá ser aceita se o PO alterar explicitamente este requisito.
+
+## 4. Requisito de baixo impacto
+
+A solução deve:
+
+- evitar alterações amplas no Windows;
+- não depender de mudanças manuais em registro, políticas, features do sistema ou PATH global;
+- não exigir múltiplos runtimes/componentes externos instalados apenas para executar o StepFlow;
+- não exigir reinicialização do Windows em implantação/atualização normal;
+- não substituir ou atualizar componentes compartilhados do sistema de forma que possam afetar outros serviços;
+- manter configurações do StepFlow isoladas da configuração global da máquina;
+- permitir remoção/rollback com impacto mínimo e previsível.
+
+## 5. Pasta fixa do produto
 
 O cenário desejado é existir uma pasta operacional própria do StepFlow em local ainda a definir no servidor, conceitualmente:
 
@@ -49,25 +83,25 @@ O cenário desejado é existir uma pasta operacional própria do StepFlow em loc
 
 A localização real não está definida e não deve ser hardcoded antes da validação no ambiente corporativo.
 
-Estrutura conceitual possível:
+Estrutura conceitual:
 
 ```text
 StepFlow\
-├── app\            # binários/arquivos executáveis da versão publicada
+├── app\            # binários/arquivos executáveis publicados
 ├── config\         # configuração específica da implantação
-├── data\           # dados persistentes, se aprovado para esse local
+├── data\           # dados persistentes
 ├── logs\           # logs operacionais
-├── backups\        # ou referência para local de backup aprovado
-└── tools\           # utilitários próprios estritamente necessários
+├── backups\        # backups
+└── tools\           # utilitários próprios estritamente necessários, se houver
 ```
 
-Essa árvore é conceitual. A estrutura final será definida após a escolha tecnológica do Host e da estratégia de atualização.
+A estrutura final será definida após o fechamento dos mecanismos de Host, launcher e atualização.
 
-## 5. Binários e dependências
+## 6. Binários e dependências
 
 A arquitetura deve favorecer artefatos de execução que carreguem consigo o máximo possível das dependências necessárias ao StepFlow.
 
-Isso significa preferir, quando tecnicamente adequado:
+Preferir:
 
 - executáveis/binários self-contained ou equivalentes;
 - bibliotecas privadas dentro da pasta do produto;
@@ -79,27 +113,26 @@ O ambiente de **desenvolvimento** pode possuir Node.js, Rust, compiladores e out
 
 **Toolchain de desenvolvimento e runtime de produção são contextos distintos.**
 
-## 6. Host do StepFlow
+## 7. Host do StepFlow
 
-A existência de um StepFlow Host continua sendo requisito da arquitetura lógica para coordenar SQLite, autenticação, concorrência e eventos.
+A existência lógica de um StepFlow Host continua necessária para coordenar SQLite, autenticação, concorrência, auditoria e eventos.
 
-Porém, a tecnologia e o formato do Host devem respeitar o princípio Pocket.
+Porém, "Host" significa um papel/processo da arquitetura, **não um Windows Service permanente**.
 
-A solução ideal deverá poder ser publicada junto da pasta do StepFlow sem exigir instalação de uma stack completa de desenvolvimento no servidor.
+O Host deve:
 
-Questões que ainda precisam ser fechadas na Fase 1:
+- executar junto aos dados centrais;
+- ser iniciado somente quando necessário;
+- suportar múltiplos Clients simultâneos enquanto estiver ativo;
+- encerrar de forma segura quando o StepFlow não estiver mais em uso;
+- não deixar processo residual depois do encerramento;
+- não exigir runtime/toolchain instalado no servidor.
 
-- se o Host será um executável self-contained;
-- se deverá rodar como processo normal, serviço Windows ou outro mecanismo;
-- como será iniciado automaticamente com alteração mínima do sistema;
-- como será parado/atualizado de forma controlada;
-- quais privilégios mínimos serão necessários;
-- como manter banco, configuração e logs isolados;
-- como realizar rollback sem impactar outros serviços.
+A Fase 1 ainda precisa resolver como o primeiro Client dispara o Host na máquina central e como o último uso permite encerrá-lo sem quebrar sessões concorrentes.
 
-Transformar o Host em serviço Windows **não está automaticamente aprovado**. Caso essa alternativa seja escolhida, a instalação/remoção do serviço deverá ser simples, previsível e justificada frente ao requisito de baixo impacto.
+Importante: iniciar um `.exe` armazenado em SMB a partir de uma estação normalmente executa esse programa na estação, não no servidor. Portanto, o bootstrap remoto do Host precisa ser resolvido explicitamente.
 
-## 7. Client e ponto de entrada
+## 8. Client e ponto de entrada
 
 A experiência do técnico permanece simples:
 
@@ -119,11 +152,9 @@ A implementação poderá manter artefatos do Client na pasta publicada do servi
 - atualização central continue simples;
 - o servidor não precise sofrer alterações invasivas para disponibilizar a nova versão.
 
-## 8. Atualização e rollback
+## 9. Atualização e rollback
 
-A atualização deve seguir a mesma filosofia Pocket.
-
-Direção desejada:
+A atualização deve seguir a mesma filosofia Pocket:
 
 ```text
 nova versão pronta
@@ -135,7 +166,7 @@ validar
 ativar nova versão
 ```
 
-A estratégia final deve buscar evitar:
+A estratégia final deve evitar:
 
 - instaladores complexos;
 - alterações irreversíveis no sistema;
@@ -145,7 +176,7 @@ A estratégia final deve buscar evitar:
 
 Dados persistentes devem ser separados dos binários de aplicação de modo que uma atualização de versão não dependa de sobrescrever o banco ou arquivos de configuração específicos da implantação.
 
-## 9. Critério de aceitação para tecnologias futuras
+## 10. Critério de aceitação para tecnologias futuras
 
 Toda tecnologia considerada para Client, Host, banco, exportação ou atualização deve responder:
 
@@ -156,24 +187,17 @@ Toda tecnologia considerada para Client, Host, banco, exportação ou atualizaç
 5. Pode ser distribuído dentro da própria pasta do StepFlow?
 6. Pode ser atualizado e removido sem deixar dependências frágeis no servidor?
 7. Funciona offline depois de implantado?
+8. Deixa algum processo StepFlow ativo quando o produto está fechado?
 
 Quanto mais respostas invasivas houver, menor a aderência ao conceito Pocket.
 
-## 10. Consequência para provas técnicas
+## 11. Consequência para provas técnicas
 
 As provas da Fase 1 não devem validar apenas se uma tecnologia "funciona".
 
-Elas também devem validar se a tecnologia pode produzir artefatos compatíveis com o modelo de implantação Pocket.
+Elas também devem validar se a tecnologia pode produzir artefatos compatíveis com o modelo de implantação Pocket, inclusive o ciclo de vida sob demanda e ausência de processos residuais.
 
-Exemplos:
-
-- a prova do Client deve observar portabilidade/runtime necessário;
-- a prova do Host deverá observar execução a partir de pasta própria;
-- a estratégia de banco deve permanecer local ao Host sem instalação de servidor de banco externo;
-- a estratégia de exportação deve evitar dependências globais desnecessárias;
-- a atualização deve ser projetada pensando em substituição controlada de artefatos/pastas.
-
-## 11. Regra final
+## 12. Regra final
 
 **O servidor existe antes do StepFlow e continuará existindo independentemente dele. O StepFlow deve se adaptar ao ambiente, e não exigir que o ambiente seja remodelado para recebê-lo.**
 
