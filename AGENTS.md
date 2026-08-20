@@ -13,6 +13,7 @@ Este arquivo orienta o Codex e qualquer agente de implementação que trabalhe n
 - O desenvolvimento atual ocorre em computador pessoal, fora da LAN da empresa.
 - IPs, hostnames, compartilhamentos SMB e caminhos corporativos usados em exemplos não são configuração oficial enquanto não forem confirmados no ambiente real.
 - A implantação corporativa deve respeitar o princípio Pocket documentado em `docs/03-arquitetura/implantacao-pocket.md`: mínimo impacto no servidor, preferência por copy-deploy e ausência de toolchain de desenvolvimento como requisito de produção.
+- **Pocket também exige ciclo de vida sob demanda:** quando o StepFlow estiver fechado/sem uso, nenhum processo StepFlow deve permanecer residente consumindo recursos no servidor como comportamento padrão.
 - Fase atual: **Fase 1 — Fechamento arquitetural e especificação**.
 - A Fase 1 autoriza investigação, documentação, decisões técnicas e provas descartáveis explicitamente solicitadas; não autoriza antecipar funcionalidades de negócio.
 
@@ -78,6 +79,9 @@ Esse bloco é orientação operacional ao PO e **não faz parte do prompt técni
 - Se a tarefa depender da LAN corporativa e a execução ocorrer fora dela, marcar a verificação como `NÃO APLICÁVEL NESTE AMBIENTE`, salvo se a tarefa especificar uma simulação local.
 - Não transformar dependências de desenvolvimento em dependências obrigatórias do servidor de produção sem decisão explícita.
 - Ao avaliar uma tecnologia, considerar sempre se o artefato final pode ser implantado em pasta própria, com baixo impacto, sem exigir Node.js, Rust, compiladores ou outras toolchains no servidor.
+- **Não propor Windows Service persistente, serviço auto-start, Task Scheduler, watchdog, tray agent ou daemon residente como solução padrão do StepFlow.**
+- **Quando o StepFlow estiver fechado/sem uso, nenhum processo StepFlow deve permanecer ativo no servidor como comportamento normal.**
+- Qualquer exceção futura a essas duas regras exige alteração explícita do requisito pelo PO.
 
 ## Regras específicas já consolidadas do StepFlow
 
@@ -87,6 +91,7 @@ Esse bloco é orientação operacional ao PO e **não faz parte do prompt técni
 - Clientes não devem abrir diretamente um mesmo arquivo SQLite através do compartilhamento de rede.
 - O banco SQLite deve ser acessado por uma camada host/servidora local à máquina que armazena o banco.
 - O cliente deve conversar com o host por contratos definidos, e não por acesso direto ao arquivo de dados.
+- O Host deve ser tratado como processo sob demanda a ser orquestrado durante o uso, não como serviço Windows permanente.
 - O produto deve continuar simples para o usuário final: acessar um ponto de entrada interno do StepFlow deve exigir, idealmente, apenas duplo clique.
 - O endereço real desse ponto de entrada ainda não está definido e não deve ser hardcoded a partir de exemplos anteriores.
 - A implantação no servidor deve buscar o modelo Pocket: copiar/publicar uma pasta pronta em local fixo, com configuração mínima e sem remodelar o Windows que já hospeda outros serviços.
