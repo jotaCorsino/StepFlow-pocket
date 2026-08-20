@@ -2,130 +2,95 @@
 
 ## Finalidade
 
-Este arquivo orienta o Codex e qualquer agente de implementação que trabalhe neste repositório.
+Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 
-## Contexto operacional
+## Fonte de verdade e fase atual
 
-- Repositório: `jotaCorsino/StepFlow-pocket`
-- Branch principal: `main`
-- Pasta local de trabalho prevista: `C:\dev\StepFlow`
 - GitHub é a fonte principal de verdade.
-- O desenvolvimento atual ocorre em computador pessoal, fora da LAN da empresa.
-- IPs, hostnames, compartilhamentos SMB e caminhos corporativos usados em exemplos não são configuração oficial enquanto não forem confirmados no ambiente real.
-- A implantação corporativa deve respeitar o princípio Pocket documentado em `docs/03-arquitetura/implantacao-pocket.md`: mínimo impacto no servidor, preferência por copy-deploy e ausência de toolchain de desenvolvimento como requisito de produção.
-- **Pocket também exige ciclo de vida sob demanda:** quando o StepFlow estiver fechado/sem uso, nenhum processo StepFlow deve permanecer residente consumindo recursos no servidor como comportamento padrão.
-- Fase atual: **Fase 1 — Fechamento arquitetural e especificação**.
-- A Fase 1 autoriza investigação, documentação, decisões técnicas e provas descartáveis explicitamente solicitadas; não autoriza antecipar funcionalidades de negócio.
+- Branch principal: `main`.
+- Checkout local previsto: `C:\dev\StepFlow`.
+- Desenvolvimento atual: computador pessoal fora da LAN corporativa.
+- Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
+- Blocos 0–7 da Fase 1 estão fechados; Bloco 8 (UI/UX) é o próximo.
+
+## Leitura obrigatória antes de implementar
+
+1. `README.md`;
+2. `docs/README.md`;
+3. `docs/00-governanca/contexto-ambientes.md`;
+4. `docs/00-governanca/metodo-padrao-trabalho-assistido.md`;
+5. `docs/00-governanca/politica-capacidade-codex.md`;
+6. `docs/01-produto/visao-geral.md`;
+7. `docs/03-arquitetura/arquitetura-vigente.md`;
+8. `docs/03-arquitetura/implantacao-pocket.md`;
+9. `docs/05-progresso/registro-de-decisoes.md`;
+10. `docs/04-planejamento/plano-oficial-fase-1.md` enquanto a Fase 1 estiver vigente;
+11. documentos específicos da tarefa.
 
 ## Papéis
 
-### PO / responsável pelo produto
+- **PO:** define produto, prioridade, comportamento e aprovação visual/funcional.
+- **Assistente:** analisa, arquiteta, documenta e transforma decisões aprovadas em tarefas.
+- **Codex:** executa tecnicamente o escopo recebido, sem inventar produto ou ampliar tarefa.
 
-O usuário responsável pelo projeto define escopo, prioridade, comportamento do produto, direção visual e aprovação final.
+## Pré-flight obrigatório
 
-### Assistente
-
-O assistente atua como analista, arquiteto, documentador e coordenador do trabalho. Deve transformar decisões do PO em documentação e tarefas executáveis, identificar conflitos e preservar rastreabilidade.
-
-Antes de entregar qualquer nova tarefa ao Codex, o Assistente deve realizar o pré-flight de capacidade definido em `docs/00-governanca/politica-capacidade-codex.md` e informar ao PO, separadamente do prompt técnico, o modelo e nível de raciocínio recomendados.
-
-### Codex
-
-O Codex é executor técnico. Não deve inventar produto, ampliar escopo ou tomar decisões visuais relevantes por conta própria.
-
-## Ordem obrigatória de leitura antes de implementar
-
-1. `README.md`
-2. `docs/README.md`
-3. `docs/00-governanca/guia-mestre-desenvolvimento.md`
-4. `docs/00-governanca/metodo-padrao-trabalho-assistido.md`
-5. `docs/00-governanca/politica-capacidade-codex.md`
-6. `docs/00-governanca/contexto-ambientes.md`
-7. `docs/03-arquitetura/implantacao-pocket.md`
-8. `docs/05-progresso/registro-de-decisoes.md`
-9. `docs/04-planejamento/roadmap.md`
-10. `docs/04-planejamento/plano-oficial-fase-1.md` enquanto a Fase 1 estiver vigente;
-11. documentos específicos da tarefa, módulo, arquitetura ou tela.
-
-## Regra de pré-flight de capacidade
-
-Antes de cada novo enunciado destinado ao Codex, o Assistente deve apresentar ao PO um bloco separado chamado, conceitualmente, `PRÉ-FLIGHT PARA VOCÊ — NÃO ENVIAR AO CODEX`.
-
-Esse bloco deve indicar:
+Antes de cada nova tarefa destinada ao Codex, o Assistente deve apresentar ao PO, separadamente do prompt técnico:
 
 - modelo recomendado;
-- nível de raciocínio recomendado;
-- motivo objetivo da escolha;
+- nível de raciocínio;
+- motivo;
 - condição de escalonamento, quando pertinente.
 
-A recomendação deve buscar a menor capacidade que mantenha margem adequada de segurança para a tarefa. A capacidade não é herdada automaticamente da tarefa anterior.
+Seguir `docs/00-governanca/politica-capacidade-codex.md` e buscar a menor capacidade que mantenha margem adequada de segurança.
 
-Esse bloco é orientação operacional ao PO e **não faz parte do prompt técnico do Codex**.
+## Regras operacionais
 
-## Regras operacionais obrigatórias
+- uma tarefa por vez;
+- não declarar trabalho parcial como concluído;
+- não criar funcionalidade, dependência ou estrutura relevante fora do escopo;
+- não alterar UX/visual aprovado sem autorização;
+- não transformar proposta em decisão;
+- manter documentação e implementação sincronizadas;
+- preservar modularidade e baixo acoplamento;
+- não versionar credenciais, senhas, tokens, banco real ou dados pessoais da empresa;
+- exemplos de IP/hostname/share/path nunca viram configuração oficial;
+- testes dependentes da LAN corporativa feitos fora dela são `NÃO APLICÁVEIS NESTE AMBIENTE`;
+- protótipos descartáveis não podem ser promovidos silenciosamente a produção.
 
-- Trabalhar uma tarefa por vez.
-- Não apresentar implementação parcial como entrega concluída.
-- Não criar funcionalidades fora do escopo documentado.
-- Não alterar direção visual, layout, hierarquia, UX ou comportamento aparente sem autorização explícita quando houver definição aprovada.
-- Não introduzir dependência, framework ou padrão estrutural importante sem decisão registrada.
-- Não substituir uma decisão documentada por uma preferência técnica pessoal.
-- Se houver conflito entre documentos, interromper a decisão técnica e registrar/sinalizar o conflito; seguir a fonte de verdade mais recente apenas quando a precedência estiver clara.
-- Manter documentação e código sincronizados na mesma tarefa quando a mudança justificar atualização documental.
-- Preservar modularidade e baixo acoplamento; evitar arquivos monolíticos e abstrações artificiais sem benefício.
-- Não colocar credenciais, senhas reais, bancos de produção, avatares reais ou dados da empresa sob versionamento.
-- Protótipo de investigação da Fase 1 deve ser identificado como descartável e não pode ser promovido silenciosamente a código definitivo.
-- Não transformar exemplo de IP, hostname, share ou path em configuração oficial.
-- Se a tarefa depender da LAN corporativa e a execução ocorrer fora dela, marcar a verificação como `NÃO APLICÁVEL NESTE AMBIENTE`, salvo se a tarefa especificar uma simulação local.
-- Não transformar dependências de desenvolvimento em dependências obrigatórias do servidor de produção sem decisão explícita.
-- Ao avaliar uma tecnologia, considerar sempre se o artefato final pode ser implantado em pasta própria, com baixo impacto, sem exigir Node.js, Rust, compiladores ou outras toolchains no servidor.
-- **Não propor Windows Service persistente, serviço auto-start, Task Scheduler, watchdog, tray agent ou daemon residente como solução padrão do StepFlow.**
-- **Quando o StepFlow estiver fechado/sem uso, nenhum processo StepFlow deve permanecer ativo no servidor como comportamento normal.**
-- Qualquer exceção futura a essas duas regras exige alteração explícita do requisito pelo PO.
+## Regras Pocket obrigatórias
 
-## Regras específicas já consolidadas do StepFlow
+- implantação central baseada em copiar/publicar pasta pronta;
+- nenhuma toolchain de desenvolvimento exigida no servidor de produção;
+- não usar Windows Service persistente, serviço auto-start, Task Scheduler, watchdog, tray agent ou daemon residente como padrão;
+- Host e Controller iniciam sob demanda;
+- quando o StepFlow está fechado/sem uso, nenhum processo StepFlow deve permanecer ativo no servidor;
+- Client operacional roda localmente na estação, preparado por launcher transitório;
+- launcher também encerra após iniciar o Client;
+- dados/configuração/logs permanecem separados dos binários substituíveis.
 
-- O frontend deverá permanecer modular em HTML, CSS e JavaScript, usando ES Modules e classes somente quando houver estado/comportamento que as justifique.
-- O projeto não deve se transformar em um único HTML/JS monolítico.
-- O uso simultâneo por vários computadores é requisito obrigatório.
-- Clientes não devem abrir diretamente um mesmo arquivo SQLite através do compartilhamento de rede.
-- O banco SQLite deve ser acessado por uma camada host/servidora local à máquina que armazena o banco.
-- O cliente deve conversar com o host por contratos definidos, e não por acesso direto ao arquivo de dados.
-- O Host deve ser tratado como processo sob demanda a ser orquestrado durante o uso, não como serviço Windows permanente.
-- O produto deve continuar simples para o usuário final: acessar um ponto de entrada interno do StepFlow deve exigir, idealmente, apenas duplo clique.
-- O endereço real desse ponto de entrada ainda não está definido e não deve ser hardcoded a partir de exemplos anteriores.
-- A implantação no servidor deve buscar o modelo Pocket: copiar/publicar uma pasta pronta em local fixo, com configuração mínima e sem remodelar o Windows que já hospeda outros serviços.
-- Atualizações e rollback devem favorecer substituição controlada de artefatos/pastas, mantendo dados/configuração persistentes separados dos binários quando apropriado.
-- A interface de documentação de processos deve preservar a metáfora de livro/páginas por etapa.
-- PDF, DOCX e impressão são requisitos do produto; a investigação técnica deve escolher a estratégia, não remover o requisito.
-- O comportamento das marcações do checklist durante uma execução ainda é pendência e não deve ser presumido pelo Codex.
+Qualquer exceção futura a essas regras exige mudança explícita do requisito pelo PO.
 
-## Escopo mínimo de uma tarefa Codex
+## Regras técnicas já consolidadas
 
-Toda tarefa precisa declarar:
+- Client: Tauri 2 + HTML/CSS/JavaScript modular;
+- Host: Rust + Tokio/Axum + `rusqlite`/SQLite bundled;
+- HTTP/JSON para API e WebSocket para eventos;
+- SQLite somente pelo Host local aos dados;
+- writer coordenado + fila bounded + revisão otimista;
+- nenhuma sobrescrita silenciosa;
+- sessões opacas e autorização sempre no Host;
+- Argon2id para senha;
+- processos documentais usam revisões imutáveis;
+- PDF, DOCX e impressão são requisitos do produto;
+- estado das marcações do checklist durante execução ainda é pendência.
 
-- objetivo;
-- contexto e documentos de referência;
-- escopo incluído;
-- escopo explicitamente não incluído;
-- arquivos ou áreas esperadas;
-- critérios de aceite;
-- validações obrigatórias;
-- documentação a atualizar ao final.
+## Tarefa Codex
 
-## Relatório obrigatório ao concluir uma tarefa
+Toda tarefa deve declarar objetivo, fonte de verdade, escopo incluído, fora do escopo, critérios de aceite, validações e documentação impactada.
 
-O Codex deve informar, no mínimo:
-
-1. objetivo executado;
-2. arquivos criados, alterados ou removidos;
-3. decisões técnicas tomadas dentro do escopo autorizado;
-4. testes, build, smoke tests ou validações realizadas;
-5. resultado das validações;
-6. riscos, limitações ou pendências encontradas;
-7. documentação atualizada;
-8. próximos passos recomendados, sem executá-los fora do escopo.
+O relatório final deve informar: objetivo executado, arquivos alterados, decisões técnicas, validações/resultados, riscos/pendências, documentação atualizada e próximos passos sugeridos.
 
 ## Gate de implementação
 
-Se a documentação da fase declarar que determinada implementação ainda não está autorizada, o Codex deve limitar-se à tarefa documental, investigativa, estrutural ou de protótipo explicitamente pedida. Não deve aproveitar a tarefa para criar um app funcional parcial.
+Se a fase/documentação não autorizar implementação definitiva, limitar-se ao trabalho documental, investigativo ou estrutural explicitamente solicitado.

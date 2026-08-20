@@ -1,16 +1,24 @@
 # Tarefas Codex — StepFlow Pocket
 
-## Ordem de execução vigente
+Esta pasta deve conter somente tarefas Codex **ativas ou imediatamente preparadas**.
 
-As tarefas desta pasta devem ser executadas na ordem definida pela fase e por suas dependências.
+Tarefas concluídas, troubleshooting e provas descartáveis antigas são removidos da árvore documental ativa e permanecem recuperáveis pelo histórico Git.
 
-### Fase 1
+## Estado atual
 
-1. `f1-b0-t01-bootstrap-repositorio-local.md` — preparar `C:\dev\StepFlow` como clone íntegro do repositório oficial.
-2. `f1-b1-t01-inventario-ambiente-windows.md` — inventariar o ambiente Windows somente depois que o bootstrap local estiver validado.
+Não há tarefa Codex aberta neste momento.
 
-Não executar uma tarefa posterior antes de concluir seus pré-requisitos.
+A Fase 1 está no **Bloco 8 — UI/UX**, que deve primeiro produzir/aprovar especificações de tela antes de abrir implementação.
 
-## Regra operacional
+## Regra para nova tarefa
 
-O Codex deve ler `AGENTS.md` após o bootstrap e antes de qualquer tarefa técnica subsequente.
+Antes de qualquer prompt ao Codex:
+
+1. confirmar que o bloco/gate correspondente autoriza a tarefa;
+2. apresentar ao PO o pré-flight de capacidade separado do enunciado;
+3. usar `docs/templates/template-tarefa-codex.md`;
+4. indicar documentos vigentes de referência;
+5. declarar escopo e fora do escopo;
+6. definir critérios de aceite e validações.
+
+Codex deve ler `AGENTS.md` antes de executar.

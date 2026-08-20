@@ -1,80 +1,71 @@
 # Documentação do StepFlow Pocket
 
-## Objetivo
+Esta pasta contém apenas a documentação ativa necessária para entender e evoluir o projeto. Troubleshooting concluído, tarefas antigas e provas descartáveis devem ser consultados pelo histórico Git quando necessário, não mantidos como documentos vigentes.
 
-Esta pasta concentra a documentação viva e operacional do StepFlow Pocket. Ela deve permitir que PO, Assistente e Codex entendam o estado vigente do produto sem depender da memória de conversas anteriores.
+## Precedência
 
-## Princípios
+Em caso de divergência:
 
-- GitHub é a fonte principal de verdade do projeto.
-- Toda evolução relevante deve deixar rastreabilidade documental proporcional ao impacto.
-- Decisões consolidadas devem ser separadas de hipóteses, propostas e pendências.
-- Implementação e documentação devem permanecer sincronizadas.
-- Documentos históricos não devem ser silenciosamente reescritos para parecer que uma decisão sempre existiu.
-- Quando uma decisão for substituída, registrar a nova decisão e indicar a anterior como superada quando necessário.
+1. `05-progresso/registro-de-decisoes.md`;
+2. documento específico vigente de produto/arquitetura/tela/fase;
+3. `01-produto/visao-geral.md`;
+4. material histórico no Git.
 
-## Estrutura
+Ambiguidade relevante volta ao PO; não é autorização para o executor escolher sozinho.
 
-### `00-governanca`
+## Índice vigente
 
-Regras de trabalho, papéis, precedência documental, guia mestre e método reutilizável de desenvolvimento assistido.
+### Governança — `00-governanca`
 
-### `01-produto`
+- `contexto-ambientes.md` — desenvolvimento local versus ambiente corporativo;
+- `metodo-padrao-trabalho-assistido.md` — processo PO + Assistente + Codex;
+- `politica-capacidade-codex.md` — seleção de modelo/raciocínio antes de tarefas Codex.
 
-Visão do produto, atores, objetivos, requisitos funcionais e não funcionais e limites de escopo.
+Regras específicas de execução ficam em `../AGENTS.md`, evitando duplicação.
 
-### `02-telas`
+### Produto — `01-produto`
 
-Uma especificação por tela ou superfície relevante. Deve cobrir layout, componentes, interações, estados, dados, permissões, erros, regras e critérios de aceite.
+- `visao-geral.md` — propósito, usuários, requisitos e limites do StepFlow.
 
-### `03-arquitetura`
+### Telas — `02-telas`
 
-Arquitetura do sistema, estrutura do repositório, decisões técnicas, compatibilidade Windows, modelo de dados, contratos, segurança, concorrência, persistência e ADRs.
+- `README.md` — mapa das telas e ordem de especificação do Bloco 8.
 
-Documentos já relevantes:
+As especificações individuais serão criadas apenas conforme forem analisadas/aprovadas.
 
-- `arquitetura-inicial.md` — separação lógica Client/Host/Data;
-- `compatibilidade-windows-client.md` — investigação da Fase 1 sobre Tauri, WebView2, Windows e distribuição do Client.
+### Arquitetura — `03-arquitetura`
 
-### `04-planejamento`
+- `arquitetura-vigente.md` — visão consolidada Client/Launcher/Host/Data;
+- `implantacao-pocket.md` — requisitos inegociáveis de implantação e ciclo de vida;
+- `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
+- `host-pocket.md` — tecnologia, Controller, Host, paths, shutdown e atualização;
+- `launcher-distribuicao-client.md` — cópia local/versionamento do Client;
+- `comunicacao-client-host.md` — HTTP/JSON, WebSocket e compatibilidade;
+- `autenticacao-sessao-autorizacao.md` — usuários, sessão e permissões;
+- `modelo-dados-schema-fase-1.md` — schema conceitual, revisões e migrations;
+- `concorrencia-fila-conflitos-eventos.md` — writer, fila, conflitos e eventos.
 
-Roadmap, fases, dependências, gates de entrada/saída, planos oficiais e tarefas fechadas para o Codex.
+### Planejamento — `04-planejamento`
 
-Documentos vigentes:
+- `roadmap.md` — fases do projeto;
+- `plano-oficial-fase-1.md` — estado dos blocos e gates da fase atual;
+- `tarefas-codex/README.md` — lista somente de tarefas Codex ativas. Tarefas concluídas são removidas da árvore ativa e permanecem no histórico Git.
 
-- `roadmap.md`;
-- `plano-oficial-fase-0.md` — concluído;
-- `plano-oficial-fase-1.md` — vigente;
-- `tarefas-codex/` — tarefas investigativas/implementáveis em escopo fechado.
+### Progresso — `05-progresso`
 
-### `05-progresso`
+- `registro-de-decisoes.md` — decisões vigentes e pendências;
+- `changelog-projeto.md` — marcos relevantes;
+- `diario-de-progresso.md` — registro cronológico histórico; não é fonte superior de decisão;
+- `revisao-cruzada-fase-0.md` — evidência histórica do gate da Fase 0, mantida por referência do diário.
 
-Registro de decisões, diário de progresso, changelog e evidências de revisões/gates.
+### Templates — `templates`
 
-### `templates`
-
-Modelos reutilizáveis para análises e tarefas.
-
-## Precedência documental
-
-Em caso de divergência, usar esta ordem prática até que uma decisão específica determine algo diferente:
-
-1. decisão consolidada mais recente em `05-progresso/registro-de-decisoes.md`;
-2. documento específico e vigente da tela, fluxo, arquitetura ou fase;
-3. `00-governanca/guia-mestre-desenvolvimento.md`;
-4. visão geral de produto;
-5. material histórico ou conversas antigas.
-
-Se ainda houver ambiguidade relevante, ela deve ser tratada como pendência, não como licença para o executor escolher sozinho.
+- `template-analise-de-tela.md`;
+- `template-preflight-capacidade-codex.md`;
+- `template-tarefa-codex.md`.
 
 ## Estado atual
 
-A **Fase 0 — Fundação documental e governança** foi concluída em 2026-08-19.
+**Fase 1 em andamento. Blocos 0–7 encerrados em nível arquitetural. Próximo: Bloco 8 — UI/UX.**
 
-A fase vigente é **Fase 1 — Fechamento arquitetural e especificação**.
-
-O StepFlow ainda não possui implementação funcional. A Fase 1 permite investigação técnica, documentação e provas explicitamente descartáveis, mas continua bloqueando a antecipação de funcionalidades de negócio.
-
-O primeiro bloco vigente é **Plataforma Windows, Client e distribuição**. A primeira tarefa Codex preparada é:
-
-`docs/04-planejamento/tarefas-codex/f1-b1-t01-inventario-ambiente-windows.md`
+Não há código funcional oficial ainda.

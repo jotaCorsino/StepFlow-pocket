@@ -1,211 +1,132 @@
 # Visão Geral do Produto — StepFlow Pocket
 
-**Status:** CONSOLIDADO EM NÍVEL INICIAL
+**Status:** CONSOLIDADO
 
-## 1. Propósito
+## Propósito
 
-O StepFlow Pocket é um aplicativo interno para centralizar documentação de processos técnicos e transformar procedimentos estáticos em guias operacionais fáceis de consultar e executar.
+O StepFlow é uma aplicação interna para centralizar documentação de processos técnicos e transformar procedimentos estáticos em guias operacionais fáceis de consultar e executar. O objetivo é reduzir atrito para o técnico, não criar um portal burocrático de gestão documental.
 
-O foco não é criar um sistema burocrático de gestão documental. O foco é permitir que técnicos encontrem uma documentação, entendam rapidamente o contexto e executem cada etapa com clareza.
+## Usuários
 
-## 2. Usuários
+- **ADM:** controle total, configurações, usuários, permissões e documentações;
+- **Gerência:** manutenção das documentações e gestão delegada de usuários não-ADM;
+- **Funcionário/Técnico:** consulta e execução; por padrão não altera conteúdo oficial.
 
-### ADM
+## Experiência principal
 
-Responsável por controle total do sistema, configurações, usuários, permissões e documentações.
+```text
+ponto de entrada interno do StepFlow
+        ↓
+duplo clique
+        ↓
+Client local preparado/atualizado
+        ↓
+login
+        ↓
+consulta e execução
+```
 
-### Gerência
+O técnico não deve instalar dependências, informar banco/servidor manualmente nem executar comandos no uso normal.
 
-Responsável por manutenção operacional das documentações e, conforme permissão, gestão de usuários não superiores ao nível administrativo principal.
+O endereço real do ponto de entrada corporativo ainda não está definido. Usar apenas placeholders como:
 
-### Funcionário / Técnico
+`\\<HOST-OU-SERVIDOR-DA-EMPRESA>\<COMPARTILHAMENTO>\<PASTA-STEPFLOW>\`
 
-Responsável por consultar e executar documentações. Por padrão não altera o conteúdo oficial.
-
-## 3. Cenário de uso principal
-
-O técnico acessa o compartilhamento interno:
-
-`\\192.168.5.7\Arquivos\StepFlow\`
-
-Encontra o ponto de entrada do StepFlow, dá dois cliques, realiza login e utiliza a aplicação.
-
-Não deve ser necessário instalar, configurar banco, informar endereço de servidor ou executar comandos manualmente em cada estação para o uso normal.
-
-## 4. Proposta de valor
-
-- documentação técnica centralizada;
-- leitura rápida e organizada;
-- execução passo a passo;
-- instruções copiáveis com um clique;
-- checklists durante execução;
-- versionamento e histórico;
-- permissões simples;
-- uso offline da Internet e restrito à rede interna;
-- manutenção centralizada;
-- possibilidade de uso simultâneo por vários técnicos;
-- exportação da documentação para formatos compartilháveis.
-
-## 5. Modelo de uma documentação de processo
+## Modelo enxuto de processo
 
 Campos principais:
 
 - Código;
 - Título;
-- Área / Departamento;
+- Área/Departamento;
 - Responsável;
 - Status;
 - Versão;
 - Objetivo;
 - Observações;
 - Pré-requisitos;
-- Etapas do processo;
+- Etapas;
 - Histórico de alterações.
 
-O produto deve resistir à inclusão de campos burocráticos sem valor operacional claro.
+Não adicionar campos burocráticos sem valor operacional aprovado.
 
-## 6. Etapas como páginas
+## Etapas como páginas de manual
 
-Cada processo é percebido como um manual/livro.
+Cada etapa deve funcionar como uma página navegável e pode conter título, introdução, passos/subpassos, checklist documental, observações, alertas, comandos/blocos copiáveis, navegação anterior/próxima e indicação de progresso.
 
-Cada etapa funciona como uma página navegável e pode conter:
+O controle de cópia deve ser discreto, somente por ícone, com feedback curto.
 
-- título;
-- texto introdutório;
-- passos numerados;
-- detalhes dos passos;
-- observações;
-- checklist;
-- alertas/informações;
-- blocos copiáveis para comandos, caminhos, parâmetros ou instruções específicas;
-- navegação anterior/próxima;
-- indicador de posição dentro do processo.
+## Multiusuário
 
-O bloco copiável usa apenas ícone de cópia, sem botão textual grande.
+O produto deve aceitar vários usuários simultâneos em computadores diferentes:
 
-## 7. Gestão das documentações
+- Clients nunca acessam SQLite diretamente;
+- escritas são coordenadas pelo Host;
+- edições antigas não sobrescrevem silenciosamente alterações recentes;
+- mudanças relevantes chegam aos Clients por eventos/reconsulta;
+- fila de escrita não substitui revisão otimista.
 
-Usuários autorizados devem poder:
+## Usuários e permissões
 
-- criar;
-- editar;
-- salvar nova revisão/versão conforme a regra definida;
-- excluir ou arquivar conforme política futura;
-- pesquisar;
-- filtrar;
-- consultar histórico;
-- exportar.
+Conta possui identificador estável, login, nome de exibição, cargo, hash de senha, avatar, perfil e permissões.
 
-Usuários de leitura podem consultar e interagir com elementos de execução sem alterar a documentação oficial.
+O usuário pode editar nome de exibição, cargo, avatar e senha dentro das regras. Autorização é sempre verificada no Host.
 
-## 8. Concorrência
+## Exportação e backup
 
-O sistema precisa aceitar vários usuários simultâneos em computadores diferentes.
+Requisitos obrigatórios:
 
-Requisitos funcionais:
+- PDF;
+- DOCX;
+- impressão;
+- identidade da empresa no documento exportado;
+- backup e restauração simples.
 
-- uma sessão não pode corromper ou bloquear indevidamente outra;
-- alterações devem ser coordenadas pelo host;
-- edições concorrentes da mesma documentação não podem resultar em sobrescrita silenciosa;
-- clientes devem ser informados quando dados relevantes forem atualizados;
-- o sistema pode indicar que outro usuário está editando um documento sem necessariamente impedir leitura.
+A exportação usa modelo próprio de documento, não captura da tela.
 
-## 9. Usuários e perfis
+## Requisitos não funcionais
 
-Conta contém:
+### Pocket
 
-- nome/identificador de login;
-- nome de exibição;
-- cargo;
-- senha;
-- avatar;
-- perfil/permissões.
-
-O próprio usuário pode editar avatar, nome de exibição, cargo e senha dentro das regras definidas.
-
-Perfis padrão:
-
-- ADM;
-- Gerência;
-- Funcionário.
-
-Permissões devem ser efetivamente verificadas no host.
-
-## 10. Configuração da empresa
-
-O ADM deve poder personalizar informações institucionais relevantes, incluindo logo PNG transparente.
-
-A interface deve informar dimensões, proporção e peso recomendados antes do upload.
-
-O logo é exibido de forma pequena e clássica no topo esquerdo da sidebar.
-
-## 11. Exportação
-
-Objetivo funcional:
-
-- exportar documentação para PDF;
-- exportar documentação para DOCX;
-- permitir impressão.
-
-O documento exportado deve ter template próprio e poder incorporar identidade da empresa.
-
-## 12. Backup
-
-O sistema deve permitir backup e restauração de maneira simples, adequada a uma aplicação interna pequena.
-
-## 13. Requisitos não funcionais principais
-
-### Usabilidade
-
-- início por duplo clique;
-- interface limpa;
-- poucos passos para encontrar um processo;
-- navegação previsível;
-- leitura confortável;
-- ações destrutivas claras;
-- feedback imediato para copiar, salvar e conflitos.
-
-### Manutenibilidade
-
-- JavaScript modular;
-- código dividido por responsabilidade;
-- evitar HTML/JS monolítico;
-- arquitetura documentada;
-- baixo acoplamento;
-- tarefas pequenas e revisáveis.
-
-### Disponibilidade interna
-
-- deve funcionar sem Internet;
-- depende apenas dos recursos necessários dentro da rede/estações;
-- falha do host deve ser apresentada de forma compreensível, sem corromper dados locais do cliente.
+- implantação da máquina central por pasta pronta;
+- nenhum runtime/toolchain de desenvolvimento no servidor;
+- nenhum serviço/processo StepFlow persistente quando o produto está fechado;
+- Client distribuído sem instalador tradicional obrigatório;
+- funcionamento sem dependência da Internet durante o uso normal.
 
 ### Compatibilidade
 
-A faixa final de versões Windows suportadas ainda precisa de validação técnica antes de ser prometida como requisito definitivo.
+Baseline inicial: **Windows 10/11 x64**. Tauri 2 usa WebView2. Versões reais das estações e presença do runtime ainda serão verificadas no ambiente corporativo.
+
+### Manutenibilidade
+
+- frontend modular em HTML/CSS/JavaScript com ES Modules;
+- baixo acoplamento;
+- código organizado por responsabilidade/domínio;
+- evitar monólitos e superengenharia.
 
 ### Segurança proporcional
 
-- hash de senha;
-- autorização real no host;
-- sessão autenticada;
-- trilha de alterações relevantes;
-- dados reais fora do Git.
+- Argon2id para senhas;
+- sessão autenticada e opaca;
+- autorização no Host;
+- auditoria de ações relevantes;
+- nenhum dado real/segredo no Git.
 
-## 14. Fora do escopo inicial
-
-A menos que uma decisão futura altere explicitamente:
+## Fora do escopo inicial
 
 - acesso público pela Internet;
-- autenticação por redes sociais;
-- MFA complexo;
-- recuperação de senha por email;
-- multiempresa/SaaS;
-- grande infraestrutura distribuída;
+- SaaS/multiempresa;
+- MFA complexo e recuperação por email;
 - edição colaborativa caractere a caractere;
 - chat corporativo;
-- workflow burocrático de aprovação documental com múltiplas instâncias.
+- workflow burocrático de aprovação em múltiplas instâncias;
+- infraestrutura distribuída de grande porte.
 
-## 15. Critério de sucesso do Pocket
+## Pendência de produto ainda aberta
 
-Um técnico deve conseguir abrir o StepFlow, localizar uma documentação e executar um processo passo a passo com menos atrito do que teria abrindo arquivos Word/PDF dispersos em pastas de rede.
+O checklist documental é obrigatório, mas o estado das marcações durante uma execução ainda será decidido no Bloco 9 da Fase 1.
+
+## Critério de sucesso
+
+Um técnico deve conseguir localizar e executar um processo no StepFlow com menos atrito do que usando documentos Word/PDF dispersos em pastas de rede.

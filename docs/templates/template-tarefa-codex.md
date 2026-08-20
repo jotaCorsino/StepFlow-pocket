@@ -2,26 +2,27 @@
 
 ## Título
 
-Nome curto e objetivo da tarefa.
+Nome curto e objetivo.
 
 ## 1. Objetivo
 
-Descrever uma única entrega central verificável.
+Uma única entrega central, verificável.
 
 ## 2. Contexto e fonte de verdade
 
-Listar os documentos que devem ser lidos antes da execução.
+Indicar somente documentos vigentes necessários, normalmente:
 
-Exemplo:
+- `AGENTS.md`;
+- `docs/README.md`;
+- `docs/03-arquitetura/arquitetura-vigente.md` quando houver impacto arquitetural;
+- documento específico da arquitetura/tela;
+- `docs/05-progresso/registro-de-decisoes.md` quando houver decisão relacionada.
 
-- `AGENTS.md`
-- `docs/00-governanca/guia-mestre-desenvolvimento.md`
-- documento específico da arquitetura/tela
-- decisões relacionadas em `docs/05-progresso/registro-de-decisoes.md`
+Não mandar o Codex reconstruir contexto a partir de tarefas/revisões históricas removidas da árvore ativa.
 
 ## 3. Estado inicial esperado
 
-Descrever o que deve existir antes da tarefa e quais dependências já precisam estar concluídas.
+Descrever pré-condições, branch/checkout quando relevante e dependências já concluídas.
 
 ## 4. Escopo incluído
 
@@ -31,76 +32,63 @@ Descrever o que deve existir antes da tarefa e quais dependências já precisam 
 
 ## 5. Fora do escopo
 
-Registrar explicitamente o que não deve ser alterado ou implementado nesta tarefa.
+Registrar explicitamente o que não deve ser alterado, implementado ou investigado.
 
 ## 6. Regras e restrições
 
-Incluir conforme aplicável:
+Incluir apenas o que se aplica:
 
-- comportamento funcional obrigatório;
-- restrições de UI/UX;
-- compatibilidade;
-- segurança;
-- autorização;
+- comportamento funcional;
+- UI/UX aprovada;
+- Pocket/distribuição;
+- segurança/autorização;
 - concorrência;
-- persistência;
-- performance;
+- persistência/migrations;
+- compatibilidade;
 - convenções arquiteturais;
-- dependências proibidas ou já aprovadas.
+- dependências aprovadas/proibidas.
 
 ## 7. Arquivos/áreas esperadas
 
-Indicar áreas prováveis, sem obrigar mudanças artificiais em arquivos que não precisem ser tocados.
+Indicar áreas prováveis sem exigir alteração artificial de arquivo.
 
 ## 8. Critérios de aceite
 
-- [ ] requisito verificável 1;
-- [ ] requisito verificável 2;
-- [ ] requisito verificável 3;
-- [ ] nenhuma alteração fora do escopo;
-- [ ] documentação obrigatória atualizada.
+- [ ] requisitos verificáveis da tarefa;
+- [ ] nenhuma mudança fora do escopo;
+- [ ] documentação necessária sincronizada.
 
 ## 9. Validações obrigatórias
 
-Definir comandos/evidências quando já forem conhecidos.
-
-Exemplos:
+Conforme aplicável:
 
 - build;
 - testes automatizados;
-- lint/typecheck;
+- lint/typecheck/formatter;
 - smoke test;
-- teste de duas instâncias;
-- teste de autorização;
-- teste de conflito de revisão;
-- inspeção de arquivo gerado;
-- conferência de `git diff`/estado do repositório.
+- teste de autorização/conflito/duas instâncias;
+- inspeção de artefatos;
+- `git diff --check` e estado do repositório.
+
+Não criar provas adicionais sem necessidade real do critério de aceite.
 
 ## 10. Documentação a atualizar
 
-Listar exatamente os documentos esperados, quando aplicável:
+Listar exatamente o documento vivo afetado. Evitar criar arquivo de revisão/gate separado quando o resultado puder ser incorporado ao documento vigente e ao changelog/decisões de forma mais simples.
 
-- diário de progresso;
-- changelog;
-- registro de decisões;
-- documento de tela;
-- arquitetura;
-- roadmap;
-- ADR.
+O diário é histórico e só deve ser alterado quando explicitamente incluído na tarefa e sem conflito local conhecido.
 
 ## 11. Relatório final obrigatório
 
-O Codex deve responder com:
-
 1. objetivo executado;
 2. arquivos criados/alterados/removidos;
-3. decisões técnicas tomadas dentro do escopo;
+3. decisões técnicas dentro do escopo;
 4. validações executadas;
 5. resultados;
-6. riscos, limitações e pendências;
+6. riscos/limitações/pendências;
 7. documentação atualizada;
 8. próximos passos sugeridos, sem executá-los automaticamente.
 
 ## 12. Regra de parada
 
-Se surgir uma decisão de produto/UX/arquitetura não coberta pela documentação e necessária para prosseguir corretamente, não inventar a regra. Registrar o bloqueio com opções e impacto para decisão do PO/assistente.
+Se surgir decisão de produto/UX/arquitetura necessária e não coberta pela fonte vigente, não inventar. Reportar o bloqueio e opções para decisão do PO/Assistente.

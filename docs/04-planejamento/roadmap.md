@@ -1,415 +1,144 @@
-# Roadmap do StepFlow Pocket
+# Roadmap — StepFlow Pocket
 
-**Status:** FASE 1 EM ANDAMENTO
-
-## Objetivo
-
-Organizar a construção do StepFlow Pocket por fases dependentes e verificáveis, impedindo que o projeto avance para código de negócio antes de fechar decisões estruturais que afetam manutenção, concorrência, distribuição e UX.
-
----
+**Status:** FASE 1 EM ANDAMENTO  
+**Atualização:** 2026-08-20
 
 ## Fase 0 — Fundação documental e governança
 
-**Status:** CONCLUÍDA EM 2026-08-19
+**CONCLUÍDA em 2026-08-19.**
 
-### Objetivo
-
-Transformar as decisões já discutidas em fonte de verdade versionada e estabelecer o método de trabalho PO + Assistente + Codex.
-
-### Entregas concluídas
-
-- README inicial;
-- índice de documentação;
-- `AGENTS.md`;
-- método genérico de trabalho assistido;
-- guia mestre do StepFlow;
-- visão geral do produto;
-- arquitetura inicial;
-- roadmap;
-- registro inicial de decisões;
-- diário/changelog iniciais;
-- templates de tela e tarefa Codex;
-- revisão cruzada final.
-
-### Resultado do gate
-
-A base documental foi considerada coerente e suficiente para permitir continuidade sem dependência do histórico do chat. A evidência está em `docs/05-progresso/revisao-cruzada-fase-0.md`.
-
----
+Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e templates foram estabelecidos. O histórico detalhado permanece no Git e no diário.
 
 ## Fase 1 — Fechamento arquitetural e especificação
 
-**Status:** EM ANDAMENTO
+**EM ANDAMENTO.**
 
-### Objetivo
+Blocos concluídos:
 
-Validar tecnicamente as propostas e transformar arquitetura conceitual em contratos implementáveis.
+- Client/Tauri e compatibilidade Windows;
+- Host Pocket sob demanda;
+- launcher e atualização do Client;
+- comunicação HTTP/JSON + WebSocket;
+- autenticação/sessão/autorização;
+- modelo de dados/migrations/histórico;
+- concorrência/fila/conflitos/eventos.
 
-O plano detalhado está em `docs/04-planejamento/plano-oficial-fase-1.md`.
+Próximos blocos:
 
-### Blocos
+1. UI/UX;
+2. comportamento do checklist durante execução;
+3. exportação PDF/DOCX/impressão;
+4. backup/restore;
+5. estrutura oficial do repositório e plano da Fase 2.
 
-#### 1. Stack e compatibilidade
-
-- validar Tauri e alternativas para o Client;
-- definir versões suportadas de Windows;
-- validar WebView/runtime e cenário offline;
-- definir formato do Host;
-- definir estratégia de build/distribuição.
-
-#### 2. Launcher e atualização
-
-- validar duplo clique a partir do compartilhamento SMB;
-- testar launcher com cópia local quando necessário;
-- definir manifesto de versão;
-- definir atualização e rollback mínimos;
-- definir comportamento quando a rede/Host estiver indisponível.
-
-#### 3. Comunicação Client ↔ Host
-
-- definir protocolo;
-- contratos;
-- versionamento de contrato;
-- descoberta/endereço;
-- eventos em tempo real;
-- tratamento de incompatibilidade entre versões.
-
-#### 4. Autenticação e autorização
-
-- modelo de usuário;
-- hash de senha;
-- sessão;
-- matriz de permissões;
-- ADM inicial/bootstrap;
-- regras de Gerência e Funcionário.
-
-#### 5. Dados
-
-- modelo conceitual;
-- schema inicial;
-- migrations;
-- revisão/versionamento;
-- auditoria;
-- política de exclusão/arquivamento;
-- arquivos e paths.
-
-#### 6. Concorrência
-
-- fila/serialização;
-- optimistic concurrency;
-- eventos;
-- soft lock/presença, se aprovado;
-- testes de duas ou mais estações.
-
-#### 7. UI/UX
-
-Documentar telas principais antes do código:
-
-- Login;
-- Shell/sidebar;
-- Início/Dashboard;
-- Lista/Pesquisa de processos;
-- Leitura do processo em formato livro;
-- Editor de processo;
-- Histórico de alterações;
-- Usuários;
-- Meu perfil;
-- Configurações da empresa;
-- Backup;
-- Exportação.
-
-#### 8. Checklist de execução
-
-- manter checklist como parte da documentação;
-- decidir se as marcações de execução serão temporárias, locais, persistidas por usuário ou parte de uma entidade formal de execução;
-- evitar complexidade de workflow sem requisito aprovado.
-
-#### 9. Exportação e backup
-
-- definir estratégia PDF;
-- definir estratégia DOCX;
-- definir impressão;
-- template exportável;
-- backup consistente;
-- restore e validação.
-
-#### 10. Estrutura oficial e plano da Fase 2
-
-- fechar árvore oficial do repositório;
-- convenções;
-- contratos compartilhados;
-- testes e scripts;
-- plano de fundação técnica.
-
-### Gate de saída
-
-- stack validada;
-- arquitetura Client/Host/Data consolidada;
-- estrutura oficial do repositório definida;
-- contratos mínimos definidos;
-- modelo de dados conceitual fechado;
-- autenticação/permissões documentadas;
-- concorrência especificada;
-- comportamento do checklist de execução decidido;
-- telas críticas documentadas;
-- estratégia de launcher validada por investigação/protótipo;
-- PDF, DOCX e impressão definidos tecnicamente;
-- backup/restore definidos;
-- plano oficial de implementação da Fase 2 aprovado.
-
----
+Detalhes em `plano-oficial-fase-1.md`.
 
 ## Fase 2 — Fundação técnica executável
 
-**Status:** PENDENTE
+**PENDENTE.**
 
-### Objetivo
+Criar somente a fundação real:
 
-Criar apenas a fundação real do Client e Host, sem tentar entregar todo o produto.
-
-### Entregáveis esperados
-
-- estrutura física do repositório;
-- build do Client;
-- build do Host;
-- comunicação mínima Client/Host;
-- health check;
+- árvore oficial de Client/launcher/Controller/Host;
+- builds reproduzíveis;
 - configuração de desenvolvimento;
-- banco SQLite inicial com migrations;
+- comunicação mínima e health/readiness;
+- SQLite + migrations iniciais;
 - logging mínimo;
-- testes de fundação;
-- pacote/execução local de desenvolvimento.
+- testes de fundação.
 
-### Gate de saída
-
-- Client abre;
-- Host inicia;
-- Client detecta Host;
-- chamada simples funciona;
-- banco inicializa de forma determinística;
-- build limpo;
-- documentação e scripts de desenvolvimento atualizados.
-
----
+Gate: Client abre, Host Pocket inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build limpo passa.
 
 ## Fase 3 — Autenticação, usuários e shell
 
-**Status:** PENDENTE
+**PENDENTE.**
 
-### Objetivo
-
-Entregar a entrada real do sistema e a estrutura base da aplicação.
-
-### Entregáveis
-
-- login;
-- logout;
-- sessão;
-- ADM bootstrap;
-- usuários;
-- perfis/permissões;
-- edição de perfil pessoal;
-- avatar;
-- sidebar e shell visual;
-- logo/configuração básica da empresa;
+- login/logout/sessão;
+- bootstrap ADM;
+- usuários/permissões;
+- perfil/avatar;
+- shell/sidebar;
+- configuração básica da empresa;
 - autorização real no Host.
-
-### Gate de saída
-
-- perfis possuem comportamento esperado;
-- funcionário não consegue executar operação administrativa por API;
-- Gerência respeita limites;
-- ADM controla usuários;
-- sessão funciona em múltiplos clientes;
-- tela base preserva UX aprovada.
-
----
 
 ## Fase 4 — Núcleo documental de processos
 
-**Status:** PENDENTE
-
-### Objetivo
-
-Entregar CRUD e persistência do modelo simplificado de documentação.
-
-### Entregáveis
+**PENDENTE.**
 
 - lista/pesquisa;
-- criação;
-- edição;
-- remoção/arquivamento conforme decisão;
-- campos principais;
-- etapas;
-- passos;
-- observações;
-- checklist definido na documentação;
-- blocos copiáveis;
-- histórico;
-- revisão/versionamento;
-- permissões.
-
-### Gate de saída
-
-- ADM/Gerência administram processos;
-- Funcionário apenas lê documentação oficial;
-- histórico permanece íntegro;
-- revisão concorrente não sobrescreve silenciosamente;
-- CRUD passa por validações e testes previstos.
-
----
+- criação/edição/arquivamento;
+- etapas e blocos estruturados;
+- histórico/revisões;
+- permissões;
+- conflitos de revisão.
 
 ## Fase 5 — Experiência de execução em formato livro
 
-**Status:** PENDENTE
+**PENDENTE.**
 
-### Objetivo
+- páginas/etapas;
+- navegação e progresso;
+- passos/alertas/blocos copiáveis;
+- checklist conforme decisão da Fase 1;
+- estados de UI.
 
-Consolidar o diferencial de UX do StepFlow.
+## Fase 6 — Multiusuário em ambiente real
 
-### Entregáveis
+**PENDENTE.**
 
-- leitor em páginas/etapas;
-- anterior/próxima;
-- indicador de posição;
-- passos claros;
-- comportamento do checklist conforme decisão fechada na Fase 1;
-- observações e alertas;
-- blocos copiáveis com ícone;
-- feedback de cópia;
-- comportamento para processo longo;
-- estados vazios/erro/carregamento.
+- testes com múltiplos Clients;
+- conflitos e fila;
+- eventos/reconexão;
+- comportamento de Host indisponível;
+- validação na LAN corporativa quando disponível.
 
-### Gate de saída
+## Fase 7 — Exportação e identidade
 
-- execução prática validada contra processos de exemplo;
-- leitura é mais simples do que documento tradicional equivalente;
-- nenhum elemento de execução altera documentação oficial sem permissão.
+**PENDENTE.**
 
----
-
-## Fase 6 — Multiusuário e atualização em tempo real
-
-**Status:** PENDENTE
-
-### Objetivo
-
-Fechar comportamento simultâneo em condições reais de rede.
-
-### Entregáveis
-
-- eventos de alteração;
-- refresh/reload controlado;
-- presença/soft lock, se aprovado;
-- conflito de revisão;
-- fila de comandos onde necessária;
-- testes com múltiplas instâncias;
-- comportamento de reconexão;
-- mensagens de Host indisponível.
-
-### Gate de saída
-
-- pelo menos duas estações podem operar simultaneamente;
-- alterações não corrompem dados;
-- conflito é detectado;
-- lista/telas relevantes refletem atualização sem intervenção manual desnecessária.
-
----
-
-## Fase 7 — Exportação, impressão e identidade
-
-**Status:** PENDENTE
-
-### Objetivo
-
-Permitir saída formal das documentações.
-
-### Entregáveis
-
-- template exportável;
 - PDF;
 - DOCX;
 - impressão;
-- logo e dados da empresa;
-- paginação/cabeçalho/rodapé conforme especificação;
-- nomes de arquivos consistentes.
+- template e identidade da empresa;
+- validação em leitores esperados.
 
-### Gate de saída
+## Fase 8 — Distribuição Pocket, backup e operação
 
-- documentos de exemplo exportam corretamente;
-- arquivos abrem em leitores esperados;
-- identidade visual permanece legível;
-- exportação não depende de captura da tela de execução.
+**PENDENTE.**
 
----
+- pacote da máquina central por pasta, com Controller/Host sob demanda;
+- launcher publicado na rede e Client local versionado;
+- backup/restore;
+- logs de diagnóstico;
+- documentação de implantação;
+- validação sem Internet e em PCs corporativos.
 
-## Fase 8 — Backup, launcher e distribuição operacional
+Não inclui instalar serviço StepFlow persistente na máquina central.
 
-**Status:** PENDENTE
+Cenário final conceitual:
 
-### Objetivo
-
-Transformar a aplicação funcional em uma ferramenta simples de distribuir e recuperar.
-
-### Entregáveis
-
-- Host instalável/inicializável na máquina central;
-- launcher/ponto de entrada de rede;
-- atualização do Client;
-- ícone customizado;
-- backup;
-- restauração;
-- logs de diagnóstico básicos;
-- documentação de implantação interna;
-- teste de cenário sem Internet.
-
-### Gate de saída
-
-Cenário de aceite:
-
-1. técnico abre `\\192.168.5.7\Arquivos\StepFlow\`;
-2. executa o ponto de entrada com duplo clique;
-3. StepFlow inicia sem configuração manual;
-4. conecta ao Host;
-5. realiza login;
-6. utiliza o sistema;
-7. atualização do Client pode ser distribuída centralmente;
-8. backup/restore foram testados.
-
----
+```text
+Controller central é iniciado quando o StepFlow será usado
+→ técnico acessa o ponto de entrada interno
+→ launcher prepara Client local
+→ login/uso multiusuário
+→ encerramento operacional fecha Host/Controller
+→ nenhum processo StepFlow residual
+```
 
 ## Fase 9 — Hardening e release interno
 
-**Status:** PENDENTE
+**PENDENTE.**
 
-### Objetivo
-
-Revisar robustez antes de tratar a versão como release interno estável.
-
-### Frentes
-
-- segurança proporcional;
-- validação de entradas;
-- permissões;
-- corrupção/falha de banco;
-- recuperação de backup;
-- concorrência;
-- performance com base realista;
+- segurança/autorização;
+- recuperação de falha/banco;
+- backup/restore;
+- concorrência/performance;
 - logs;
-- instalação/atualização;
+- distribuição/atualização;
 - smoke tests end-to-end;
-- revisão documental;
-- limpeza de débitos técnicos prioritários.
+- revisão documental e limpeza de débitos prioritários.
 
-### Gate de saída
+## Regra do roadmap
 
-Release interno versionado, reproduzível, documentado e recuperável.
-
----
-
-## Regra de execução do roadmap
-
-- Não iniciar fase apenas porque a anterior “parece suficiente”. Validar o gate.
-- Uma fase pode ter tarefas paralelizáveis conceitualmente, mas a execução com Codex deve continuar em tarefas pequenas e revisáveis.
-- Descobertas podem alterar o roadmap; a mudança deve ser registrada antes da implementação afetada.
-- O roadmap é instrumento de dependência e direção, não promessa imutável de cronograma.
+Fases dependem de gates, não de cronograma. Mudanças de requisito atualizam documentação antes da implementação afetada. A execução continua em tarefas pequenas e verificáveis.

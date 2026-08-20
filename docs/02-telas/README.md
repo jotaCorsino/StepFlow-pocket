@@ -1,57 +1,49 @@
 # Telas e Superfícies — StepFlow Pocket
 
-## Objetivo
+## Estado
 
-Centralizar a especificação individual das telas e experiências visuais do StepFlow antes e durante a implementação.
+**Bloco 8 da Fase 1 — próximo bloco de trabalho.**
 
-Cada tela relevante deverá usar `docs/templates/template-analise-de-tela.md` como base.
+Esta pasta conterá somente especificações de telas que estiverem em análise ou consolidadas. Cada tela relevante deve usar `docs/templates/template-analise-de-tela.md`.
 
-## Regra
+Uma especificação só vira contrato visual/funcional quando estiver explicitamente aprovada/consolidada.
 
-Uma tela passa a funcionar como contrato visual/funcional quando sua documentação estiver marcada como consolidada/aprovada.
-
-Antes disso, wireframes, descrições e propostas são direção de trabalho e não autorizam o Codex a decidir detalhes importantes por conta própria.
-
-## Mapa inicial de telas
-
-A numeração final será consolidada durante a Fase 1.
-
-Superfícies já identificadas:
+## Mapa de telas
 
 1. Login;
-2. Shell principal / sidebar;
-3. Início / Dashboard;
+2. Shell principal/sidebar;
+3. Início/Dashboard;
 4. Lista e pesquisa de processos;
-5. Leitura de processo em formato livro;
-6. Editor de processo;
-7. Editor de etapa, passos, checklist, observações e blocos copiáveis;
-8. Histórico de alterações/versões;
-9. Usuários e permissões;
-10. Meu perfil;
-11. Configurações da empresa;
-12. Backup e restauração;
-13. Exportação / impressão;
-14. Estados transversais: Host indisponível, conflito de edição, sem permissão, loading, vazio e erro.
+5. Leitura do processo em formato livro;
+6. Editor de processo/etapas;
+7. Histórico de alterações;
+8. Usuários e permissões;
+9. Meu perfil;
+10. Configurações da empresa;
+11. Backup/restauração;
+12. Exportação/impressão;
+13. estados transversais: Host indisponível, loading, vazio, erro, sem permissão e conflito.
 
-## Direção visual já consolidada
+## Direção visual já aprovada
 
-- sidebar à esquerda;
-- logo pequeno e alinhado à esquerda no topo;
-- visual limpo, corporativo e discreto;
-- foco em leitura técnica;
-- etapas apresentadas como páginas de manual/livro;
-- blocos de comando/texto copiável com ícone de cópia;
-- feedback visual curto e não intrusivo;
-- funcionário em experiência predominantemente de leitura/execução.
+- visual corporativo, limpo e discreto;
+- sidebar esquerda;
+- logo pequeno no topo esquerdo, proporção preservada;
+- leitura técnica como prioridade;
+- processos apresentados como manual/livro;
+- comandos/blocos copiáveis com ícone discreto;
+- feedback curto de cópia;
+- Funcionário em experiência predominantemente de leitura/execução.
 
-## Próxima ação desta área
-
-Na Fase 1, documentar primeiro as telas que definem o shell e o fluxo crítico:
+## Ordem recomendada do Bloco 8
 
 1. Login;
 2. Shell/sidebar;
-3. Lista de processos;
+3. Lista/pesquisa;
 4. Leitor em formato livro;
-5. Editor de processo.
+5. Editor;
+6. histórico;
+7. usuários/perfil/configurações;
+8. backup/exportação e estados transversais.
 
-Somente depois expandir para administração, configurações e operações auxiliares.
+Não criar UI de produção antes da especificação/aprovação correspondente.

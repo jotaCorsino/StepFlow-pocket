@@ -1,41 +1,58 @@
 # StepFlow Pocket
 
-StepFlow Pocket é uma aplicação interna para consulta, criação, edição, versionamento e execução guiada de documentações de processos técnicos.
+Aplicação interna para documentar, consultar, versionar e executar processos técnicos de forma guiada, com foco em simplicidade operacional e implantação de baixo impacto.
 
-## Estado atual
+## Estado do projeto
 
-O projeto está na fase inicial de documentação, governança e arquitetura. Ainda não há implementação funcional autorizada.
+A **Fase 1 — Fechamento arquitetural e especificação** está em andamento.
 
-## Repositório e ambiente local
+Os Blocos 0 a 7 estão fechados em nível arquitetural. O próximo bloco é o **Bloco 8 — especificação de UI/UX**. Ainda não existe implementação funcional oficial do produto.
 
-- Repositório oficial: `https://github.com/jotaCorsino/StepFlow-pocket.git`
-- Branch principal: `main`
-- Pasta local prevista para o Codex: `C:\dev\StepFlow`
+## Arquitetura vigente
 
-## Princípio de trabalho
+```text
+ponto de entrada interno
+        ↓
+launcher transitório
+        ↓
+Client Tauri local em %LOCALAPPDATA%
+        ↓ HTTP/JSON + WebSocket
+Host Pocket Rust sob demanda
+        ↓
+SQLite local + arquivos persistentes
+```
 
-O GitHub é a fonte principal de verdade do projeto. Documentação, decisões, arquitetura, planejamento e progresso devem permanecer sincronizados com a implementação.
+Princípios obrigatórios:
 
-Antes de qualquer implementação relevante, consultar:
+- Client: Tauri 2 + HTML/CSS/JavaScript modular;
+- Host: Rust + Tokio/Axum + SQLite bundled;
+- múltiplos Clients simultâneos;
+- Clients nunca abrem SQLite diretamente;
+- revisão otimista + writer coordenado no Host;
+- launcher e Host não permanecem residentes sem necessidade;
+- servidor recebe uma pasta pronta do StepFlow, sem Rust, Node, Visual Studio ou banco externo instalados para runtime;
+- quando o StepFlow está fechado, não deve restar processo StepFlow consumindo recursos no servidor.
 
-1. `AGENTS.md`
-2. `docs/README.md`
-3. `docs/00-governanca/guia-mestre-desenvolvimento.md`
-4. `docs/05-progresso/registro-de-decisoes.md`
-5. o documento específico da fase, módulo ou tela em questão
+## Documentação principal
 
-## Estrutura documental
+Comece por:
 
-A documentação viva será organizada em:
+1. `AGENTS.md` — regras obrigatórias para agentes/Codex;
+2. `docs/README.md` — índice da documentação vigente;
+3. `docs/01-produto/visao-geral.md` — produto e requisitos;
+4. `docs/03-arquitetura/arquitetura-vigente.md` — visão técnica consolidada;
+5. `docs/05-progresso/registro-de-decisoes.md` — decisões e pendências atuais;
+6. `docs/04-planejamento/plano-oficial-fase-1.md` — estado e próximos blocos.
 
-- `docs/00-governanca` — regras operacionais, guia mestre e método de trabalho;
-- `docs/01-produto` — visão e requisitos do produto;
-- `docs/02-telas` — documentação individual das telas e fluxos visuais;
-- `docs/03-arquitetura` — arquitetura, estrutura do repositório, dados, contratos e ADRs;
-- `docs/04-planejamento` — roadmap, fases, gates e planos de implementação;
-- `docs/05-progresso` — changelog, diário e registro de decisões;
-- `docs/templates` — modelos reutilizáveis para análise e execução.
+## Ambiente de desenvolvimento
 
-## Regra atual
+- repositório oficial: `jotaCorsino/StepFlow-pocket`;
+- branch principal: `main`;
+- checkout local previsto: `C:\dev\StepFlow`;
+- desenvolvimento atual fora da LAN corporativa.
 
-Enquanto a fase documental inicial não for encerrada explicitamente, não devem ser introduzidas funcionalidades de negócio, dependências ou estruturas técnicas irreversíveis por conveniência.
+Endereços IP, hostnames e caminhos SMB reais da empresa ainda não estão consolidados. Exemplos históricos não podem ser tratados como configuração oficial.
+
+## Regra de implementação
+
+A Fase 1 permite documentação, decisões arquiteturais e provas descartáveis quando realmente necessárias. Código definitivo de negócio só deve começar após os gates correspondentes e o plano da Fase 2.

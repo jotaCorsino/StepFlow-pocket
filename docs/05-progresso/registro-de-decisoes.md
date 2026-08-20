@@ -1,276 +1,166 @@
 # Registro de Decisões — StepFlow Pocket
 
-## Objetivo
+**Atualização:** 2026-08-20
 
-Registrar decisões relevantes do projeto com data, status e consequência, preservando distinção entre o que já foi aprovado e o que ainda é apenas direção/proposta.
+Este arquivo registra apenas decisões vigentes e pendências atuais. Discussões, troubleshooting e propostas superadas permanecem no histórico Git.
 
----
+## Produto e UX
 
-## Decisões consolidadas
+### Nome e propósito
 
-### 2026-08-20 — O Host será sob demanda; processo residente permanente é rejeitado
+- produto: **StepFlow**;
+- aplicação interna para documentação e execução guiada de processos técnicos;
+- evitar burocracia e campos sem valor operacional;
+- etapas funcionam como páginas de manual/livro;
+- sidebar esquerda, logo pequeno no topo esquerdo;
+- blocos copiáveis usam ícone discreto;
+- PDF, DOCX e impressão são requisitos obrigatórios.
 
-**Status:** CONSOLIDADA COMO REQUISITO ARQUITETURAL
+### Processo documental
 
-O conceito Pocket exige mais do que copy-deploy. No servidor/máquina central, o StepFlow não deve permanecer consumindo recursos quando não estiver sendo utilizado.
-
-Consequências obrigatórias:
-
-- nenhum Windows Service persistente como solução padrão;
-- nenhum serviço auto-start;
-- nenhuma tarefa agendada, watchdog, tray agent ou daemon residente apenas para manter o StepFlow disponível;
-- processos StepFlow iniciam sob demanda quando o produto entra em uso;
-- quando o uso termina, todos os processos transitórios StepFlow devem encerrar de forma controlada;
-- quando fechado/sem uso, o consumo de CPU/memória do StepFlow deve tender a zero;
-- copiar/publicar a pasta pronta continua sendo o modelo de implantação desejado;
-- nenhuma instalação de Rust, Node.js, Visual Studio, SQLite Server ou toolchain no servidor.
-
-A PoC de Windows Service realizada no PC de desenvolvimento permanece apenas como evidência técnica descartável e **não é decisão de produção**.
-
-A questão ainda aberta é o bootstrap/orquestração do Host central sob demanda para múltiplos Clients.
-
-Referências: `docs/03-arquitetura/implantacao-pocket.md` e `docs/03-arquitetura/host-operacao-windows.md`.
-
-### 2026-08-19 — O nome do aplicativo é StepFlow
-
-**Status:** CONSOLIDADA
-
-O produto Pocket passa a ser identificado como **StepFlow**.
-
-### 2026-08-19 — GitHub é a fonte principal de verdade
-
-**Status:** CONSOLIDADA
-
-O repositório `jotaCorsino/StepFlow-pocket` centraliza documentação, decisões e futura implementação.
-
-A pasta local prevista para execução pelo Codex é `C:\dev\StepFlow`.
-
-### 2026-08-19 — O projeto seguirá o método PO + Assistente + Codex
-
-**Status:** CONSOLIDADA
-
-- PO define produto, prioridade e aprovação;
-- Assistente analisa, arquiteta, documenta e transforma decisões em tarefas;
-- Codex executa tecnicamente dentro de escopo explícito.
-
-O método reutilizável está em `docs/00-governanca/metodo-padrao-trabalho-assistido.md`.
-
-### 2026-08-19 — Toda tarefa Codex terá pré-flight de capacidade separado do prompt
-
-**Status:** CONSOLIDADA
-
-Antes de cada nova tarefa destinada ao Codex, o Assistente deve avaliar complexidade, risco e custo da execução e recomendar ao PO o modelo e o nível de raciocínio adequados.
-
-Essa recomendação:
-
-- é destinada somente ao PO/usuário;
-- deve aparecer antes e separada do prompt técnico;
-- não deve ser incorporada ao enunciado enviado ao Codex;
-- deve buscar a menor capacidade que ainda ofereça margem adequada de segurança;
-- deve ser refeita para cada tarefa, sem herdar automaticamente a capacidade da tarefa anterior.
-
-A política genérica e reutilizável está em `docs/00-governanca/politica-capacidade-codex.md` e o formato padrão em `docs/templates/template-preflight-capacidade-codex.md`.
-
-### 2026-08-19 — A implementação deve ser modular e evitar monólito HTML/JavaScript
-
-**Status:** CONSOLIDADA
-
-A interface poderá utilizar HTML, CSS e JavaScript, mas o código deve ser organizado em módulos, componentes e domínios. ES Modules são a direção padrão. Classes serão usadas apenas onde estado/comportamento justificarem.
-
-### 2026-08-19 — O modelo de dados de processo será enxuto
-
-**Status:** CONSOLIDADA
-
-Campos principais aprovados:
+Campos principais:
 
 - Código;
 - Título;
-- Área / Departamento;
+- Área/Departamento;
 - Responsável;
 - Status;
 - Versão;
 - Objetivo;
 - Observações;
 - Pré-requisitos;
-- Etapas do processo;
-- Histórico de alterações.
+- Etapas;
+- Histórico.
+
+### Perfis
 
-Campos burocráticos adicionais não devem ser incluídos sem necessidade aprovada.
+- ADM;
+- Gerência;
+- Funcionário.
 
-### 2026-08-19 — Etapas serão apresentadas como páginas de um manual/livro
+Gerência não administra ADM. Funcionário é leitura/execução por padrão. Usuário pode editar avatar, nome de exibição, cargo e senha dentro das regras.
 
-**Status:** CONSOLIDADA
+## Governança
 
-Cada etapa deve possuir sua própria experiência de leitura, com passos, observações, checklist e blocos copiáveis quando necessário. A navegação deve reforçar a ideia de páginas/etapas sequenciais.
+- GitHub é a fonte principal de verdade;
+- método PO + Assistente + Codex;
+- uma tarefa por vez;
+- toda tarefa Codex exige pré-flight de modelo/raciocínio separado do prompt;
+- documentação vigente tem precedência sobre histórico/conversas;
+- Fase 1 está em andamento; Blocos 0–7 concluídos; Bloco 8 é o próximo.
 
-### 2026-08-19 — O controle de cópia será somente por ícone
+## Ambientes
 
-**Status:** CONSOLIDADA
+- desenvolvimento atual ocorre fora da LAN corporativa;
+- IP, hostname, share e paths reais da empresa ainda não foram confirmados;
+- exemplos históricos de endereço são inválidos como configuração;
+- testes de LAN/SMB feitos fora do ambiente real não validam nem bloqueiam a implantação corporativa.
 
-Blocos destinados a comandos, caminhos ou instruções copiáveis utilizarão ícone discreto de cópia, sem botão textual grande.
+## Pocket / máquina central
 
-### 2026-08-19 — O logo ficará na sidebar esquerda
+**Consolidado:** implantação por pasta pronta, com mínimo impacto no Windows.
 
-**Status:** CONSOLIDADA
+- nenhuma toolchain/runtime de desenvolvimento exigida na máquina central;
+- nenhum Windows Service StepFlow persistente;
+- nenhum auto-start, Task Scheduler, watchdog, tray agent ou daemon StepFlow como padrão;
+- Controller/Host iniciam sob demanda;
+- encerrado o uso, nenhum processo StepFlow deve permanecer ativo;
+- dados/config/logs/backups separados dos binários substituíveis.
 
-O logo da empresa será pequeno, clássico, alinhado à esquerda e posicionado no topo do menu lateral.
+A PoC histórica de Windows Service foi descartada como arquitetura de produção apesar do sucesso técnico.
 
-### 2026-08-19 — O StepFlow será iniciado pelo técnico a partir de um ponto de entrada na rede interna
+## Client Windows
 
-**Status:** CONSOLIDADA COMO REQUISITO DE UX
+- **Tauri 2 + HTML/CSS/JavaScript modular**;
+- alvo inicial Windows 10/11 x64;
+- WebView2 como renderer;
+- PoC confirmou executável isolado sem Node/npm/Rust/Cargo em runtime;
+- Electron é contingência, não alternativa em avaliação ativa.
 
-O requisito consolidado é a experiência:
+## Launcher
 
-`ponto de entrada interno do StepFlow` → duplo clique → login → uso.
+- launcher Rust x64 portátil/transitório;
+- ponto de entrada interno → cópia Client versionada em `%LOCALAPPDATA%` → execução local → launcher encerra;
+- versões lado a lado e SHA-256;
+- sem instalador obrigatório/updater residente;
+- launcher não inicia remotamente o Host central.
 
-O endereço IP, hostname, nome do compartilhamento e subpasta reais ainda não estão definidos/confirmados.
+## Host
 
-Até que o ambiente corporativo seja conhecido, usar somente notação conceitual, por exemplo:
+- **Rust + Tokio/Axum + `rusqlite` bundled**;
+- Controller portátil na máquina central inicia Host como processo-filho;
+- readiness, instância única e shutdown gracioso obrigatórios;
+- sem processo residual;
+- primeiro start central depende de ação na máquina central ou mecanismo corporativo já existente/aprovado.
 
-`\\<HOST-OU-SERVIDOR-DA-EMPRESA>\<COMPARTILHAMENTO>\<PASTA-STEPFLOW>\`
+## Comunicação
 
-O exemplo `\\192.168.5.7\Arquivos\StepFlow\` usado anteriormente **não é uma configuração oficial** e não deve ser embutido em código ou tratado como requisito.
+- HTTP/JSON para API;
+- WebSocket para eventos;
+- contratos versionados inicialmente em `/api/v1`;
+- endpoint/configuração via `deployment.json` sem segredos;
+- handshake de compatibilidade antes do login;
+- primeira versão sem edição offline.
 
-A implementação técnica pode usar launcher/cópia local desde que preserve a experiência simples de acesso aprovada.
+## Autenticação e autorização
 
-### 2026-08-19 — Desenvolvimento atual e implantação corporativa são ambientes distintos
+- Argon2id para senhas;
+- sessão opaca server-side;
+- token somente em memória do Client inicialmente;
+- autorização por capacidade sempre no Host;
+- bootstrap do ADM principal somente em fluxo local/controlado;
+- desativar usuário em vez de excluir quando houver histórico.
 
-**Status:** CONSOLIDADA
+## Dados e histórico
 
-O projeto está sendo desenvolvido em um computador pessoal fora da LAN da empresa. Testes de infraestrutura interna, como SMB, Host real, permissões de rede e caminhos corporativos, só terão valor de validação definitiva quando realizados em ambiente conectado à rede da empresa e usando endereços reais confirmados.
+- SQLite local ao Host;
+- revisões de processo imutáveis;
+- `revision_no` técnico separado de `display_version`;
+- etapas/blocos estruturados por revisão;
+- migrations numeradas/versionadas;
+- auditoria append-only separada de logs;
+- arquivamento/desativação preferidos à exclusão destrutiva normal.
 
-Resultados de acesso a caminhos internos enquanto o desenvolvimento ocorrer fora da LAN devem ser classificados como `NÃO APLICÁVEL NESTE AMBIENTE`, e não como bloqueio do produto.
+## Concorrência
 
-Referência: `docs/00-governanca/contexto-ambientes.md`.
+- WAL;
+- um writer lógico coordenado;
+- fila bounded/backpressure;
+- revisão otimista obrigatória onde houver risco de perda concorrente;
+- conflitos não sobrescrevem automaticamente;
+- eventos somente pós-commit;
+- sem soft/hard lock inicial de edição;
+- dois Hosts não podem usar o mesmo data dir.
 
-### 2026-08-19 — A implantação no servidor seguirá o princípio Pocket / copy-deploy
+## Pendências vigentes
 
-**Status:** CONSOLIDADA COMO REQUISITO ARQUITETURAL
+### Bloco 8 — UI/UX
 
-O servidor Windows da empresa já executa outros serviços e não poderá ser remodelado livremente para receber o StepFlow.
+Especificar e aprovar telas críticas.
 
-A implantação deve buscar a menor interferência possível no ambiente. O cenário ideal é copiar/arrastar uma pasta pronta do StepFlow para uma pasta fixa do servidor e realizar apenas a configuração/inicialização mínima necessária.
+### Bloco 9 — checklist durante execução
 
-Consequências obrigatórias para as escolhas técnicas:
+Definir se as marcações são temporárias, locais, persistidas por usuário ou entidade formal de execução.
 
-- evitar instalação tradicional quando possível;
-- evitar dependências globais no servidor;
-- evitar alterações amplas em registro, PATH, políticas ou features do Windows;
-- evitar reinicialização do servidor em implantação/atualização normal;
-- não exigir Node.js, Rust, compiladores ou toolchain de desenvolvimento no servidor de produção;
-- favorecer binários/artefatos self-contained ou equivalentes;
-- manter configuração, dados e logs isolados do restante do sistema;
-- permitir atualização e rollback com substituição controlada de artefatos/pastas;
-- preservar os demais serviços existentes no servidor.
+### Bloco 10 — exportação
 
-Referência: `docs/03-arquitetura/implantacao-pocket.md`.
+Escolher arquitetura/bibliotecas para PDF, DOCX e impressão offline.
 
-### 2026-08-19 — Login interno simples continua obrigatório
+### Bloco 11 — backup/restore
 
-**Status:** CONSOLIDADA
+Fechar formato, retenção, validação e restauração segura.
 
-O sistema terá autenticação local para uso interno. Não há necessidade inicial de MFA, recuperação por email ou autenticação pública complexa.
+### Bloco 12 — estrutura/Fase 2
 
-Senhas não serão armazenadas em texto puro.
+Definir árvore oficial, scripts, contratos/testes e plano da fundação executável.
 
-### 2026-08-19 — Perfis padrão serão ADM, Gerência e Funcionário
+### Ambiente corporativo
 
-**Status:** CONSOLIDADA
+Confirmar Windows/WebView2, paths/SMB/permissões, hostname/porta, transporte HTTP/HTTPS, antivírus/EDR/firewall e mecanismo real de start do Controller central.
 
-- ADM: controle total;
-- Gerência: criação/edição de documentações e poderes administrativos delegados;
-- Funcionário: leitura/execução, sem edição da documentação oficial por padrão.
+## Decisões explicitamente superadas
 
-Gerência não deve poder criar/promover ADM ou alterar a autoridade do ADM principal sem futura decisão explícita.
-
-### 2026-08-19 — Usuários poderão editar dados do próprio perfil
-
-**Status:** CONSOLIDADA
-
-Cada conta pode editar avatar, nome de exibição, cargo e senha dentro das regras de autorização. Relacionamentos internos/históricos devem usar identificador estável, não apenas o nome exibido.
-
-### 2026-08-19 — Uso simultâneo por vários computadores é requisito obrigatório
-
-**Status:** CONSOLIDADA
-
-O projeto deve suportar múltiplas instâncias do Client utilizando a mesma base central sem corrupção ou sobrescrita silenciosa.
-
-### 2026-08-19 — Clientes não acessarão diretamente um SQLite compartilhado pela rede
-
-**Status:** CONSOLIDADA
-
-O SQLite será acessado por uma camada Host localizada junto aos dados. Clients não abrirão diretamente o mesmo `.sqlite` por SMB.
-
-### 2026-08-19 — Fila de escrita não substitui controle de revisão
-
-**Status:** CONSOLIDADA
-
-A arquitetura deve combinar ordenação/serialização das escritas necessárias com detecção de conflito baseada em revisão/versão, impedindo que uma edição antiga sobrescreva silenciosamente uma nova.
-
-### 2026-08-19 — Atualizações relevantes devem chegar aos clientes sem refresh manual desnecessário
-
-**Status:** CONSOLIDADA COMO REQUISITO FUNCIONAL
-
-O mecanismo técnico ainda será definido, mas alterações relevantes devem ser propagadas para as instâncias conectadas.
-
-### 2026-08-19 — Exportação para PDF e DOCX permanece no escopo do produto
-
-**Status:** CONSOLIDADA COMO REQUISITO DE PRODUTO
-
-O sistema deverá oferecer exportação para PDF e DOCX, além de impressão. A Fase 1 deverá validar a estratégia e as bibliotecas para implementar esse requisito de forma offline e manutenível. A existência da função não depende dessa validação; apenas sua solução técnica.
-
-O modelo exportável será separado da tela de execução.
-
-### 2026-08-19 — O estado marcado do checklist durante uma execução ainda não está definido
-
-**Status:** CONSOLIDADA COMO PENDÊNCIA DE PRODUTO
-
-O checklist faz parte da documentação de uma etapa. Porém, ainda será decidido se as marcações feitas pelo técnico durante o uso são apenas temporárias, locais por usuário/dispositivo, persistidas no Host ou registradas como uma entidade formal de execução.
-
-Nenhuma dessas alternativas deve ser implementada como padrão antes da decisão correspondente.
-
-### 2026-08-19 — O projeto começa por documentação e arquitetura
-
-**Status:** CONSOLIDADA
-
-Nenhuma implementação funcional ampla está autorizada antes do fechamento da fundação documental e do gate arquitetural correspondente.
-
-### 2026-08-19 — A Fase 0 foi concluída e a Fase 1 está autorizada
-
-**Status:** CONSOLIDADA
-
-A revisão cruzada da fundação documental foi concluída e registrada em `docs/05-progresso/revisao-cruzada-fase-0.md`.
-
-A próxima fase autorizada é **Fase 1 — Fechamento arquitetural e especificação**, conforme `docs/04-planejamento/plano-oficial-fase-1.md`.
-
-A Fase 1 autoriza investigação, especificação, decisões técnicas e provas descartáveis quando necessárias, mas não autoriza antecipar funcionalidades de negócio das fases seguintes.
-
----
-
-## Direções propostas que ainda exigem validação
-
-### 2026-08-19 — Tauri para o StepFlow Client
-
-**Status:** PROPOSTA / VALIDAÇÃO TÉCNICA PENDENTE
-
-Tauri é a direção atual para empacotar a UI HTML/CSS/JavaScript como aplicativo Windows, mas compatibilidade, runtime e distribuição ainda serão validados formalmente.
-
-### 2026-08-19 — Launcher de rede com execução local do Client
-
-**Status:** PROPOSTA / PROTÓTIPO PENDENTE
-
-Um ponto de entrada localizado no compartilhamento ou mecanismo equivalente da rede interna pode verificar versão, manter cópia local e iniciar o Client local, preservando a experiência de duplo clique para o técnico.
-
-O caminho físico real ainda será definido no ambiente corporativo.
-
-### 2026-08-19 — Canal de eventos em tempo real
-
-**Status:** PROPOSTA / TECNOLOGIA PENDENTE
-
-WebSocket ou solução equivalente será avaliada para atualização dos clientes.
-
-### 2026-08-20 — Bootstrap/orquestração do Host central sob demanda
-
-**Status:** PROPOSTA / MECANISMO PENDENTE
-
-O Host é parte consolidada da arquitetura lógica, mas seu disparo na máquina central precisa ocorrer sem serviço persistente. A solução deve permitir múltiplos Clients enquanto o Host estiver ativo e desligá-lo com segurança quando o StepFlow deixar de ser utilizado.
+- `\\192.168.5.7\Arquivos\StepFlow\` e similares: **exemplo histórico, nunca configuração oficial**;
+- Windows Service/auto-start para o Host: **rejeitado como padrão**;
+- Client rodando permanentemente via SMB: **substituído pelo launcher + cópia local**;
+- acesso direto dos Clients ao SQLite: **proibido**.
