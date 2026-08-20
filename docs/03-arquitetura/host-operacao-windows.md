@@ -1,92 +1,107 @@
 # StepFlow Host — Modelo Operacional no Windows
 
 **Data:** 2026-08-20  
-**Status:** DIREÇÃO RECOMENDADA / SUJEITA A UMA PROVA OPERACIONAL
+**Status:** REQUISITO CORRIGIDO / WINDOWS SERVICE PERSISTENTE REJEITADO COMO MODELO PADRÃO
 
-## 1. Contexto
+## 1. Correção de direção
 
-O Gate A do Bloco 2 validou que o Host em Rust pode executar de forma Pocket a partir de pasta própria, expondo HTTP e usando SQLite local sem depender de Node, npm, Rust, Cargo ou Visual Studio em runtime.
+Uma direção anterior deste documento recomendou um Windows Service persistente para manter o StepFlow Host continuamente disponível. Essa direção contrariava um requisito Pocket já consolidado pelo PO e está **revogada**.
 
-Resta fechar como o Host ficará continuamente disponível na máquina central.
+A prova com Windows Service realizada no PC de desenvolvimento permanece válida somente como evidência de viabilidade técnica do mecanismo. Ela **não autoriza** usar Windows Service persistente, serviço auto-start, Task Scheduler permanente ou processo residente como arquitetura padrão do StepFlow.
 
-## 2. Alternativas avaliadas
+## 2. Requisito operacional obrigatório
 
-### Processo normal iniciado manualmente
+No servidor/máquina central da empresa, o StepFlow deve buscar o modelo mais próximo possível de:
 
-Não é suficiente como solução principal porque depende de ação humana após reinício e pode deixar o StepFlow indisponível sem diagnóstico claro.
+```text
+pasta StepFlow copiada para o servidor
+        ↓
+usuário inicia o StepFlow
+        ↓
+processos necessários do StepFlow iniciam
+        ↓
+StepFlow é utilizado
+        ↓
+último uso/sessão do StepFlow é encerrado
+        ↓
+processos transitórios do StepFlow encerram
+        ↓
+nenhum processo StepFlow permanece consumindo recursos
+```
 
-### Inicialização por logon
+Consequências obrigatórias:
 
-Não é adequada ao Host central porque depende de sessão de usuário.
+- não instalar runtimes ou toolchains no servidor;
+- não registrar Windows Service persistente como requisito normal;
+- não configurar serviço auto-start;
+- não criar tarefa agendada permanente para manter Host ativo;
+- não alterar PATH global;
+- não depender de instalação tradicional;
+- não deixar Host, launcher, watchdog ou agente residente em segundo plano quando o StepFlow não estiver em uso;
+- manter consumo de CPU/memória do StepFlow praticamente zero quando não estiver em uso;
+- manter binários, configuração, dados, logs e backups dentro da árvore controlada do produto ou em paths explicitamente aprovados;
+- remoção deve ser próxima de encerrar processos e remover a pasta, preservando dados/backups quando aplicável.
 
-### Task Scheduler com Boot Trigger
+## 3. O que permanece validado
 
-Tecnicamente inicia no boot e não depende de logon, mas continua sendo uma tarefa agendada usada para manter um processo permanente. Exige registro administrativo e oferece um modelo de ciclo de vida menos natural para um daemon HTTP de longa duração.
+O Gate A do Bloco 2 validou que o Host em Rust pode:
 
-### Windows Service
+- executar a partir de pasta própria;
+- expor HTTP;
+- operar SQLite local;
+- persistir dados fora da pasta de binários;
+- encerrar de forma controlada;
+- executar sem Node.js, npm, Rust, Cargo ou Visual Studio no runtime.
 
-É o modelo nativo do Windows para processos de longa duração que precisam permanecer disponíveis independentemente de logon. O Service Control Manager oferece start/stop/status e início automático ou delayed-auto.
+A PoC posterior também validou que o mesmo tipo de Host pode integrar-se ao Service Control Manager. Essa capacidade fica registrada como contingência técnica, não como solução padrão.
 
-## 3. Direção recomendada
-
-Adotar **um único Windows Service do StepFlow Host** como exceção mínima e explicitamente justificada ao princípio de copy-deploy.
-
-A instalação do serviço deve ocorrer uma única vez por implantação e apontar para o executável mantido na pasta fixa do StepFlow.
-
-O serviço não autoriza:
-
-- instalar runtimes globais;
-- alterar PATH;
-- instalar banco externo;
-- habilitar features amplas do Windows;
-- exigir reboot;
-- espalhar binários fora da pasta do produto.
-
-## 4. Por que a exceção é aceitável
-
-O Host precisa iniciar sem usuário logado e permanecer ativo para autenticação, API, SQLite, concorrência e eventos.
-
-Um serviço Windows introduz somente um registro controlado no Service Control Manager e pode ser instalado/removido de forma explícita. Isso é mais previsível do que depender de login ou usar Task Scheduler para simular um daemon.
-
-## 5. Modelo conceitual da pasta
+## 4. Modelo conceitual de pasta
 
 ```text
 StepFlow\
 ├── app\
-│   └── StepFlowHost.exe
+│   ├── StepFlow.exe          # ponto de entrada/orquestrador a definir
+│   └── StepFlowHost.exe      # processo Host transitório
 ├── config\
 │   └── stepflow-host.toml
 ├── data\
 │   └── stepflow.sqlite
 ├── logs\
-├── backups\
-└── tools\
+└── backups\
 ```
 
 A localização física real permanece aberta até o ambiente corporativo ser conhecido.
 
-## 6. Regras operacionais propostas
+## 5. Questão arquitetural ainda aberta
 
-- binário substituível separadamente de `config`, `data`, `logs` e `backups`;
-- serviço aponta para caminho estável dentro da pasta StepFlow;
-- bind/porta vêm de configuração local, não de hardcode de ambiente;
-- logs operacionais vão para `logs`, sem depender do terminal;
-- shutdown deve responder corretamente ao stop do Service Control Manager;
-- atualização do binário exige parar o serviço, substituir/ativar a versão e reiniciar;
-- rollback deve permitir restaurar a versão anterior sem tocar no banco, salvo migration incompatível explicitamente tratada;
-- instalação/remoção do serviço será uma operação administrativa rara, não parte do uso diário.
+O requisito multiusuário continua obrigatório. Portanto, a Fase 1 ainda precisa fechar **como o primeiro Client dispara o Host na máquina central e como o último uso autoriza seu encerramento**, sem instalar serviço persistente e sem deixar processo residente.
 
-## 7. Próxima prova necessária
+Esse problema deve ser tratado como um problema de bootstrap/orquestração do Host sob demanda, não como justificativa automática para manter um daemon permanente.
 
-Antes de consolidar definitivamente o Windows Service:
+Possibilidades poderão ser estudadas, mas nenhuma está aprovada ainda:
 
-1. adaptar uma PoC descartável Rust para responder ao Service Control Manager;
-2. registrar o serviço apontando para pasta descartável;
-3. iniciar sem usuário interativo;
-4. validar `/health` e SQLite;
-5. executar `stop` e confirmar shutdown limpo;
-6. reiniciar o serviço;
-7. remover o registro do serviço sem deixar dependências;
-8. confirmar que os dados na pasta persistente permanecem preservados.
+- processo principal/orquestrador iniciado sob demanda na máquina central;
+- mecanismo de execução remota já existente e aprovado no ambiente corporativo;
+- desenho em que o ponto de entrada e o Host coexistam na própria máquina central quando o uso ocorrer nela;
+- outra solução transitória que não exija instalação nem processo residente.
 
-A prova deve ser feita no PC de desenvolvimento, não no servidor corporativo, e não valida ainda políticas reais da empresa.
+Não assumir que executar um `.exe` por SMB inicia esse processo no servidor: normalmente o processo executa na estação que o abriu. Esse detalhe deve ser resolvido explicitamente.
+
+## 6. Critério de aceite da solução final
+
+A solução do Host só poderá ser consolidada se demonstrar, ao mesmo tempo:
+
+1. uso simultâneo por vários Clients;
+2. SQLite acessado apenas pelo Host local aos dados;
+3. nenhum runtime/toolchain de desenvolvimento instalado no servidor;
+4. implantação baseada em copiar uma pasta pronta;
+5. nenhuma instalação/registro persistente desnecessário no Windows;
+6. início do Host somente quando necessário;
+7. encerramento controlado quando o StepFlow deixa de estar em uso;
+8. nenhum processo StepFlow residual após o encerramento;
+9. dados/config/logs preservados independentemente do ciclo de vida do binário;
+10. atualização/rollback por substituição controlada de artefatos.
+
+## 7. Regra de precedência
+
+Este documento corrige e substitui qualquer recomendação anterior de Windows Service persistente ou auto-start para o StepFlow Host.
