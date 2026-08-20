@@ -2,7 +2,7 @@
 
 **Atualização:** 2026-08-20
 
-Este arquivo registra apenas decisões vigentes e pendências atuais. Discussões, troubleshooting e propostas superadas permanecem no histórico Git.
+Este arquivo registra apenas decisões vigentes e pendências atuais. Discussões, troubleshooting, provas descartáveis e propostas superadas permanecem no histórico Git.
 
 ## Produto e UX
 
@@ -53,7 +53,7 @@ Gerência não administra ADM. Funcionário é leitura/execução por padrão. U
 
 - desenvolvimento atual ocorre fora da LAN corporativa;
 - IP, hostname, share e paths reais da empresa ainda não foram confirmados;
-- exemplos históricos de endereço são inválidos como configuração;
+- exemplos históricos de infraestrutura não são configuração;
 - testes de LAN/SMB feitos fora do ambiente real não validam nem bloqueiam a implantação corporativa.
 
 ## Pocket / máquina central
@@ -67,14 +67,12 @@ Gerência não administra ADM. Funcionário é leitura/execução por padrão. U
 - encerrado o uso, nenhum processo StepFlow deve permanecer ativo;
 - dados/config/logs/backups separados dos binários substituíveis.
 
-A PoC histórica de Windows Service foi descartada como arquitetura de produção apesar do sucesso técnico.
-
 ## Client Windows
 
 - **Tauri 2 + HTML/CSS/JavaScript modular**;
 - alvo inicial Windows 10/11 x64;
 - WebView2 como renderer;
-- PoC confirmou executável isolado sem Node/npm/Rust/Cargo em runtime;
+- prova técnica confirmou executável isolado sem Node/npm/Rust/Cargo em runtime;
 - Electron é contingência, não alternativa em avaliação ativa.
 
 ## Launcher
@@ -157,10 +155,3 @@ Definir árvore oficial, scripts, contratos/testes e plano da fundação execut�
 ### Ambiente corporativo
 
 Confirmar Windows/WebView2, paths/SMB/permissões, hostname/porta, transporte HTTP/HTTPS, antivírus/EDR/firewall e mecanismo real de start do Controller central.
-
-## Decisões explicitamente superadas
-
-- `\\192.168.5.7\Arquivos\StepFlow\` e similares: **exemplo histórico, nunca configuração oficial**;
-- Windows Service/auto-start para o Host: **rejeitado como padrão**;
-- Client rodando permanentemente via SMB: **substituído pelo launcher + cópia local**;
-- acesso direto dos Clients ao SQLite: **proibido**.

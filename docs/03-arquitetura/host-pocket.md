@@ -30,8 +30,6 @@ Controller iniciado sob demanda
 → nenhum processo residual
 ```
 
-A PoC histórica de Windows Service foi tecnicamente bem-sucedida, mas **não é arquitetura de produção** e não deve voltar a ser proposta como padrão sem mudança explícita do requisito pelo PO.
-
 ## Estrutura conceitual
 
 ```text

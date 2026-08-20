@@ -116,7 +116,7 @@ Não bloqueiam a documentação atual, mas devem ser validadas antes da implanta
 - [ ] exportação/impressão definidas;
 - [ ] backup/restore definidos;
 - [ ] estrutura oficial do repositório definida;
-- [ ] pendências não bloqueantes registradas;
+- [x] pendências não bloqueantes registradas;
 - [ ] plano da Fase 2 aprovado.
 
 ## Regra de execução
