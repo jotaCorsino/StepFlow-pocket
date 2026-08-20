@@ -8,6 +8,29 @@ Registrar decisões relevantes do projeto com data, status e consequência, pres
 
 ## Decisões consolidadas
 
+### 2026-08-20 — O Host será sob demanda; processo residente permanente é rejeitado
+
+**Status:** CONSOLIDADA COMO REQUISITO ARQUITETURAL
+
+O conceito Pocket exige mais do que copy-deploy. No servidor/máquina central, o StepFlow não deve permanecer consumindo recursos quando não estiver sendo utilizado.
+
+Consequências obrigatórias:
+
+- nenhum Windows Service persistente como solução padrão;
+- nenhum serviço auto-start;
+- nenhuma tarefa agendada, watchdog, tray agent ou daemon residente apenas para manter o StepFlow disponível;
+- processos StepFlow iniciam sob demanda quando o produto entra em uso;
+- quando o uso termina, todos os processos transitórios StepFlow devem encerrar de forma controlada;
+- quando fechado/sem uso, o consumo de CPU/memória do StepFlow deve tender a zero;
+- copiar/publicar a pasta pronta continua sendo o modelo de implantação desejado;
+- nenhuma instalação de Rust, Node.js, Visual Studio, SQLite Server ou toolchain no servidor.
+
+A PoC de Windows Service realizada no PC de desenvolvimento permanece apenas como evidência técnica descartável e **não é decisão de produção**.
+
+A questão ainda aberta é o bootstrap/orquestração do Host central sob demanda para múltiplos Clients.
+
+Referências: `docs/03-arquitetura/implantacao-pocket.md` e `docs/03-arquitetura/host-operacao-windows.md`.
+
 ### 2026-08-19 — O nome do aplicativo é StepFlow
 
 **Status:** CONSOLIDADA
@@ -140,8 +163,6 @@ Consequências obrigatórias para as escolhas técnicas:
 - permitir atualização e rollback com substituição controlada de artefatos/pastas;
 - preservar os demais serviços existentes no servidor.
 
-O formato exato do Host ainda será definido, mas qualquer alternativa que exija instalação invasiva deve ser considerada menos aderente ao conceito Pocket e precisa de justificativa explícita.
-
 Referência: `docs/03-arquitetura/implantacao-pocket.md`.
 
 ### 2026-08-19 — Login interno simples continua obrigatório
@@ -248,10 +269,8 @@ O caminho físico real ainda será definido no ambiente corporativo.
 
 WebSocket ou solução equivalente será avaliada para atualização dos clientes.
 
-### 2026-08-19 — StepFlow Host como processo/serviço leve e pouco invasivo
+### 2026-08-20 — Bootstrap/orquestração do Host central sob demanda
 
-**Status:** DIREÇÃO ARQUITETURAL / FORMATO FINAL PENDENTE
+**Status:** PROPOSTA / MECANISMO PENDENTE
 
-O Host é parte consolidada da arquitetura lógica. Tecnologia, empacotamento e modo de inicialização no Windows ainda precisam ser definidos.
-
-Qualquer alternativa deverá respeitar `docs/03-arquitetura/implantacao-pocket.md`: preferir execução a partir da pasta própria do produto, evitar runtime/toolchain global e minimizar alterações permanentes no servidor.
+O Host é parte consolidada da arquitetura lógica, mas seu disparo na máquina central precisa ocorrer sem serviço persistente. A solução deve permitir múltiplos Clients enquanto o Host estiver ativo e desligá-lo com segurança quando o StepFlow deixar de ser utilizado.
