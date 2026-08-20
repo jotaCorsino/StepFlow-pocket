@@ -1,60 +1,65 @@
 # F1-B2 Gate B — Prova Operacional do Host como Windows Service
 
 **Data:** 2026-08-20  
-**Status:** PRONTO PARA EXECUÇÃO PELO PO  
-**Ambiente:** PC pessoal de desenvolvimento, sessão `EARTH\Estudos`; operações do Service Control Manager exigem PowerShell elevado apenas no trecho administrativo.
+**Status:** CONCLUÍDA TECNICAMENTE / ARQUITETURA REJEITADA COMO PADRÃO  
+**Ambiente:** PC pessoal de desenvolvimento, sessão `EARTH\Estudos`; operações do Service Control Manager foram executadas em PowerShell elevado.
 
-## 1. Objetivo
+## 1. Resultado técnico
 
-Validar em uma única prova descartável que um Host Rust compatível com o Gate A pode operar como Windows Service nativo mantendo o princípio Pocket.
+A prova descartável foi concluída com sucesso:
 
-A prova deve validar:
+- build release concluído;
+- pasta `app` separada de `data` e `logs`;
+- serviço descartável registrado pelo Service Control Manager;
+- start/stop/status funcionaram;
+- `/health` respondeu;
+- SQLite persistiu dados;
+- restart preservou o banco;
+- remoção do registro do serviço preservou binário, dados e logs;
+- runtime não exigiu Node.js, npm, Rust, Cargo ou Visual Studio.
 
-1. build release fora do repositório;
-2. pasta `app` separada de `data` e `logs`;
-3. registro do serviço apontando para o executável da pasta Pocket;
-4. start/stop/status pelo Service Control Manager;
-5. `/health` e SQLite enquanto o serviço está ativo;
-6. shutdown limpo ao receber stop;
-7. restart;
-8. remoção do serviço sem remover dados;
-9. ausência de runtime/toolchain de desenvolvimento em produção.
+## 2. Reclassificação arquitetural
 
-Não há teste de reboot, LAN, firewall, autenticação ou WebSocket neste gate.
+Apesar do sucesso técnico, o Windows Service persistente **não atende ao requisito Pocket consolidado pelo PO** como modelo padrão.
 
-## 2. Tecnologia da prova
+O requisito correto é:
 
-Usar crate `windows-service` atual compatível com o toolchain, além de Axum/Tokio e `rusqlite` bundled.
+- copiar/publicar a pasta StepFlow no servidor;
+- não instalar runtimes ou componentes globais;
+- não registrar serviço persistente como requisito normal;
+- não deixar Host/agente/watchdog em segundo plano quando o StepFlow não estiver em uso;
+- iniciar os processos necessários quando o StepFlow for utilizado;
+- encerrar todos os processos transitórios do StepFlow quando o uso terminar;
+- manter consumo praticamente zero quando o produto estiver fechado.
 
-O executável será realmente service-aware; não usar NSSM, srvany ou wrapper externo.
+Portanto, o sucesso desta PoC prova somente que a tecnologia Rust pode integrar-se ao SCM se algum cenário futuro justificar essa contingência. **Não consolida Windows Service para produção.**
 
-## 3. Restrições
+## 3. Motivo da correção
 
-- não modificar `C:\dev\StepFlow`;
-- não instalar runtime ou ferramenta adicional no Windows;
-- não alterar PATH permanente;
-- não criar regra de firewall;
-- não testar bind LAN;
-- não registrar serviço com nome definitivo do produto;
-- não usar banco real;
-- não deixar o serviço registrado ao final;
-- não apagar `data` ou `logs` ao remover o serviço.
+Uma recomendação anterior interpretou disponibilidade contínua do Host como requisito superior ao ciclo de vida Pocket. Essa interpretação estava incorreta.
 
-## 4. Resultado de aceite
+O requisito de baixo impacto e ausência de processos residuais já existia como intenção do produto e deve prevalecer.
 
-O gate será aprovado se:
+## 4. Próxima questão válida do Bloco 2
 
-- o serviço for registrado e iniciado pelo SCM;
-- `/health` responder `ok`;
-- `/db-probe` criar/incrementar o banco na pasta persistente;
-- `sc stop` produzir encerramento limpo e status STOPPED;
-- o serviço puder iniciar novamente e o contador do banco persistir;
-- `sc delete` remover somente o registro do serviço;
-- binário, banco e logs permaneçam na pasta da PoC;
-- nenhuma dependência global seja exigida no runtime.
+Fechar o mecanismo de **Host central sob demanda**:
 
-## 5. Decisão após o gate
+```text
+primeiro uso do StepFlow
+        ↓
+iniciar Host na máquina central
+        ↓
+múltiplos Clients utilizam o mesmo Host
+        ↓
+último uso termina
+        ↓
+Host encerra com segurança
+        ↓
+nenhum processo StepFlow residual
+```
 
-Se aprovado, consolidar Windows Service como modelo padrão do StepFlow Host, com instalação administrativa rara e operação diária automática.
+O ponto crítico é descobrir como disparar o Host na máquina central sem instalar serviço persistente. Executar um `.exe` localizado em um compartilhamento SMB normalmente executa o processo na estação cliente, portanto esse bootstrap precisa de solução explícita.
 
-Se falhar por comportamento real do serviço/SCM, revisar a decisão antes de abrir novos testes. Não iniciar sequência de microdiagnósticos.
+## 5. Regra de eficiência
+
+Não abrir nova sequência de microprovas. A próxima etapa deve primeiro analisar e escolher uma estratégia operacional que satisfaça simultaneamente Pocket e multiusuário; somente depois executar uma prova pequena e conclusiva, se necessária.
