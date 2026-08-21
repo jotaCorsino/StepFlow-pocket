@@ -22,7 +22,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis som
 | 5 | Autenticação/autorização | CONCLUÍDO NO NÚCLEO / PARÂMETROS PENDENTES | `03-arquitetura/autenticacao-sessao-autorizacao.md` |
 | 6 | Dados/schema/migrations | CONCLUÍDO | `03-arquitetura/modelo-dados-schema-fase-1.md` |
 | 7 | Concorrência/eventos | CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
-| 8 | UI/UX | PRÓXIMO | `02-telas/README.md` |
+| 8 | UI/UX | EM ANDAMENTO | `02-telas/README.md` |
 | 9 | Checklist durante execução | PENDENTE | decisão de produto |
 | 10 | Exportação/impressão | PENDENTE | arquitetura técnica |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
@@ -47,6 +47,8 @@ Documentar/aprovar antes do código as superfícies críticas:
 13. estados transversais de erro/loading/conflito/Host indisponível.
 
 Usar `docs/templates/template-analise-de-tela.md`. Aparência só vira contrato quando aprovada pelo PO.
+
+**Estado atual do Bloco 8:** `docs/02-telas/01-login.md` está em análise/proposta para aprovação do PO. Nenhuma UI de produção foi criada.
 
 No Bloco 8, telas de backup/exportação fecham apenas **UX, fluxo, estados e permissões visíveis**. Estratégia técnica de exportação pertence ao Bloco 10 e estratégia técnica de backup/restore ao Bloco 11. A tela deve registrar dependências sem inventar solução técnica.
 
