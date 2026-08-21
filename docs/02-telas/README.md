@@ -17,9 +17,10 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `05-leitor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `06-editor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `07-historico-revisoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 08 — Lista/Pesquisa de Atendimentos**.
+- `08-lista-pesquisa-atendimentos.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 09 — Atendimento/Execução + Equipamento**.
 
-A Tela 08 ainda não está em análise neste checkpoint.
+A Tela 09 ainda não está em análise neste checkpoint.
 
 ## Domínio operacional aprovado
 
@@ -48,8 +49,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 5. Leitor em formato livro — consolidado;
 6. Editor de Processo + categorias — consolidado;
 7. Histórico/Revisões — consolidado;
-8. Lista/pesquisa de Atendimentos — **próximo**;
-9. Atendimento/execução + ficha do equipamento;
+8. Lista/pesquisa de Atendimentos — consolidado;
+9. Atendimento/execução + ficha do equipamento — **próximo**;
 10. Usuários/permissões;
 11. Meu perfil;
 12. Configurações + gestão de categorias;
@@ -124,6 +125,19 @@ Fonte: `06-editor-processo.md`.
 - diff visual não é obrigatório na primeira versão.
 
 Fonte: `07-historico-revisoes.md`.
+
+## Lista/Pesquisa de Atendimentos — consolidado
+
+- lista/tabela compacta;
+- campo único de busca por código de atendimento, OS/referência, cliente/solicitante, equipamento, serial, patrimônio ou MAC;
+- filtros iniciais `Responsável` + `Período`;
+- equipamento aparece apenas como resumo na lista;
+- linha abre a futura Tela 09;
+- retorno preserva busca/filtros/ordenação/posição quando possível;
+- não criar coluna/filtro `Status` antes do lifecycle do Bloco 9;
+- mais recentes primeiro, com timestamp exato definido somente no Bloco 9.
+
+Fonte: `08-lista-pesquisa-atendimentos.md`.
 
 ## Limite do Bloco 8
 
