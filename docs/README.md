@@ -1,6 +1,6 @@
 # Documentação do StepFlow Pocket
 
-Esta pasta contém apenas a documentação ativa necessária para entender e evoluir o projeto. Troubleshooting concluído, tarefas antigas e provas descartáveis devem ser consultados pelo histórico Git quando necessário, não mantidos como documentos vigentes.
+Esta pasta contém a documentação ativa necessária para entender e evoluir o projeto. O `README.md` da raiz funciona como **painel resumido de acompanhamento**, mas não substitui as fontes de decisão abaixo.
 
 ## Precedência
 
@@ -13,13 +13,9 @@ Em caso de divergência durante uma tarefa:
 5. enunciado da tarefa, dentro das decisões vigentes;
 6. material histórico no Git.
 
-O enunciado autoriza o escopo, mas não revoga silenciosamente decisão consolidada. Para alterar uma decisão vigente, a tarefa deve declarar explicitamente a nova decisão aprovada pelo PO e atualizar os documentos afetados.
-
-Ambiguidade relevante volta ao PO/Assistente; não é autorização para o executor escolher sozinho.
+O enunciado autoriza escopo, mas não revoga decisão consolidada. Proposta não pode ser implementada como decisão sem aprovação do PO.
 
 ## Leitura eficiente para Codex
-
-O Codex não precisa reler toda a governança a cada tarefa.
 
 Sempre:
 
@@ -36,7 +32,7 @@ Conforme impacto:
 - contexto de ambientes;
 - documento técnico relacionado.
 
-`metodo-padrao-trabalho-assistido.md` e `politica-capacidade-codex.md` orientam principalmente PO/Assistente e só precisam ser lidos pelo Codex quando a tarefa tratar dessas políticas.
+`metodo-padrao-trabalho-assistido.md` e `politica-capacidade-codex.md` orientam principalmente PO/Assistente.
 
 ## Índice vigente
 
@@ -44,53 +40,59 @@ Conforme impacto:
 
 - `contexto-ambientes.md` — sessão normal do PO, sandbox Codex e ambiente corporativo;
 - `metodo-padrao-trabalho-assistido.md` — processo PO + Assistente + Codex;
-- `politica-capacidade-codex.md` — seleção de modelo/raciocínio antes de tarefas Codex.
+- `politica-capacidade-codex.md` — seleção de modelo/raciocínio.
 
-Regras específicas e obrigatórias de execução ficam em `../AGENTS.md`, evitando duplicação.
+Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Produto — `01-produto`
 
-- `visao-geral.md` — propósito, usuários, requisitos e limites do StepFlow.
+- `visao-geral.md` — propósito, usuários, requisitos e limites;
+- `categorizacao-atendimentos-equipamentos.md` — categorização e domínio `Procedimento × Atendimento × Equipamento`, já aprovados conceitualmente, além das pendências dos Blocos 9/10.
 
 ### Telas — `02-telas`
 
-- `README.md` — mapa das telas, limites e ordem de especificação do Bloco 8.
-
-As especificações individuais serão criadas apenas conforme forem analisadas/aprovadas.
+- `README.md` — mapa/limites do Bloco 8;
+- `01-login.md` — Login consolidado;
+- `02-shell-sidebar.md` — Shell consolidado;
+- `03-dashboard.md` — Dashboard consolidado;
+- `04-lista-pesquisa-processos.md` — Lista/Pesquisa consolidada;
+- próxima especificação: Leitor em formato livro.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão consolidada Client/Launcher/Host/Data;
-- `implantacao-pocket.md` — requisitos inegociáveis de implantação e ciclo de vida;
+- `arquitetura-vigente.md` — arquitetura consolidada;
+- `implantacao-pocket.md` — implantação/ciclo de vida;
 - `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
-- `host-pocket.md` — tecnologia, Controller, Host, ciclo de vida, paths, shutdown e atualização;
-- `launcher-distribuicao-client.md` — cópia local/versionamento do Client;
-- `comunicacao-client-host.md` — HTTP/JSON, WebSocket e compatibilidade;
-- `autenticacao-sessao-autorizacao.md` — decisões consolidadas e parâmetros ainda pendentes de autenticação/permissões;
-- `modelo-dados-schema-fase-1.md` — schema conceitual, revisões e migrations;
-- `concorrencia-fila-conflitos-eventos.md` — writer, fila, conflitos e eventos.
+- `host-pocket.md` — Controller/Host;
+- `launcher-distribuicao-client.md` — distribuição local do Client;
+- `comunicacao-client-host.md` — HTTP/JSON/WebSocket;
+- `autenticacao-sessao-autorizacao.md` — autenticação e parâmetros pendentes;
+- `modelo-dados-schema-fase-1.md` — schema conceitual consolidado, incluindo extensão operacional;
+- `concorrencia-fila-conflitos-eventos.md` — writer/fila/conflitos/eventos.
 
 ### Planejamento — `04-planejamento`
 
-- `roadmap.md` — fases do projeto;
-- `plano-oficial-fase-1.md` — estado dos blocos, gates e limites da fase atual;
-- `tarefas-codex/README.md` — lista somente de tarefas Codex ativas. Tarefas concluídas são removidas da árvore ativa e permanecem no histórico Git.
+- `roadmap.md` — fases;
+- `plano-oficial-fase-1.md` — estado/gates/pendências;
+- `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
 
 - `registro-de-decisoes.md` — decisões vigentes e pendências;
 - `changelog-projeto.md` — marcos relevantes;
-- `diario-de-progresso.md` — registro cronológico histórico; não é fonte superior de decisão;
-- `revisao-cruzada-fase-0.md` — evidência histórica do gate da Fase 0, mantida por referência do diário.
+- `diario-de-progresso.md` — histórico; não é fonte superior de decisão;
+- `revisao-cruzada-fase-0.md` — evidência histórica da Fase 0.
 
 ### Templates — `templates`
 
 - `template-analise-de-tela.md`;
 - `template-preflight-capacidade-codex.md`;
-- `template-tarefa-codex.md` — inclui base Git, proteção do working tree e regras de parada.
+- `template-tarefa-codex.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento. Blocos 0–7 encerrados no núcleo arquitetural; parâmetros operacionais explicitamente pendentes continuam bloqueados para implementação até decisão. Próximo: Bloco 8 — UI/UX.**
+**Fase 1 em andamento; Bloco 8 em execução. Telas 01–04 consolidadas. Próxima: Tela 05 — Leitor em formato livro.**
 
-Não há código funcional oficial ainda.
+A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas e identidade interna de equipamento estão aprovadas conceitualmente. Lifecycle/permissões/checklist permanecem para o Bloco 9; formato técnico da ficha compacta, para o Bloco 10.
+
+Não há código funcional oficial.

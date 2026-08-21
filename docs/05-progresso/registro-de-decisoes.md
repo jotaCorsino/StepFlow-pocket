@@ -2,23 +2,57 @@
 
 **Atualização:** 2026-08-21
 
-Este arquivo registra apenas decisões vigentes e pendências atuais. Discussões, troubleshooting, provas descartáveis e propostas superadas permanecem no histórico Git.
+Este arquivo registra decisões vigentes e pendências atuais. Propostas não aprovadas ficam explicitamente identificadas como **PROPOSTA**, nunca como decisão.
 
 ## Produto e UX
 
-### Nome e propósito
+### Nome e propósito — consolidado
 
 - produto: **StepFlow**;
-- aplicação interna para documentação e execução guiada de processos técnicos;
+- aplicação interna para documentação e execução guiada de procedimentos técnicos;
+- uso não restrito à manutenção de computadores;
+- deve acomodar manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias e outros procedimentos internos;
 - evitar burocracia e campos sem valor operacional;
 - etapas funcionam como páginas de manual/livro;
 - sidebar esquerda, logo pequeno no topo esquerdo;
 - blocos copiáveis usam ícone discreto;
-- PDF, DOCX e impressão são requisitos obrigatórios.
+- PDF, DOCX e impressão são requisitos da documentação.
 
-### Processo documental
+### Categorização e domínio operacional — consolidado em 2026-08-21
 
-Campos principais:
+Ficam aprovados:
+
+- sistema de categorias configuráveis para procedimentos;
+- um procedimento pode possuir múltiplas categorias simples;
+- sem taxonomia hierárquica complexa na primeira versão;
+- separação entre `Procedimento`, `Atendimento/Execução` e `Equipamento`;
+- `Atendimentos` como área operacional própria no Client;
+- equipamento é opcional e reutilizável entre atendimentos;
+- equipamento possui identidade interna estável/código StepFlow próprio;
+- MAC, serial, patrimônio, cliente e OS/referência são atributos de busca, não identidade canônica exclusiva;
+- um atendimento pode utilizar múltiplos procedimentos;
+- atendimento preserva vínculo com a revisão do procedimento realmente utilizada;
+- manutenção de computador/notebook pode registrar nome, CPU, RAM, armazenamento, SO/versão, serial/patrimônio/MAC, saúde da bateria quando aplicável e observações;
+- atendimento pode ser relacionado a cliente/solicitante e ordem de serviço/referência externa;
+- deve existir resumo do trabalho/procedimentos realizados;
+- deve existir ficha compacta imprimível para anexação física ao equipamento;
+- a nova capacidade não transforma o produto em CRM, estoque, RMM, financeiro ou sistema completo de chamados.
+
+Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
+
+Pendentes:
+
+- lifecycle/status exatos do atendimento;
+- permissões operacionais;
+- formato dos códigos legíveis;
+- comportamento do checklist/progresso;
+- regras de edição/reabertura após conclusão;
+- layout/tamanho físico e formato final da ficha compacta;
+- necessidade de PDF específico da ficha além da impressão direta.
+
+### Procedimento documental
+
+Campos principais continuam:
 
 - Código;
 - Título;
@@ -29,8 +63,23 @@ Campos principais:
 - Objetivo;
 - Observações;
 - Pré-requisitos;
+- Categorias;
 - Etapas;
 - Histórico.
+
+### Lista/Pesquisa de Processos — consolidado em 2026-08-21
+
+- visualização padrão em lista/tabela compacta;
+- busca por Código, Título ou termo documental;
+- filtros principais por Categoria e Área;
+- filtro Status somente para perfis que realmente precisem trabalhar com estados diferentes;
+- categorias permitem seleção múltipla simples com semântica **OU** inicialmente;
+- categorias aparecem como labels/chips discretos;
+- ação principal abre o leitor, não o editor;
+- ações administrativas ficam contextuais;
+- `Arquivar` é a operação normal em vez de `Excluir`;
+- retorno do leitor preserva busca/filtros;
+- busca documental de `Processos` permanece separada da busca operacional de `Atendimentos`.
 
 ### Perfis
 
@@ -40,150 +89,154 @@ Campos principais:
 
 Gerência não administra ADM. Funcionário é leitura/execução por padrão. Usuário pode editar avatar, nome de exibição, cargo e senha dentro das regras.
 
+A matriz exata para categorias/equipamentos/atendimentos será fechada no Bloco 9.
+
 ## Governança
 
 - GitHub é a fonte principal de verdade;
 - método PO + Assistente + Codex;
 - uma tarefa por vez;
-- toda tarefa Codex exige pré-flight de modelo/raciocínio separado do prompt;
-- `AGENTS.md` é a regra operacional superior para agentes;
-- o prompt da tarefa autoriza escopo, mas não revoga silenciosamente decisão consolidada;
-- mudança de decisão exige indicação explícita de aprovação do PO e atualização dos documentos vigentes afetados;
-- toda tarefa Codex que altere arquivos deve declarar branch/base e commit SHA esperado;
-- alteração preexistente no working tree pertence ao PO/outro fluxo e não pode ser resetada, stashada, limpa, sobrescrita nem incorporada à tarefa;
-- se a base Git estiver diferente ou um arquivo necessário já estiver modificado, o Codex para e reporta;
-- Fase 1 está em andamento; Blocos 0–7 concluídos no núcleo arquitetural; Bloco 8 é o próximo.
+- toda tarefa Codex exige pré-flight separado do prompt;
+- `AGENTS.md` é regra operacional superior;
+- prompt autoriza escopo, mas não revoga decisão consolidada;
+- mudança de decisão exige aprovação explícita do PO + atualização documental;
+- tarefa Codex que altera arquivos declara branch/base + SHA;
+- alteração preexistente no working tree pertence ao PO/outro fluxo;
+- base divergente ou arquivo necessário já modificado faz Codex parar/reportar;
+- Fase 1 em andamento; Bloco 8 em execução.
 
 ## Ambientes
 
-- desenvolvimento atual ocorre fora da LAN corporativa;
-- sessão Windows normal do PO e sandbox Codex são contextos distintos;
-- limitação específica do sandbox Codex não vira requisito do StepFlow;
-- Codex não deve alterar ACL, Schannel, registro, PATH global ou segurança para reparar seu ambiente;
-- operações que realmente dependam de credenciais, elevação, Internet confiável ou configuração global devem ser reportadas para execução controlada na sessão normal do PO;
-- IP, hostname, share e paths reais da empresa ainda não foram confirmados;
-- exemplos históricos de infraestrutura não são configuração;
-- testes de LAN/SMB feitos fora do ambiente real não validam nem bloqueiam a implantação corporativa.
+- desenvolvimento atual fora da LAN corporativa;
+- sessão normal do PO e sandbox Codex são contextos distintos;
+- limitação do sandbox não vira requisito;
+- Codex não altera ACL/Schannel/registro/PATH global/segurança para reparar ambiente;
+- operações que exigem credenciais/elevação/Internet confiável/configuração global são reportadas para sessão normal do PO;
+- infraestrutura real da empresa ainda não confirmada;
+- exemplos históricos não são configuração;
+- testes LAN/SMB fora do ambiente real não validam nem bloqueiam implantação.
 
 ## Pocket / máquina central
 
-**Consolidado:** implantação por pasta pronta, com mínimo impacto no Windows.
-
+- implantação por pasta pronta;
 - nenhuma toolchain/runtime de desenvolvimento exigida na máquina central;
 - nenhum Windows Service StepFlow persistente;
-- nenhum auto-start, Task Scheduler, watchdog, tray agent ou daemon StepFlow como padrão;
-- Controller/Host iniciam sob demanda;
-- encerrado o ciclo central, nenhum processo StepFlow deve permanecer ativo;
-- dados/config/logs/backups separados dos binários substituíveis.
+- nenhum auto-start, Task Scheduler, watchdog, tray agent ou daemon como padrão;
+- Controller/Host sob demanda;
+- encerrado o ciclo central, nenhum processo StepFlow permanece ativo;
+- dados/config/logs/backups separados dos binários.
 
 ## Client Windows
 
-- **Tauri 2 + HTML/CSS/JavaScript modular**;
+- Tauri 2 + HTML/CSS/JavaScript modular;
 - alvo inicial Windows 10/11 x64;
-- WebView2 como renderer;
-- prova técnica confirmou executável isolado sem Node/npm/Rust/Cargo em runtime;
-- Electron é contingência, não alternativa em avaliação ativa.
+- WebView2;
+- executável isolado sem toolchain no runtime;
+- Electron apenas contingência.
 
 ## Launcher
 
 - launcher Rust x64 portátil/transitório;
-- ponto de entrada interno → cópia Client versionada em `%LOCALAPPDATA%` → execução local → launcher encerra;
-- versões lado a lado e SHA-256;
-- sem instalador obrigatório/updater residente;
-- launcher não inicia remotamente o Host central.
+- ponto de entrada interno → Client versionado em `%LOCALAPPDATA%` → execução local → launcher encerra;
+- versões lado a lado + SHA-256;
+- sem updater residente;
+- launcher não inicia remotamente Host central.
 
 ## Host
 
-- **Rust + Tokio/Axum + `rusqlite` bundled**;
-- Controller portátil na máquina central inicia Host como processo-filho;
-- readiness, instância única e shutdown gracioso obrigatórios;
-- ciclo de vida central pertence ao Controller;
-- fechar um Client individual não encerra o Host central;
-- encerrar o Controller/ciclo central solicita shutdown gracioso do Host;
-- auto-shutdown por último Client ou timeout **não está consolidado** e não pode ser implementado por suposição;
-- primeiro start central depende de ação na máquina central ou mecanismo corporativo já existente/aprovado.
+- Rust + Tokio/Axum + `rusqlite` bundled;
+- Controller inicia Host como filho;
+- readiness, instância única e shutdown gracioso;
+- ciclo central pertence ao Controller;
+- fechar Client individual não encerra Host;
+- auto-shutdown por último Client/timeout não consolidado;
+- primeiro start central depende de ação local ou mecanismo corporativo existente/aprovado.
 
 ## Comunicação
 
-- HTTP/JSON para API;
-- WebSocket para eventos;
-- contratos versionados inicialmente em `/api/v1`;
-- endpoint/configuração via `deployment.json` sem segredos;
+- HTTP/JSON + WebSocket;
+- contratos inicialmente `/api/v1`;
+- `deployment.json` sem segredos;
 - handshake de compatibilidade antes do login;
 - primeira versão sem edição offline.
 
-## Autenticação e autorização
+## Autenticação/autorização
 
 Consolidado:
 
-- Argon2id para senhas;
+- Argon2id;
 - sessão opaca server-side;
 - token somente em memória do Client inicialmente;
-- autorização por capacidade sempre no Host;
-- bootstrap do ADM principal somente em fluxo local/controlado;
-- desativar usuário em vez de excluir quando houver histórico.
+- autorização Host-side;
+- bootstrap ADM local/controlado;
+- desativação preferida à exclusão quando houver histórico.
 
-Ainda não são contratos definitivos de implementação:
+Pendentes:
 
-- custo exato do Argon2id;
-- tamanho mínimo final de senha;
-- tempos finais de expiração da sessão;
-- permissão da Gerência para configuração da empresa;
-- permissão da Gerência para backup.
-
-Esses itens precisam de decisão explícita antes da implementação correspondente.
+- custo exato Argon2id;
+- senha mínima final;
+- expiração de sessão;
+- permissão da Gerência para configuração/backup;
+- permissões de categorização/equipamentos/atendimentos.
 
 ## Dados e histórico
 
+Consolidado:
+
 - SQLite local ao Host;
-- revisões de processo imutáveis;
-- `revision_no` técnico separado de `display_version`;
-- etapas/blocos estruturados por revisão;
-- migrations numeradas/versionadas;
-- auditoria append-only separada de logs;
-- arquivamento/desativação preferidos à exclusão destrutiva normal.
+- revisões de procedimento imutáveis;
+- `revision_no` separado de `display_version`;
+- migrations versionadas;
+- auditoria append-only;
+- arquivamento/desativação preferidos à exclusão destrutiva;
+- categorias, equipamentos e atendimentos fazem parte da extensão conceitual aprovada do schema;
+- atendimento preserva a revisão de procedimento utilizada;
+- MAC não é chave canônica do equipamento.
 
 ## Concorrência
 
 - WAL;
-- um writer lógico coordenado;
+- writer lógico coordenado;
 - fila bounded/backpressure;
-- revisão otimista obrigatória onde houver risco de perda concorrente;
+- revisão otimista quando houver risco de perda;
 - conflitos não sobrescrevem automaticamente;
-- eventos somente pós-commit;
-- sem soft/hard lock inicial de edição;
-- dois Hosts não podem usar o mesmo data dir.
+- eventos pós-commit;
+- sem soft/hard lock inicial;
+- dois Hosts não usam o mesmo data dir;
+- categorias/equipamentos/atendimentos seguem o mesmo princípio de controle otimista quando necessário.
 
-## Fase 1 / limites de implementação
+## Bloco 8 — UI/UX
 
-- não criar scaffold oficial, árvore runtime definitiva ou código de negócio antes do Bloco 12/Fase 2;
-- PoC na Fase 1 só quando explicitamente autorizada e descartável;
-- Bloco 8 fecha UX/fluxos/estados, mas não escolhe tecnologia de exportação nem mecanismo técnico de backup;
-- Dashboard faz parte da sequência obrigatória de análise do Bloco 8;
-- parâmetros marcados como `PROPOSTA`, `PENDENTE` ou equivalentes não podem ser transformados em implementação definitiva pelo executor.
+- Login consolidado;
+- Shell consolidado, incluindo `Atendimentos`;
+- Dashboard consolidado em direção enxuta, sem KPIs/gráficos;
+- Lista/Pesquisa de Processos consolidada com categorização;
+- próxima superfície: **Leitor em formato livro**;
+- mapa de telas inclui Atendimento/Equipamento;
+- nenhuma UI de produção criada.
 
 ## Pendências vigentes
 
-### Bloco 8 — UI/UX
+### Bloco 8
 
-Especificar e aprovar telas críticas, incluindo a UX de encerramento central quando houver Clients conectados.
+Continuar pela Tela 05 — Leitor em formato livro — e depois Editor/Histórico/Atendimentos e demais superfícies.
 
-### Bloco 9 — checklist durante execução
+### Bloco 9
 
-Definir se as marcações são temporárias, locais, persistidas por usuário ou entidade formal de execução.
+Fechar lifecycle, checklist/progresso, conclusão/reabertura, concorrência/histórico específicos e matriz operacional de permissões.
 
-### Bloco 10 — exportação
+### Bloco 10
 
-Escolher arquitetura/bibliotecas para PDF, DOCX e impressão offline.
+Fechar tecnologia/formato da ficha compacta, além de PDF/DOCX/impressão dos procedimentos.
 
-### Bloco 11 — backup/restore
+### Bloco 11
 
-Fechar formato, retenção, validação e restauração segura.
+Backup/restore incluindo categorias, equipamentos e atendimentos.
 
-### Bloco 12 — estrutura/Fase 2
+### Bloco 12
 
-Fechar parâmetros operacionais ainda necessários à implementação, definir árvore oficial, scripts, contratos/testes e plano da fundação executável.
+Parâmetros finais, árvore oficial, scripts, contratos/testes e plano da Fase 2.
 
 ### Ambiente corporativo
 
-Confirmar Windows/WebView2, paths/SMB/permissões, hostname/porta, transporte HTTP/HTTPS, antivírus/EDR/firewall e mecanismo real de start do Controller central.
+Confirmar Windows/WebView2, SMB/permissões, hostname/porta, HTTP/HTTPS, antivírus/EDR/firewall e mecanismo real de start do Controller.

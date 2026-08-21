@@ -1,35 +1,48 @@
 # Roadmap — StepFlow Pocket
 
 **Status:** FASE 1 EM ANDAMENTO  
-**Atualização:** 2026-08-20
+**Atualização:** 2026-08-21
 
 ## Fase 0 — Fundação documental e governança
 
 **CONCLUÍDA em 2026-08-19.**
 
-Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e templates foram estabelecidos. O histórico detalhado permanece no Git e no diário.
+Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e templates foram estabelecidos.
 
 ## Fase 1 — Fechamento arquitetural e especificação
 
 **EM ANDAMENTO.**
 
-Blocos concluídos:
+Núcleo arquitetural já fechado:
 
-- Client/Tauri e compatibilidade Windows;
+- Client/Tauri e Windows;
 - Host Pocket sob demanda;
-- launcher e atualização do Client;
-- comunicação HTTP/JSON + WebSocket;
-- autenticação/sessão/autorização;
+- launcher/update;
+- HTTP/JSON + WebSocket;
+- autenticação/sessão/autorização no núcleo;
 - modelo de dados/migrations/histórico;
-- concorrência/fila/conflitos/eventos.
+- concorrência/fila/conflitos/eventos;
+- extensão conceitual `Procedimento × Atendimento/Execução × Equipamento`;
+- categorias configuráveis/múltiplas e identidade interna de equipamento.
 
-Próximos blocos:
+Bloco atual: **UI/UX**.
 
-1. UI/UX;
-2. comportamento do checklist durante execução;
-3. exportação PDF/DOCX/impressão;
-4. backup/restore;
-5. estrutura oficial do repositório e plano da Fase 2.
+No Bloco 8 já estão consolidados:
+
+- Login;
+- Shell/sidebar com `Atendimentos`;
+- Dashboard enxuto;
+- Lista/Pesquisa de Processos com categorização.
+
+Próxima superfície: **Leitor em formato livro**.
+
+Próximos blocos da Fase 1:
+
+1. concluir UI/UX;
+2. fechar execução operacional/Atendimentos + checklist;
+3. fechar exportação PDF/DOCX/impressão + ficha compacta;
+4. fechar backup/restore;
+5. fechar estrutura oficial e plano da Fase 2.
 
 Detalhes em `plano-oficial-fase-1.md`.
 
@@ -37,17 +50,15 @@ Detalhes em `plano-oficial-fase-1.md`.
 
 **PENDENTE.**
 
-Criar somente a fundação real:
-
-- árvore oficial de Client/launcher/Controller/Host;
+- árvore oficial Client/launcher/Controller/Host;
 - builds reproduzíveis;
 - configuração de desenvolvimento;
-- comunicação mínima e health/readiness;
+- comunicação mínima + health/readiness;
 - SQLite + migrations iniciais;
 - logging mínimo;
 - testes de fundação.
 
-Gate: Client abre, Host Pocket inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build limpo passa.
+Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build limpo passa.
 
 ## Fase 3 — Autenticação, usuários e shell
 
@@ -59,38 +70,46 @@ Gate: Client abre, Host Pocket inicia sob demanda, comunicação mínima funcion
 - perfil/avatar;
 - shell/sidebar;
 - configuração básica da empresa;
-- autorização real no Host.
+- autorização Host-side.
 
-## Fase 4 — Núcleo documental de processos
+## Fase 4 — Núcleo documental de procedimentos
 
 **PENDENTE.**
 
 - lista/pesquisa;
+- categorização;
 - criação/edição/arquivamento;
-- etapas e blocos estruturados;
+- etapas/blocos;
 - histórico/revisões;
 - permissões;
 - conflitos de revisão.
 
-## Fase 5 — Experiência de execução em formato livro
+## Fase 5 — Experiência de execução e registro operacional
 
 **PENDENTE.**
 
-- páginas/etapas;
-- navegação e progresso;
+- páginas/etapas em formato livro;
+- navegação/progresso;
 - passos/alertas/blocos copiáveis;
 - checklist conforme decisão da Fase 1;
+- Atendimentos;
+- equipamento opcional;
+- busca/lista operacional;
+- resumo do trabalho;
+- vínculo à revisão executada;
+- ficha compacta conforme contrato dos Blocos 8/10;
 - estados de UI.
 
 ## Fase 6 — Multiusuário em ambiente real
 
 **PENDENTE.**
 
-- testes com múltiplos Clients;
-- conflitos e fila;
+- múltiplos Clients;
+- conflitos/fila;
 - eventos/reconexão;
-- comportamento de Host indisponível;
-- validação na LAN corporativa quando disponível.
+- Host indisponível;
+- concorrência dos registros operacionais;
+- validação LAN corporativa.
 
 ## Fase 7 — Exportação e identidade
 
@@ -99,31 +118,34 @@ Gate: Client abre, Host Pocket inicia sob demanda, comunicação mínima funcion
 - PDF;
 - DOCX;
 - impressão;
-- template e identidade da empresa;
-- validação em leitores esperados.
+- template/identidade da empresa;
+- ficha compacta de atendimento/equipamento;
+- validação em leitores/impressoras esperados.
 
 ## Fase 8 — Distribuição Pocket, backup e operação
 
 **PENDENTE.**
 
-- pacote da máquina central por pasta, com Controller/Host sob demanda;
-- launcher publicado na rede e Client local versionado;
-- backup/restore;
-- logs de diagnóstico;
+- pacote central por pasta com Controller/Host sob demanda;
+- launcher em rede + Client local versionado;
+- backup/restore incluindo categorias, equipamentos e atendimentos;
+- logs;
 - documentação de implantação;
 - validação sem Internet e em PCs corporativos.
 
-Não inclui instalar serviço StepFlow persistente na máquina central.
+Não inclui serviço StepFlow persistente.
 
 Cenário final conceitual:
 
 ```text
-Controller central é iniciado quando o StepFlow será usado
-→ técnico acessa o ponto de entrada interno
+Controller iniciado quando StepFlow será usado
 → launcher prepara Client local
 → login/uso multiusuário
-→ encerramento operacional fecha Host/Controller
-→ nenhum processo StepFlow residual
+→ consulta procedimento
+→ quando necessário, registra Atendimento/equipamento
+→ impressão/exportação quando necessária
+→ encerramento fecha Host/Controller
+→ zero processo StepFlow residual
 ```
 
 ## Fase 9 — Hardening e release interno
@@ -135,10 +157,10 @@ Controller central é iniciado quando o StepFlow será usado
 - backup/restore;
 - concorrência/performance;
 - logs;
-- distribuição/atualização;
+- distribuição/update;
 - smoke tests end-to-end;
-- revisão documental e limpeza de débitos prioritários.
+- revisão documental.
 
 ## Regra do roadmap
 
-Fases dependem de gates, não de cronograma. Mudanças de requisito atualizam documentação antes da implementação afetada. A execução continua em tarefas pequenas e verificáveis.
+Fases dependem de gates, não de cronograma. Mudanças de requisito atualizam documentação antes da implementação. Propostas só viram implementação após aprovação explícita.

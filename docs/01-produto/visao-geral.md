@@ -4,7 +4,11 @@
 
 ## Propósito
 
-O StepFlow é uma aplicação interna para centralizar documentação de processos técnicos e transformar procedimentos estáticos em guias operacionais fáceis de consultar e executar. O objetivo é reduzir atrito para o técnico, não criar um portal burocrático de gestão documental.
+O StepFlow é uma aplicação interna para centralizar documentação de procedimentos técnicos, transformar documentos estáticos em guias operacionais fáceis de consultar/executar e, quando o trabalho exigir rastreabilidade, registrar as informações reais do serviço realizado.
+
+O produto não é restrito à manutenção de computadores. Deve acomodar manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias técnicos e outros procedimentos internos.
+
+O objetivo é reduzir atrito para o técnico, não criar um portal burocrático.
 
 ## Usuários
 
@@ -15,26 +19,20 @@ O StepFlow é uma aplicação interna para centralizar documentação de process
 ## Experiência principal
 
 ```text
-ponto de entrada interno do StepFlow
-        ↓
-duplo clique
-        ↓
-Client local preparado/atualizado
-        ↓
-login
-        ↓
-consulta e execução
+ponto de entrada interno
+→ duplo clique
+→ Client local preparado/atualizado
+→ login
+→ consulta/execução
 ```
 
-O técnico não deve instalar dependências, informar banco/servidor manualmente nem executar comandos no uso normal.
+O técnico não instala dependências nem informa banco/servidor manualmente no uso normal.
 
-O endereço real do ponto de entrada corporativo ainda não está definido. Usar apenas placeholders como:
+Infraestrutura corporativa real ainda é pendente; exemplos de path continuam apenas conceituais.
 
-`\\<HOST-OU-SERVIDOR-DA-EMPRESA>\<COMPARTILHAMENTO>\<PASTA-STEPFLOW>\`
+## Procedimentos
 
-## Modelo enxuto de processo
-
-Campos principais:
+Campos principais consolidados:
 
 - Código;
 - Título;
@@ -46,87 +44,126 @@ Campos principais:
 - Observações;
 - Pré-requisitos;
 - Etapas;
-- Histórico de alterações.
+- Histórico.
+
+Novo requisito confirmado: **categorização de procedimentos**. Cardinalidade, hierarquia e modelo final das categorias ainda estão em aprovação.
 
 Não adicionar campos burocráticos sem valor operacional aprovado.
 
 ## Etapas como páginas de manual
 
-Cada etapa deve funcionar como uma página navegável e pode conter título, introdução, passos/subpassos, checklist documental, observações, alertas, comandos/blocos copiáveis, navegação anterior/próxima e indicação de progresso.
+Cada etapa funciona como página navegável e pode conter título, introdução, passos/subpassos, checklist documental, observações, alertas, comandos/blocos copiáveis, navegação anterior/próxima e indicação de progresso.
 
-O controle de cópia deve ser discreto, somente por ícone, com feedback curto.
+Controle de cópia é discreto, somente por ícone, com feedback curto.
+
+## Registro do serviço/equipamento — novo requisito
+
+Para cenários como manutenção de computadores/notebooks, o sistema deve permitir registrar, quando aplicável:
+
+- nome do equipamento;
+- processador;
+- RAM;
+- armazenamento;
+- sistema operacional/versão;
+- MAC ou outro identificador útil;
+- saúde da bateria;
+- observações;
+- cliente e/ou ordem de serviço/referência para facilitar busca;
+- resumo do que foi feito/procedimentos realizados.
+
+O sistema deve permitir extrair/gerar uma ficha compacta imprimível para anexação física ao equipamento.
+
+A modelagem recomendada — separar `Procedimento`, `Atendimento/Execução` e `Equipamento` — está documentada como **PROPOSTA** em `categorizacao-atendimentos-equipamentos.md` e ainda exige aprovação do PO.
+
+## Busca operacional
+
+Requisito confirmado: facilitar a localização por informações disponíveis do serviço/equipamento, como cliente, OS/referência, nome e identificadores úteis.
+
+Quais campos serão chaves, filtros ou índices depende da modelagem aprovada.
 
 ## Multiusuário
 
-O produto deve aceitar vários usuários simultâneos em computadores diferentes:
-
 - Clients nunca acessam SQLite diretamente;
 - escritas são coordenadas pelo Host;
-- edições antigas não sobrescrevem silenciosamente alterações recentes;
-- mudanças relevantes chegam aos Clients por eventos/reconsulta;
+- edições antigas não sobrescrevem alterações recentes;
+- mudanças relevantes chegam por eventos/reconsulta;
 - fila de escrita não substitui revisão otimista.
+
+Novos registros operacionais aprovados no futuro seguirão essas mesmas regras.
 
 ## Usuários e permissões
 
 Conta possui identificador estável, login, nome de exibição, cargo, hash de senha, avatar, perfil e permissões.
 
-O usuário pode editar nome de exibição, cargo, avatar e senha dentro das regras. Autorização é sempre verificada no Host.
+Usuário pode editar nome, cargo, avatar e senha dentro das regras. Autorização é sempre Host-side.
+
+Permissões para categorias e registros de serviço/equipamento ainda serão fechadas antes da implementação correspondente.
 
 ## Exportação e backup
 
-Requisitos obrigatórios:
+Documentação exige:
 
 - PDF;
 - DOCX;
 - impressão;
-- identidade da empresa no documento exportado;
-- backup e restauração simples.
+- identidade da empresa;
+- backup/restauração simples.
 
-A exportação usa modelo próprio de documento, não captura da tela.
+Exportação usa documento próprio, não screenshot.
+
+Novo requisito: ficha compacta imprimível de serviço/equipamento. Formato físico, PDF e tecnologia serão fechados no Bloco 10.
 
 ## Requisitos não funcionais
 
 ### Pocket
 
-- implantação da máquina central por pasta pronta;
-- nenhum runtime/toolchain de desenvolvimento no servidor;
-- nenhum serviço/processo StepFlow persistente quando o produto está fechado;
-- Client distribuído sem instalador tradicional obrigatório;
-- funcionamento sem dependência da Internet durante o uso normal.
+- implantação central por pasta pronta;
+- nenhuma toolchain de desenvolvimento no servidor;
+- nenhum processo StepFlow após encerramento do ciclo central;
+- Client sem instalador tradicional obrigatório;
+- uso normal sem dependência da Internet.
 
 ### Compatibilidade
 
-Baseline inicial: **Windows 10/11 x64**. Tauri 2 usa WebView2. Versões reais das estações e presença do runtime ainda serão verificadas no ambiente corporativo.
+Baseline inicial: Windows 10/11 x64 com WebView2. Ambiente corporativo real ainda será validado.
 
 ### Manutenibilidade
 
-- frontend modular em HTML/CSS/JavaScript com ES Modules;
+- frontend modular HTML/CSS/JavaScript + ES Modules;
 - baixo acoplamento;
-- código organizado por responsabilidade/domínio;
+- organização por responsabilidade/domínio;
 - evitar monólitos e superengenharia.
 
 ### Segurança proporcional
 
-- Argon2id para senhas;
-- sessão autenticada e opaca;
-- autorização no Host;
-- auditoria de ações relevantes;
-- nenhum dado real/segredo no Git.
+- Argon2id;
+- sessão opaca;
+- autorização Host-side;
+- auditoria relevante;
+- nenhum segredo/dado real no Git.
 
 ## Fora do escopo inicial
 
 - acesso público pela Internet;
 - SaaS/multiempresa;
-- MFA complexo e recuperação por email;
+- CRM completo/faturamento;
+- estoque de peças;
+- RMM/inventário automatizado;
+- help desk completo com SLA;
+- MFA complexo/recuperação por email;
 - edição colaborativa caractere a caractere;
 - chat corporativo;
-- workflow burocrático de aprovação em múltiplas instâncias;
+- workflow burocrático complexo;
 - infraestrutura distribuída de grande porte.
 
-## Pendência de produto ainda aberta
+## Pendências atuais
 
-O checklist documental é obrigatório, mas o estado das marcações durante uma execução ainda será decidido no Bloco 9 da Fase 1.
+- aprovar modelagem da categorização;
+- aprovar ou ajustar separação Procedimento × Atendimento/Execução × Equipamento;
+- fechar identidade/busca dos registros;
+- fechar lifecycle/checklist/permissões no Bloco 9;
+- fechar ficha compacta no Bloco 10.
 
 ## Critério de sucesso
 
-Um técnico deve conseguir localizar e executar um processo no StepFlow com menos atrito do que usando documentos Word/PDF dispersos em pastas de rede.
+Um técnico deve conseguir localizar o procedimento adequado, executar o trabalho com baixo atrito e, quando o cenário exigir registro do serviço/equipamento, produzir um resumo útil e imprimível sem depender de controles paralelos dispersos.

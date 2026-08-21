@@ -2,70 +2,103 @@
 
 ## Estado
 
-**Bloco 8 da Fase 1 — próximo bloco de trabalho.**
+**Bloco 8 da Fase 1 — EM ANDAMENTO.**
 
-Esta pasta conterá somente especificações de telas que estiverem em análise ou consolidadas. Cada tela relevante deve usar `docs/templates/template-analise-de-tela.md`.
+Esta pasta contém especificações de telas em análise ou consolidadas. Cada tela relevante usa `docs/templates/template-analise-de-tela.md`.
 
-Uma especificação só vira contrato visual/funcional quando estiver explicitamente aprovada/consolidada.
+Uma especificação só vira contrato visual/funcional quando explicitamente aprovada/consolidada.
+
+## Especificações atuais
+
+- `01-login.md` — **CONSOLIDADO FUNCIONALMENTE**;
+- `02-shell-sidebar.md` — **CONSOLIDADO**, incluindo `Atendimentos`;
+- `03-dashboard.md` — **CONSOLIDADO**;
+- `04-lista-pesquisa-processos.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 05 — Leitor em formato livro**.
+
+## Domínio operacional aprovado
+
+O StepFlow distingue:
+
+- `Processos` — documentação/modelos oficiais;
+- `Atendimentos` — ocorrências reais de execução/serviço;
+- `Equipamento` — entidade opcional relacionada aos atendimentos quando aplicável.
+
+Também estão aprovados:
+
+- categorias configuráveis e múltiplas;
+- identidade interna própria do equipamento;
+- múltiplos procedimentos por atendimento;
+- vínculo histórico à revisão realmente utilizada;
+- ficha compacta imprimível de atendimento/equipamento.
+
+Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
 ## Mapa de telas
 
-1. Login;
-2. Shell principal/sidebar;
-3. Início/Dashboard;
-4. Lista e pesquisa de processos;
-5. Leitura do processo em formato livro;
-6. Editor de processo/etapas;
-7. Histórico de alterações;
-8. Usuários e permissões;
-9. Meu perfil;
-10. Configurações da empresa;
-11. Backup/restauração;
-12. Exportação/impressão;
-13. estados transversais: Host indisponível, loading, vazio, erro, sem permissão e conflito.
+1. Login — consolidado;
+2. Shell/sidebar — consolidado;
+3. Início/Dashboard — consolidado;
+4. Lista/pesquisa de Processos — consolidado;
+5. Leitor em formato livro — **próximo**;
+6. Editor de Processo + categorias;
+7. Histórico;
+8. Lista/pesquisa de Atendimentos;
+9. Atendimento/execução + ficha do equipamento;
+10. Usuários/permissões;
+11. Meu perfil;
+12. Configurações + gestão de categorias;
+13. Backup/restauração;
+14. Exportação/impressão + ficha compacta;
+15. estados transversais.
 
-## Direção visual já aprovada
+## Direção visual aprovada
 
 - visual corporativo, limpo e discreto;
-- sidebar esquerda;
-- logo pequeno no topo esquerdo, proporção preservada;
+- sidebar esquerda persistente;
+- logo pequeno no topo esquerdo;
+- sem topbar global redundante;
+- perfil/avatar no rodapé;
 - leitura técnica como prioridade;
-- processos apresentados como manual/livro;
-- comandos/blocos copiáveis com ícone discreto;
+- procedimentos como manual/livro;
+- blocos copiáveis com ícone discreto;
 - feedback curto de cópia;
-- Funcionário em experiência predominantemente de leitura/execução.
+- Funcionário predominantemente em leitura/execução.
+
+## Lista/Pesquisa de Processos — decisões consolidadas
+
+- lista/tabela compacta;
+- busca por código, título ou termo;
+- filtros principais por Categoria e Área;
+- Status somente quando útil ao perfil;
+- categorias múltiplas com semântica OU inicialmente;
+- categorias como labels/chips discretos;
+- abertura padrão no leitor;
+- ações administrativas contextuais;
+- `Arquivar` em vez de `Excluir` na operação normal;
+- retorno do leitor preserva pesquisa/filtros;
+- busca documental separada da busca operacional de Atendimentos.
 
 ## Limite do Bloco 8
 
-O Bloco 8 fecha **UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional** das telas.
+O Bloco 8 fecha UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional.
 
-Para Backup/Restauração e Exportação/Impressão, o Bloco 8 pode definir:
+Não decide sozinho:
 
-- onde o usuário acessa a função;
-- quais ações e informações aparecem;
-- confirmações, feedbacks e estados de erro;
-- permissões percebidas na UI.
+- lifecycle/status final do Atendimento;
+- checklist/progresso operacional;
+- matriz de permissões operacional;
+- tecnologia/formato final da ficha compacta.
 
-O Bloco 8 **não escolhe** bibliotecas, formato interno de pacote, mecanismo de geração de PDF/DOCX, estratégia de backup SQLite, retenção ou detalhes técnicos que pertencem aos Blocos 10 e 11. Se a especificação de tela depender desses detalhes, registrar a dependência sem inventar a solução.
+Esses pontos pertencem aos Blocos 9 e 10.
 
-## Ordem recomendada do Bloco 8
+## Regra de separação de busca
 
-1. Login;
-2. Shell/sidebar;
-3. Início/Dashboard;
-4. Lista/pesquisa;
-5. Leitor em formato livro;
-6. Editor;
-7. Histórico;
-8. Usuários e permissões;
-9. Meu perfil;
-10. Configurações da empresa;
-11. Backup/restauração — somente UX/fluxo;
-12. Exportação/impressão — somente UX/fluxo;
-13. estados transversais.
+- `Processos`: código, título, termo, área, categoria e metadados documentais aprovados;
+- `Atendimentos`: código de atendimento, OS/referência, cliente, equipamento, serial/patrimônio/MAC e dados operacionais.
 
-Não criar UI de produção antes da especificação/aprovação correspondente.
+Não misturar os dois domínios em pesquisa global sem requisito explícito.
 
 ## Regra de parada
 
-Se uma tela exigir decisão ainda marcada como pendente em outro bloco — por exemplo, persistência do checklist, política técnica de backup ou estratégia de exportação — especificar apenas o que já é conhecido e registrar a pendência. Não transformar a lacuna em requisito técnico por iniciativa própria.
+Quando uma tela depender de lifecycle/checklist/exportação ainda pendentes, documentar a dependência e parar no limite aprovado. Não inventar solução técnica ou regra de negócio.
