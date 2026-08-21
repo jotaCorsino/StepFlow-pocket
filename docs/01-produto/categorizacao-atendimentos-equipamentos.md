@@ -1,11 +1,11 @@
 # Categorização, Atendimentos e Equipamentos — StepFlow
 
-**Status:** REQUISITOS DE PRODUTO CONFIRMADOS / MODELAGEM PROPOSTA PARA APROVAÇÃO  
+**Status:** CONSOLIDADO NO NÚCLEO DE PRODUTO / DETALHES OPERACIONAIS PENDENTES  
 **Atualização:** 2026-08-21
 
 ## 1. Objetivo
 
-Expandir o StepFlow para documentar procedimentos de diferentes áreas técnicas e, em cenários que exigem rastreabilidade do trabalho realizado, registrar informações específicas do serviço/equipamento e gerar uma ficha compacta imprimível.
+Expandir o StepFlow para documentar procedimentos de diferentes áreas técnicas e, quando houver trabalho real a registrar, separar claramente o **modelo reutilizável** da **ocorrência concreta de serviço**.
 
 O produto deve suportar, entre outros usos:
 
@@ -18,255 +18,229 @@ O produto deve suportar, entre outros usos:
 - procedimentos internos;
 - passo a passos/guias técnicos.
 
-## 2. Requisitos confirmados pelo PO
+## 2. Modelo de domínio aprovado
 
-Estão confirmados:
-
-1. sistema de categorização de procedimentos;
-2. categorias devem permitir organizar procedimentos de diferentes áreas de atuação;
-3. em manutenção de computadores/notebooks deve existir uma área para registrar informações específicas do equipamento;
-4. a ficha deve suportar, conforme aplicável: nome, processador, RAM, armazenamento, versão do sistema, MAC ou outro identificador útil, saúde da bateria e observações;
-5. deve ser possível relacionar o registro a cliente e/ou ordem de serviço/referência útil para busca;
-6. o sistema deve facilitar busca pelos identificadores operacionais disponíveis;
-7. deve existir resumo do que foi feito/procedimentos realizados;
-8. a ficha resumida precisa poder ser extraída/gerada para impressão e anexação física ao equipamento;
-9. a funcionalidade de manutenção de computadores não pode limitar o uso do StepFlow em redes, infraestrutura, Service Desk, Help Desk, guias ou outros procedimentos.
-
-## 3. Modelagem recomendada — ainda sujeita à aprovação do PO
-
-Para atender aos requisitos sem misturar documentação com registros de serviço, a direção recomendada é separar:
+Ficam consolidados três conceitos distintos:
 
 1. **Procedimento** — modelo reutilizável/documentação oficial;
 2. **Atendimento/Execução** — ocorrência concreta em que um ou mais procedimentos foram realizados;
 3. **Equipamento** — ativo físico opcional relacionado ao atendimento quando fizer sentido.
 
-Exemplo recomendado:
-
 ```text
 Procedimento oficial
-"Manutenção preventiva de notebook"
         ↓ usado em
-Atendimento/registro de serviço
+Atendimento/Execução
         ↓ relacionado opcionalmente a
 Equipamento
         ↓ registra
 procedimentos realizados + resumo + observações
 ```
 
-Essa separação é **PROPOSTA DE MODELAGEM**, não autorização de implementação até aprovação do PO e fechamento do Bloco 9.
+Alterar um procedimento oficial no futuro não reescreve o histórico de um atendimento já realizado.
 
-## 4. Categorização dos procedimentos
+## 3. Categorização dos procedimentos
 
-### Requisito confirmado
-
-Procedimentos precisam ser organizáveis por categorias adequadas aos diferentes contextos de uso.
-
-### Proposta recomendada
+Fica consolidado:
 
 - categorias configuráveis pela empresa, não hardcoded;
-- procedimento pode pertencer a uma ou mais categorias;
-- categorias pesquisáveis/filtráveis;
+- um procedimento pode pertencer a uma ou mais categorias;
+- categorias são pesquisáveis e filtráveis;
 - exemplos como `Manutenção`, `TI`, `Service Desk`, `Help Desk`, `Infraestrutura`, `Redes` e `Guias` são exemplos, não enumeração fixa;
-- começar sem árvore hierárquica complexa, tags paralelas ou taxonomia avançada;
-- permitir arquivamento preservando histórico.
+- primeira versão usa categorias simples, sem árvore hierárquica complexa ou taxonomia avançada;
+- categoria pode ser arquivada sem destruir histórico.
 
-A necessidade real de múltiplas categorias versus categoria única/hierárquica deve ser validada antes da implementação.
+A hierarquia de categorias só será adicionada se uma necessidade real futura justificar.
 
-## 5. Ficha de equipamento
+## 4. Equipamento
 
-### Campos confirmados pelo requisito
+Equipamento é opcional. O StepFlow não exige ficha de computador para procedimentos de rede, servidor, Help Desk ou guias gerais.
 
-Para manutenção de computadores/notebooks, a ficha deve suportar:
+Para computadores/notebooks, a ficha deve suportar conforme aplicável:
 
 - nome do equipamento;
+- tipo do equipamento;
 - processador;
 - memória RAM;
 - armazenamento;
-- sistema operacional/versão;
-- endereço MAC ou identificador equivalente útil;
-- saúde da bateria quando aplicável;
-- observações;
-- vínculo/referência com cliente e/ou ordem de serviço para facilitar localização.
-
-### Campos adicionais recomendados
-
-- tipo do equipamento;
+- sistema operacional;
+- versão do sistema operacional;
 - número de série;
 - patrimônio/asset tag;
-- técnico/responsável;
-- código interno legível do equipamento.
+- um ou mais endereços MAC;
+- saúde da bateria quando aplicável;
+- cliente/solicitante/responsável relacionado;
+- observações.
 
-Esses campos adicionais são propostas e podem ser ajustados pelo PO.
+Campos sem aplicação ao equipamento permanecem vazios/ocultos; não devem se tornar burocracia obrigatória.
 
-## 6. Identidade e busca
+## 5. Identidade e busca do equipamento
 
-### Requisito confirmado
+Fica consolidado que a identidade principal do equipamento não depende exclusivamente de MAC, serial ou outro atributo físico mutável.
 
-O usuário precisa localizar facilmente o registro usando informações reais do trabalho/equipamento.
-
-### Recomendação técnica
-
-Não usar MAC como única identidade canônica. A direção recomendada é:
+Direção aprovada:
 
 - identificador interno estável gerado pelo StepFlow;
-- código legível para uso operacional;
-- serial, patrimônio, MAC, nome, cliente e OS/referência como atributos de busca.
+- código legível operacional gerado pelo sistema;
+- MAC, serial, patrimônio, nome do equipamento, cliente e ordem de serviço/referência são atributos pesquisáveis;
+- múltiplos MACs podem existir para o mesmo equipamento.
 
-Motivo: um equipamento pode ter múltiplas interfaces, adaptadores substituídos ou endereços alteráveis. A identidade interna evita que uma mudança física quebre o histórico.
+Isso evita quebrar histórico quando uma interface de rede é trocada, removida ou substituída.
 
-Busca proposta, conforme dados disponíveis:
+O formato exato do código legível (`EQP-...` ou equivalente) permanece pendente para o Bloco 9/implementação.
 
-- código interno do equipamento;
-- código do atendimento/registro;
-- nome do equipamento;
-- cliente/solicitante/responsável;
-- ordem de serviço/referência externa;
-- número de série;
-- patrimônio;
-- MAC normalizado.
+## 6. Atendimento / execução
 
-O formato de códigos como `EQP-...`/`ATD-...` é pendente.
+Atendimento é o registro operacional concreto do serviço realizado.
 
-## 7. Registro do serviço realizado
+Fica consolidado que ele pode conter:
 
-### Requisito confirmado
-
-A ficha precisa guardar resumo do que foi feito e os procedimentos realizados.
-
-### Modelagem recomendada
-
-Criar um registro de atendimento/execução com:
-
-- identificador interno;
-- código legível;
-- OS/referência externa opcional;
+- identificador interno estável;
+- código legível do atendimento;
+- ordem de serviço/referência externa opcional;
 - cliente/solicitante/responsável quando aplicável;
-- equipamento opcional;
-- técnico/responsável;
+- equipamento associado opcional;
+- técnico/responsável pelo atendimento;
 - datas aplicáveis;
 - observações;
 - resumo do trabalho realizado;
-- um ou mais procedimentos usados.
+- um ou mais procedimentos utilizados.
 
-Para preservar histórico, recomenda-se vincular o atendimento à **revisão exata** do procedimento que foi utilizada, não apenas ao procedimento atual.
+Um atendimento pode utilizar múltiplos procedimentos.
 
-Lifecycle, estados e regras de conclusão/reabertura permanecem pendentes do Bloco 9.
+O lifecycle exato — estados, conclusão, reabertura e regras de edição — será fechado no Bloco 9.
 
-## 8. Ficha compacta / etiqueta imprimível
+## 7. Vínculo histórico com o procedimento
 
-### Requisito confirmado
+Cada procedimento utilizado em um atendimento deve preservar referência à **revisão efetivamente utilizada**, não apenas ao procedimento atual.
 
-Precisa existir uma saída compacta que possa ser impressa e anexada fisicamente ao equipamento.
+Assim, se um atendimento foi executado com a revisão 1.3 e o procedimento depois evoluir para 2.0, o histórico continua refletindo corretamente o que existia quando o trabalho foi feito.
+
+A persistência de checklist/progresso por etapa será fechada no Bloco 9.
+
+## 8. Área operacional `Atendimentos`
+
+Fica aprovado usar **`Atendimentos`** como nome da área operacional principal no Client.
+
+Separação de navegação:
+
+- `Processos` — documentação/modelos oficiais;
+- `Atendimentos` — serviços/execuções reais.
+
+Essa separação não impede iniciar um atendimento a partir do leitor de um procedimento.
+
+## 9. Ficha compacta / etiqueta imprimível
+
+Atendimentos com equipamento devem poder gerar uma saída compacta destinada a acompanhamento físico do equipamento.
 
 Conteúdo esperado, quando disponível:
 
 - identidade da empresa/StepFlow;
+- código do atendimento;
+- ordem de serviço/referência;
 - cliente/solicitante;
-- OS/referência;
-- identificação do equipamento;
+- código/nome do equipamento;
 - processador;
 - RAM;
 - armazenamento;
 - sistema/versão;
-- identificadores úteis como serial/patrimônio/MAC;
-- saúde da bateria quando aplicável;
+- serial/patrimônio/MAC conforme aplicável;
+- saúde da bateria quando informada;
 - resumo dos procedimentos realizados;
 - observações relevantes;
 - técnico/responsável;
-- data.
+- data do atendimento/conclusão.
 
-A saída deve ser documento próprio, não captura de tela.
+A saída é documento próprio, não captura de tela.
 
-Tamanho físico, paginação, PDF, QR/barcode e mecanismo de geração pertencem ao Bloco 10 e continuam pendentes.
+Tamanho físico, paginação, QR/barcode, tecnologia de geração e necessidade de PDF além da impressão direta pertencem ao Bloco 10.
 
-## 9. Generalidade do produto
+## 10. Cenários suportados
 
-O StepFlow não deve exigir ficha de computador para todo procedimento.
-
-A direção recomendada deve permitir cenários como:
+O modelo deve permitir:
 
 ```text
-procedimento sem registro formal de serviço
-procedimento + registro de serviço sem equipamento
-procedimento + registro de serviço + equipamento
-registro de serviço com mais de um procedimento
+procedimento sem atendimento formal
+procedimento + atendimento sem equipamento
+procedimento + atendimento + equipamento
+atendimento com múltiplos procedimentos
+mesmo equipamento relacionado a atendimentos diferentes
 ```
 
-Essa flexibilidade é proposta para preservar o uso em Service Desk, servidores, redes, guias e manutenção física.
+Isso preserva o uso amplo do StepFlow sem transformá-lo em sistema exclusivo de manutenção de PCs.
 
-## 10. Permissões
+## 11. Permissões
 
-Confirmado:
+Já consolidado:
 
 - Funcionário/Técnico pode executar procedimento sem receber permissão para editar documentação oficial;
 - autorização real permanece no Host.
 
-Pendente:
+Pendente para o Bloco 9:
 
 - quem cria/edita categorias;
-- quem cadastra/altera equipamento;
-- quem inicia/edita/conclui atendimento;
-- quem pode reabrir atendimento;
+- quem cadastra/altera/arquiva equipamento;
+- quem inicia/edita/conclui/reabre atendimento;
 - quem gera/reimprime ficha.
 
-## 11. Concorrência e histórico
+## 12. Concorrência e histórico
 
-Se a modelagem recomendada for aprovada:
+- equipamentos e atendimentos são dados oficiais do Host;
+- Clients nunca editam SQLite diretamente;
+- alterações concorrentes relevantes usam controle otimista equivalente ao restante do produto;
+- atendimento concluído preserva a revisão do procedimento utilizada;
+- ficha/relatório reflete estado confirmado pelo Host.
 
-- equipamento e atendimento serão dados oficiais do Host;
-- Clients nunca editarão SQLite diretamente;
-- alterações concorrentes relevantes usarão revisão/controle otimista;
-- atendimento concluído preservará a revisão de procedimento utilizada;
-- ficha impressa refletirá estado confirmado pelo Host.
-
-## 12. Impacto na Fase 1
+## 13. Impactos na Fase 1
 
 ### Bloco 8 — UI/UX
 
-Deve incorporar os **requisitos confirmados**:
+Deve incorporar:
 
-- categorias na experiência de procedimentos;
-- área de registro do serviço/equipamento;
-- busca operacional;
+- categorias na lista/editor/leitor de procedimentos;
+- `Atendimentos` na navegação;
+- superfícies de atendimento/execução;
+- ficha de equipamento;
+- busca por atendimento/equipamento;
 - ação de gerar/imprimir ficha compacta.
 
-A estrutura exata das telas depende da aprovação da modelagem recomendada.
+### Bloco 9 — Execução operacional e checklist
 
-### Bloco 9 — execução operacional e checklist
+Fechar:
 
-Se a separação Atendimento/Equipamento for aprovada, o Bloco 9 fecha:
+- lifecycle do atendimento;
+- criação/edição/conclusão/reabertura;
+- progresso/checklist;
+- regras de edição após conclusão;
+- concorrência operacional;
+- matriz de permissões;
+- formato final dos códigos legíveis.
 
-- entidades/regras operacionais finais;
-- lifecycle;
-- vínculo com procedimento/revisão;
-- checklist/progresso;
-- concorrência/histórico;
-- permissões.
+### Bloco 10 — Exportação/impressão
 
-### Bloco 10 — exportação/impressão
+Além de PDF/DOCX/impressão dos procedimentos, fechar a ficha compacta de atendimento/equipamento.
 
-Fechará a estratégia da ficha compacta além dos documentos completos de procedimentos.
+## 14. Fora do escopo inicial
 
-## 13. Fora do escopo por enquanto
-
-Não transformar automaticamente esta necessidade em:
+Não transformar automaticamente esta capacidade em:
 
 - CRM completo;
 - faturamento/financeiro;
 - estoque de peças;
-- inventário/RMM completo;
-- descoberta automática de hardware;
+- RMM/inventário automatizado;
+- descoberta automática de hardware pela rede;
 - sistema de chamados completo com SLA;
 - QR/barcode obrigatório;
 - taxonomia hierárquica complexa.
 
-## 14. Pontos para aprovação do PO
+Esses itens só entram mediante requisito futuro explícito.
 
-1. aprovar separação **Procedimento × Atendimento/Execução × Equipamento**;
-2. aprovar categorias configuráveis, inicialmente simples e potencialmente múltiplas;
-3. aprovar identificador interno/código StepFlow como identidade principal, mantendo MAC/serial/patrimônio como busca;
-4. aprovar `Atendimentos` como nome/área operacional ou escolher outro termo;
-5. aprovar que um atendimento possa referenciar mais de um procedimento;
-6. aprovar vínculo histórico com a revisão do procedimento utilizada;
-7. confirmar se ficha compacta precisa de PDF além de impressão direta;
-8. lifecycle, permissões e checklist ficam para o Bloco 9.
+## 15. Pendências vigentes
+
+- formato exato dos códigos legíveis;
+- lifecycle do atendimento;
+- matriz operacional de permissões;
+- persistência/comportamento do checklist;
+- regras de edição de equipamento/atendimento após conclusão;
+- tamanho/layout físico da ficha;
+- necessidade de PDF específico da ficha além da impressão direta;
+- uso futuro de QR/barcode somente se houver benefício real.
