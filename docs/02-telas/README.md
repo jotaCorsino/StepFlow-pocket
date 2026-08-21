@@ -18,9 +18,9 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `06-editor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `07-historico-revisoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `08-lista-pesquisa-atendimentos.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 09 — Atendimento/Execução + Equipamento**.
+- `09-atendimento-execucao-equipamento.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
-A Tela 09 ainda não está em análise neste checkpoint.
+A Tela 10 não deve ser iniciada antes da consolidação e integração da Tela 09.
 
 ## Domínio operacional aprovado
 
@@ -50,8 +50,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 6. Editor de Processo + categorias — consolidado;
 7. Histórico/Revisões — consolidado;
 8. Lista/pesquisa de Atendimentos — consolidado;
-9. Atendimento/execução + ficha do equipamento — **próximo**;
-10. Usuários/permissões;
+9. Atendimento/execução + ficha do equipamento — **em análise**;
+10. Usuários/permissões — pendente;
 11. Meu perfil;
 12. Configurações + gestão de categorias;
 13. Backup/restauração;
@@ -138,6 +138,26 @@ Fonte: `07-historico-revisoes.md`.
 - mais recentes primeiro, com timestamp exato definido somente no Bloco 9.
 
 Fonte: `08-lista-pesquisa-atendimentos.md`.
+
+## Atendimento/Execução + Equipamento — em análise
+
+Propostas atuais, ainda não consolidadas:
+
+- uma única página vertical com seções `Atendimento`, `Equipamento` e `Procedimentos utilizados`;
+- mesma Tela 09 para novo atendimento e atendimento existente;
+- equipamento continua opcional;
+- `Vincular equipamento` pesquisa cadastro existente antes de cadastrar novo;
+- ficha técnica mostra somente campos preenchidos/aplicáveis;
+- edição do Equipamento fica visualmente separada da edição do Atendimento;
+- múltiplos MACs com label opcional;
+- procedimentos exibem versão editorial + revisão técnica efetivamente utilizada;
+- `Abrir revisão` leva ao Leitor na revisão específica;
+- iniciar pelo Leitor pode pré-selecionar a revisão consultada;
+- `Resumo do trabalho` separado de `Observações`;
+- ponto de entrada `Ficha / Imprimir`, com fluxo final reservado à Tela 14/Bloco 10;
+- não definir `Status`, conclusão, reabertura ou checklist persistente antes do Bloco 9.
+
+Fonte: `09-atendimento-execucao-equipamento.md`.
 
 ## Limite do Bloco 8
 

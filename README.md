@@ -41,7 +41,7 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 6 | Editor de Processo + categorias | ✅ Consolidado |
 | 7 | Histórico / revisões | ✅ Consolidado |
 | 8 | Lista / pesquisa de Atendimentos | ✅ Consolidado |
-| 9 | Atendimento / execução + equipamento | 🟡 Próximo |
+| 9 | Atendimento / execução + equipamento | 🟡 Em análise |
 | 10 | Usuários / permissões | ⏳ Pendente |
 | 11 | Meu perfil | ⏳ Pendente |
 | 12 | Configurações + categorias | ⏳ Pendente |
@@ -68,9 +68,9 @@ Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. 
 
 ### Próximo passo
 
-**Tela 09 — Atendimento / Execução + Equipamento.**
+**Tela 09 — Atendimento / Execução + Equipamento — em análise.**
 
-A Tela 09 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 08 estar integrada em `main`, a branch encerrada e o checkout local sincronizado.
+Neste checkpoint de trabalho, somente a Tela 09 está aberta para análise. A Tela 10 não deve ser iniciada antes da aprovação, consolidação, merge e sincronização deste checkpoint.
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 
