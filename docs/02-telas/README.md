@@ -16,7 +16,10 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `04-lista-pesquisa-processos.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `05-leitor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `06-editor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- `07-historico-revisoes.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
+- `07-historico-revisoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 08 — Lista/Pesquisa de Atendimentos**.
+
+A Tela 08 ainda não está em análise neste checkpoint.
 
 ## Domínio operacional aprovado
 
@@ -44,8 +47,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 4. Lista/pesquisa de Processos — consolidado;
 5. Leitor em formato livro — consolidado;
 6. Editor de Processo + categorias — consolidado;
-7. Histórico/Revisões — **em análise**;
-8. Lista/pesquisa de Atendimentos;
+7. Histórico/Revisões — consolidado;
+8. Lista/pesquisa de Atendimentos — **próximo**;
 9. Atendimento/execução + ficha do equipamento;
 10. Usuários/permissões;
 11. Meu perfil;
@@ -108,15 +111,15 @@ Fonte: `05-leitor-processo.md`.
 
 Fonte: `06-editor-processo.md`.
 
-## Histórico/Revisões — propostas em análise
+## Histórico/Revisões — consolidado
 
 - lista cronológica compacta, mais recente primeiro;
 - `revision_no` técnico separado de `display_version` editorial;
 - badges `Atual` e `Publicada` representam ponteiros vigentes;
-- revisão histórica abre no Leitor em modo somente leitura;
+- revisão histórica abre no Leitor em somente leitura;
 - revisão histórica é identificada claramente e não parece vigente;
 - snapshots não podem ser editados/excluídos;
-- ação proposta `Criar nova revisão a partir desta`, sem rollback destrutivo;
+- `Criar nova revisão a partir desta` cria uma nova revisão, sem rollback destrutivo;
 - conteúdo antigo só volta a ser publicado após virar nova revisão atual;
 - diff visual não é obrigatório na primeira versão.
 

@@ -39,8 +39,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 4 | Lista / pesquisa de Processos | ✅ Consolidado |
 | 5 | Leitor em formato livro | ✅ Consolidado |
 | 6 | Editor de Processo + categorias | ✅ Consolidado |
-| 7 | Histórico / revisões | 🟡 Em análise |
-| 8 | Lista / pesquisa de Atendimentos | ⏳ Pendente |
+| 7 | Histórico / revisões | ✅ Consolidado |
+| 8 | Lista / pesquisa de Atendimentos | 🟡 Próximo |
 | 9 | Atendimento / execução + equipamento | ⏳ Pendente |
 | 10 | Usuários / permissões | ⏳ Pendente |
 | 11 | Meu perfil | ⏳ Pendente |
@@ -68,7 +68,9 @@ Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. 
 
 ### Próximo passo
 
-**Tela 07 — Histórico / Revisões — em análise.**
+**Tela 08 — Lista / Pesquisa de Atendimentos.**
+
+A Tela 08 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após este checkpoint estar integrado em `main` e sincronizado localmente.
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 
