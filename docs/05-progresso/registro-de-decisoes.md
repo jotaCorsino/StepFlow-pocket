@@ -18,36 +18,41 @@ Este arquivo registra decisões vigentes e pendências atuais. Propostas não ap
 - blocos copiáveis usam ícone discreto;
 - PDF, DOCX e impressão são requisitos da documentação.
 
-### Novo requisito de 2026-08-21 — consolidado
+### Categorização e domínio operacional — consolidado em 2026-08-21
 
-O PO confirmou:
+Ficam aprovados:
 
-- sistema de categorização de procedimentos;
-- área para registrar dados específicos de computadores/notebooks quando o serviço exigir;
-- campos como nome, processador, RAM, armazenamento, versão do sistema, MAC/identificador útil, saúde da bateria quando aplicável e observações;
-- possibilidade de relacionar o registro a cliente e/ou ordem de serviço/referência útil para busca;
-- busca facilitada pelos identificadores operacionais disponíveis;
-- resumo do que foi feito/procedimentos realizados;
-- ficha/relatório compacto extraível/imprimível para anexação física ao equipamento;
-- essas funções não podem tornar o produto exclusivo de manutenção de PCs.
+- sistema de categorias configuráveis para procedimentos;
+- um procedimento pode possuir múltiplas categorias simples;
+- sem taxonomia hierárquica complexa na primeira versão;
+- separação entre `Procedimento`, `Atendimento/Execução` e `Equipamento`;
+- `Atendimentos` como área operacional própria no Client;
+- equipamento é opcional e reutilizável entre atendimentos;
+- equipamento possui identidade interna estável/código StepFlow próprio;
+- MAC, serial, patrimônio, cliente e OS/referência são atributos de busca, não identidade canônica exclusiva;
+- um atendimento pode utilizar múltiplos procedimentos;
+- atendimento preserva vínculo com a revisão do procedimento realmente utilizada;
+- manutenção de computador/notebook pode registrar nome, CPU, RAM, armazenamento, SO/versão, serial/patrimônio/MAC, saúde da bateria quando aplicável e observações;
+- atendimento pode ser relacionado a cliente/solicitante e ordem de serviço/referência externa;
+- deve existir resumo do trabalho/procedimentos realizados;
+- deve existir ficha compacta imprimível para anexação física ao equipamento;
+- a nova capacidade não transforma o produto em CRM, estoque, RMM, financeiro ou sistema completo de chamados.
 
-### Modelagem da nova funcionalidade — PROPOSTA
+Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
-Ainda aguardam aprovação explícita do PO:
+Pendentes:
 
-- separar `Procedimento`, `Atendimento/Execução` e `Equipamento` como entidades distintas;
-- categorias configuráveis, simples e possivelmente múltiplas;
-- equipamento reutilizável entre atendimentos;
-- identificador interno/código StepFlow como identidade principal e MAC/serial/patrimônio como busca;
-- um atendimento poder usar mais de um procedimento;
-- atendimento preservar a revisão exata do procedimento utilizado;
-- `Atendimentos` como nome/item próprio na sidebar.
-
-Fonte da proposta: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
+- lifecycle/status exatos do atendimento;
+- permissões operacionais;
+- formato dos códigos legíveis;
+- comportamento do checklist/progresso;
+- regras de edição/reabertura após conclusão;
+- layout/tamanho físico e formato final da ficha compacta;
+- necessidade de PDF específico da ficha além da impressão direta.
 
 ### Procedimento documental
 
-Campos principais atualmente consolidados continuam:
+Campos principais continuam:
 
 - Código;
 - Título;
@@ -58,10 +63,9 @@ Campos principais atualmente consolidados continuam:
 - Objetivo;
 - Observações;
 - Pré-requisitos;
+- Categorias;
 - Etapas;
 - Histórico.
-
-`Categorias` é requisito novo confirmado, mas sua cardinalidade/modelagem final ainda está em aprovação.
 
 ### Perfis
 
@@ -71,7 +75,7 @@ Campos principais atualmente consolidados continuam:
 
 Gerência não administra ADM. Funcionário é leitura/execução por padrão. Usuário pode editar avatar, nome de exibição, cargo e senha dentro das regras.
 
-A matriz exata para categorias/serviços/equipamentos permanece pendente.
+A matriz exata para categorias/equipamentos/atendimentos será fechada no Bloco 9.
 
 ## Governança
 
@@ -159,7 +163,7 @@ Pendentes:
 - senha mínima final;
 - expiração de sessão;
 - permissão da Gerência para configuração/backup;
-- permissões de categorização/registro operacional/equipamento.
+- permissões de categorização/equipamentos/atendimentos.
 
 ## Dados e histórico
 
@@ -170,11 +174,10 @@ Consolidado:
 - `revision_no` separado de `display_version`;
 - migrations versionadas;
 - auditoria append-only;
-- arquivamento/desativação preferidos à exclusão destrutiva.
-
-Nova extensão de schema para categorias/atendimentos/equipamentos está **PROPOSTA**, não implementável como contrato até aprovação da modelagem.
-
-A antiga frase “nenhuma entidade formal de execução antes do Bloco 9” deixa de poder ser usada para negar o novo requisito de registro de serviço; porém o formato final dessa entidade ainda depende da aprovação da modelagem e do Bloco 9.
+- arquivamento/desativação preferidos à exclusão destrutiva;
+- categorias, equipamentos e atendimentos fazem parte da extensão conceitual aprovada do schema;
+- atendimento preserva a revisão de procedimento utilizada;
+- MAC não é chave canônica do equipamento.
 
 ## Concorrência
 
@@ -185,30 +188,23 @@ A antiga frase “nenhuma entidade formal de execução antes do Bloco 9” deix
 - conflitos não sobrescrevem automaticamente;
 - eventos pós-commit;
 - sem soft/hard lock inicial;
-- dois Hosts não usam o mesmo data dir.
-
-Novos dados operacionais, se aprovados na modelagem proposta, seguirão os mesmos princípios.
+- dois Hosts não usam o mesmo data dir;
+- categorias/equipamentos/atendimentos seguem o mesmo princípio de controle otimista quando necessário.
 
 ## Bloco 8 — UI/UX
 
 - Login consolidado;
-- núcleo do Shell consolidado;
-- Shell reaberto somente para aprovar/rejeitar `Atendimentos` como nova entrada;
-- Dashboard em análise;
-- mapa de telas ampliado pelos requisitos novos;
+- Shell consolidado, incluindo `Atendimentos`;
+- Dashboard aprovado em sua direção enxuta e sem KPIs/gráficos;
+- Lista/Pesquisa de Processos passa a incluir categorias;
+- mapa de telas inclui superfícies futuras de Atendimento/Equipamento;
 - nenhuma UI de produção criada.
 
 ## Pendências vigentes
 
-### Aprovação imediata da modelagem nova
+### Bloco 8
 
-1. `Procedimento × Atendimento/Execução × Equipamento` separados;
-2. categorias simples/configuráveis e potencialmente múltiplas;
-3. identificador interno/código StepFlow para equipamento;
-4. `Atendimentos` como termo/área operacional;
-5. múltiplos procedimentos por atendimento;
-6. vínculo histórico à revisão utilizada;
-7. necessidade de PDF da ficha além da impressão direta.
+Continuar especificação/aprovação das telas, começando pela Lista/Pesquisa de Processos com categorização e depois Leitor/Editor.
 
 ### Bloco 9
 
@@ -220,7 +216,7 @@ Fechar tecnologia/formato da ficha compacta, além de PDF/DOCX/impressão dos pr
 
 ### Bloco 11
 
-Backup/restore incluindo novos dados aprovados.
+Backup/restore incluindo categorias, equipamentos e atendimentos.
 
 ### Bloco 12
 
