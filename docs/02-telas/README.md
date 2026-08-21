@@ -14,7 +14,7 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `02-shell-sidebar.md` — **CONSOLIDADO**, incluindo `Atendimentos`;
 - `03-dashboard.md` — **CONSOLIDADO**;
 - `04-lista-pesquisa-processos.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 05 — Leitor em formato livro**.
+- `05-leitor-processo.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
 ## Domínio operacional aprovado
 
@@ -40,7 +40,7 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 2. Shell/sidebar — consolidado;
 3. Início/Dashboard — consolidado;
 4. Lista/pesquisa de Processos — consolidado;
-5. Leitor em formato livro — **próximo**;
+5. Leitor em formato livro — **em análise**;
 6. Editor de Processo + categorias;
 7. Histórico;
 8. Lista/pesquisa de Atendimentos;
@@ -78,6 +78,20 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 - `Arquivar` em vez de `Excluir` na operação normal;
 - retorno do leitor preserva pesquisa/filtros;
 - busca documental separada da busca operacional de Atendimentos.
+
+## Leitor — propostas em análise
+
+- `Visão geral` antes da Etapa 1;
+- uma etapa por página;
+- `Sumário` temporário em vez de segunda sidebar fixa;
+- `Etapa X de Y` como posição de navegação, não conclusão;
+- Anterior/Próxima;
+- categorias discretas no cabeçalho;
+- checklist documental separado de estado operacional;
+- nova revisão disponível não substitui silenciosamente a revisão aberta;
+- ponto de entrada futuro `Iniciar atendimento`, sem antecipar Bloco 9.
+
+Fonte: `05-leitor-processo.md`.
 
 ## Limite do Bloco 8
 
