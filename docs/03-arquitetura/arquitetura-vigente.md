@@ -1,6 +1,6 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1 / EXTENSÃO OPERACIONAL EM PROPOSTA  
+**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO EXTENSÃO OPERACIONAL CONCEITUAL  
 **Atualização:** 2026-08-21
 
 ## Visão geral
@@ -32,25 +32,30 @@ Responsabilidades:
 
 Baseline inicial: Windows 10/11 x64, com WebView2. Validação corporativa permanece pendente.
 
-## Novo requisito funcional confirmado
+## Domínio funcional consolidado
 
-A arquitetura deve passar a suportar:
+A arquitetura deve suportar:
 
-- categorização de procedimentos;
-- registro das informações reais de serviço/equipamento em cenários aplicáveis;
-- busca operacional por cliente/OS/identificadores úteis;
-- resumo dos procedimentos realizados;
-- ficha compacta imprimível.
+- procedimentos/documentação oficiais;
+- categorização configurável e múltipla;
+- `Atendimentos` como ocorrências reais de serviço/execução;
+- `Equipamento` opcional/reutilizável quando o atendimento envolver ativo físico;
+- busca documental separada da busca operacional;
+- resumo do trabalho realizado;
+- vínculo do atendimento com uma ou mais revisões de procedimentos utilizadas;
+- ficha compacta imprimível de atendimento/equipamento.
 
-### Direção arquitetural proposta
+Separação consolidada:
 
-Para manter baixo acoplamento e não misturar documentação com ocorrência real, recomenda-se separar futuramente:
+```text
+Procedimento
+   ↓ usado em
+Atendimento/Execução
+   ↓ opcionalmente relacionado a
+Equipamento
+```
 
-- `Procedimento` — documentação/modelo oficial;
-- `Atendimento/Execução` — registro real do serviço;
-- `Equipamento` — ativo opcional ligado ao registro.
-
-Essa separação, categorias múltiplas e os vínculos exatos estão **EM PROPOSTA** e não são contrato de implementação até aprovação do PO/Bloco 9.
+Essa estrutura não transforma o StepFlow em CRM, estoque, RMM ou sistema completo de chamados.
 
 ## Launcher do Client
 
@@ -74,7 +79,7 @@ Tecnologia: Rust + Tokio/Axum + `rusqlite` bundled.
 
 Sem Windows Service, auto-start, Task Scheduler ou daemon StepFlow como padrão. Encerrado o ciclo central, nenhum processo StepFlow permanece ativo.
 
-## Persistência consolidada
+## Persistência
 
 ```text
 StepFlow\
@@ -95,9 +100,10 @@ StepFlow\
 - revisões de procedimento imutáveis;
 - versão exibida separada da revisão técnica;
 - auditoria separada de logs;
-- dados/config não são substituídos junto com binários.
+- dados/config não são substituídos junto com binários;
+- categorias, equipamentos e atendimentos fazem parte da extensão conceitual aprovada do schema.
 
-A extensão de schema para categorias/registros de serviço/equipamentos está em proposta em `modelo-dados-schema-fase-1.md`.
+Detalhes: `modelo-dados-schema-fase-1.md`.
 
 ## Comunicação
 
@@ -117,7 +123,7 @@ A extensão de schema para categorias/registros de serviço/equipamentos está e
 - ADM/Gerência/Funcionário como presets;
 - Gerência não administra ADM;
 - bootstrap ADM local/controlado;
-- permissões da nova área operacional ainda pendentes.
+- matriz operacional de permissões de Atendimentos/equipamentos/categorias permanece pendente do Bloco 9.
 
 ## Concorrência
 
@@ -128,19 +134,18 @@ A extensão de schema para categorias/registros de serviço/equipamentos está e
 - constraints SQLite como última defesa;
 - eventos pós-commit;
 - sem soft/hard lock inicial;
-- dois Hosts não usam o mesmo data dir.
-
-Novos dados operacionais aprovados posteriormente devem seguir os mesmos princípios.
+- dois Hosts não usam o mesmo data dir;
+- categorias/equipamentos/atendimentos seguem controle otimista equivalente quando houver risco de perda.
 
 ## Exportação e impressão
 
 PDF, DOCX e impressão são requisitos da documentação de procedimentos.
 
-Novo requisito confirmado: ficha compacta imprimível de serviço/equipamento. Estratégia, layout físico, PDF e eventuais identificadores visuais serão fechados no Bloco 10.
+A ficha compacta imprimível de atendimento/equipamento também é requisito. Estratégia, layout físico, PDF específico e eventuais identificadores visuais serão fechados no Bloco 10.
 
 ## Backup
 
-Backup/restore é coordenado pelo Host e será especificado no Bloco 11. Quando a modelagem operacional for aprovada, os novos dados devem entrar no escopo do backup.
+Backup/restore é coordenado pelo Host e será especificado no Bloco 11, incluindo categorias, equipamentos e atendimentos.
 
 ## Ambiente corporativo ainda pendente
 
@@ -155,4 +160,6 @@ Essas pendências não autorizam hardcode de exemplos.
 
 ## Próximo trabalho
 
-Bloco 8 continua em UI/UX. Antes de transformar a nova funcionalidade em telas/contratos definitivos, o PO deve aprovar ou ajustar a modelagem proposta em `docs/01-produto/categorizacao-atendimentos-equipamentos.md`. Lifecycle/checklist/permissões serão fechados no Bloco 9.
+Bloco 8 continua em UI/UX. Telas 01–04 estão consolidadas; próxima superfície: **Tela 05 — Leitor em formato livro**.
+
+Lifecycle/checklist/permissões operacionais serão fechados no Bloco 9; tecnologia/formato final da ficha, no Bloco 10.

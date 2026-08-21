@@ -12,8 +12,8 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–7 estão fechados no núcleo arquitetural; Bloco 8 (UI/UX) está em andamento.
-- Novo requisito confirmado em 2026-08-21: categorização de procedimentos, registro de informações de serviço/equipamento, busca operacional e ficha compacta imprimível.
-- A modelagem específica `Procedimento × Atendimento/Execução × Equipamento` está **EM PROPOSTA** e não pode ser implementada como decisão final antes da aprovação do PO.
+- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, identidade interna de equipamento, múltiplos procedimentos por atendimento e vínculo histórico à revisão utilizada estão **CONSOLIDADOS CONCEITUALMENTE**.
+- Lifecycle, checklist/progresso, matriz operacional de permissões e detalhes finais da ficha compacta permanecem pendentes dos Blocos 9 e 10.
 
 ## Precedência e autoridade da tarefa
 
@@ -45,7 +45,7 @@ Se o enunciado contrariar decisão consolidada, só prosseguir quando declarar e
 - `docs/04-planejamento/plano-oficial-fase-1.md`;
 - `docs/03-arquitetura/arquitetura-vigente.md`;
 - `docs/00-governanca/contexto-ambientes.md`;
-- `docs/01-produto/categorizacao-atendimentos-equipamentos.md` para categorias/serviços/equipamentos/ficha compacta;
+- `docs/01-produto/categorizacao-atendimentos-equipamentos.md` para categorias/Atendimentos/equipamentos/ficha compacta;
 - demais documentos técnicos específicos.
 
 `metodo-padrao-trabalho-assistido.md` e `politica-capacidade-codex.md` orientam principalmente PO/Assistente e não precisam ser relidos pelo Codex em toda tarefa.
@@ -134,32 +134,25 @@ Operações que exijam credenciais, Internet confiável, elevação ou configura
 - Argon2id, com parâmetros finais ainda pendentes;
 - procedimentos usam revisões imutáveis;
 - PDF, DOCX e impressão são requisitos da documentação;
-- requisito novo exige categorização, registro de dados de serviço/equipamento, busca operacional, resumo do trabalho e ficha compacta imprimível.
+- categorias de procedimentos são configuráveis e podem ser múltiplas;
+- `Processos` e `Atendimentos` são domínios distintos na navegação/consulta;
+- equipamento possui identidade interna própria; MAC/serial/patrimônio são atributos de busca;
+- atendimento pode usar múltiplos procedimentos e preservar a revisão realmente utilizada;
+- ficha compacta imprimível de atendimento/equipamento é requisito do produto.
 
-## Regras específicas do novo requisito
+## Pendências ainda não consolidáveis para implementação
 
-Confirmado:
+Não inventar por suposição:
 
-- o produto não é exclusivo de manutenção de PCs;
-- precisa organizar procedimentos por categoria;
-- manutenção de computador/notebook precisa registrar os campos solicitados pelo PO quando aplicáveis;
-- busca deve aproveitar cliente/OS/identificadores úteis;
-- precisa haver resumo do que foi realizado;
-- precisa existir saída compacta para impressão física.
-
-Ainda **NÃO consolidado**:
-
-- categorias múltiplas versus únicas/hierárquicas;
-- entidade reutilizável de equipamento;
-- entidade formal chamada `Atendimento`/`Execução`;
-- identificador interno/código StepFlow como chave operacional principal;
-- múltiplos procedimentos por atendimento;
-- vínculo obrigatório à revisão exata;
-- `Atendimentos` como item de sidebar;
-- lifecycle, checklist/progresso e matriz de permissões;
-- formato/PDF/QR/barcode da ficha compacta.
-
-Nenhum desses itens pendentes pode ser implementado por suposição.
+- lifecycle/status final de Atendimento;
+- regras de conclusão/reabertura;
+- persistência e comportamento do checklist/progresso;
+- matriz operacional de permissões;
+- formato final dos códigos legíveis;
+- tamanho/layout físico final da ficha;
+- necessidade de PDF específico da ficha;
+- QR/barcode;
+- parâmetros finais de autenticação ainda marcados como pendentes.
 
 ## Tarefa Codex
 

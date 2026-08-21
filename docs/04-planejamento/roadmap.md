@@ -20,26 +20,29 @@ Núcleo arquitetural já fechado:
 - launcher/update;
 - HTTP/JSON + WebSocket;
 - autenticação/sessão/autorização no núcleo;
-- modelo de dados/migrations/histórico original;
-- concorrência/fila/conflitos/eventos.
+- modelo de dados/migrations/histórico;
+- concorrência/fila/conflitos/eventos;
+- extensão conceitual `Procedimento × Atendimento/Execução × Equipamento`;
+- categorias configuráveis/múltiplas e identidade interna de equipamento.
 
-Novo requisito confirmado em 2026-08-21:
+Bloco atual: **UI/UX**.
 
-- categorização de procedimentos;
-- registro das informações reais de serviço/equipamento quando aplicável;
-- busca operacional;
-- resumo do trabalho/procedimentos realizados;
-- ficha compacta imprimível.
+No Bloco 8 já estão consolidados:
 
-A separação específica `Procedimento × Atendimento/Execução × Equipamento` é recomendação em proposta e será decidida ainda na Fase 1.
+- Login;
+- Shell/sidebar com `Atendimentos`;
+- Dashboard enxuto;
+- Lista/Pesquisa de Processos com categorização.
 
-Próximos blocos:
+Próxima superfície: **Leitor em formato livro**.
 
-1. UI/UX;
-2. modelagem/execução operacional + checklist;
-3. exportação PDF/DOCX/impressão + ficha compacta;
-4. backup/restore;
-5. estrutura oficial e plano da Fase 2.
+Próximos blocos da Fase 1:
+
+1. concluir UI/UX;
+2. fechar execução operacional/Atendimentos + checklist;
+3. fechar exportação PDF/DOCX/impressão + ficha compacta;
+4. fechar backup/restore;
+5. fechar estrutura oficial e plano da Fase 2.
 
 Detalhes em `plano-oficial-fase-1.md`.
 
@@ -74,7 +77,7 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 **PENDENTE.**
 
 - lista/pesquisa;
-- categorização conforme modelo aprovado;
+- categorização;
 - criação/edição/arquivamento;
 - etapas/blocos;
 - histórico/revisões;
@@ -89,12 +92,13 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 - navegação/progresso;
 - passos/alertas/blocos copiáveis;
 - checklist conforme decisão da Fase 1;
-- registro das informações reais do serviço/equipamento conforme modelagem aprovada;
-- busca/lista operacional quando aplicável;
+- Atendimentos;
+- equipamento opcional;
+- busca/lista operacional;
 - resumo do trabalho;
+- vínculo à revisão executada;
+- ficha compacta conforme contrato dos Blocos 8/10;
 - estados de UI.
-
-Se a separação Atendimento/Equipamento for aprovada, esta fase implementará esses domínios; caso a Fase 1 aprove modelagem diferente, o roadmap deverá seguir a decisão final.
 
 ## Fase 6 — Multiusuário em ambiente real
 
@@ -104,7 +108,7 @@ Se a separação Atendimento/Equipamento for aprovada, esta fase implementará e
 - conflitos/fila;
 - eventos/reconexão;
 - Host indisponível;
-- concorrência dos novos registros aprovados;
+- concorrência dos registros operacionais;
 - validação LAN corporativa.
 
 ## Fase 7 — Exportação e identidade
@@ -115,7 +119,7 @@ Se a separação Atendimento/Equipamento for aprovada, esta fase implementará e
 - DOCX;
 - impressão;
 - template/identidade da empresa;
-- ficha compacta de serviço/equipamento;
+- ficha compacta de atendimento/equipamento;
 - validação em leitores/impressoras esperados.
 
 ## Fase 8 — Distribuição Pocket, backup e operação
@@ -124,7 +128,7 @@ Se a separação Atendimento/Equipamento for aprovada, esta fase implementará e
 
 - pacote central por pasta com Controller/Host sob demanda;
 - launcher em rede + Client local versionado;
-- backup/restore incluindo novos dados aprovados;
+- backup/restore incluindo categorias, equipamentos e atendimentos;
 - logs;
 - documentação de implantação;
 - validação sem Internet e em PCs corporativos.
@@ -138,7 +142,7 @@ Controller iniciado quando StepFlow será usado
 → launcher prepara Client local
 → login/uso multiusuário
 → consulta procedimento
-→ quando necessário, registra informações reais do serviço/equipamento
+→ quando necessário, registra Atendimento/equipamento
 → impressão/exportação quando necessária
 → encerramento fecha Host/Controller
 → zero processo StepFlow residual
