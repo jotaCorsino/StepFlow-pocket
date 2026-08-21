@@ -20,13 +20,28 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis som
 | 3 | Launcher/distribuição | CONCLUÍDO | `03-arquitetura/launcher-distribuicao-client.md` |
 | 4 | Comunicação Client↔Host | CONCLUÍDO | `03-arquitetura/comunicacao-client-host.md` |
 | 5 | Autenticação/autorização | CONCLUÍDO NO NÚCLEO / PARÂMETROS PENDENTES | `03-arquitetura/autenticacao-sessao-autorizacao.md` |
-| 6 | Dados/schema/migrations | CONCLUÍDO | `03-arquitetura/modelo-dados-schema-fase-1.md` |
-| 7 | Concorrência/eventos | CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
+| 6 | Dados/schema/migrations | CONCLUÍDO NO NÚCLEO; NOVA EXTENSÃO CONCEITUAL INCORPORADA | `03-arquitetura/modelo-dados-schema-fase-1.md` |
+| 7 | Concorrência/eventos | CONCLUÍDO NO NÚCLEO; regras operacionais específicas dependem do Bloco 9 | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
 | 8 | UI/UX | EM ANDAMENTO | `02-telas/README.md` |
-| 9 | Checklist durante execução | PENDENTE | decisão de produto |
-| 10 | Exportação/impressão | PENDENTE | arquitetura técnica |
+| 9 | Execução operacional, atendimentos e checklist | PENDENTE | `01-produto/categorizacao-atendimentos-equipamentos.md` |
+| 10 | Exportação/impressão + ficha compacta | PENDENTE | arquitetura técnica |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
+
+## Novo requisito incorporado em 2026-08-21
+
+O produto passa a incluir:
+
+- categorização configurável e múltipla de procedimentos;
+- registro formal de atendimento/execução quando necessário;
+- equipamento opcional associado ao atendimento;
+- ficha de computador/notebook com dados técnicos quando aplicável;
+- busca operacional por equipamento, cliente/referência, OS, serial/patrimônio/MAC e códigos internos;
+- saída compacta imprimível de atendimento/equipamento.
+
+Fonte de produto: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
+
+Esse requisito **não** transforma o StepFlow em CRM, help desk completo, estoque, RMM ou sistema financeiro.
 
 ## Bloco 8 — UI/UX
 
@@ -35,50 +50,61 @@ Documentar/aprovar antes do código as superfícies críticas:
 1. Login;
 2. Shell/sidebar;
 3. Dashboard;
-4. lista/pesquisa de processos;
+4. lista/pesquisa de procedimentos com categorias;
 5. leitura em formato livro;
-6. editor de processo/etapas;
-7. histórico;
-8. usuários/permissões;
-9. perfil;
-10. configurações da empresa;
-11. backup/restauração;
-12. exportação/impressão;
-13. estados transversais de erro/loading/conflito/Host indisponível.
+6. editor de procedimento/etapas + categorias;
+7. histórico de alterações;
+8. lista/pesquisa de atendimentos;
+9. atendimento/execução e ficha de equipamento;
+10. usuários/permissões;
+11. perfil;
+12. configurações da empresa + gestão de categorias;
+13. backup/restauração;
+14. exportação/impressão + ficha compacta;
+15. estados transversais de erro/loading/conflito/Host indisponível.
 
 Usar `docs/templates/template-analise-de-tela.md`. Aparência só vira contrato quando aprovada pelo PO.
 
 ### Estado atual
 
-- `docs/02-telas/01-login.md` — **contrato funcional consolidado** em 2026-08-21;
-- `docs/02-telas/02-shell-sidebar.md` — **consolidado/aprovado pelo PO** em 2026-08-21;
-- `docs/02-telas/03-dashboard.md` — **em análise/proposta para aprovação do PO**;
+- `docs/02-telas/01-login.md` — contrato funcional consolidado;
+- `docs/02-telas/02-shell-sidebar.md` — núcleo consolidado; **reaberto pontualmente** para posicionar a nova área `Atendimentos`;
+- `docs/02-telas/03-dashboard.md` — em análise/proposta para aprovação do PO;
+- requisitos de categorização/atendimento/equipamento incorporados antes de avançar às telas de Processos;
 - nenhuma UI de produção foi criada.
 
-No Bloco 8, telas de backup/exportação fecham apenas **UX, fluxo, estados e permissões visíveis**. Estratégia técnica de exportação pertence ao Bloco 10 e estratégia técnica de backup/restore ao Bloco 11. A tela deve registrar dependências sem inventar solução técnica.
+No Bloco 8, telas operacionais podem definir UX, fluxo, campos, estados e permissões visíveis. Regras de lifecycle/checklist que dependem do Bloco 9 devem ficar marcadas como pendentes, não inventadas.
 
-O encerramento do Host também deve respeitar `host-pocket.md`: Client individual não derruba o Host; o ciclo central pertence ao Controller. A UX de confirmação/aviso quando houver Clients conectados pode ser especificada no Bloco 8.
+Para Backup/Restauração e Exportação/Impressão, o Bloco 8 fecha somente UX/fluxo/estados. Estratégia técnica de exportação e ficha compacta pertence ao Bloco 10; backup/restore ao Bloco 11.
 
-## Bloco 9 — Checklist durante execução
+## Bloco 9 — Execução operacional, atendimentos e checklist
 
-O checklist documental já existe no modelo. Falta decidir se a marcação feita pelo técnico será:
+Fechar o comportamento da ocorrência real de trabalho:
 
-- somente em memória da sessão;
-- local por usuário/dispositivo;
-- persistida como progresso pessoal;
-- parte de uma entidade formal de execução.
+- lifecycle do atendimento (`novo/em andamento/concluído/...`) apenas na medida necessária;
+- criação/edição/conclusão/reabertura;
+- vínculo opcional com equipamento;
+- vínculo com uma ou mais revisões de procedimentos executados;
+- estado das marcações de checklist/progresso;
+- histórico operacional;
+- concorrência/revisão de atendimento/equipamento;
+- regras quando o procedimento oficial muda durante/depois do atendimento;
+- matriz de permissões operacional.
 
-Escolher a alternativa mais simples que atenda ao uso real, sem criar workflow burocrático sem requisito.
+A solução deve permanecer simples e proporcional ao uso real, sem transformar atendimento em workflow burocrático.
 
 ## Bloco 10 — Exportação e impressão
 
-PDF, DOCX e impressão são obrigatórios. Fechar:
+PDF, DOCX e impressão continuam obrigatórios para documentação de procedimentos.
 
-- onde gerar cada formato;
-- bibliotecas/estratégia offline;
-- modelo comum exportável;
-- identidade da empresa;
-- paginação, listas, tabelas e blocos técnicos;
+Além disso, fechar a saída compacta de atendimento/equipamento:
+
+- geração própria, não screenshot;
+- conteúdo e identidade da empresa;
+- tamanho/layout físico;
+- impressão direta e formatos de arquivo necessários;
+- paginação/listas/blocos técnicos;
+- se QR/barcode traz valor real ou permanece fora do escopo;
 - critérios de validação.
 
 ## Bloco 11 — Backup e restauração
@@ -86,6 +112,7 @@ PDF, DOCX e impressão são obrigatórios. Fechar:
 Fechar:
 
 - backup consistente do SQLite + arquivos administrados;
+- inclusão de categorias, equipamentos e atendimentos;
 - formato do pacote;
 - validação;
 - retenção;
@@ -96,7 +123,7 @@ Fechar:
 
 Somente depois dos blocos anteriores:
 
-- resolver parâmetros operacionais ainda pendentes necessários à implementação, como valores finais de sessão/senha/permissões marcadas como pendentes;
+- resolver parâmetros operacionais pendentes necessários à implementação;
 - definir árvore oficial de Client/Host/launcher/contratos/testes/assets;
 - convenções e scripts;
 - arquivos ignorados/configuração de desenvolvimento;
@@ -124,11 +151,12 @@ Não bloqueiam a documentação atual, mas devem ser validadas antes da implanta
 - [x] comunicação definida;
 - [x] núcleo de autenticação/autorização definido;
 - [ ] parâmetros operacionais pendentes necessários à autenticação fechados antes da implementação correspondente;
-- [x] modelo de dados/migrations definidos;
-- [x] concorrência definida;
-- [ ] telas críticas especificadas/aprovadas;
-- [ ] checklist de execução decidido;
-- [ ] exportação/impressão definidas;
+- [x] modelo de dados/migrations definido no núcleo e extensão conceitual nova incorporada;
+- [x] concorrência geral definida;
+- [ ] telas críticas, incluindo categorias/atendimentos/equipamentos, especificadas/aprovadas;
+- [ ] execução operacional e checklist decididos;
+- [ ] matriz de permissões de categorias/equipamentos/atendimentos decidida;
+- [ ] exportação/impressão + ficha compacta definidas;
 - [ ] backup/restore definidos;
 - [ ] estrutura oficial do repositório definida;
 - [x] pendências não bloqueantes registradas;
