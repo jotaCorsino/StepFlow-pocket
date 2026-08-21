@@ -2,30 +2,56 @@
 
 **Atualização:** 2026-08-21
 
-Este arquivo registra apenas decisões vigentes e pendências atuais. Discussões, troubleshooting, provas descartáveis e propostas superadas permanecem no histórico Git.
+Este arquivo registra decisões vigentes e pendências atuais. Propostas não aprovadas ficam explicitamente identificadas como **PROPOSTA**, nunca como decisão.
 
 ## Produto e UX
 
-### Nome e propósito
+### Nome e propósito — consolidado
 
 - produto: **StepFlow**;
-- aplicação interna para documentação e execução guiada de processos técnicos;
+- aplicação interna para documentação e execução guiada de procedimentos técnicos;
 - uso não restrito à manutenção de computadores;
 - deve acomodar manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias e outros procedimentos internos;
 - evitar burocracia e campos sem valor operacional;
 - etapas funcionam como páginas de manual/livro;
 - sidebar esquerda, logo pequeno no topo esquerdo;
 - blocos copiáveis usam ícone discreto;
-- PDF, DOCX e impressão são requisitos obrigatórios para documentação.
+- PDF, DOCX e impressão são requisitos da documentação.
+
+### Novo requisito de 2026-08-21 — consolidado
+
+O PO confirmou:
+
+- sistema de categorização de procedimentos;
+- área para registrar dados específicos de computadores/notebooks quando o serviço exigir;
+- campos como nome, processador, RAM, armazenamento, versão do sistema, MAC/identificador útil, saúde da bateria quando aplicável e observações;
+- possibilidade de relacionar o registro a cliente e/ou ordem de serviço/referência útil para busca;
+- busca facilitada pelos identificadores operacionais disponíveis;
+- resumo do que foi feito/procedimentos realizados;
+- ficha/relatório compacto extraível/imprimível para anexação física ao equipamento;
+- essas funções não podem tornar o produto exclusivo de manutenção de PCs.
+
+### Modelagem da nova funcionalidade — PROPOSTA
+
+Ainda aguardam aprovação explícita do PO:
+
+- separar `Procedimento`, `Atendimento/Execução` e `Equipamento` como entidades distintas;
+- categorias configuráveis, simples e possivelmente múltiplas;
+- equipamento reutilizável entre atendimentos;
+- identificador interno/código StepFlow como identidade principal e MAC/serial/patrimônio como busca;
+- um atendimento poder usar mais de um procedimento;
+- atendimento preservar a revisão exata do procedimento utilizado;
+- `Atendimentos` como nome/item próprio na sidebar.
+
+Fonte da proposta: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
 ### Procedimento documental
 
-Campos principais vigentes:
+Campos principais atualmente consolidados continuam:
 
 - Código;
 - Título;
 - Área/Departamento;
-- Categorias;
 - Responsável;
 - Status;
 - Versão;
@@ -35,37 +61,7 @@ Campos principais vigentes:
 - Etapas;
 - Histórico.
 
-### Categorização
-
-- categorias são configuráveis, não hardcoded;
-- um procedimento pode pertencer a uma ou mais categorias;
-- categorias são pesquisáveis/filtráveis;
-- exemplos de categoria não formam enumeração fixa;
-- não criar hierarquia/taxonomia complexa sem necessidade comprovada.
-
-### Atendimento/execução e equipamento
-
-Nova decisão de produto consolidada em 2026-08-21:
-
-- `Procedimento` é o modelo oficial reutilizável;
-- `Atendimento/Execução` é uma ocorrência real de trabalho;
-- `Equipamento` é entidade opcional associável a atendimentos;
-- um atendimento pode usar um ou mais procedimentos;
-- atendimento deve preservar a revisão do procedimento efetivamente utilizada;
-- procedimentos podem existir sem atendimento formal;
-- atendimentos podem existir sem equipamento.
-
-Para computadores/notebooks, a ficha de equipamento suporta informações como nome, cliente/solicitante, processador, RAM, armazenamento, SO/versão, serial/patrimônio, MAC(s), saúde de bateria quando aplicável e observações.
-
-A identidade canônica do equipamento é interna ao StepFlow. MAC/serial/patrimônio são atributos úteis para busca, não chave canônica obrigatória.
-
-O sistema deve permitir busca operacional por código do atendimento/equipamento, OS/referência externa, cliente/solicitante, nome do equipamento, serial/patrimônio e MAC normalizado quando disponível.
-
-### Ficha compacta
-
-Atendimento com equipamento deve permitir gerar uma ficha/relatório compacto imprimível, com identidade, características principais, resumo do serviço/procedimentos e observações. A saída é documento próprio, não screenshot.
-
-Tamanho físico, formatos finais e estratégia técnica pertencem ao Bloco 10.
+`Categorias` é requisito novo confirmado, mas sua cardinalidade/modelagem final ainda está em aprovação.
 
 ### Perfis
 
@@ -75,30 +71,30 @@ Tamanho físico, formatos finais e estratégia técnica pertencem ao Bloco 10.
 
 Gerência não administra ADM. Funcionário é leitura/execução por padrão. Usuário pode editar avatar, nome de exibição, cargo e senha dentro das regras.
 
-A matriz exata de permissões para categorias, equipamentos e atendimentos permanece pendente para o Bloco 9.
+A matriz exata para categorias/serviços/equipamentos permanece pendente.
 
 ## Governança
 
 - GitHub é a fonte principal de verdade;
 - método PO + Assistente + Codex;
 - uma tarefa por vez;
-- toda tarefa Codex exige pré-flight de modelo/raciocínio separado do prompt;
-- `AGENTS.md` é a regra operacional superior para agentes;
-- prompt autoriza escopo, mas não revoga silenciosamente decisão consolidada;
-- mudança de decisão exige indicação explícita de aprovação do PO e atualização dos documentos vigentes;
-- toda tarefa Codex que altere arquivos declara branch/base + SHA;
-- alteração preexistente no working tree pertence ao PO/outro fluxo e não pode ser resetada, stashada, limpa, sobrescrita nem incorporada à tarefa;
-- base divergente ou arquivo necessário já modificado faz o Codex parar/reportar;
-- Fase 1 está em andamento; Bloco 8 em execução.
+- toda tarefa Codex exige pré-flight separado do prompt;
+- `AGENTS.md` é regra operacional superior;
+- prompt autoriza escopo, mas não revoga decisão consolidada;
+- mudança de decisão exige aprovação explícita do PO + atualização documental;
+- tarefa Codex que altera arquivos declara branch/base + SHA;
+- alteração preexistente no working tree pertence ao PO/outro fluxo;
+- base divergente ou arquivo necessário já modificado faz Codex parar/reportar;
+- Fase 1 em andamento; Bloco 8 em execução.
 
 ## Ambientes
 
-- desenvolvimento atual ocorre fora da LAN corporativa;
-- sessão Windows normal do PO e sandbox Codex são contextos distintos;
-- limitação do sandbox não vira requisito do StepFlow;
-- Codex não altera ACL, Schannel, registro, PATH global ou segurança para reparar ambiente;
-- operações dependentes de credenciais/elevação/Internet confiável/configuração global são reportadas para sessão normal do PO;
-- infraestrutura real da empresa ainda não está confirmada;
+- desenvolvimento atual fora da LAN corporativa;
+- sessão normal do PO e sandbox Codex são contextos distintos;
+- limitação do sandbox não vira requisito;
+- Codex não altera ACL/Schannel/registro/PATH global/segurança para reparar ambiente;
+- operações que exigem credenciais/elevação/Internet confiável/configuração global são reportadas para sessão normal do PO;
+- infraestrutura real da empresa ainda não confirmada;
 - exemplos históricos não são configuração;
 - testes LAN/SMB fora do ambiente real não validam nem bloqueiam implantação.
 
@@ -107,139 +103,129 @@ A matriz exata de permissões para categorias, equipamentos e atendimentos perma
 - implantação por pasta pronta;
 - nenhuma toolchain/runtime de desenvolvimento exigida na máquina central;
 - nenhum Windows Service StepFlow persistente;
-- nenhum auto-start, Task Scheduler, watchdog, tray agent ou daemon StepFlow como padrão;
-- Controller/Host iniciam sob demanda;
+- nenhum auto-start, Task Scheduler, watchdog, tray agent ou daemon como padrão;
+- Controller/Host sob demanda;
 - encerrado o ciclo central, nenhum processo StepFlow permanece ativo;
-- dados/config/logs/backups separados dos binários substituíveis.
+- dados/config/logs/backups separados dos binários.
 
 ## Client Windows
 
 - Tauri 2 + HTML/CSS/JavaScript modular;
 - alvo inicial Windows 10/11 x64;
-- WebView2 como renderer;
-- executável isolado sem Node/npm/Rust/Cargo no runtime;
-- Electron é contingência, não alternativa ativa.
+- WebView2;
+- executável isolado sem toolchain no runtime;
+- Electron apenas contingência.
 
 ## Launcher
 
 - launcher Rust x64 portátil/transitório;
 - ponto de entrada interno → Client versionado em `%LOCALAPPDATA%` → execução local → launcher encerra;
-- versões lado a lado e SHA-256;
-- sem instalador obrigatório/updater residente;
+- versões lado a lado + SHA-256;
+- sem updater residente;
 - launcher não inicia remotamente Host central.
 
 ## Host
 
 - Rust + Tokio/Axum + `rusqlite` bundled;
-- Controller portátil inicia Host como filho;
-- readiness, instância única e shutdown gracioso obrigatórios;
+- Controller inicia Host como filho;
+- readiness, instância única e shutdown gracioso;
 - ciclo central pertence ao Controller;
 - fechar Client individual não encerra Host;
-- auto-shutdown por último Client/timeout não está consolidado;
+- auto-shutdown por último Client/timeout não consolidado;
 - primeiro start central depende de ação local ou mecanismo corporativo existente/aprovado.
 
 ## Comunicação
 
-- HTTP/JSON para API;
-- WebSocket para eventos;
-- contratos inicialmente em `/api/v1`;
+- HTTP/JSON + WebSocket;
+- contratos inicialmente `/api/v1`;
 - `deployment.json` sem segredos;
 - handshake de compatibilidade antes do login;
 - primeira versão sem edição offline.
 
-## Autenticação e autorização
+## Autenticação/autorização
 
 Consolidado:
 
 - Argon2id;
 - sessão opaca server-side;
 - token somente em memória do Client inicialmente;
-- autorização sempre Host-side;
-- bootstrap do ADM principal somente local/controlado;
+- autorização Host-side;
+- bootstrap ADM local/controlado;
 - desativação preferida à exclusão quando houver histórico.
 
-Pendentes antes da implementação correspondente:
+Pendentes:
 
 - custo exato Argon2id;
-- tamanho mínimo final de senha;
-- expiração final de sessão;
-- permissão da Gerência para configuração da empresa;
-- permissão da Gerência para backup;
-- permissões operacionais de categorias/equipamentos/atendimentos.
+- senha mínima final;
+- expiração de sessão;
+- permissão da Gerência para configuração/backup;
+- permissões de categorização/registro operacional/equipamento.
 
 ## Dados e histórico
+
+Consolidado:
 
 - SQLite local ao Host;
 - revisões de procedimento imutáveis;
 - `revision_no` separado de `display_version`;
-- categorias configuráveis com relação múltipla a procedimentos;
-- equipamentos com identidade interna + código legível;
-- atendimentos formais com equipamento opcional;
-- atendimento referencia revisão de procedimento utilizada;
-- migrations numeradas/versionadas;
-- auditoria append-only separada de logs;
-- arquivamento/desativação preferidos à exclusão destrutiva normal.
+- migrations versionadas;
+- auditoria append-only;
+- arquivamento/desativação preferidos à exclusão destrutiva.
 
-A antiga exclusão de “entidade formal de execução” está **superada pelo requisito de 2026-08-21** e não é mais válida.
+Nova extensão de schema para categorias/atendimentos/equipamentos está **PROPOSTA**, não implementável como contrato até aprovação da modelagem.
+
+A antiga frase “nenhuma entidade formal de execução antes do Bloco 9” deixa de poder ser usada para negar o novo requisito de registro de serviço; porém o formato final dessa entidade ainda depende da aprovação da modelagem e do Bloco 9.
 
 ## Concorrência
 
 - WAL;
 - writer lógico coordenado;
 - fila bounded/backpressure;
-- revisão otimista onde houver risco de perda concorrente;
+- revisão otimista quando houver risco de perda;
 - conflitos não sobrescrevem automaticamente;
-- eventos somente pós-commit;
-- sem soft/hard lock inicial de edição;
-- dois Hosts não usam o mesmo data dir;
-- equipamentos/atendimentos adotam controle otimista equivalente quando aplicável.
+- eventos pós-commit;
+- sem soft/hard lock inicial;
+- dois Hosts não usam o mesmo data dir.
 
-## Fase 1 / UI
+Novos dados operacionais, se aprovados na modelagem proposta, seguirão os mesmos princípios.
 
-- sem scaffold/código de produção antes do Bloco 12/Fase 2;
-- PoC apenas quando autorizada e descartável;
-- Bloco 8 fecha UX/fluxos/estados, sem escolher tecnologia de exportação/backup;
+## Bloco 8 — UI/UX
+
 - Login consolidado;
-- núcleo do Shell consolidado, reaberto apenas para decidir item `Atendimentos`;
+- núcleo do Shell consolidado;
+- Shell reaberto somente para aprovar/rejeitar `Atendimentos` como nova entrada;
 - Dashboard em análise;
-- mapa do Bloco 8 expandido para categorias, atendimentos e equipamento.
+- mapa de telas ampliado pelos requisitos novos;
+- nenhuma UI de produção criada.
 
 ## Pendências vigentes
 
-### Bloco 8 — UI/UX
+### Aprovação imediata da modelagem nova
 
-- aprovar Dashboard;
-- decidir `Atendimentos` como item próprio da sidebar;
-- especificar lista/leitor/editor com categorias;
-- especificar lista de atendimentos + ficha de equipamento;
-- seguir demais telas previstas.
+1. `Procedimento × Atendimento/Execução × Equipamento` separados;
+2. categorias simples/configuráveis e potencialmente múltiplas;
+3. identificador interno/código StepFlow para equipamento;
+4. `Atendimentos` como termo/área operacional;
+5. múltiplos procedimentos por atendimento;
+6. vínculo histórico à revisão utilizada;
+7. necessidade de PDF da ficha além da impressão direta.
 
-### Bloco 9 — execução operacional, atendimento e checklist
+### Bloco 9
 
-Definir:
+Fechar lifecycle, checklist/progresso, conclusão/reabertura, concorrência/histórico específicos e matriz operacional de permissões.
 
-- lifecycle do atendimento;
-- marcações/progresso do checklist;
-- conclusão/reabertura;
-- vínculo operacional com revisão do procedimento;
-- concorrência/histórico específicos;
-- matriz de permissões de categorias/equipamentos/atendimentos.
+### Bloco 10
 
-### Bloco 10 — exportação
+Fechar tecnologia/formato da ficha compacta, além de PDF/DOCX/impressão dos procedimentos.
 
-- arquitetura/bibliotecas para PDF, DOCX e impressão;
-- formato/layout da ficha compacta de atendimento/equipamento;
-- decidir se ficha exige PDF além de impressão direta;
-- QR/barcode somente se houver valor aprovado.
+### Bloco 11
 
-### Bloco 11 — backup/restore
+Backup/restore incluindo novos dados aprovados.
 
-Fechar formato, retenção, validação e restauração segura incluindo os novos dados operacionais.
+### Bloco 12
 
-### Bloco 12 — estrutura/Fase 2
-
-Fechar parâmetros necessários, árvore oficial, scripts, contratos/testes e plano executável.
+Parâmetros finais, árvore oficial, scripts, contratos/testes e plano da Fase 2.
 
 ### Ambiente corporativo
 
-Confirmar Windows/WebView2, paths/SMB/permissões, hostname/porta, HTTP/HTTPS, antivírus/EDR/firewall e mecanismo real de start do Controller.
+Confirmar Windows/WebView2, SMB/permissões, hostname/porta, HTTP/HTTPS, antivírus/EDR/firewall e mecanismo real de start do Controller.
