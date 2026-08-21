@@ -10,14 +10,15 @@ Uma especificação só vira contrato visual/funcional quando estiver explicitam
 
 ## Especificações atuais
 
-- `01-login.md` — **CONSOLIDADO FUNCIONALMENTE**; identidade visual detalhada será compartilhada com o Shell;
-- `02-shell-sidebar.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
+- `01-login.md` — **CONSOLIDADO FUNCIONALMENTE**; identidade visual detalhada será compartilhada com o sistema visual do Shell;
+- `02-shell-sidebar.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- `03-dashboard.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
 ## Mapa de telas
 
 1. Login — contrato funcional consolidado;
-2. Shell principal/sidebar — em análise;
-3. Início/Dashboard;
+2. Shell principal/sidebar — consolidado;
+3. Início/Dashboard — em análise;
 4. Lista e pesquisa de processos;
 5. Leitura do processo em formato livro;
 6. Editor de processo/etapas;
@@ -32,8 +33,10 @@ Uma especificação só vira contrato visual/funcional quando estiver explicitam
 ## Direção visual já aprovada
 
 - visual corporativo, limpo e discreto;
-- sidebar esquerda;
+- sidebar esquerda persistente;
 - logo pequeno no topo esquerdo, proporção preservada;
+- sem topbar global redundante;
+- perfil/avatar no rodapé da sidebar;
 - leitura técnica como prioridade;
 - processos apresentados como manual/livro;
 - comandos/blocos copiáveis com ícone discreto;
@@ -56,8 +59,8 @@ O Bloco 8 **não escolhe** bibliotecas, formato interno de pacote, mecanismo de 
 ## Ordem de trabalho do Bloco 8
 
 1. Login — consolidado funcionalmente;
-2. Shell/sidebar — em análise;
-3. Início/Dashboard;
+2. Shell/sidebar — consolidado;
+3. Início/Dashboard — em análise;
 4. Lista/pesquisa;
 5. Leitor em formato livro;
 6. Editor;
