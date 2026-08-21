@@ -10,12 +10,13 @@ Uma especificação só vira contrato visual/funcional quando estiver explicitam
 
 ## Especificações atuais
 
-- `01-login.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
+- `01-login.md` — **CONSOLIDADO FUNCIONALMENTE**; identidade visual detalhada será compartilhada com o Shell;
+- `02-shell-sidebar.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
 ## Mapa de telas
 
-1. Login;
-2. Shell principal/sidebar;
+1. Login — contrato funcional consolidado;
+2. Shell principal/sidebar — em análise;
 3. Início/Dashboard;
 4. Lista e pesquisa de processos;
 5. Leitura do processo em formato livro;
@@ -52,10 +53,10 @@ Para Backup/Restauração e Exportação/Impressão, o Bloco 8 pode definir:
 
 O Bloco 8 **não escolhe** bibliotecas, formato interno de pacote, mecanismo de geração de PDF/DOCX, estratégia de backup SQLite, retenção ou detalhes técnicos que pertencem aos Blocos 10 e 11. Se a especificação de tela depender desses detalhes, registrar a dependência sem inventar a solução.
 
-## Ordem recomendada do Bloco 8
+## Ordem de trabalho do Bloco 8
 
-1. Login;
-2. Shell/sidebar;
+1. Login — consolidado funcionalmente;
+2. Shell/sidebar — em análise;
 3. Início/Dashboard;
 4. Lista/pesquisa;
 5. Leitor em formato livro;
