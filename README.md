@@ -37,8 +37,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 2 | Shell / sidebar | ✅ Consolidado |
 | 3 | Início / Dashboard | ✅ Consolidado |
 | 4 | Lista / pesquisa de Processos | ✅ Consolidado |
-| 5 | Leitor em formato livro | 🟡 Próximo |
-| 6 | Editor de Processo + categorias | ⏳ Pendente |
+| 5 | Leitor em formato livro | ✅ Consolidado |
+| 6 | Editor de Processo + categorias | 🟡 Em análise |
 | 7 | Histórico | ⏳ Pendente |
 | 8 | Lista / pesquisa de Atendimentos | ⏳ Pendente |
 | 9 | Atendimento / execução + equipamento | ⏳ Pendente |
@@ -68,7 +68,7 @@ Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. 
 
 ### Próximo passo
 
-**Tela 05 — Leitor em formato livro.**
+**Tela 06 — Editor de Processo + Categorias.**
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 

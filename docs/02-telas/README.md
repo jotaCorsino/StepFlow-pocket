@@ -14,7 +14,8 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `02-shell-sidebar.md` — **CONSOLIDADO**, incluindo `Atendimentos`;
 - `03-dashboard.md` — **CONSOLIDADO**;
 - `04-lista-pesquisa-processos.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- `05-leitor-processo.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
+- `05-leitor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- `06-editor-processo.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
 ## Domínio operacional aprovado
 
@@ -40,8 +41,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 2. Shell/sidebar — consolidado;
 3. Início/Dashboard — consolidado;
 4. Lista/pesquisa de Processos — consolidado;
-5. Leitor em formato livro — **em análise**;
-6. Editor de Processo + categorias;
+5. Leitor em formato livro — consolidado;
+6. Editor de Processo + categorias — **em análise**;
 7. Histórico;
 8. Lista/pesquisa de Atendimentos;
 9. Atendimento/execução + ficha do equipamento;
@@ -65,33 +66,45 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 - feedback curto de cópia;
 - Funcionário predominantemente em leitura/execução.
 
-## Lista/Pesquisa de Processos — decisões consolidadas
+## Lista/Pesquisa de Processos — consolidado
 
 - lista/tabela compacta;
 - busca por código, título ou termo;
-- filtros principais por Categoria e Área;
-- Status somente quando útil ao perfil;
+- filtros Categoria + Área;
+- Status somente quando útil;
 - categorias múltiplas com semântica OU inicialmente;
-- categorias como labels/chips discretos;
-- abertura padrão no leitor;
+- abertura padrão no Leitor;
 - ações administrativas contextuais;
-- `Arquivar` em vez de `Excluir` na operação normal;
-- retorno do leitor preserva pesquisa/filtros;
-- busca documental separada da busca operacional de Atendimentos.
+- `Arquivar` em vez de `Excluir`;
+- retorno preserva busca/filtros.
 
-## Leitor — propostas em análise
+## Leitor — consolidado
 
 - `Visão geral` antes da Etapa 1;
 - uma etapa por página;
-- `Sumário` temporário em vez de segunda sidebar fixa;
-- `Etapa X de Y` como posição de navegação, não conclusão;
+- Sumário temporário;
+- `Etapa X de Y` como posição, não conclusão;
 - Anterior/Próxima;
-- categorias discretas no cabeçalho;
-- checklist documental separado de estado operacional;
-- nova revisão disponível não substitui silenciosamente a revisão aberta;
-- ponto de entrada futuro `Iniciar atendimento`, sem antecipar Bloco 9.
+- categorias discretas;
+- checklist documental separado do operacional;
+- nova revisão não substitui silenciosamente a aberta;
+- ponto futuro `Iniciar atendimento`, sem antecipar Bloco 9.
 
 Fonte: `05-leitor-processo.md`.
+
+## Editor — propostas em análise
+
+- separar `Informações` e `Etapas`;
+- painel contextual `Estrutura` para etapas;
+- salvamento explícito, sem autosave inicial;
+- blocos tipados, sem HTML livre;
+- categorias selecionadas no Editor e gerenciadas fora dele;
+- reordenação por drag-and-drop + ações acessíveis;
+- conflito preserva alterações locais e nunca sobrescreve automaticamente;
+- `Visualizar` usa última revisão salva;
+- `Salvar` e `Publicar revisão atual` são ações distintas.
+
+Fonte: `06-editor-processo.md`.
 
 ## Limite do Bloco 8
 
