@@ -2,11 +2,15 @@
 
 ## Estado
 
-**Bloco 8 da Fase 1 — próximo bloco de trabalho.**
+**Bloco 8 da Fase 1 — EM ANDAMENTO.**
 
-Esta pasta conterá somente especificações de telas que estiverem em análise ou consolidadas. Cada tela relevante deve usar `docs/templates/template-analise-de-tela.md`.
+Esta pasta contém somente especificações de telas que estejam em análise ou consolidadas. Cada tela relevante deve usar `docs/templates/template-analise-de-tela.md`.
 
 Uma especificação só vira contrato visual/funcional quando estiver explicitamente aprovada/consolidada.
+
+## Especificações atuais
+
+- `01-login.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
 ## Mapa de telas
 
