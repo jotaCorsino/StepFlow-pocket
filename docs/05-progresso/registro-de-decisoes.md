@@ -67,6 +67,20 @@ Campos principais continuam:
 - Etapas;
 - Histórico.
 
+### Lista/Pesquisa de Processos — consolidado em 2026-08-21
+
+- visualização padrão em lista/tabela compacta;
+- busca por Código, Título ou termo documental;
+- filtros principais por Categoria e Área;
+- filtro Status somente para perfis que realmente precisem trabalhar com estados diferentes;
+- categorias permitem seleção múltipla simples com semântica **OU** inicialmente;
+- categorias aparecem como labels/chips discretos;
+- ação principal abre o leitor, não o editor;
+- ações administrativas ficam contextuais;
+- `Arquivar` é a operação normal em vez de `Excluir`;
+- retorno do leitor preserva busca/filtros;
+- busca documental de `Processos` permanece separada da busca operacional de `Atendimentos`.
+
 ### Perfis
 
 - ADM;
@@ -195,16 +209,17 @@ Consolidado:
 
 - Login consolidado;
 - Shell consolidado, incluindo `Atendimentos`;
-- Dashboard aprovado em sua direção enxuta e sem KPIs/gráficos;
-- Lista/Pesquisa de Processos passa a incluir categorias;
-- mapa de telas inclui superfícies futuras de Atendimento/Equipamento;
+- Dashboard consolidado em direção enxuta, sem KPIs/gráficos;
+- Lista/Pesquisa de Processos consolidada com categorização;
+- próxima superfície: **Leitor em formato livro**;
+- mapa de telas inclui Atendimento/Equipamento;
 - nenhuma UI de produção criada.
 
 ## Pendências vigentes
 
 ### Bloco 8
 
-Continuar especificação/aprovação das telas, começando pela Lista/Pesquisa de Processos com categorização e depois Leitor/Editor.
+Continuar pela Tela 05 — Leitor em formato livro — e depois Editor/Histórico/Atendimentos e demais superfícies.
 
 ### Bloco 9
 

@@ -51,9 +51,9 @@ Documentar/aprovar antes do código:
 1. Login;
 2. Shell/sidebar;
 3. Dashboard;
-4. lista/pesquisa de processos com categorização;
+4. lista/pesquisa de Processos com categorização;
 5. leitura em formato livro;
-6. editor de processo + categorização;
+6. editor de Processo + categorização;
 7. histórico;
 8. lista/pesquisa de Atendimentos;
 9. Atendimento/execução + ficha do equipamento;
@@ -69,7 +69,8 @@ Documentar/aprovar antes do código:
 - `01-login.md` — consolidado;
 - `02-shell-sidebar.md` — consolidado, incluindo `Atendimentos`;
 - `03-dashboard.md` — consolidado;
-- `04-lista-pesquisa-processos.md` — em análise/proposta para aprovação;
+- `04-lista-pesquisa-processos.md` — consolidado;
+- **próximo: Tela 05 — Leitor em formato livro**;
 - nenhuma UI de produção criada.
 
 Lifecycle, checklist e permissões operacionais detalhadas permanecem para o Bloco 9. Tecnologia/formato final da ficha compacta permanece para o Bloco 10.

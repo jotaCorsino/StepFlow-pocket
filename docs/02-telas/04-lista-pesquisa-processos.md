@@ -1,8 +1,8 @@
 # Tela 04 — Lista e Pesquisa de Processos
 
-**Status:** EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO  
+**Status:** CONSOLIDADO / APROVADO PELO PO  
 **Bloco:** Fase 1 — Bloco 8 (UI/UX)  
-**Última consolidação:** 2026-08-21
+**Aprovação:** 2026-08-21
 
 ## 1. Objetivo
 
@@ -16,17 +16,15 @@ Esta tela pesquisa **documentação/procedimentos**. Registros de serviço, OS, 
 - Gerência;
 - Funcionário.
 
-Todos podem consultar procedimentos autorizados. Ações de criação/edição/publicação/arquivamento dependem das capacidades efetivas da sessão.
+Todos podem consultar procedimentos autorizados. Criação, edição, publicação e arquivamento dependem das capacidades efetivas da sessão.
 
 ## 3. Entrada
 
-A tela pode ser aberta por:
-
 - item `Processos` da sidebar;
-- busca rápida do Dashboard, com termo já aplicado;
-- retornos contextuais de outras telas.
+- busca rápida do Dashboard com termo já aplicado;
+- retorno contextual de outras telas.
 
-## 4. Estrutura proposta
+## 4. Estrutura aprovada
 
 ```text
 Processos                                      [ Novo processo* ]
@@ -46,39 +44,36 @@ PR-020    Reset de senha              Help Desk      SD     1.1
 * somente quando autorizado
 ```
 
-A tabela/lista deve favorecer leitura rápida e densidade moderada. Cards grandes não são o padrão inicial para esse tipo de consulta.
+A visualização padrão usa **lista/tabela compacta**, não cards grandes.
 
 ## 5. Busca textual
 
-A busca deve aceitar, no mínimo:
+A busca aceita, no mínimo:
 
 - Código;
 - Título;
 - termos compatíveis com os campos indexados definidos pelo Host.
 
-Direção proposta:
+Regras:
 
-- busca executada explicitamente por Enter/ação de busca ou com debounce controlado se a implementação demonstrar benefício;
-- não iniciar dezenas de consultas enquanto o usuário digita;
 - termo vindo do Dashboard aparece preenchido e aplicado;
 - busca vazia mostra listagem padrão autorizada;
+- execução por Enter/ação explícita ou debounce controlado, sem tempestade de requisições;
 - não pesquisar dados operacionais de `Atendimentos` nesta tela.
-
-A estratégia técnica de normalização/índices pertence à implementação do Host, seguindo o modelo de dados vigente.
 
 ## 6. Filtro por categorias
 
 Categorias são configuráveis e um procedimento pode possuir múltiplas.
 
-### Proposta de UX
+Aprovado:
 
-- filtro `Categoria` permite escolher uma ou mais categorias;
-- seleção múltipla usa comportamento simples, sem árvore hierárquica;
-- quando várias categorias forem selecionadas, a primeira versão pode aplicar semântica **OU**: mostrar procedimento pertencente a qualquer uma das categorias selecionadas;
+- seleção de uma ou mais categorias;
+- sem árvore hierárquica na primeira versão;
+- múltiplas categorias usam semântica **OU** inicialmente: o procedimento aparece se pertencer a qualquer categoria selecionada;
 - filtros ativos ficam visíveis e removíveis;
-- categoria arquivada não aparece como opção normal para novos filtros, salvo contexto administrativo/histórico.
+- categoria arquivada não aparece como opção normal de novo filtro.
 
-A semântica `OU` é proposta para aprovação; não implementar `E`/construtor avançado sem necessidade real.
+Não criar construtor avançado `E/OU` sem necessidade futura aprovada.
 
 ## 7. Outros filtros
 
@@ -88,26 +83,20 @@ Filtro simples pelas áreas existentes nos procedimentos visíveis.
 
 ### Status
 
-Somente quando fizer sentido para o perfil:
-
-- Funcionário vê essencialmente conteúdo publicado/disponível para consulta;
-- ADM/Gerência podem precisar diferenciar rascunho/publicado/arquivado conforme o lifecycle documental consolidado posteriormente.
-
-Não transformar `Status` em filtro burocrático se o usuário não puder agir sobre estados diferentes.
+Somente para perfis que realmente precisem trabalhar com estados documentais diferentes. Funcionário recebe essencialmente conteúdo publicado/disponível; ADM/Gerência podem receber filtro adicional conforme capacidades.
 
 ## 8. Ordenação
 
-Proposta inicial:
+Direção consolidada:
 
-- sem busca textual: ordenar por Código ou Título de forma estável e previsível;
-- com busca: relevância compatível com o mecanismo de busca, com desempate estável;
-- permitir ordenação por Código, Título e atualização quando isso trouxer valor.
+- ordem estável e previsível;
+- sem busca textual: Código ou Título como ordenação padrão final a fechar visualmente;
+- com busca: relevância do mecanismo + desempate estável;
+- Código, Título e atualização podem ser opções se úteis.
 
-A ordem padrão final pode ser fechada junto da validação visual; não depende de mudança de domínio.
+A escolha exata da ordenação padrão não altera o domínio e pode ser fechada durante validação visual.
 
-## 9. Colunas/informações da lista
-
-Informações prioritárias:
+## 9. Colunas prioritárias
 
 - Código;
 - Título;
@@ -115,118 +104,104 @@ Informações prioritárias:
 - Área/Departamento;
 - Versão exibida.
 
-Informações secundárias opcionais quando úteis:
+Secundários, quando úteis:
 
 - Responsável;
 - data de atualização/publicação;
 - status para perfis administrativos.
 
-Evitar excesso de colunas na visualização padrão.
+Evitar excesso de colunas.
 
 ## 10. Exibição das categorias
 
-Proposta:
-
-- categorias aparecem como labels/chips discretos;
-- mostrar quantidade limitada por linha quando houver muitas;
+- labels/chips discretos;
 - excesso pode aparecer como `+N`/expansão acessível;
-- cor não é a única forma de distinguir categoria;
-- não usar uma cor exclusiva fixa por categoria como requisito inicial.
+- cor não é a única forma de distinção;
+- não exigir uma cor fixa exclusiva por categoria.
 
 ## 11. Abertura do procedimento
 
-Ação principal da linha é abrir o **Leitor em formato livro**.
+A ação principal da linha abre o **Leitor em formato livro**.
 
-Comportamento proposto:
+- clique/título abre o leitor;
+- teclado oferece ação equivalente;
+- usuário com permissão de edição não é jogado diretamente no editor.
 
-- clique no título/linha abre o leitor;
-- foco/Enter em elemento equivalente também abre;
-- não abrir diretamente o editor apenas porque o usuário possui permissão de edição.
+Leitura continua sendo o caminho principal.
 
-Isso mantém a leitura como caminho principal e evita edição acidental.
-
-## 12. Ações para perfis autorizados
+## 12. Ações administrativas
 
 ### Novo processo
 
-Botão `Novo processo` aparece apenas com capacidade de criação.
+Aparece somente com capacidade de criação.
 
-### Ações por item
+### Menu contextual por item
 
-Quando autorizado, menu contextual discreto pode incluir:
+Quando autorizado, pode incluir:
 
 - Editar;
 - Histórico;
 - Publicar, quando aplicável;
 - Arquivar.
 
-`Arquivar` é preferível a `Excluir` na UI normal, alinhado ao modelo de dados.
+Na operação normal usar **Arquivar**, não `Excluir`. Ações destrutivas ou irreversíveis exigem confirmação proporcional.
 
-Ação destrutiva exige confirmação apropriada.
+## 13. Preservação do contexto
 
-## 13. Estados
+Ao retornar do leitor, preservar preferencialmente:
+
+- termo de busca;
+- categorias selecionadas;
+- área/status;
+- ordenação;
+- página/posição quando aplicável.
+
+Não obrigar o técnico a refazer a pesquisa.
+
+## 14. Estados
 
 ### Loading
 
-- preservar estrutura da tela;
-- evitar spinner por linha;
-- filtros não devem parecer aplicados antes da resposta atual.
+Preservar estrutura da tela; evitar spinner por linha.
 
 ### Nenhum resultado
 
-Mensagem contextual:
+`Nenhum processo encontrado com os filtros atuais.`
 
-- `Nenhum processo encontrado com os filtros atuais.`
-- ação `Limpar filtros` quando filtros estiverem ativos.
+Oferecer `Limpar filtros` quando aplicável.
 
 ### Nenhum processo cadastrado
 
 - Funcionário: informar ausência de procedimentos disponíveis;
-- usuário com criação: pode receber ação contextual `Novo processo`.
+- perfil com criação: pode receber ação contextual `Novo processo`.
 
 ### Host indisponível
 
-Seguir estado transversal do Shell; não apresentar cache como resultado atual sem indicação.
+Seguir estado transversal do Shell; não apresentar cache como atual sem indicação.
 
-### Sessão/permissão alterada
+### Mudança de permissão
 
-Reconciliar lista/ações conforme novas capacidades; Host continua autoridade.
+Reconciliar resultados e ações; Host continua autoridade.
 
-## 14. Atualização em tempo real
+## 15. Atualização em tempo real
 
-Quando evento indicar alteração/publicação/arquivamento de procedimento ou categoria relevante:
+Eventos de alteração/publicação/arquivamento/categoria provocam invalidação e reconsulta do estado relevante.
 
-- invalidar/reconsultar resultados afetados;
-- preservar termo/filtros atuais;
-- evitar reposicionar agressivamente a lista enquanto o usuário interage, salvo necessidade de consistência.
+Preservar filtros e evitar reposicionamento agressivo enquanto o usuário interage.
 
-## 15. Paginação / volume
+## 16. Paginação / volume
 
-A lista não deve carregar quantidade indefinida de registros de uma vez.
-
-Direção proposta:
-
+- não carregar quantidade indefinida de registros;
 - paginação simples ou carregamento incremental controlado;
-- tamanho de página definido na implementação após estimativa/medição do volume real;
-- filtros/termo permanecem ao navegar entre páginas;
-- não exigir virtualização complexa sem necessidade demonstrada.
+- tamanho final de página será definido após estimativa/medição real;
+- filtros e termo persistem entre páginas;
+- não exigir virtualização complexa sem evidência.
 
-## 16. URL/estado de navegação
+## 17. Contratos conceituais
 
-Mesmo em Tauri, o estado da tela deve ser representável internamente de forma previsível:
+A tela depende de:
 
-- termo de busca;
-- categorias selecionadas;
-- área/status aplicáveis;
-- página/ordenação quando necessário.
-
-Voltar do leitor deve preferencialmente restaurar a consulta anterior em vez de zerar o contexto do usuário.
-
-## 17. Dados/contratos necessários
-
-A tela depende conceitualmente de:
-
-1. consulta paginada/listável de procedimentos autorizados;
+1. consulta paginada de procedimentos autorizados;
 2. busca textual;
 3. filtro por categoria;
 4. filtro por área/status quando aplicável;
@@ -235,30 +210,28 @@ A tela depende conceitualmente de:
 7. abertura por `process_id` estável;
 8. eventos/reconsulta após mudanças.
 
-Nomes finais de rotas ficam para implementação.
+Nomes de rotas ficam para implementação.
 
 ## 18. Segurança e autorização
 
-- Host filtra os resultados;
-- Funcionário não recebe rascunhos/arquivados sem permissão;
-- ocultar `Novo processo`/ações no Client não substitui autorização;
-- categoria não concede acesso a procedimento por si só;
-- manipulação de filtros/estado não permite leitura indevida.
+- Host filtra resultados;
+- Funcionário não recebe conteúdo não autorizado;
+- ocultar ações no Client não substitui autorização;
+- categoria não concede acesso por si só;
+- manipulação de filtros não permite leitura indevida.
 
 ## 19. Concorrência
 
-A lista é predominantemente leitura.
-
-Ações de edição/publicação/arquivamento seguem revisão otimista e regras do documento de concorrência; a lista não cria locking próprio.
+A lista é leitura predominante. Edição/publicação/arquivamento seguem revisão otimista e regras gerais de concorrência; a lista não cria locking próprio.
 
 ## 20. Acessibilidade e teclado
 
-- busca e filtros possuem labels acessíveis;
-- filtros são operáveis por teclado;
-- tabela/lista possui estrutura semântica adequada;
-- linha/ação de abrir procedimento é identificável;
+- busca/filtros com labels acessíveis;
+- filtros operáveis por teclado;
+- tabela/lista semanticamente adequada;
+- ação de abrir identificável;
 - foco visível;
-- menus contextuais fecham com Escape;
+- menu contextual fecha com Escape;
 - estado de filtro não depende só de cor.
 
 ## 21. Janelas menores
@@ -270,65 +243,65 @@ Prioridade de preservação:
 3. Categorias;
 4. Área/Versão.
 
-Informações secundárias podem colapsar/reorganizar em janelas menores. Rolagem horizontal extensa deve ser evitada quando houver alternativa de layout.
+Informações secundárias podem colapsar/reorganizar. Evitar rolagem horizontal extensa quando houver alternativa.
 
-## 22. Relação com Atendimentos
+## 22. Separação de Atendimentos
 
-Esta tela **não** pesquisa:
+Esta tela não pesquisa:
 
-- código do atendimento;
+- código de atendimento;
 - ordem de serviço;
 - cliente/solicitante operacional;
 - equipamento;
 - serial/patrimônio/MAC;
 - resumo de serviço executado.
 
-Esses filtros pertencem à futura lista de `Atendimentos`.
+Esses campos pertencem à futura lista de `Atendimentos`.
 
-Pode existir futuramente ação contextual `Iniciar atendimento com este procedimento`, mas seu comportamento depende do Bloco 9 e não é consolidado nesta tela.
+Uma futura ação `Iniciar atendimento com este procedimento` depende do Bloco 9 e não é definida aqui.
 
 ## 23. Fora do escopo
 
-- editor do procedimento;
+- editor detalhado;
 - leitor detalhado;
 - lifecycle de Atendimento;
 - busca operacional por equipamento/OS;
 - taxonomia hierárquica;
-- mecanismo FTS5 específico;
+- escolha de FTS5;
 - código de produção.
 
-## 24. Propostas para aprovação do PO
+## 24. Decisões consolidadas nesta tela
 
-1. layout em tabela/lista compacta, não cards grandes;
-2. filtros principais `Categoria` + `Área`, com `Status` somente para perfis que precisem;
+1. lista/tabela compacta;
+2. filtros principais `Categoria` + `Área`, com `Status` apenas quando útil ao perfil;
 3. categoria com seleção múltipla simples;
-4. múltiplas categorias selecionadas usam semântica **OU** inicialmente;
-5. categorias exibidas como labels/chips discretos na linha;
-6. clicar no procedimento abre o leitor, não o editor;
-7. ações administrativas ficam em menu contextual;
+4. semântica **OU** para múltiplas categorias;
+5. categorias como labels/chips discretos;
+6. abrir procedimento leva ao leitor, não ao editor;
+7. ações administrativas em menu contextual;
 8. `Arquivar` em vez de `Excluir` na operação normal;
-9. voltar do leitor restaura busca/filtros;
-10. busca de `Processos` permanece separada da busca operacional de `Atendimentos`.
+9. retorno do leitor preserva busca/filtros;
+10. busca documental de `Processos` separada da busca operacional de `Atendimentos`.
 
-## 25. Pendências
+## 25. Pendências visuais/de implementação
 
-- ordem padrão final;
-- quantidade/tamanho de página;
+- ordenação padrão final;
+- tamanho de página;
 - microcopy final;
-- comportamento visual exato do multi-select de categorias;
-- necessidade futura de filtros adicionais após uso real.
+- aparência exata do multiselect de categorias;
+- filtros adicionais apenas se uso real justificar.
 
-## 26. Critérios de aceite da especificação
+## 26. Critérios de aceite
 
 - [x] categorização incorporada;
-- [x] múltiplas categorias não exigem taxonomia complexa;
+- [x] múltiplas categorias sem taxonomia complexa;
 - [x] consulta documental separada de Atendimento;
-- [x] autorização permanece Host-side;
-- [x] nenhuma implementação criada;
-- [ ] layout lista/tabela aprovado pelo PO;
-- [ ] filtros aprovados pelo PO;
-- [ ] semântica OU para categorias aprovada;
-- [ ] navegação/ações aprovadas.
+- [x] autorização Host-side;
+- [x] layout lista/tabela aprovado;
+- [x] filtros aprovados;
+- [x] semântica OU aprovada;
+- [x] navegação/ações aprovadas;
+- [x] nenhuma implementação criada.
 
 ## 27. Casos de teste futuros
 
@@ -343,7 +316,7 @@ Pode existir futuramente ação contextual `Iniciar atendimento com este procedi
 9. item abre leitor correto;
 10. voltar preserva contexto;
 11. categoria arquivada não aparece em filtro normal;
-12. evento de atualização reconcilia resultado;
+12. evento relevante reconcilia resultado;
 13. estado vazio permite limpar filtros;
 14. teclado/acessibilidade funcionam;
 15. busca não retorna Atendimento/equipamento por engano.

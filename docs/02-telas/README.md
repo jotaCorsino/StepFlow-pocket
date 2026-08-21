@@ -13,11 +13,12 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `01-login.md` — **CONSOLIDADO FUNCIONALMENTE**;
 - `02-shell-sidebar.md` — **CONSOLIDADO**, incluindo `Atendimentos`;
 - `03-dashboard.md` — **CONSOLIDADO**;
-- `04-lista-pesquisa-processos.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
+- `04-lista-pesquisa-processos.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 05 — Leitor em formato livro**.
 
 ## Domínio operacional aprovado
 
-O StepFlow passa a distinguir:
+O StepFlow distingue:
 
 - `Processos` — documentação/modelos oficiais;
 - `Atendimentos` — ocorrências reais de execução/serviço;
@@ -25,22 +26,22 @@ O StepFlow passa a distinguir:
 
 Também estão aprovados:
 
-- categorias configuráveis e múltiplas para procedimentos;
-- identidade interna própria do equipamento, sem depender exclusivamente de MAC/serial/patrimônio;
+- categorias configuráveis e múltiplas;
+- identidade interna própria do equipamento;
 - múltiplos procedimentos por atendimento;
 - vínculo histórico à revisão realmente utilizada;
 - ficha compacta imprimível de atendimento/equipamento.
 
 Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
-## Mapa de telas atual
+## Mapa de telas
 
 1. Login — consolidado;
 2. Shell/sidebar — consolidado;
 3. Início/Dashboard — consolidado;
-4. Lista/pesquisa de processos — em análise, com categorização;
-5. Leitura em formato livro — mostrar categorização de forma discreta;
-6. Editor de processo — permitir categorização;
+4. Lista/pesquisa de Processos — consolidado;
+5. Leitor em formato livro — **próximo**;
+6. Editor de Processo + categorias;
 7. Histórico;
 8. Lista/pesquisa de Atendimentos;
 9. Atendimento/execução + ficha do equipamento;
@@ -64,54 +65,40 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 - feedback curto de cópia;
 - Funcionário predominantemente em leitura/execução.
 
+## Lista/Pesquisa de Processos — decisões consolidadas
+
+- lista/tabela compacta;
+- busca por código, título ou termo;
+- filtros principais por Categoria e Área;
+- Status somente quando útil ao perfil;
+- categorias múltiplas com semântica OU inicialmente;
+- categorias como labels/chips discretos;
+- abertura padrão no leitor;
+- ações administrativas contextuais;
+- `Arquivar` em vez de `Excluir` na operação normal;
+- retorno do leitor preserva pesquisa/filtros;
+- busca documental separada da busca operacional de Atendimentos.
+
 ## Limite do Bloco 8
 
 O Bloco 8 fecha UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional.
 
-Pode definir:
+Não decide sozinho:
 
-- como categorias aparecem em listas/leitor/editor;
-- como o usuário informa dados de atendimento/equipamento;
-- como pesquisa cliente/OS/identificadores na área `Atendimentos`;
-- onde vê resumo do trabalho;
-- onde aciona geração/impressão da ficha.
-
-Não pode decidir sozinho:
-
-- lifecycle/status final do atendimento;
+- lifecycle/status final do Atendimento;
 - checklist/progresso operacional;
 - matriz de permissões operacional;
 - tecnologia/formato final da ficha compacta.
 
 Esses pontos pertencem aos Blocos 9 e 10.
 
-## Ordem de trabalho do Bloco 8
-
-1. Login — consolidado;
-2. Shell/sidebar — consolidado;
-3. Dashboard — consolidado;
-4. Lista/pesquisa de processos + categorização — **em análise**;
-5. Leitor;
-6. Editor + categorização;
-7. Histórico;
-8. Lista/pesquisa de Atendimentos;
-9. Atendimento + equipamento;
-10. Usuários/permissões;
-11. Perfil;
-12. Configurações + categorias;
-13. Backup/restauração — UX/fluxo;
-14. Exportação/impressão + ficha compacta — UX/fluxo;
-15. estados transversais.
-
-Não criar UI de produção antes da aprovação correspondente.
-
 ## Regra de separação de busca
 
-- `Processos`: código, título, termo, área, categoria e demais metadados documentais aprovados;
+- `Processos`: código, título, termo, área, categoria e metadados documentais aprovados;
 - `Atendimentos`: código de atendimento, OS/referência, cliente, equipamento, serial/patrimônio/MAC e dados operacionais.
 
-Não misturar os dois domínios em uma única pesquisa global sem requisito explícito.
+Não misturar os dois domínios em pesquisa global sem requisito explícito.
 
 ## Regra de parada
 
-Quando a tela depender de lifecycle/checklist/exportação ainda pendentes, documentar a dependência e parar no limite aprovado. Não inventar solução técnica ou regra de negócio.
+Quando uma tela depender de lifecycle/checklist/exportação ainda pendentes, documentar a dependência e parar no limite aprovado. Não inventar solução técnica ou regra de negócio.

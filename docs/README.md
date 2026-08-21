@@ -1,6 +1,6 @@
 # Documentação do StepFlow Pocket
 
-Esta pasta contém apenas a documentação ativa necessária para entender e evoluir o projeto. Troubleshooting concluído, tarefas antigas e provas descartáveis devem ser consultados pelo histórico Git quando necessário, não mantidos como documentos vigentes.
+Esta pasta contém a documentação ativa necessária para entender e evoluir o projeto. O `README.md` da raiz funciona como **painel resumido de acompanhamento**, mas não substitui as fontes de decisão abaixo.
 
 ## Precedência
 
@@ -13,7 +13,7 @@ Em caso de divergência durante uma tarefa:
 5. enunciado da tarefa, dentro das decisões vigentes;
 6. material histórico no Git.
 
-O enunciado autoriza escopo, mas não revoga decisão consolidada. Proposta marcada como proposta não pode ser implementada como decisão sem aprovação do PO.
+O enunciado autoriza escopo, mas não revoga decisão consolidada. Proposta não pode ser implementada como decisão sem aprovação do PO.
 
 ## Leitura eficiente para Codex
 
@@ -47,25 +47,27 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 ### Produto — `01-produto`
 
 - `visao-geral.md` — propósito, usuários, requisitos e limites;
-- `categorizacao-atendimentos-equipamentos.md` — **requisitos novos confirmados** de categorização/registro de serviço/equipamento/ficha compacta + **modelagem recomendada ainda em proposta**.
+- `categorizacao-atendimentos-equipamentos.md` — categorização e domínio `Procedimento × Atendimento × Equipamento`, já aprovados conceitualmente, além das pendências dos Blocos 9/10.
 
 ### Telas — `02-telas`
 
 - `README.md` — mapa/limites do Bloco 8;
 - `01-login.md` — Login consolidado;
-- `02-shell-sidebar.md` — núcleo consolidado, extensão operacional em aprovação;
-- `03-dashboard.md` — Dashboard em análise/proposta.
+- `02-shell-sidebar.md` — Shell consolidado;
+- `03-dashboard.md` — Dashboard consolidado;
+- `04-lista-pesquisa-processos.md` — Lista/Pesquisa consolidada;
+- próxima especificação: Leitor em formato livro.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — arquitetura consolidada + extensão operacional explicitamente proposta;
+- `arquitetura-vigente.md` — arquitetura consolidada;
 - `implantacao-pocket.md` — implantação/ciclo de vida;
 - `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
 - `launcher-distribuicao-client.md` — distribuição local do Client;
 - `comunicacao-client-host.md` — HTTP/JSON/WebSocket;
 - `autenticacao-sessao-autorizacao.md` — autenticação e parâmetros pendentes;
-- `modelo-dados-schema-fase-1.md` — schema consolidado original + extensão operacional proposta;
+- `modelo-dados-schema-fase-1.md` — schema conceitual consolidado, incluindo extensão operacional;
 - `concorrencia-fila-conflitos-eventos.md` — writer/fila/conflitos/eventos.
 
 ### Planejamento — `04-planejamento`
@@ -76,7 +78,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Progresso — `05-progresso`
 
-- `registro-de-decisoes.md` — decisões vigentes, requisitos novos confirmados e propostas claramente separadas;
+- `registro-de-decisoes.md` — decisões vigentes e pendências;
 - `changelog-projeto.md` — marcos relevantes;
 - `diario-de-progresso.md` — histórico; não é fonte superior de decisão;
 - `revisao-cruzada-fase-0.md` — evidência histórica da Fase 0.
@@ -89,6 +91,8 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Bloco 8 em execução. Requisito novo de categorização + ficha/registro de serviço/equipamento confirmado. Modelagem específica ainda aguarda aprovação do PO.**
+**Fase 1 em andamento; Bloco 8 em execução. Telas 01–04 consolidadas. Próxima: Tela 05 — Leitor em formato livro.**
+
+A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas e identidade interna de equipamento estão aprovadas conceitualmente. Lifecycle/permissões/checklist permanecem para o Bloco 9; formato técnico da ficha compacta, para o Bloco 10.
 
 Não há código funcional oficial.
