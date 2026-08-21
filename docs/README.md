@@ -19,8 +19,6 @@ Ambiguidade relevante volta ao PO/Assistente; não é autorização para o execu
 
 ## Leitura eficiente para Codex
 
-O Codex não precisa reler toda a governança a cada tarefa.
-
 Sempre:
 
 - `AGENTS.md`;
@@ -46,17 +44,21 @@ Conforme impacto:
 - `metodo-padrao-trabalho-assistido.md` — processo PO + Assistente + Codex;
 - `politica-capacidade-codex.md` — seleção de modelo/raciocínio antes de tarefas Codex.
 
-Regras específicas e obrigatórias de execução ficam em `../AGENTS.md`, evitando duplicação.
+Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Produto — `01-produto`
 
-- `visao-geral.md` — propósito, usuários, requisitos e limites do StepFlow.
+- `visao-geral.md` — propósito, usuários, requisitos e limites do StepFlow;
+- `categorizacao-atendimentos-equipamentos.md` — categorias de procedimentos, atendimento/execução, ficha de equipamento, busca operacional e ficha compacta imprimível.
 
 ### Telas — `02-telas`
 
-- `README.md` — mapa das telas, limites e ordem de especificação do Bloco 8.
+- `README.md` — mapa das telas, limites e ordem do Bloco 8;
+- `01-login.md` — Login consolidado funcionalmente;
+- `02-shell-sidebar.md` — núcleo do Shell consolidado, com extensão `Atendimentos` em aprovação;
+- `03-dashboard.md` — Dashboard em análise/proposta.
 
-As especificações individuais serão criadas apenas conforme forem analisadas/aprovadas.
+As próximas especificações serão criadas conforme análise/aprovação.
 
 ### Arquitetura — `03-arquitetura`
 
@@ -66,22 +68,22 @@ As especificações individuais serão criadas apenas conforme forem analisadas/
 - `host-pocket.md` — tecnologia, Controller, Host, ciclo de vida, paths, shutdown e atualização;
 - `launcher-distribuicao-client.md` — cópia local/versionamento do Client;
 - `comunicacao-client-host.md` — HTTP/JSON, WebSocket e compatibilidade;
-- `autenticacao-sessao-autorizacao.md` — decisões consolidadas e parâmetros ainda pendentes de autenticação/permissões;
-- `modelo-dados-schema-fase-1.md` — schema conceitual, revisões e migrations;
+- `autenticacao-sessao-autorizacao.md` — decisões consolidadas e parâmetros ainda pendentes;
+- `modelo-dados-schema-fase-1.md` — schema conceitual, revisões, categorias, equipamentos, atendimentos e migrations;
 - `concorrencia-fila-conflitos-eventos.md` — writer, fila, conflitos e eventos.
 
 ### Planejamento — `04-planejamento`
 
 - `roadmap.md` — fases do projeto;
 - `plano-oficial-fase-1.md` — estado dos blocos, gates e limites da fase atual;
-- `tarefas-codex/README.md` — lista somente de tarefas Codex ativas. Tarefas concluídas são removidas da árvore ativa e permanecem no histórico Git.
+- `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
 
 - `registro-de-decisoes.md` — decisões vigentes e pendências;
 - `changelog-projeto.md` — marcos relevantes;
 - `diario-de-progresso.md` — registro cronológico histórico; não é fonte superior de decisão;
-- `revisao-cruzada-fase-0.md` — evidência histórica do gate da Fase 0, mantida por referência do diário.
+- `revisao-cruzada-fase-0.md` — evidência histórica do gate da Fase 0.
 
 ### Templates — `templates`
 
@@ -91,6 +93,6 @@ As especificações individuais serão criadas apenas conforme forem analisadas/
 
 ## Estado atual
 
-**Fase 1 em andamento. Blocos 0–7 encerrados no núcleo arquitetural; parâmetros operacionais explicitamente pendentes continuam bloqueados para implementação até decisão. Próximo: Bloco 8 — UI/UX.**
+**Fase 1 em andamento. Bloco 8 — UI/UX em execução. Novo requisito de categorização + atendimento/equipamento foi incorporado e expandiu os Blocos 8, 9 e 10 sem autorizar código de produção.**
 
 Não há código funcional oficial ainda.
