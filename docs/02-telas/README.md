@@ -10,101 +10,106 @@ Uma especificação só vira contrato visual/funcional quando estiver explicitam
 
 ## Especificações atuais
 
-- `01-login.md` — **CONSOLIDADO FUNCIONALMENTE**; identidade visual detalhada será compartilhada com o sistema visual do Shell;
-- `02-shell-sidebar.md` — **NÚCLEO CONSOLIDADO / REABERTO PONTUALMENTE** para posicionar a nova área de Atendimentos;
+- `01-login.md` — **CONSOLIDADO FUNCIONALMENTE**;
+- `02-shell-sidebar.md` — **NÚCLEO CONSOLIDADO / REABERTO PONTUALMENTE** para avaliar a nova área operacional;
 - `03-dashboard.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
-## Novo requisito transversal incorporado
+## Novo requisito confirmado
 
-O StepFlow agora deve suportar:
+O StepFlow deve passar a suportar:
 
-- categorização configurável/múltipla de procedimentos;
-- atendimentos/execuções formais quando o caso exigir;
-- equipamentos opcionais associados aos atendimentos;
-- ficha técnica de computador/notebook quando aplicável;
-- busca operacional por equipamento/cliente/OS/serial/patrimônio/MAC;
-- ficha/relatório compacto imprimível.
+- categorização de procedimentos;
+- registro de informações de serviço/equipamento em cenários aplicáveis;
+- ficha técnica de computador/notebook com os dados solicitados pelo PO;
+- busca por cliente/OS/identificadores úteis;
+- resumo do trabalho/procedimentos realizados;
+- ficha compacta imprimível.
 
 Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
-## Mapa de telas atualizado
+## Modelagem/UX ainda em proposta
 
-1. Login — contrato funcional consolidado;
-2. Shell principal/sidebar — núcleo consolidado, ajuste de Atendimentos pendente;
+Ainda não é contrato:
+
+- separar Procedimento × Atendimento/Execução × Equipamento;
+- `Atendimentos` como nome/item próprio da sidebar;
+- categorias múltiplas;
+- equipamento reutilizável;
+- múltiplos procedimentos por atendimento;
+- vínculo à revisão exata utilizada.
+
+O Bloco 8 pode avançar nos requisitos confirmados, mas não deve congelar essas escolhas sem aprovação do PO.
+
+## Mapa de telas atual
+
+1. Login — consolidado;
+2. Shell/sidebar — núcleo consolidado, extensão operacional pendente;
 3. Início/Dashboard — em análise;
-4. Lista e pesquisa de procedimentos — incluir categorias;
-5. Leitura do procedimento em formato livro — exibir categoria(s) de forma discreta;
-6. Editor de procedimento/etapas — selecionar/manter categorias aplicáveis;
-7. Histórico de alterações;
-8. Lista e pesquisa de atendimentos;
-9. Atendimento/execução + ficha de equipamento opcional;
-10. Usuários e permissões;
+4. Lista/pesquisa de procedimentos — incluir categorização;
+5. Leitura em formato livro — mostrar categorização de forma discreta;
+6. Editor de procedimento — permitir categorização conforme modelo aprovado;
+7. Histórico;
+8. lista/pesquisa de registros operacionais de serviço — **estrutura/nome pendentes**;
+9. registro do serviço + ficha do equipamento — **estrutura pendente**;
+10. Usuários/permissões;
 11. Meu perfil;
-12. Configurações da empresa + gestão de categorias;
+12. Configurações + gestão de categorias;
 13. Backup/restauração;
-14. Exportação/impressão + ficha compacta de atendimento/equipamento;
-15. estados transversais: Host indisponível, loading, vazio, erro, sem permissão e conflito.
+14. Exportação/impressão + ficha compacta;
+15. estados transversais.
 
 ## Direção visual já aprovada
 
 - visual corporativo, limpo e discreto;
 - sidebar esquerda persistente;
-- logo pequeno no topo esquerdo, proporção preservada;
+- logo pequeno no topo esquerdo;
 - sem topbar global redundante;
-- perfil/avatar no rodapé da sidebar;
+- perfil/avatar no rodapé;
 - leitura técnica como prioridade;
-- procedimentos apresentados como manual/livro;
-- comandos/blocos copiáveis com ícone discreto;
+- procedimentos como manual/livro;
+- blocos copiáveis com ícone discreto;
 - feedback curto de cópia;
-- Funcionário em experiência predominantemente de leitura/execução.
-
-## Separação obrigatória na UX
-
-Não misturar:
-
-- `Processos/Procedimentos` — documentação/modelos oficiais reutilizáveis;
-- `Atendimentos` — ocorrências reais de execução/serviço;
-- `Equipamentos` — ficha física opcional utilizada pelos atendimentos.
-
-Um técnico deve conseguir consultar um procedimento sem criar atendimento. Quando houver rastreabilidade operacional, o atendimento referencia o procedimento/revisão executada.
+- Funcionário predominantemente em leitura/execução.
 
 ## Limite do Bloco 8
 
-O Bloco 8 fecha **UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional** das telas.
+O Bloco 8 fecha UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional apenas onde as decisões necessárias estiverem aprovadas.
 
-Para Atendimentos/Equipamentos, o Bloco 8 pode definir:
+Para os novos requisitos, pode definir:
 
-- onde iniciar/localizar um atendimento;
-- campos e agrupamento visual da ficha;
-- busca e filtros;
-- vínculo visível com procedimentos;
-- ação de gerar/imprimir ficha;
-- estados de tela.
+- como categorias aparecem em listas/leitor/editor;
+- como o usuário informa os dados de computador/equipamento;
+- como busca cliente/OS/identificadores;
+- onde vê o resumo do trabalho;
+- onde aciona geração/impressão da ficha.
 
-O Bloco 8 **não decide sozinho** lifecycle, persistência de checklist ou regras operacionais ainda pertencentes ao Bloco 9.
+Não pode decidir sozinho:
 
-Para Backup/Restauração e Exportação/Impressão, o Bloco 8 fecha apenas UX/fluxo/estados. O Bloco 10 define a tecnologia e o formato físico da ficha compacta; o Bloco 11 fecha backup/restore.
+- entidades finais e cardinalidades;
+- lifecycle do registro operacional;
+- checklist/progresso;
+- matriz de permissões;
+- tecnologia/formato da ficha compacta.
 
 ## Ordem de trabalho do Bloco 8
 
 1. Login — consolidado;
-2. Shell/sidebar — núcleo consolidado; ajuste Atendimentos pendente;
-3. Início/Dashboard — em análise;
-4. Lista/pesquisa de procedimentos + categorias;
-5. Leitor em formato livro;
-6. Editor + categorias;
+2. Shell/sidebar — núcleo consolidado, extensão operacional em aprovação;
+3. Dashboard — em análise;
+4. Lista/pesquisa de procedimentos + categorização;
+5. Leitor;
+6. Editor + categorização;
 7. Histórico;
-8. Atendimentos — lista/pesquisa;
-9. Atendimento/execução + equipamento;
-10. Usuários e permissões;
-11. Meu perfil;
-12. Configurações + categorias;
-13. Backup/restauração — somente UX/fluxo;
-14. Exportação/impressão + ficha compacta — somente UX/fluxo;
-15. estados transversais.
+8. superfícies do registro de serviço/equipamento após aprovação da modelagem;
+9. Usuários/permissões;
+10. Perfil;
+11. Configurações + categorias;
+12. Backup/restauração — UX/fluxo;
+13. Exportação/impressão + ficha compacta — UX/fluxo;
+14. estados transversais.
 
-Não criar UI de produção antes da especificação/aprovação correspondente.
+Não criar UI de produção antes da aprovação correspondente.
 
 ## Regra de parada
 
-Se uma tela exigir decisão ainda marcada como pendente em outro bloco — por exemplo, lifecycle do atendimento, persistência do checklist, política técnica de backup ou estratégia de exportação — especificar apenas o que já é conhecido e registrar a pendência. Não transformar a lacuna em requisito técnico por iniciativa própria.
+Quando a tela depender de modelagem/lifecycle/checklist/exportação ainda pendentes, documentar a dependência e parar no limite aprovado. Não inventar solução técnica ou regra de negócio.
