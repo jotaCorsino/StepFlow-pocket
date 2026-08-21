@@ -43,10 +43,11 @@ Campos principais consolidados:
 - Objetivo;
 - Observações;
 - Pré-requisitos;
+- Categorias;
 - Etapas;
 - Histórico.
 
-Novo requisito confirmado: **categorização de procedimentos**. Cardinalidade, hierarquia e modelo final das categorias ainda estão em aprovação.
+Categorias são configuráveis pela empresa, pesquisáveis/filtráveis e um procedimento pode possuir uma ou mais categorias simples. Taxonomia hierárquica complexa não faz parte da primeira versão.
 
 Não adicionar campos burocráticos sem valor operacional aprovado.
 
@@ -56,7 +57,13 @@ Cada etapa funciona como página navegável e pode conter título, introdução,
 
 Controle de cópia é discreto, somente por ícone, com feedback curto.
 
-## Registro do serviço/equipamento — novo requisito
+## Registro do serviço/equipamento
+
+O domínio aprovado distingue:
+
+- **Procedimento** — modelo/documentação oficial reutilizável;
+- **Atendimento/Execução** — ocorrência concreta do serviço realizado;
+- **Equipamento** — ativo físico opcional relacionado ao atendimento quando aplicável.
 
 Para cenários como manutenção de computadores/notebooks, o sistema deve permitir registrar, quando aplicável:
 
@@ -65,21 +72,30 @@ Para cenários como manutenção de computadores/notebooks, o sistema deve permi
 - RAM;
 - armazenamento;
 - sistema operacional/versão;
-- MAC ou outro identificador útil;
+- um ou mais MACs e outros identificadores úteis;
+- serial/patrimônio;
 - saúde da bateria;
 - observações;
 - cliente e/ou ordem de serviço/referência para facilitar busca;
 - resumo do que foi feito/procedimentos realizados.
 
+Equipamento possui identidade interna estável própria. MAC, serial, patrimônio, cliente e OS/referência são atributos pesquisáveis e não identidade canônica exclusiva.
+
+Um Atendimento pode usar múltiplos procedimentos e deve preservar vínculo com a revisão efetivamente utilizada.
+
 O sistema deve permitir extrair/gerar uma ficha compacta imprimível para anexação física ao equipamento.
 
-A modelagem recomendada — separar `Procedimento`, `Atendimento/Execução` e `Equipamento` — está documentada como **PROPOSTA** em `categorizacao-atendimentos-equipamentos.md` e ainda exige aprovação do PO.
+Detalhes operacionais de lifecycle, checklist/progresso, permissões e códigos legíveis serão fechados no Bloco 9.
 
 ## Busca operacional
 
-Requisito confirmado: facilitar a localização por informações disponíveis do serviço/equipamento, como cliente, OS/referência, nome e identificadores úteis.
+`Processos` e `Atendimentos` possuem buscas separadas por domínio.
 
-Quais campos serão chaves, filtros ou índices depende da modelagem aprovada.
+Procedimentos são localizados por código, título, termo, área e categoria conforme contratos aprovados.
+
+Atendimentos/equipamentos devem ser localizáveis pelas informações operacionais disponíveis, incluindo código, OS/referência, cliente/solicitante, nome do equipamento, serial, patrimônio e MAC normalizado quando aplicável.
+
+Índices/normalização finais pertencem à implementação técnica; não introduzir motor externo sem necessidade demonstrada.
 
 ## Multiusuário
 
@@ -87,9 +103,8 @@ Quais campos serão chaves, filtros ou índices depende da modelagem aprovada.
 - escritas são coordenadas pelo Host;
 - edições antigas não sobrescrevem alterações recentes;
 - mudanças relevantes chegam por eventos/reconsulta;
-- fila de escrita não substitui revisão otimista.
-
-Novos registros operacionais aprovados no futuro seguirão essas mesmas regras.
+- fila de escrita não substitui revisão otimista;
+- categorias, equipamentos e atendimentos seguem os mesmos princípios quando houver alteração concorrente relevante.
 
 ## Usuários e permissões
 
@@ -97,7 +112,7 @@ Conta possui identificador estável, login, nome de exibição, cargo, hash de s
 
 Usuário pode editar nome, cargo, avatar e senha dentro das regras. Autorização é sempre Host-side.
 
-Permissões para categorias e registros de serviço/equipamento ainda serão fechadas antes da implementação correspondente.
+A matriz operacional de permissões para categorias, equipamentos e atendimentos será fechada no Bloco 9 antes da implementação correspondente.
 
 ## Exportação e backup
 
@@ -111,7 +126,9 @@ Documentação exige:
 
 Exportação usa documento próprio, não screenshot.
 
-Novo requisito: ficha compacta imprimível de serviço/equipamento. Formato físico, PDF e tecnologia serão fechados no Bloco 10.
+A ficha compacta imprimível de atendimento/equipamento também é requisito. Formato físico, PDF específico e tecnologia serão fechados no Bloco 10.
+
+Backup/restore deve incluir os dados operacionais aprovados.
 
 ## Requisitos não funcionais
 
@@ -158,11 +175,12 @@ Baseline inicial: Windows 10/11 x64 com WebView2. Ambiente corporativo real aind
 
 ## Pendências atuais
 
-- aprovar modelagem da categorização;
-- aprovar ou ajustar separação Procedimento × Atendimento/Execução × Equipamento;
-- fechar identidade/busca dos registros;
-- fechar lifecycle/checklist/permissões no Bloco 9;
-- fechar ficha compacta no Bloco 10.
+- fechar lifecycle/status de Atendimento;
+- fechar checklist/progresso e regras de conclusão/reabertura;
+- fechar matriz operacional de permissões;
+- fechar formato dos códigos legíveis;
+- fechar ficha compacta no Bloco 10;
+- concluir especificação/aprovação das telas do Bloco 8.
 
 ## Critério de sucesso
 

@@ -14,7 +14,12 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `02-shell-sidebar.md` — **CONSOLIDADO**, incluindo `Atendimentos`;
 - `03-dashboard.md` — **CONSOLIDADO**;
 - `04-lista-pesquisa-processos.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 05 — Leitor em formato livro**.
+- `05-leitor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- `06-editor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- `07-historico-revisoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 08 — Lista/Pesquisa de Atendimentos**.
+
+A Tela 08 ainda não está em análise neste checkpoint.
 
 ## Domínio operacional aprovado
 
@@ -40,10 +45,10 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 2. Shell/sidebar — consolidado;
 3. Início/Dashboard — consolidado;
 4. Lista/pesquisa de Processos — consolidado;
-5. Leitor em formato livro — **próximo**;
-6. Editor de Processo + categorias;
-7. Histórico;
-8. Lista/pesquisa de Atendimentos;
+5. Leitor em formato livro — consolidado;
+6. Editor de Processo + categorias — consolidado;
+7. Histórico/Revisões — consolidado;
+8. Lista/pesquisa de Atendimentos — **próximo**;
 9. Atendimento/execução + ficha do equipamento;
 10. Usuários/permissões;
 11. Meu perfil;
@@ -65,19 +70,60 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 - feedback curto de cópia;
 - Funcionário predominantemente em leitura/execução.
 
-## Lista/Pesquisa de Processos — decisões consolidadas
+## Lista/Pesquisa de Processos — consolidado
 
 - lista/tabela compacta;
 - busca por código, título ou termo;
-- filtros principais por Categoria e Área;
-- Status somente quando útil ao perfil;
+- filtros Categoria + Área;
+- Status somente quando útil;
 - categorias múltiplas com semântica OU inicialmente;
-- categorias como labels/chips discretos;
-- abertura padrão no leitor;
+- abertura padrão no Leitor;
 - ações administrativas contextuais;
-- `Arquivar` em vez de `Excluir` na operação normal;
-- retorno do leitor preserva pesquisa/filtros;
-- busca documental separada da busca operacional de Atendimentos.
+- `Arquivar` em vez de `Excluir`;
+- retorno preserva busca/filtros.
+
+## Leitor — consolidado
+
+- `Visão geral` antes da Etapa 1;
+- uma etapa por página;
+- Sumário temporário;
+- `Etapa X de Y` como posição, não conclusão;
+- Anterior/Próxima;
+- categorias discretas;
+- checklist documental separado do operacional;
+- nova revisão não substitui silenciosamente a aberta;
+- ponto futuro `Iniciar atendimento`, sem antecipar Bloco 9.
+
+Fonte: `05-leitor-processo.md`.
+
+## Editor — consolidado
+
+- `Informações` e `Etapas` separados;
+- painel contextual `Estrutura`;
+- salvamento explícito, sem autosave inicial;
+- cada save aceito cria revisão imutável;
+- blocos tipados, sem HTML livre;
+- categorias selecionadas no Editor e gerenciadas fora dele;
+- drag-and-drop apenas como complemento a ações acessíveis;
+- conflito preserva alterações locais e nunca sobrescreve automaticamente;
+- `Visualizar` usa última revisão salva;
+- `Salvar` e `Publicar revisão atual` são ações distintas.
+
+Fonte: `06-editor-processo.md`.
+
+## Histórico/Revisões — consolidado
+
+- lista cronológica compacta, mais recente primeiro;
+- `revision_no` técnico separado de `display_version` editorial;
+- badges `Atual` e `Publicada` representam ponteiros vigentes;
+- revisão histórica abre no Leitor em somente leitura;
+- revisão histórica é identificada claramente e não parece vigente;
+- snapshots não podem ser editados/excluídos;
+- `Criar nova revisão a partir desta` cria uma nova revisão, sem rollback destrutivo;
+- conteúdo antigo só volta a ser publicado após virar nova revisão atual;
+- diff visual não é obrigatório na primeira versão.
+
+Fonte: `07-historico-revisoes.md`.
 
 ## Limite do Bloco 8
 
@@ -98,6 +144,10 @@ Esses pontos pertencem aos Blocos 9 e 10.
 - `Atendimentos`: código de atendimento, OS/referência, cliente, equipamento, serial/patrimônio/MAC e dados operacionais.
 
 Não misturar os dois domínios em pesquisa global sem requisito explícito.
+
+## Regra de acompanhamento
+
+Todo avanço consolidado de fase, bloco ou tela deve atualizar o painel do `README.md` no mesmo checkpoint documental.
 
 ## Regra de parada
 
