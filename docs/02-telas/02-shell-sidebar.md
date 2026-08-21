@@ -1,28 +1,26 @@
 # Tela 02 — Shell Principal e Sidebar
 
-**Status:** EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO  
+**Status:** CONSOLIDADO / APROVADO PELO PO  
 **Bloco:** Fase 1 — Bloco 8 (UI/UX)  
-**Última consolidação:** 2026-08-21
+**Aprovação:** 2026-08-21
 
 ## 1. Objetivo
 
 Definir a estrutura visual e funcional persistente da área autenticada do StepFlow, fornecendo navegação simples, identidade visual consistente e acesso ao perfil sem competir com o conteúdo principal.
 
-O Shell não é um dashboard específico. Ele é a moldura comum que permanece enquanto o usuário navega entre as áreas autorizadas.
+O Shell é a moldura comum da área autenticada; não é um dashboard específico.
 
 ## 2. Atores
 
-O Shell é usado por:
+Usado por:
 
 - ADM;
 - Gerência;
 - Funcionário.
 
-A estrutura visual é comum; os itens visíveis dependem das capacidades efetivas retornadas pelo Host.
+A estrutura é comum. Itens visíveis dependem das capacidades efetivas retornadas pelo Host.
 
-## 3. Entrada no Shell
-
-Fluxo:
+## 3. Entrada
 
 ```text
 Login válido
@@ -32,9 +30,9 @@ Login válido
 → Início/Dashboard
 ```
 
-Se a sessão expirar ou for revogada, a área autenticada é abandonada e o usuário retorna ao Login.
+Sessão expirada ou revogada encerra a área autenticada e retorna ao Login.
 
-## 4. Estrutura geral proposta
+## 4. Estrutura aprovada
 
 ```text
 ┌──────────────────┬──────────────────────────────────────────────┐
@@ -47,356 +45,272 @@ Se a sessão expirar ou for revogada, a área autenticada é abandonada e o usu�
 │ • Configurações* │                                              │
 │                  │                                              │
 │                  │                                              │
-│                  │                                              │
 │ [avatar] Nome    │                                              │
 │          Cargo   │                                              │
 └──────────────────┴──────────────────────────────────────────────┘
 
-* somente quando a sessão possuir capacidade correspondente
+* conforme capacidades efetivas da sessão
 ```
 
-### Direção consolidada já existente
+Decisões aprovadas:
 
-- sidebar à esquerda;
-- logo discreto no topo esquerdo;
-- perfil/avatar na parte inferior;
-- visual corporativo, limpo e clássico;
-- conteúdo técnico deve dominar a área útil.
-
-### Proposta para aprovação
-
-- sidebar persistente enquanto autenticado;
-- nenhuma barra superior global redundante;
-- conteúdo da página ocupa todo o restante da janela;
-- sidebar não fica recolhendo/expandindo automaticamente na primeira versão;
-- itens sem permissão ficam ocultos em vez de aparecerem desabilitados;
-- `Backup/Restauração` não vira item global separado: entra em Configurações/área administrativa quando permitido;
-- `Exportar/Imprimir` permanece ação contextual do processo/documento, não item global da sidebar.
+- sidebar persistente à esquerda;
+- logo pequeno da empresa + `StepFlow` no topo;
+- sem topbar global fixa/redundante;
+- conteúdo ocupa o restante da janela;
+- sidebar não recolhe/expande automaticamente na primeira versão;
+- itens sem permissão ficam ocultos;
+- `Backup/Restauração` pertence à área administrativa/Configurações quando autorizado;
+- `Exportar/Imprimir` permanece contextual ao processo/documento;
+- perfil/avatar permanece no rodapé;
+- sem indicador verde permanente de conexão;
+- sem modo hamburger/mobile na primeira versão, salvo necessidade real comprovada pela janela mínima suportada.
 
 ## 5. Identidade no topo
 
-Área superior da sidebar deve mostrar:
+Exibir:
 
-- logo da empresa, pequeno e sem deformação;
-- nome `StepFlow` de forma discreta;
-- nenhum texto técnico de Host, banco, versão de schema ou ambiente.
+- logo da empresa pequeno, sem deformação;
+- nome `StepFlow` de forma discreta.
 
-Se o logo não estiver configurado, o Shell deve manter um fallback visual limpo sem quebrar layout.
+Não exibir informações técnicas de Host, banco, porta, schema ou ambiente.
+
+Sem logo configurado, usar fallback visual simples que preserve o layout.
 
 ## 6. Navegação principal
 
-### Itens propostos
+### Início
 
-#### Início
-
-Disponível para todos os perfis autenticados.
+Disponível para todos os usuários autenticados.
 
 Destino: `Início/Dashboard`.
 
-#### Processos
+### Processos
 
 Disponível para todos.
 
 Destino: lista/pesquisa de processos.
 
-#### Usuários
+### Usuários
 
-Visível somente quando a sessão possuir capacidade de ler/gerir usuários.
+Visível somente com capacidade correspondente.
 
-- ADM: acesso completo conforme autorização;
-- Gerência: acesso restrito a usuários não-ADM;
-- Funcionário: não vê o item.
+- ADM: conforme permissões administrativas;
+- Gerência: gestão delegada de usuários não-ADM;
+- Funcionário: item oculto.
 
-#### Configurações
+### Configurações
 
-Visível somente quando houver pelo menos uma capacidade administrativa/configurável aplicável.
+Visível somente quando houver capacidade administrativa aplicável.
 
-Pode futuramente agrupar, conforme permissões:
+Pode agrupar, conforme permissões aprovadas:
 
 - identidade da empresa;
 - backup/restauração;
-- outras configurações administrativas aprovadas.
+- demais configurações administrativas documentadas.
 
-O item não autoriza por si só nenhuma capacidade; o Host continua validando todas as operações.
+A visibilidade nunca substitui autorização Host-side.
 
-## 7. Regra de visibilidade por permissão
+## 7. Visibilidade e autorização
 
-A sidebar reflete capacidades retornadas pelo Host.
-
-Proposta:
-
-- item não autorizado é **ocultado**, não apenas desabilitado;
-- navegação direta para rota não autorizada continua sendo bloqueada pelo Host/Client;
-- ocultação serve somente à experiência do usuário e nunca substitui autorização server-side.
-
-Se capacidades mudarem durante a sessão, o Client deve reconciliar a UI quando receber/descobrir o novo estado; mecanismo técnico exato fica fora desta tela.
+- item não autorizado fica oculto;
+- rota/ação não autorizada continua bloqueada mesmo se o Client for manipulado;
+- capacidades alteradas durante a sessão devem reconciliar a UI;
+- o Host é sempre a autoridade final.
 
 ## 8. Item ativo
 
-O destino atual precisa ser perceptível sem excesso visual.
+O destino atual deve ser perceptível de forma discreta e acessível:
 
-Direção:
+- somente um item principal ativo;
+- não depender apenas de cor;
+- texto e ícone legíveis;
+- foco de teclado distinto do estado ativo.
 
-- destaque discreto do item ativo;
-- não depender somente de cor;
-- ícone e texto permanecem legíveis;
-- somente um destino principal fica marcado como ativo por vez.
+Cor/borda exatas pertencem ao sistema visual comum.
 
-Detalhes de cor/borda serão fechados no sistema visual.
-
-## 9. Perfil no rodapé da sidebar
-
-Área inferior persistente:
+## 9. Perfil no rodapé
 
 ```text
 [avatar]  Nome de exibição
           Cargo
 ```
 
-Ao acionar a área do perfil, proposta de menu simples:
+Clique/acionamento abre menu simples:
 
 - `Meu perfil`;
 - `Sair`.
 
-Não mostrar login técnico, `user_id`, preset interno ou matriz de permissões diretamente no rodapé.
-
-### Meu perfil
-
-Navega para a tela de perfil pessoal.
+Não mostrar `user_id`, role interno ou detalhes de permissão no rodapé.
 
 ### Sair
 
 - solicita logout ao Host;
 - revoga/encerra a sessão conforme contrato;
-- limpa o token em memória;
-- retorna ao Login.
-
-Logout comum não encerra o Host central.
+- limpa token em memória;
+- retorna ao Login;
+- **não encerra o Host central**.
 
 ## 10. Área de conteúdo
 
-A área à direita da sidebar é reservada para a tela atual.
+- Shell não força cards em todas as páginas;
+- título, filtros e ações pertencem à tela corrente;
+- a própria tela define largura e densidade adequadas;
+- não existe segunda navegação global no topo.
 
-Princípios:
+Cabeçalho local de página pode conter título, descrição e ações. Breadcrumb só quando realmente necessário.
 
-- largura máxima do conteúdo é definida pela própria tela quando necessário;
-- Shell não força cards/painéis artificiais em todas as páginas;
-- títulos, ações contextuais e filtros pertencem à tela corrente;
-- evitar uma segunda navegação global no topo.
-
-## 11. Cabeçalho de página
-
-Proposta: não existe um `topbar` global fixo.
-
-Cada tela pode possuir um cabeçalho local no conteúdo contendo, quando necessário:
-
-- título;
-- descrição curta;
-- ações da página;
-- breadcrumbs apenas se a navegação realmente justificar.
-
-Não transformar breadcrumbs em requisito global sem necessidade.
-
-## 12. Estados de conexão e sessão
+## 11. Estados de conexão e sessão
 
 ### Operação normal
 
-Não exibir indicador verde permanente de “online” apenas por decoração.
+Nenhum indicador decorativo permanente de conexão.
 
-### Host temporariamente indisponível
+### Host indisponível
 
-Quando uma tela já autenticada perde conexão com o Host:
-
-- exibir estado/banner contextual claro;
-- evitar apresentar operações como concluídas;
-- preservar a estrutura do Shell quando isso ajudar o usuário a entender o contexto;
-- ações que dependem do Host ficam indisponíveis de modo explícito.
-
-A política detalhada de reconexão segue `comunicacao-client-host.md`.
+- mostrar banner/estado contextual claro;
+- não apresentar operação como concluída sem confirmação;
+- preservar Shell quando isso ajudar a manter contexto;
+- ações dependentes do Host ficam explicitamente indisponíveis.
 
 ### Sessão expirada/revogada
 
-- interromper uso de áreas protegidas;
-- limpar estado de autenticação local;
+- interromper acesso protegido;
+- limpar autenticação local;
 - retornar ao Login com mensagem curta quando apropriado.
 
 ### Permissão revogada
 
-Se o usuário perder acesso a uma área:
-
-- não continuar exibindo conteúdo protegido como se ainda estivesse autorizado;
-- remover/reconciliar item de navegação;
+- remover/reconciliar navegação;
+- não manter conteúdo protegido aberto;
 - encaminhar para destino autorizado seguro, preferencialmente Início.
 
-## 13. Estados de loading do Shell
+## 12. Loading inicial do Shell
 
-Após login e antes de montar a navegação, o Client pode precisar confirmar perfil/capacidades.
+Após login, montar a navegação somente quando perfil/capacidades necessários estiverem disponíveis.
 
-Direção:
+Evitar piscar itens provisórios que desaparecem em seguida.
 
-- loading curto e estável;
-- evitar mostrar primeiro itens que depois desaparecem por permissão;
-- não piscar sidebar com opções provisórias.
+## 13. Janelas menores
 
-## 14. Comportamento em janelas menores
+- sidebar com largura estável em desktop;
+- conteúdo central pode rolar;
+- não criar hamburger/mobile por antecipação;
+- modo compacto só será avaliado se a janela mínima suportada demonstrar necessidade.
 
-A sidebar deve continuar funcional nas dimensões mínimas suportadas.
+## 14. Ícones
 
-Proposta inicial:
-
-- sidebar mantém largura estável em desktop;
-- conteúdo central pode rolar quando necessário;
-- não introduzir modo mobile/hamburger como requisito da primeira versão;
-- eventual sidebar compacta só será adicionada se o tamanho mínimo validado realmente exigir.
-
-## 15. Ícones
-
-Proposta:
-
-- cada item principal pode ter ícone simples + texto;
-- texto não deve ser removido na primeira versão;
+- ícone simples + texto nos itens principais;
+- texto não é removido na primeira versão;
 - ícones não substituem labels;
-- estilo consistente e discreto;
-- nenhuma iconografia decorativa excessiva.
+- estilo consistente e discreto.
 
-## 16. Cores e tipografia
+## 15. Sistema visual compartilhado
 
-O Shell será a referência do sistema visual compartilhado pelo Login e demais telas.
+O Shell será a referência visual compartilhada pelo Login e demais telas.
 
-Ainda não estão aprovados:
+Ainda serão fechados em conjunto no Bloco 8:
 
 - paleta exata;
 - família tipográfica;
-- tamanho/largura da sidebar;
-- raios de borda;
-- sombras;
-- escala de espaçamento;
-- estilo final do estado ativo;
-- aparência exata de botões/inputs/cards.
+- largura exata da sidebar;
+- raios, sombras e espaçamento;
+- estilo final de botões, inputs, cards e banners;
+- dimensão mínima suportada da janela.
 
-Direção já consolidada:
+Direção obrigatória já aprovada:
 
-- visual corporativo e clássico;
-- alto contraste suficiente para leitura;
+- corporativa;
+- limpa;
+- clássica/discreta;
 - densidade moderada;
-- não parecer portal burocrático nem dashboard chamativo.
+- alto contraste para leitura;
+- sem aparência de portal burocrático ou dashboard chamativo.
 
-## 17. Acessibilidade e teclado
+## 16. Acessibilidade e teclado
 
-- todos os itens de navegação acessíveis por teclado;
+- navegação totalmente acionável por teclado;
 - foco visível;
-- item ativo identificável semanticamente;
-- avatar/menu de perfil acessível por teclado;
-- ícones com texto ou nome acessível;
-- tooltip não é a única forma de identificar uma ação;
-- navegação não depende apenas de hover.
+- item ativo semanticamente identificável;
+- menu de perfil acessível por teclado;
+- ícones com texto/nome acessível;
+- Escape fecha menu de perfil;
+- navegação não depende de hover.
 
-## 18. Navegação por teclado
+Atalhos globais não são requisito inicial.
 
-Direção:
+## 17. Eventos relevantes
 
-- Tab percorre itens interativos em ordem previsível;
-- Enter/Espaço ativa item conforme semântica do controle;
-- menu de perfil pode ser fechado por Escape;
-- foco retorna de modo previsível após fechar menu.
-
-Atalhos globais de teclado não são requisito nesta etapa.
-
-## 19. Responsabilidade do Host
-
-O Shell pode ocultar/exibir itens, mas o Host é sempre responsável pela autorização real.
-
-Tentativa de acessar recurso sem permissão deve ser rejeitada mesmo que ocorra por URL/estado interno/manipulação do Client.
-
-## 20. Eventos em tempo real
-
-O Shell pode precisar reagir a:
+O Shell pode reagir a:
 
 - sessão revogada/expirada;
-- perfil/nome/avatar alterado;
-- capacidades alteradas;
+- alteração de nome/avatar;
+- alteração de capacidades;
 - Host indisponível/reconectado.
 
-Não é necessário criar um protocolo específico nesta tela; usar os contratos/eventos definidos na arquitetura quando correspondentes.
+Usar os contratos vigentes; não criar protocolo específico por causa da tela.
 
-## 21. Concorrência
+## 18. Relação com o Host central
 
-O Shell não mantém estado concorrente de negócio próprio.
-
-Mudanças de perfil/permissões feitas por outro administrador devem ser reconciliadas com o estado retornado pelo Host; o Client não conserva autoridade antiga por conveniência.
-
-## 22. Relação com o Controller/Host central
-
-- logout de usuário não encerra Host;
+- logout não encerra Host;
 - fechar Client individual não encerra Host;
-- Shell não oferece ação comum de “desligar servidor” ao técnico;
-- eventual comando administrativo de encerramento central pertence à UX do Controller/área operacional correspondente, não à navegação comum do Client sem decisão específica.
+- Shell comum não oferece “desligar servidor” ao técnico;
+- encerramento central pertence ao ciclo do Controller e à UX administrativa correspondente.
 
-## 23. Fora do escopo
+## 19. Fora do escopo
 
-- conteúdo do Dashboard;
-- layout da lista de processos;
-- leitor/editor;
+- conteúdo específico do Dashboard;
+- lista/leitor/editor de processos;
 - estratégia técnica de backup/exportação;
 - implementação do Controller;
-- sistema final de design tokens;
 - código Tauri/HTML/CSS/JS de produção.
 
-## 24. Decisões já consolidadas antes desta análise
+## 20. Decisões consolidadas nesta tela
 
-- sidebar à esquerda;
-- logo pequeno no topo esquerdo;
-- perfil/avatar na parte inferior;
-- usuário vê experiência compatível com suas permissões;
-- Funcionário é leitura/execução por padrão;
-- Host valida autorização;
-- visual corporativo, limpo e discreto.
-
-## 25. Propostas para aprovação do PO
-
-1. sidebar persistente e não recolhível na primeira versão;
+1. sidebar persistente, não recolhível automaticamente na primeira versão;
 2. sem topbar global fixa;
-3. navegação principal: `Início`, `Processos`, `Usuários` e `Configurações` conforme permissão;
-4. itens sem autorização ficam ocultos;
-5. `Backup/Restauração` fica dentro da área de Configurações, não como item global;
-6. `Exportar/Imprimir` permanece contextual aos processos/documentos;
-7. perfil no rodapé abre menu com `Meu perfil` e `Sair`;
-8. não mostrar indicador permanente de conexão quando tudo está normal;
-9. não criar modo hamburger/sidebar compacta sem necessidade real de janela mínima.
+3. navegação `Início`, `Processos`, `Usuários` e `Configurações`, conforme permissão;
+4. itens sem autorização ocultos;
+5. Backup/Restauração dentro da área administrativa/Configurações;
+6. Exportar/Imprimir contextual;
+7. perfil no rodapé com `Meu perfil` e `Sair`;
+8. sem indicador permanente de conexão em estado normal;
+9. sem hamburger/mobile sem necessidade comprovada;
+10. logout e fechamento de Client não encerram Host.
 
-## 26. Pendências
+## 21. Pendências compartilhadas do sistema visual
 
-- identidade visual exata do Shell;
-- dimensão mínima suportada da janela;
-- largura exata da sidebar;
-- microcopy final;
-- política visual para banners/erros transversais;
-- UX específica de encerramento central quando houver Clients conectados será tratada na superfície administrativa correspondente.
+- paleta;
+- tipografia;
+- espaçamento;
+- dimensões exatas;
+- aparência final de componentes e banners;
+- janela mínima suportada.
 
-## 27. Critérios de aceite da especificação
+Essas pendências não reabrem a estrutura funcional aprovada nesta tela.
 
-- [x] respeita sidebar/logo/perfil já aprovados;
-- [x] não confunde ocultação visual com autorização;
-- [x] logout não interfere no Host central;
-- [x] mantém Backup/Exportação dentro dos limites dos Blocos 10/11;
-- [x] não cria código de produção;
-- [ ] estrutura de navegação aprovada pelo PO;
-- [ ] comportamento de sidebar aprovado pelo PO;
-- [ ] menu de perfil aprovado pelo PO;
-- [ ] tratamento visual normal/degradado aprovado pelo PO;
+## 22. Critérios de aceite da especificação
 
-## 28. Casos de teste futuros
+- [x] sidebar/logo/perfil aprovados;
+- [x] navegação aprovada;
+- [x] comportamento da sidebar aprovado;
+- [x] menu de perfil aprovado;
+- [x] tratamento normal/degradado aprovado em nível funcional;
+- [x] ocultação visual não substitui autorização;
+- [x] logout não interfere no Host;
+- [x] nenhuma implementação de produção criada.
+
+## 23. Casos de teste futuros
 
 1. ADM vê itens autorizados;
 2. Gerência não vê controles exclusivos de ADM;
-3. Funcionário vê somente navegação compatível com leitura/execução;
-4. tentativa de rota não autorizada é bloqueada;
-5. item ativo é perceptível por teclado/leitor de tela;
-6. perfil abre e fecha corretamente;
-7. logout revoga sessão e volta ao Login;
-8. logout não encerra Host;
-9. sessão expirada retorna ao Login;
-10. Host indisponível mostra estado coerente;
-11. alteração de nome/avatar é refletida no rodapé;
-12. alteração de permissões não deixa acesso antigo ativo;
-13. layout continua utilizável na janela mínima suportada.
+3. Funcionário vê navegação compatível com leitura/execução;
+4. rota não autorizada é bloqueada;
+5. item ativo e foco são perceptíveis;
+6. perfil abre/fecha corretamente;
+7. logout volta ao Login e não encerra Host;
+8. sessão expirada retorna ao Login;
+9. Host indisponível mostra estado coerente;
+10. alteração de nome/avatar é refletida;
+11. alteração de permissões remove acesso antigo;
+12. layout funciona na janela mínima aprovada.
