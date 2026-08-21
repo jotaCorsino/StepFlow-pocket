@@ -2,6 +2,21 @@
 
 ## 2026-08-21
 
+### Expansão de produto — categorias, atendimentos e equipamentos
+
+- escopo do StepFlow explicitamente ampliado para manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias e outros procedimentos internos;
+- categorização configurável e múltipla de procedimentos incorporada como requisito;
+- separação formal entre Procedimento (modelo), Atendimento/Execução (ocorrência real) e Equipamento (ativo opcional);
+- ficha de computador/notebook definida com processador, RAM, armazenamento, SO/versão, serial/patrimônio, MAC(s), saúde de bateria quando aplicável e observações;
+- identidade interna estável de equipamento definida como canônica; MAC/serial/patrimônio passam a ser atributos de busca;
+- busca operacional passa a considerar atendimento, OS/referência, equipamento, cliente/solicitante, serial/patrimônio e MAC quando disponíveis;
+- atendimento deve preservar a revisão do procedimento efetivamente utilizada e pode usar múltiplos procedimentos;
+- ficha/relatório compacto imprimível de atendimento/equipamento incorporada ao escopo do Bloco 10;
+- Bloco 9 ampliado de checklist isolado para execução operacional, lifecycle de atendimento, checklist/progresso, histórico e permissões operacionais;
+- modelo de dados, arquitetura vigente, roadmap, plano da Fase 1, mapa de telas, decisões e AGENTS sincronizados;
+- Shell reaberto apenas para decidir a nova entrada `Atendimentos`, sem invalidar seu núcleo já aprovado;
+- nenhum código de produção foi criado.
+
 ### Hardening documental para execução Codex
 
 - simulada leitura do repositório por um Codex sem memória de conversa;
