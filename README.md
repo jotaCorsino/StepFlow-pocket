@@ -38,8 +38,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 3 | Início / Dashboard | ✅ Consolidado |
 | 4 | Lista / pesquisa de Processos | ✅ Consolidado |
 | 5 | Leitor em formato livro | ✅ Consolidado |
-| 6 | Editor de Processo + categorias | 🟡 Em análise |
-| 7 | Histórico | ⏳ Pendente |
+| 6 | Editor de Processo + categorias | ✅ Consolidado |
+| 7 | Histórico / revisões | 🟡 Em análise |
 | 8 | Lista / pesquisa de Atendimentos | ⏳ Pendente |
 | 9 | Atendimento / execução + equipamento | ⏳ Pendente |
 | 10 | Usuários / permissões | ⏳ Pendente |
@@ -68,9 +68,13 @@ Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. 
 
 ### Próximo passo
 
-**Tela 06 — Editor de Processo + Categorias.**
+**Tela 07 — Histórico / Revisões — em análise.**
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
+
+### Regra de atualização deste painel
+
+Todo avanço consolidado de **fase, bloco ou tela** deve atualizar este README **no mesmo checkpoint documental**. Um avanço não é considerado documentalmente encerrado se o painel de acompanhamento permanecer atrasado.
 
 ## Papéis no desenvolvimento
 

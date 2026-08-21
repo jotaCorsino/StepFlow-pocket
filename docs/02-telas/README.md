@@ -15,7 +15,8 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `03-dashboard.md` — **CONSOLIDADO**;
 - `04-lista-pesquisa-processos.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `05-leitor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- `06-editor-processo.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
+- `06-editor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- `07-historico-revisoes.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
 ## Domínio operacional aprovado
 
@@ -42,8 +43,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 3. Início/Dashboard — consolidado;
 4. Lista/pesquisa de Processos — consolidado;
 5. Leitor em formato livro — consolidado;
-6. Editor de Processo + categorias — **em análise**;
-7. Histórico;
+6. Editor de Processo + categorias — consolidado;
+7. Histórico/Revisões — **em análise**;
 8. Lista/pesquisa de Atendimentos;
 9. Atendimento/execução + ficha do equipamento;
 10. Usuários/permissões;
@@ -92,19 +93,34 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
 Fonte: `05-leitor-processo.md`.
 
-## Editor — propostas em análise
+## Editor — consolidado
 
-- separar `Informações` e `Etapas`;
-- painel contextual `Estrutura` para etapas;
+- `Informações` e `Etapas` separados;
+- painel contextual `Estrutura`;
 - salvamento explícito, sem autosave inicial;
+- cada save aceito cria revisão imutável;
 - blocos tipados, sem HTML livre;
 - categorias selecionadas no Editor e gerenciadas fora dele;
-- reordenação por drag-and-drop + ações acessíveis;
+- drag-and-drop apenas como complemento a ações acessíveis;
 - conflito preserva alterações locais e nunca sobrescreve automaticamente;
 - `Visualizar` usa última revisão salva;
 - `Salvar` e `Publicar revisão atual` são ações distintas.
 
 Fonte: `06-editor-processo.md`.
+
+## Histórico/Revisões — propostas em análise
+
+- lista cronológica compacta, mais recente primeiro;
+- `revision_no` técnico separado de `display_version` editorial;
+- badges `Atual` e `Publicada` representam ponteiros vigentes;
+- revisão histórica abre no Leitor em modo somente leitura;
+- revisão histórica é identificada claramente e não parece vigente;
+- snapshots não podem ser editados/excluídos;
+- ação proposta `Criar nova revisão a partir desta`, sem rollback destrutivo;
+- conteúdo antigo só volta a ser publicado após virar nova revisão atual;
+- diff visual não é obrigatório na primeira versão.
+
+Fonte: `07-historico-revisoes.md`.
 
 ## Limite do Bloco 8
 
@@ -125,6 +141,10 @@ Esses pontos pertencem aos Blocos 9 e 10.
 - `Atendimentos`: código de atendimento, OS/referência, cliente, equipamento, serial/patrimônio/MAC e dados operacionais.
 
 Não misturar os dois domínios em pesquisa global sem requisito explícito.
+
+## Regra de acompanhamento
+
+Todo avanço consolidado de fase, bloco ou tela deve atualizar o painel do `README.md` no mesmo checkpoint documental.
 
 ## Regra de parada
 

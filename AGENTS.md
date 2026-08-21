@@ -97,6 +97,8 @@ Se arquivo necessário já estiver modificado, parar e reportar.
 - não alterar UX/visual aprovado sem autorização;
 - não transformar proposta, exemplo ou parâmetro provisório em decisão;
 - manter documentação e implementação sincronizadas;
+- **todo avanço consolidado de fase, bloco ou tela deve atualizar o painel do `README.md` no mesmo checkpoint documental**;
+- não considerar um avanço documental encerrado se o README de acompanhamento estiver atrasado;
 - preservar modularidade e baixo acoplamento;
 - não versionar credenciais, segredos, banco real ou dados pessoais da empresa;
 - exemplos de IP/hostname/share/path nunca viram configuração;

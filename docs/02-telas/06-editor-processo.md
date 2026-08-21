@@ -1,29 +1,25 @@
 # Tela 06 — Editor de Processo + Categorias
 
-**Status:** EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO  
+**Status:** CONSOLIDADO / APROVADO PELO PO  
 **Bloco:** Fase 1 — Bloco 8 (UI/UX)  
 **Última consolidação:** 2026-08-21
 
 ## 1. Objetivo
 
-Permitir que usuários autorizados criem e mantenham procedimentos oficiais de forma estruturada, sem editor HTML livre e sem transformar a atividade documental em workflow burocrático.
+Permitir que usuários autorizados criem e mantenham procedimentos oficiais de forma estruturada, sem HTML livre e sem workflow editorial burocrático.
 
-O Editor deve refletir o mesmo modelo que o Leitor consome: metadados do procedimento, categorias, etapas ordenadas e blocos tipados.
+O Editor reflete o mesmo modelo consumido pelo Leitor: metadados, categorias, etapas ordenadas e blocos tipados.
 
 ## 2. Atores e permissões
 
-Usuários com capacidades documentais apropriadas, normalmente:
+Normalmente:
 
 - ADM;
 - Gerência.
 
-Funcionário/Técnico não recebe edição oficial por padrão.
-
-O Client pode ocultar controles sem permissão, mas todas as operações são validadas novamente pelo Host.
+Funcionário/Técnico não recebe edição oficial por padrão. O Client oculta controles sem permissão, mas o Host valida todas as operações.
 
 ## 3. Entrada
-
-Fluxos principais:
 
 ```text
 Processos → Novo processo
@@ -31,74 +27,20 @@ Processos → menu do item → Editar
 Leitor → menu contextual → Editar
 ```
 
-Ao abrir edição existente, o Editor recebe a revisão-base usada para controle otimista.
+Ao editar procedimento existente, o Client mantém a revisão-base para controle otimista.
 
-## 4. Layout proposto
+## 4. Estrutura aprovada
 
-```text
-← Processos                       Editando PR-014
-                                  [ Visualizar ] [ Salvar alterações ]
+O Editor possui duas áreas internas:
 
-[ Informações ] [ Etapas ]
-
-────────────────────────────────────────────────────────────
-
-INFORMAÇÕES
-Código              [ PR-014                         ]
-Título               [ Configuração de VLAN          ]
-Área/Departamento    [ TI ▾                          ]
-Responsável          [ ...                           ]
-Categorias           [ Redes ] [ Infraestrutura ] [+]
-Versão exibida       [ 2.0                           ]
-
-Objetivo
-[ .................................................. ]
-
-Pré-requisitos
-[ .................................................. ]
-
-Observações
-[ .................................................. ]
-```
-
-Na área `Etapas`:
-
-```text
-Estrutura                         Etapa 3 — Configurar VLAN
-────────────────────             ───────────────────────────
-1. Preparação                     Título [..................]
-2. Acesso ao switch               Introdução [.............]
-3. Configurar VLAN  ← atual
-4. Validar
-[ + Nova etapa ]                  Blocos
-                                  ┌ Passos numerados       ┐
-                                  │ ...                    │
-                                  └────────────────────────┘
-                                  ┌ Comando             ⋮  ┐
-                                  │ switchport ...         │
-                                  └────────────────────────┘
-
-                                  [ + Adicionar bloco ]
-```
-
-A sidebar global do StepFlow permanece. O painel `Estrutura` é contextual ao Editor e não vira nova navegação global.
-
-## 5. Separação `Informações` × `Etapas`
-
-### Proposta
-
-Usar duas áreas internas simples:
-
-- **Informações** — metadados gerais do procedimento;
+- **Informações** — identidade/metadados gerais;
 - **Etapas** — estrutura e conteúdo técnico.
 
-Isso evita uma tela única muito longa e mantém clara a separação entre identidade/metadados e conteúdo executável.
+Trocar entre as áreas não salva automaticamente.
 
-Trocar entre as duas áreas não salva automaticamente.
+### Informações
 
-## 6. Campos de Informações
-
-Exibir/editar conforme capacidade e contrato:
+Campos conforme capacidade/contrato:
 
 - Código;
 - Título;
@@ -110,50 +52,36 @@ Exibir/editar conforme capacidade e contrato:
 - Observações;
 - Pré-requisitos.
 
-`Status` editorial pode ser exibido quando relevante, mas não deve virar dropdown genérico se o lifecycle editorial não exigir edição direta do campo.
+`Status` editorial só aparece quando houver regra real para ele; não criar dropdown genérico por conveniência.
 
-## 7. Categorias
+### Etapas
 
-Categorias são configuráveis e múltiplas.
+A área possui painel contextual `Estrutura`, com lista ordenada das etapas e conteúdo da etapa selecionada.
 
-### Proposta de UX
+Ações:
 
-- multi-select simples com busca quando necessário;
-- categorias já associadas aparecem como chips removíveis;
-- editor seleciona categorias existentes autorizadas;
-- não criar taxonomia/hierarquia;
-- não criar categoria inline dentro do Editor na primeira versão;
-- gestão/arquivamento de categorias fica em Configurações, conforme capacidade futura.
+- criar etapa;
+- editar título/introdução;
+- selecionar etapa;
+- reordenar;
+- remover com confirmação proporcional quando houver conteúdo.
 
-Isso evita misturar edição do procedimento com administração da taxonomia.
+A numeração deriva da ordem, não é digitada manualmente.
 
-## 8. Área `Etapas`
+## 5. Categorias
 
-O Editor apresenta uma lista ordenada de etapas e o conteúdo da etapa selecionada.
+Decisão consolidada:
 
-Ações propostas:
+- categorias são múltiplas e configuráveis;
+- multi-select simples, com busca quando necessário;
+- categorias associadas aparecem como chips removíveis;
+- o Editor seleciona categorias existentes;
+- criação/arquivamento de categoria acontece fora do Editor, em Configurações;
+- sem taxonomia hierárquica na primeira versão.
 
-- `Nova etapa`;
-- renomear título;
-- editar introdução;
-- reordenar etapa;
-- remover etapa com confirmação quando possuir conteúdo;
-- selecionar etapa sem salvar automaticamente.
+## 6. Blocos tipados
 
-A numeração exibida deriva da ordem das etapas, não precisa ser digitada manualmente.
-
-## 9. Reordenação de etapas
-
-Proposta:
-
-- drag-and-drop pode existir como atalho visual;
-- deve haver alternativa acessível `Mover para cima` / `Mover para baixo`;
-- ordem só vira oficial após salvamento aceito pelo Host;
-- reordenar localmente não cria lock.
-
-## 10. Blocos tipados
-
-`Adicionar bloco` oferece somente tipos aprovados:
+`Adicionar bloco` oferece somente:
 
 - Parágrafo (`paragraph`);
 - Passos numerados (`numbered_steps`);
@@ -163,222 +91,157 @@ Proposta:
 - Comando (`command`);
 - Código (`code`).
 
-Não oferecer HTML arbitrário como fonte de verdade.
+Não usar HTML arbitrário como fonte de verdade.
 
-## 11. Edição dos blocos
+Cada bloco possui tipo, conteúdo, ordem e ações contextuais de mover/remover.
 
-Cada bloco possui:
+## 7. Reordenação
 
-- tipo claramente identificável;
-- conteúdo próprio do tipo;
-- ordem dentro da etapa;
-- menu contextual discreto;
-- ações de mover para cima/baixo;
-- remover com confirmação proporcional quando houver risco de perda.
+- drag-and-drop pode existir como atalho;
+- sempre existe alternativa acessível `Mover para cima` / `Mover para baixo`;
+- ordem só vira oficial após save aceito pelo Host;
+- reordenação local não cria lock.
 
-Drag-and-drop pode complementar, nunca substituir, as ações acessíveis.
+## 8. Passos numerados
 
-## 12. Passos numerados
+Permitir:
 
-O editor deve permitir:
-
-- criar passos;
-- criar subpassos em hierarquia limitada e compreensível;
+- passos;
+- subpassos em hierarquia limitada/compreensível;
+- editar;
 - reordenar;
-- editar texto;
 - remover.
 
-A numeração visual é derivada da estrutura, não texto manual obrigatório.
+A numeração é derivada da estrutura.
 
-Não criar editor de árvore genérico além do necessário aos passos/subpassos.
+## 9. Checklist documental
 
-## 13. Checklist documental
+No Editor, checklist define apenas os itens do procedimento.
 
-O bloco Checklist edita somente a **definição dos itens do procedimento**.
+Não existem aqui campos de execução como concluído, executado por, data ou percentual. Esses conceitos pertencem ao Bloco 9/Atendimento.
 
-No Editor de Processo não existem campos como:
-
-- concluído;
-- executado por;
-- data de execução;
-- percentual concluído.
-
-Esses conceitos pertencem ao Bloco 9/Atendimento.
-
-## 14. Comando e Código
+## 10. Comando e Código
 
 - fonte monoespaçada;
 - preservar espaços/quebras relevantes;
-- área de edição apropriada ao tamanho;
-- preview final pertence ao Leitor;
-- não executar comandos diretamente pelo StepFlow.
+- área de edição apropriada;
+- preview final é o Leitor;
+- StepFlow não executa comandos diretamente.
 
-## 15. Salvamento — proposta central
+## 11. Salvamento explícito
 
-Usar **salvamento explícito**, não autosave silencioso inicial.
+Decisão consolidada: **sem autosave inicial**.
 
-Razões:
+Cada save aceito cria nova revisão imutável. Enquanto houver alterações locais, mostrar `Alterações não salvas` de forma discreta.
 
-- cada save aceito cria revisão imutável;
-- evita gerar revisões excessivas a cada tecla;
-- torna o momento da escrita oficial previsível;
-- combina com controle otimista de concorrência.
-
-Enquanto houver alterações locais não salvas, indicar `Alterações não salvas` de forma discreta.
-
-## 16. Revisões e `base_revision`
-
-Ao abrir um procedimento existente, o Client mantém a revisão-base recebida.
-
-Ao salvar:
+Fluxo:
 
 ```text
 Client envia estado estruturado + base_revision
-        ↓
-Host valida autorização/estrutura/revisão
-        ↓
-writer/fila coordenada
-        ↓
-transação
-        ↓
-nova process_revision imutável
-        ↓
-current_revision_id atualizado
-        ↓
-resposta de sucesso + evento pós-commit
+→ Host valida autorização/estrutura/revisão
+→ writer/fila coordenada
+→ transação
+→ nova process_revision imutável
+→ current_revision_id atualizado
+→ resposta + evento pós-commit
 ```
 
-Um save aceito nunca altera uma revisão antiga no lugar.
+Revisão antiga nunca é editada in-place.
 
-## 17. Conflito `409 REVISION_CONFLICT`
+## 12. Concorrência e conflito
 
-Se outro usuário salvar antes:
+Se outro usuário salvar primeiro:
 
-- nunca sobrescrever automaticamente;
-- manter as alterações locais do usuário visíveis/em memória;
-- exibir aviso claro de que existe uma versão mais recente;
-- bloquear tentativa de “forçar” overwrite silencioso;
-- permitir consultar/recarregar a versão atual conscientemente;
-- antes de descartar alterações locais para recarregar, pedir confirmação explícita.
+- Host responde `409 REVISION_CONFLICT`;
+- não sobrescrever automaticamente;
+- manter alterações locais visíveis/em memória;
+- avisar que existe versão mais recente;
+- não oferecer overwrite forçado silencioso;
+- recarregar versão atual só após ação consciente;
+- confirmar antes de descartar alterações locais.
 
-A primeira versão não precisa implementar merge automático de documentos.
+Não implementar merge automático na primeira versão.
 
-## 18. Evento de atualização durante edição
+Evento WebSocket durante edição não substitui campos locais. Ele apenas sinaliza mudança e provoca reconciliação segura quando necessário.
 
-Se WebSocket indicar alteração do mesmo procedimento enquanto há edição aberta:
+## 13. Saída com alterações não salvas
 
-- não substituir os campos locais;
-- mostrar banner discreto `Este processo foi atualizado por outro usuário.`;
-- informar que o próximo save pode exigir reconciliação;
-- reconsulta pode buscar metadados da nova revisão sem apagar o estado local;
-- conflito final continua decidido pelo Host no save.
-
-## 19. Saída com alterações não salvas
-
-Ao tentar:
-
-- voltar para Processos;
-- abrir Leitor;
-- trocar de rota relevante;
-- fechar janela do Client;
-
-com mudanças não salvas, mostrar confirmação simples:
+Ao voltar, trocar de rota relevante ou fechar o Client com mudanças locais:
 
 `Há alterações não salvas. Deseja sair e descartá-las?`
 
 Não persistir rascunho local oculto sem requisito aprovado.
 
-## 20. Visualizar
+## 14. Visualizar
 
-### Proposta
+`Visualizar` abre o Leitor usando a **última revisão já salva**.
 
-A ação `Visualizar` abre o Leitor usando a **última revisão já salva**.
+Não prometer preview de conteúdo ainda não salvo na primeira versão.
 
-Não prometer preview de alterações ainda não salvas nesta primeira versão. Isso reduz duplicação de renderer/estado e deixa claro o que já é oficial no Host.
+## 15. Publicação
 
-Se futuramente houver valor em preview local antes do save, pode ser adicionado como capacidade separada.
+`Salvar alterações` e `Publicar revisão atual` são ações distintas.
 
-## 21. Publicação — direção mínima
+Regras:
 
-O modelo já distingue revisão atual e revisão publicada.
+- save cria nova revisão atual;
+- save não publica automaticamente;
+- usuário com capacidade apropriada pode publicar a revisão atual;
+- publicação não cria workflow complexo de revisão/aprovação;
+- versão publicada é identificável no Leitor e Histórico.
 
-Proposta de UX:
-
-- `Salvar alterações` cria/atualiza a revisão atual por nova revisão imutável;
-- usuários com capacidade de publicação recebem ação separada `Publicar revisão atual`;
-- publicação nunca acontece implicitamente só porque houve save;
-- não criar fluxo complexo de aprovação/revisores nesta primeira versão;
-- versão publicada deve ser identificável no Leitor/Histórico.
-
-Os nomes finais dos estados editoriais permanecem subordinados ao contrato de lifecycle vigente; a Tela 06 não inventa estados extras.
-
-## 22. Novo processo
-
-Ao criar:
+## 16. Novo processo
 
 - formulário começa sem identidade persistida;
-- Código/Título e demais campos obrigatórios seguem validação do Host;
-- primeira gravação bem-sucedida cria `process_id` estável e primeira revisão;
-- processo não é publicado automaticamente apenas por ser criado;
-- `Cancelar` antes do primeiro save não cria registro oficial.
+- primeira gravação válida cria `process_id` estável e primeira revisão;
+- não publicar automaticamente apenas por criar;
+- cancelar antes do primeiro save não cria registro oficial.
 
-## 23. Validações
+## 17. Validações
 
 Host é autoridade para:
 
-- unicidade de Código;
+- unicidade do Código;
 - campos obrigatórios;
 - limites/tipos de conteúdo;
 - categorias válidas/ativas;
 - capacidade do ator;
 - revisão-base;
-- integridade estrutural das etapas/blocos.
+- integridade de etapas/blocos.
 
-Client replica validações simples para UX, mas não substitui o Host.
+Client replica validações simples apenas para UX.
 
-## 24. Mensagens
-
-Preferir mensagens curtas:
-
-- `Alterações salvas.`;
-- `Há alterações não salvas.`;
-- `Este processo foi atualizado por outro usuário.`;
-- `Não foi possível salvar. Revise os campos indicados.`;
-- `A revisão atual foi publicada.`
-
-Não expor SQL, stack trace, paths internos ou IDs técnicos desnecessários.
-
-## 25. Estados da interface
+## 18. Estados
 
 ### Loading
 
-Estrutura do Editor carregada sem mostrar dados antigos como atuais.
+Não mostrar dados antigos como atuais.
 
 ### Novo/vazio
 
-Exibir formulário limpo e primeira ação orientada.
+Formulário limpo e primeira ação orientada.
 
 ### Erro de validação
 
-Marcar campos/blocos correspondentes e manter todo o restante editável.
+Marcar campos/blocos e preservar restante da edição.
 
 ### Sem permissão
 
-Não entrar em modo editável; oferecer retorno seguro ao Leitor/Processos.
+Não entrar em modo editável.
 
 ### Host indisponível
 
-Não permitir salvar nem sugerir que mudanças locais foram confirmadas. Manter estado local enquanto a tela estiver aberta e comunicar indisponibilidade.
+Não salvar nem fingir confirmação; manter estado local enquanto a tela permanecer aberta.
 
 ### Conflito
 
-Aplicar seção 17.
+Aplicar a seção de concorrência.
 
-### Processo arquivado enquanto edita
+### Processo arquivado durante edição
 
-Não continuar salvando silenciosamente. Reconsultar Host e explicar mudança de estado/permissão.
+Reconsultar Host e bloquear save incompatível com o estado atual.
 
-## 26. Autorização
+## 19. Autorização
 
 Capacidades podem separar:
 
@@ -388,103 +251,90 @@ Capacidades podem separar:
 - arquivar;
 - gerenciar categorias.
 
-Perfil é preset; autorização final é granular e Host-side.
+Perfil é preset; autorização final é Host-side.
 
-## 27. Persistência
+## 20. Persistência e comunicação
 
-Persistência oficial inclui apenas saves aceitos pelo Host.
-
+- somente saves aceitos pelo Host são oficiais;
 - nenhum acesso direto ao SQLite;
 - nenhuma fila local offline;
-- nenhuma revisão “aceita mas ainda não commitada”;
-- evento somente após commit.
+- nenhum estado “aceito mas ainda não commitado”;
+- eventos somente após commit.
 
-## 28. Contratos Client ↔ Host necessários
-
-Conceitualmente:
+Contratos conceituais:
 
 1. carregar processo/revisão editável;
 2. listar categorias autorizadas;
-3. validar/salvar revisão com `base_revision`;
-4. criar novo processo;
-5. publicar revisão atual quando permitido;
-6. receber capacidades da sessão;
-7. receber/reconsultar eventos de atualização;
-8. eventualmente arquivar por contrato próprio.
+3. criar processo;
+4. salvar revisão com `base_revision`;
+5. publicar revisão atual;
+6. receber capacidades/eventos;
+7. arquivar por contrato próprio quando aplicável.
 
-Nomes finais dos endpoints pertencem à implementação.
+Nomes finais de endpoints pertencem à implementação.
 
-## 29. Acessibilidade e teclado
+## 21. Acessibilidade e janela
 
-- labels reais para todos os campos;
-- ordem de foco previsível;
-- ações de mover etapa/bloco por teclado;
-- drag-and-drop não é único meio de reordenar;
+- labels reais;
+- foco previsível/visível;
+- mover etapa/bloco por teclado;
+- drag-and-drop nunca é único meio;
+- erros associados aos campos;
+- chips de categoria acessíveis;
 - menus fecham com Escape;
-- erros são associados aos campos;
-- chips de categoria possuem remoção acessível;
-- foco não é perdido após adicionar/remover bloco.
+- foco preservado após adicionar/remover blocos.
 
-## 30. Janelas menores
+Desktop Windows é prioridade. Em janela menor, Informações pode virar uma coluna e o painel Estrutura pode reduzir largura sem esconder controles essenciais.
 
-Desktop Windows é prioridade.
-
-- `Informações` pode virar uma coluna;
-- painel Estrutura pode reduzir largura, mas não esconder controle essencial;
-- conteúdo central preserva área mínima de edição;
-- toolbars podem quebrar em duas linhas;
-- não criar versão mobile/hamburger sem necessidade demonstrada.
-
-## 31. Fora do escopo
+## 22. Fora do escopo
 
 - HTML/WYSIWYG genérico;
-- Markdown como fonte oficial obrigatória;
+- Markdown obrigatório como fonte oficial;
 - autosave a cada tecla;
-- merge automático de conflitos;
+- merge automático;
 - colaboração caractere a caractere;
 - criação inline de categorias;
-- execução real de comandos;
-- persistência de checklist operacional;
+- execução de comandos;
+- checklist operacional;
 - workflow editorial complexo;
 - código Tauri/Host.
 
-## 32. Propostas para aprovação do PO
+## 23. Decisões consolidadas nesta tela
 
-1. separar Editor em `Informações` e `Etapas`;
-2. usar painel contextual `Estrutura` dentro de Etapas;
-3. usar salvamento explícito, sem autosave inicial;
+1. separar `Informações` e `Etapas`;
+2. usar painel contextual `Estrutura`;
+3. salvamento explícito, sem autosave inicial;
 4. cada save aceito gera nova revisão imutável;
-5. usar blocos tipados, sem HTML livre;
-6. categorias são selecionadas no Editor, mas gerenciadas fora dele;
-7. reordenação por drag-and-drop + alternativa mover acima/abaixo;
+5. blocos tipados, sem HTML livre;
+6. categorias selecionadas no Editor e gerenciadas fora dele;
+7. drag-and-drop apenas como complemento a ações acessíveis;
 8. conflito preserva edição local e nunca faz overwrite automático;
-9. `Visualizar` mostra última revisão salva, não estado local não salvo;
-10. `Salvar` e `Publicar revisão atual` são ações distintas, sem workflow editorial complexo.
+9. `Visualizar` mostra última revisão salva;
+10. `Salvar` e `Publicar revisão atual` são ações distintas.
 
-## 33. Pendências
+## 24. Pendências menores
 
-- campos obrigatórios finais além dos já consolidados;
-- limites de tamanho por campo/bloco;
+- limites finais por campo/bloco;
 - microcopy final;
-- aparência exata do seletor múltiplo de categorias;
-- apresentação final do estado publicado/rascunho;
-- necessidade futura de preview de alterações ainda não salvas.
+- aparência exata do seletor múltiplo;
+- apresentação visual final do estado publicado/rascunho;
+- eventual preview local futuro.
 
-## 34. Critérios de aceite da especificação
+## 25. Critérios de aceite
 
-- [x] modelo estruturado respeitado;
-- [x] categorias incorporadas;
-- [x] revisão otimista respeitada;
-- [x] conflito não sobrescreve;
+- [x] layout Informações/Etapas aprovado;
+- [x] painel Estrutura aprovado;
+- [x] salvamento explícito aprovado;
+- [x] revisão imutável preservada;
+- [x] blocos tipados aprovados;
+- [x] categorias integradas;
 - [x] checklist documental separado do operacional;
-- [x] publicação não cria workflow extra automaticamente;
-- [x] nenhum código de produção criado;
-- [ ] layout Informações/Etapas aprovado pelo PO;
-- [ ] salvamento explícito aprovado;
-- [ ] UX de blocos/reordenação aprovada;
-- [ ] separação Salvar/Publicar aprovada.
+- [x] conflito sem overwrite silencioso;
+- [x] Visualizar usa revisão salva;
+- [x] Salvar/Publicar separados;
+- [x] nenhum código de produção criado.
 
-## 35. Casos de teste futuros
+## 26. Casos de teste futuros
 
 1. criar processo e cancelar antes de salvar;
 2. criar primeira revisão;
@@ -495,9 +345,8 @@ Desktop Windows é prioridade.
 7. sair com alterações não salvas;
 8. salvar com base atual;
 9. receber `409` após edição concorrente;
-10. receber evento de atualização enquanto edita;
+10. receber evento durante edição;
 11. visualizar última revisão salva;
-12. publicar revisão atual com permissão;
-13. negar publicação sem permissão;
-14. perder Host antes do save;
-15. validar janela menor/acessibilidade.
+12. publicar com/sem permissão;
+13. perder Host antes do save;
+14. validar janela menor/acessibilidade.
