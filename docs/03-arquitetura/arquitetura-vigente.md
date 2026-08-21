@@ -1,6 +1,6 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1  
+**Status:** CONSOLIDADA PARA A FASE 1 / EXTENSÃO OPERACIONAL EM PROPOSTA  
 **Atualização:** 2026-08-21
 
 ## Visão geral
@@ -30,50 +30,51 @@ Responsabilidades:
 - apresentar conflitos/erros;
 - nunca abrir SQLite diretamente.
 
-Baseline inicial: Windows 10/11 x64, com WebView2. Validação das máquinas corporativas permanece pendente.
+Baseline inicial: Windows 10/11 x64, com WebView2. Validação corporativa permanece pendente.
 
-## Domínios funcionais vigentes
+## Novo requisito funcional confirmado
 
-O núcleo funcional passa a distinguir explicitamente:
+A arquitetura deve passar a suportar:
 
-- **Procedimentos** — documentação/modelos oficiais versionados;
-- **Categorias** — classificação configurável e múltipla de procedimentos;
-- **Atendimentos/Execuções** — ocorrências reais de trabalho quando rastreabilidade for necessária;
-- **Equipamentos** — ativos físicos opcionais relacionados aos atendimentos;
-- **Usuários/Permissões** — identidade e autorização;
-- **Empresa/Exportação/Backup** — identidade e operação administrativa.
+- categorização de procedimentos;
+- registro das informações reais de serviço/equipamento em cenários aplicáveis;
+- busca operacional por cliente/OS/identificadores úteis;
+- resumo dos procedimentos realizados;
+- ficha compacta imprimível.
 
-Procedimento e atendimento são entidades diferentes. Um atendimento preserva a revisão do procedimento efetivamente usada e pode ou não possuir equipamento associado.
+### Direção arquitetural proposta
+
+Para manter baixo acoplamento e não misturar documentação com ocorrência real, recomenda-se separar futuramente:
+
+- `Procedimento` — documentação/modelo oficial;
+- `Atendimento/Execução` — registro real do serviço;
+- `Equipamento` — ativo opcional ligado ao registro.
+
+Essa separação, categorias múltiplas e os vínculos exatos estão **EM PROPOSTA** e não são contrato de implementação até aprovação do PO/Bloco 9.
 
 ## Launcher do Client
 
-O ponto de entrada da rede é um launcher portátil/transitório em Rust.
+Launcher portátil/transitório em Rust:
 
-Fluxo:
+1. lê manifesto/configuração;
+2. compara versão;
+3. copia artefatos para `%LOCALAPPDATA%\StepFlow\Client\versions\<versao>\`;
+4. valida SHA-256;
+5. inicia cópia local;
+6. encerra.
 
-1. ler manifesto/configuração publicados;
-2. comparar versão local;
-3. copiar artefatos para `%LOCALAPPDATA%\StepFlow\Client\versions\<versao>\`;
-4. validar SHA-256;
-5. ativar/iniciar a cópia local;
-6. encerrar o launcher.
-
-Versões ficam lado a lado para atualização/rollback. Nenhum serviço/updater residente é usado.
+Nenhum updater residente.
 
 ## Host Pocket
 
-Tecnologia: **Rust + Tokio/Axum + `rusqlite` com SQLite bundled**.
+Tecnologia: Rust + Tokio/Axum + `rusqlite` bundled.
 
-Na máquina central existem dois papéis executáveis:
+- Controller: ciclo de vida, paths/config, instância única, startup/readiness/shutdown;
+- Host: autenticação, autorização, API, eventos, SQLite, writer/fila, revisões, auditoria, backup/restore e dados funcionais aprovados.
 
-- Controller: inicia sob demanda, valida paths/configuração, protege instância única, inicia/acompanha Host e coordena shutdown;
-- Host: autenticação, autorização, API, eventos, SQLite, writer/fila, revisões, categorias, equipamentos, atendimentos, auditoria, backup/restore e arquivos administrados.
+Sem Windows Service, auto-start, Task Scheduler ou daemon StepFlow como padrão. Encerrado o ciclo central, nenhum processo StepFlow permanece ativo.
 
-Não há Windows Service, auto-start, Task Scheduler ou daemon StepFlow como padrão. Encerrado o ciclo operacional, nenhum processo StepFlow deve permanecer ativo.
-
-Detalhes: `host-pocket.md` e `implantacao-pocket.md`.
-
-## Persistência
+## Persistência consolidada
 
 ```text
 StepFlow\
@@ -88,75 +89,70 @@ StepFlow\
 ```
 
 - SQLite local ao Host;
-- foreign keys habilitadas;
-- WAL para concorrência leitura/escrita;
+- foreign keys;
+- WAL;
 - migrations versionadas;
 - revisões de procedimento imutáveis;
-- categorias configuráveis;
-- equipamentos com identidade interna estável;
-- atendimentos formais com equipamento opcional e vínculo à revisão utilizada;
 - versão exibida separada da revisão técnica;
-- auditoria separada de logs técnicos;
-- dados/configuração não são substituídos junto com binários.
+- auditoria separada de logs;
+- dados/config não são substituídos junto com binários.
 
-Detalhes: `modelo-dados-schema-fase-1.md` e `../01-produto/categorizacao-atendimentos-equipamentos.md`.
+A extensão de schema para categorias/registros de serviço/equipamentos está em proposta em `modelo-dados-schema-fase-1.md`.
 
 ## Comunicação
 
-- HTTP + JSON em contratos versionados, inicialmente `/api/v1`;
+- HTTP/JSON em contratos versionados, inicialmente `/api/v1`;
 - WebSocket autenticado para eventos;
-- `deployment.json` informa endpoint/contrato sem guardar segredo;
+- `deployment.json` sem segredos;
 - handshake de compatibilidade antes do login;
-- nenhuma edição offline na primeira versão;
-- falha de WebSocket provoca reconexão e reconsulta, não replay obrigatório.
+- sem edição offline inicial;
+- falha WebSocket → reconexão/reconsulta.
 
 ## Autenticação e autorização
 
-- Argon2id para senhas;
+- Argon2id;
 - sessão opaca server-side;
-- token mantido apenas em memória do Client inicialmente;
-- autorização sempre no Host;
-- ADM, Gerência e Funcionário são presets;
+- token em memória do Client;
+- autorização Host-side;
+- ADM/Gerência/Funcionário como presets;
 - Gerência não administra ADM;
-- bootstrap do primeiro ADM ocorre localmente/controlado na máquina central;
-- matriz específica de categorias/equipamentos/atendimentos ainda será fechada no Bloco 9.
+- bootstrap ADM local/controlado;
+- permissões da nova área operacional ainda pendentes.
 
 ## Concorrência
 
-- um writer lógico coordenado no Host;
-- fila bounded com backpressure;
-- revisão otimista por recurso quando houver risco de perda concorrente;
+- writer lógico coordenado;
+- fila bounded/backpressure;
+- revisão otimista por recurso quando necessário;
 - `409 Conflict` para base obsoleta;
 - constraints SQLite como última defesa;
-- eventos somente após commit;
-- nenhum soft/hard lock de edição na primeira fundação;
-- proteção contra dois Hosts usando o mesmo data dir;
-- categorias, equipamentos e atendimentos seguem o mesmo princípio de coordenação/revisão quando houver mutações concorrentes.
+- eventos pós-commit;
+- sem soft/hard lock inicial;
+- dois Hosts não usam o mesmo data dir.
+
+Novos dados operacionais aprovados posteriormente devem seguir os mesmos princípios.
 
 ## Exportação e impressão
 
-PDF, DOCX e impressão são requisitos para documentação de procedimentos.
+PDF, DOCX e impressão são requisitos da documentação de procedimentos.
 
-O novo requisito também exige ficha/relatório compacto de atendimento/equipamento para impressão física. Estratégia, tamanho/formato e eventual arquivo exportável serão fechados no Bloco 10.
+Novo requisito confirmado: ficha compacta imprimível de serviço/equipamento. Estratégia, layout físico, PDF e eventuais identificadores visuais serão fechados no Bloco 10.
 
 ## Backup
 
-Backup/restore é coordenado pelo Host e será especificado no Bloco 11. Deve abranger os novos dados de categorias, equipamentos e atendimentos além do restante do banco/arquivos administrados.
+Backup/restore é coordenado pelo Host e será especificado no Bloco 11. Quando a modelagem operacional for aprovada, os novos dados devem entrar no escopo do backup.
 
 ## Ambiente corporativo ainda pendente
 
-Somente no ambiente real serão consolidados/testados:
-
-- hostname/IP e paths reais;
-- compartilhamento SMB e permissões;
-- versões reais de Windows/arquitetura;
-- WebView2 nas estações;
-- política de transporte HTTP/HTTPS;
+- hostname/IP/paths reais;
+- SMB/permissões;
+- Windows/WebView2 reais;
+- HTTP/HTTPS;
 - antivírus/EDR/firewall;
-- mecanismo existente para iniciar o Controller na máquina central quando necessário.
+- mecanismo real de start do Controller.
 
 Essas pendências não autorizam hardcode de exemplos.
 
 ## Próximo trabalho
 
-Bloco 8 da Fase 1 continua em UI/UX, agora incorporando categorias e as superfícies de atendimento/equipamento. Lifecycle/checklist operacional será fechado no Bloco 9 antes da implementação.
+Bloco 8 continua em UI/UX. Antes de transformar a nova funcionalidade em telas/contratos definitivos, o PO deve aprovar ou ajustar a modelagem proposta em `docs/01-produto/categorizacao-atendimentos-equipamentos.md`. Lifecycle/checklist/permissões serão fechados no Bloco 9.
