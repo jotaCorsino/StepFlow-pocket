@@ -1,7 +1,7 @@
 # Arquitetura Vigente — StepFlow Pocket
 
 **Status:** CONSOLIDADA PARA A FASE 1  
-**Atualização:** 2026-08-20
+**Atualização:** 2026-08-21
 
 ## Visão geral
 
@@ -32,6 +32,19 @@ Responsabilidades:
 
 Baseline inicial: Windows 10/11 x64, com WebView2. Validação das máquinas corporativas permanece pendente.
 
+## Domínios funcionais vigentes
+
+O núcleo funcional passa a distinguir explicitamente:
+
+- **Procedimentos** — documentação/modelos oficiais versionados;
+- **Categorias** — classificação configurável e múltipla de procedimentos;
+- **Atendimentos/Execuções** — ocorrências reais de trabalho quando rastreabilidade for necessária;
+- **Equipamentos** — ativos físicos opcionais relacionados aos atendimentos;
+- **Usuários/Permissões** — identidade e autorização;
+- **Empresa/Exportação/Backup** — identidade e operação administrativa.
+
+Procedimento e atendimento são entidades diferentes. Um atendimento preserva a revisão do procedimento efetivamente usada e pode ou não possuir equipamento associado.
+
 ## Launcher do Client
 
 O ponto de entrada da rede é um launcher portátil/transitório em Rust.
@@ -53,8 +66,8 @@ Tecnologia: **Rust + Tokio/Axum + `rusqlite` com SQLite bundled**.
 
 Na máquina central existem dois papéis executáveis:
 
-- Controller: inicia sob demanda, valida paths/configuração, protege instância única, inicia/acompanha o Host e coordena shutdown;
-- Host: autenticação, autorização, API, eventos, SQLite, writer/fila, revisões, auditoria, backup/restore e arquivos administrados.
+- Controller: inicia sob demanda, valida paths/configuração, protege instância única, inicia/acompanha Host e coordena shutdown;
+- Host: autenticação, autorização, API, eventos, SQLite, writer/fila, revisões, categorias, equipamentos, atendimentos, auditoria, backup/restore e arquivos administrados.
 
 Não há Windows Service, auto-start, Task Scheduler ou daemon StepFlow como padrão. Encerrado o ciclo operacional, nenhum processo StepFlow deve permanecer ativo.
 
@@ -78,10 +91,15 @@ StepFlow\
 - foreign keys habilitadas;
 - WAL para concorrência leitura/escrita;
 - migrations versionadas;
-- revisões de processo imutáveis;
+- revisões de procedimento imutáveis;
+- categorias configuráveis;
+- equipamentos com identidade interna estável;
+- atendimentos formais com equipamento opcional e vínculo à revisão utilizada;
 - versão exibida separada da revisão técnica;
 - auditoria separada de logs técnicos;
 - dados/configuração não são substituídos junto com binários.
+
+Detalhes: `modelo-dados-schema-fase-1.md` e `../01-produto/categorizacao-atendimentos-equipamentos.md`.
 
 ## Comunicação
 
@@ -98,9 +116,10 @@ StepFlow\
 - sessão opaca server-side;
 - token mantido apenas em memória do Client inicialmente;
 - autorização sempre no Host;
-- ADM, Gerência e Funcionário são presets de permissões;
+- ADM, Gerência e Funcionário são presets;
 - Gerência não administra ADM;
-- bootstrap do primeiro ADM ocorre localmente/controlado na máquina central.
+- bootstrap do primeiro ADM ocorre localmente/controlado na máquina central;
+- matriz específica de categorias/equipamentos/atendimentos ainda será fechada no Bloco 9.
 
 ## Concorrência
 
@@ -111,13 +130,18 @@ StepFlow\
 - constraints SQLite como última defesa;
 - eventos somente após commit;
 - nenhum soft/hard lock de edição na primeira fundação;
-- proteção contra dois Hosts usando o mesmo data dir.
+- proteção contra dois Hosts usando o mesmo data dir;
+- categorias, equipamentos e atendimentos seguem o mesmo princípio de coordenação/revisão quando houver mutações concorrentes.
 
-## Exportação e backup
+## Exportação e impressão
 
-PDF, DOCX e impressão são requisitos do produto; estratégia técnica será fechada no Bloco 10.
+PDF, DOCX e impressão são requisitos para documentação de procedimentos.
 
-Backup/restore é coordenado pelo Host e será especificado no Bloco 11.
+O novo requisito também exige ficha/relatório compacto de atendimento/equipamento para impressão física. Estratégia, tamanho/formato e eventual arquivo exportável serão fechados no Bloco 10.
+
+## Backup
+
+Backup/restore é coordenado pelo Host e será especificado no Bloco 11. Deve abranger os novos dados de categorias, equipamentos e atendimentos além do restante do banco/arquivos administrados.
 
 ## Ambiente corporativo ainda pendente
 
@@ -135,4 +159,4 @@ Essas pendências não autorizam hardcode de exemplos.
 
 ## Próximo trabalho
 
-Bloco 8 da Fase 1: especificação das telas e contrato de UI/UX.
+Bloco 8 da Fase 1 continua em UI/UX, agora incorporando categorias e as superfícies de atendimento/equipamento. Lifecycle/checklist operacional será fechado no Bloco 9 antes da implementação.
