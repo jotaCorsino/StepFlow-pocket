@@ -1,28 +1,16 @@
 # Tela 03 — Início / Dashboard
 
-**Status:** EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO  
+**Status:** CONSOLIDADO / APROVADO PELO PO  
 **Bloco:** Fase 1 — Bloco 8 (UI/UX)  
-**Última consolidação:** 2026-08-21
+**Aprovação:** 2026-08-21
 
 ## 1. Objetivo
 
 Ser o primeiro destino após login e oferecer um ponto de partida simples para o uso diário do StepFlow.
 
-O Dashboard não deve se transformar em painel executivo, portal de indicadores ou central burocrática. Sua prioridade é reduzir o tempo entre abrir o aplicativo e encontrar um processo útil.
+O Dashboard não é painel executivo nem central de KPIs. Sua prioridade é reduzir o tempo entre abrir o aplicativo e localizar um procedimento útil.
 
-## 2. Atores
-
-Usado por:
-
-- ADM;
-- Gerência;
-- Funcionário.
-
-O núcleo é comum a todos. Conteúdo adicional só aparece quando houver permissão e utilidade real.
-
-## 3. Entrada
-
-Fluxo aprovado:
+## 2. Entrada
 
 ```text
 Login válido
@@ -32,18 +20,7 @@ Login válido
 
 O item `Início` da sidebar retorna a esta tela.
 
-## 4. Princípios de UX
-
-Consolidados pelo produto:
-
-- reduzir atrito para localizar e executar processos;
-- visual corporativo, limpo e discreto;
-- evitar excesso de cards, números e indicadores;
-- não duplicar navegação já disponível na sidebar;
-- não mostrar informações técnicas de Host/banco/porta;
-- respeitar capacidades retornadas pelo Host.
-
-## 5. Composição proposta
+## 3. Composição aprovada
 
 ```text
 Início
@@ -56,323 +33,187 @@ Bem-vindo, <nome>.
 
 Atualizados recentemente
 ---------------------------------------------------------------
-[Código] Título do processo                    Área      Versão
-[Código] Título do processo                    Área      Versão
-[Código] Título do processo                    Área      Versão
+[Código] Título do processo             Categoria/Área   Versão
+[Código] Título do processo             Categoria/Área   Versão
+[Código] Título do processo             Categoria/Área   Versão
 
-                                         [ Ver todos os processos ]
+                                      [ Ver todos os processos ]
 ```
 
-A composição é deliberadamente enxuta. Não inclui gráficos, contadores decorativos, ranking de usuários ou KPIs de gestão na primeira versão.
+A composição permanece deliberadamente enxuta.
 
-## 6. Cabeçalho
+## 4. Busca rápida
 
-Proposta:
+- busca por código, título ou termo compatível com a Tela 04;
+- Enter/ação de busca encaminha para `Processos` com o termo aplicado;
+- filtros completos pertencem à Tela 04;
+- resultados respeitam autorização Host-side;
+- a busca do Dashboard é de **procedimentos/documentação**, não de OS/equipamentos/atendimentos.
 
-- título `Início`;
-- saudação curta usando nome de exibição: `Bem-vindo, <nome>.`;
-- sem data/hora decorativa;
-- sem banners promocionais.
+Busca operacional por atendimento, cliente, OS, equipamento, serial/patrimônio/MAC pertence à área `Atendimentos`.
 
-A saudação não deve ocupar espaço excessivo.
+## 5. Atualizados recentemente
 
-## 7. Busca rápida de processos
+Exibir lista curta de procedimentos oficiais recentemente publicados/atualizados e visíveis ao usuário.
 
-Elemento principal proposto.
-
-### Objetivo
-
-Permitir que o técnico comece a localizar um processo sem precisar primeiro navegar até a tela completa de Processos.
-
-### Comportamento
-
-- aceitar Código, Título ou termo de busca compatível com o contrato da lista de processos;
-- Enter ou ação de busca encaminha para `Processos` com o termo aplicado;
-- o Dashboard não precisa reproduzir todos os filtros avançados da tela de Processos;
-- busca vazia pode encaminhar para a lista completa ou manter a tela, conforme microinteração a fechar com a tela de Processos;
-- não pesquisar dados que o usuário não tenha autorização para ver.
-
-### Limite
-
-A busca rápida é um ponto de entrada. A pesquisa/filtro completos serão definidos na Tela 04 — Lista e Pesquisa de Processos.
-
-## 8. Processos atualizados recentemente
-
-### Proposta
-
-Exibir uma lista curta de processos oficiais recentemente publicados/atualizados e visíveis ao usuário.
-
-Objetivos:
-
-- facilitar descoberta de documentação nova ou revisada;
-- fornecer conteúdo útil sem criar métricas administrativas;
-- permitir abertura direta do processo.
-
-### Campos visuais sugeridos
+Campos úteis:
 
 - Código;
 - Título;
-- Área/Departamento;
-- Versão exibida;
-- indicação discreta de atualização recente quando necessário.
+- Categoria(s) de forma discreta;
+- Área/Departamento quando útil;
+- Versão exibida.
 
-A data pode existir como informação secundária se melhorar a compreensão, mas não precisa dominar a lista.
+Regras:
 
-### Regras
+- somente conteúdo autorizado;
+- Funcionário não recebe rascunho administrativo indevido;
+- clique abre o leitor;
+- `Ver todos os processos` abre a Tela 04;
+- quantidade exata de itens é detalhe visual do sistema de design.
 
-- somente processos que o usuário pode consultar;
-- não mostrar rascunhos/revisões internas a quem não possui acesso correspondente;
-- clicar em item abre o leitor do processo;
-- quantidade inicial deve ser pequena para não transformar o Dashboard em outra lista completa;
-- ação `Ver todos os processos` navega para a Tela 04.
+## 6. O que não entra no Dashboard inicial
 
-A quantidade exata de itens é detalhe visual a fechar posteriormente.
+Não incluir por padrão:
 
-## 9. Ausência de seção “Favoritos” na primeira especificação
+- KPIs/gráficos;
+- ranking de usuários;
+- analytics de produtividade;
+- favoritos/bookmarks;
+- histórico pessoal de navegação;
+- painel gerencial separado;
+- duplicação dos atalhos `Atendimentos`, `Usuários` ou `Configurações` já presentes na sidebar.
 
-Não existe requisito consolidado de favoritos, pins ou bookmarks.
+Se necessidade futura justificar algum desses elementos, a tela poderá ser revisada explicitamente.
 
-Portanto, o Dashboard não cria esse conceito por conveniência. Se houver necessidade futura, deverá ser requisito explícito com persistência/UX definidas.
+## 7. Conteúdo por perfil
 
-## 10. Ausência de “Recentemente acessados” como requisito
-
-Também não está consolidado um histórico pessoal de processos recentemente abertos.
-
-Não criar armazenamento local ou server-side para isso apenas para enriquecer o Dashboard.
-
-A primeira proposta usa **processos atualizados recentemente**, deriváveis do histórico oficial já existente, e não histórico de navegação pessoal.
-
-## 11. Conteúdo por perfil
-
-### Funcionário
-
-Núcleo proposto:
+O núcleo é comum a ADM, Gerência e Funcionário:
 
 - busca rápida;
-- processos atualizados recentemente;
+- atualizados recentemente;
 - acesso à lista completa.
 
-Nenhum bloco gerencial adicional é necessário.
+Diferenças vêm da autorização do conteúdo, não de dashboards completamente distintos.
 
-### Gerência e ADM
-
-A mesma experiência de consulta permanece disponível.
-
-Não adicionar por padrão:
-
-- KPIs de quantidade de usuários;
-- quantidade de alterações por pessoa;
-- produtividade;
-- gráficos de uso;
-- filas administrativas artificiais.
-
-Atalhos administrativos já existem na sidebar; duplicá-los no Dashboard só será feito se houver utilidade concreta aprovada.
-
-## 12. Processos em edição/rascunho
-
-Não incluir bloco específico de “meus rascunhos” nesta primeira proposta sem antes fechar o fluxo completo do editor/publicação.
-
-Se a Tela 06 demonstrar necessidade real, o Dashboard poderá ser revisado sem afetar seu núcleo de busca/consulta.
-
-## 13. Estados da interface
+## 8. Estados
 
 ### Loading
 
-- mostrar estrutura estável;
-- evitar múltiplos spinners desconexos;
-- busca não deve parecer funcional se o Host ainda estiver indisponível.
+Mostrar estrutura estável sem múltiplos spinners desconexos.
 
-### Vazio — nenhum processo disponível
+### Nenhum processo disponível
 
-Exibir mensagem simples de que não há processos disponíveis para consulta.
-
-Não sugerir criação para Funcionário.
-
-Para perfis com permissão de criação, eventual ação contextual será decidida com a Tela de Processos/Editor, não automaticamente pelo Dashboard.
+Mensagem simples. Não sugerir criação para usuário sem capacidade.
 
 ### Nenhuma atualização recente
 
-O bloco pode mostrar mensagem curta e manter `Ver todos os processos` disponível.
+Mensagem curta mantendo `Ver todos os processos` disponível.
 
 ### Host indisponível
 
-Seguir o comportamento transversal aprovado no Shell:
-
-- banner/estado claro;
-- não apresentar dados antigos como se fossem atuais sem indicação;
-- desabilitar ações dependentes do Host quando necessário;
-- não exibir configuração técnica de rede.
+Seguir o estado transversal do Shell; não apresentar cache como atual sem indicação.
 
 ### Sessão expirada
 
-Retornar ao Login conforme Shell/autenticação.
+Retornar ao Login.
 
 ### Erro parcial
 
-Se a busca estiver disponível mas a lista de atualizados falhar, não é necessário derrubar todo o Dashboard. Mostrar erro contextual do bloco quando tecnicamente seguro.
+Falha na lista de recentes não precisa derrubar toda a tela quando busca/perfil continuarem válidos.
 
-## 14. Atualização em tempo real
+## 9. Atualização em tempo real
 
-Como o StepFlow possui canal de eventos, a lista de processos recentemente atualizados pode ser reconsultada quando eventos relevantes indicarem publicação/alteração oficial.
+Eventos relevantes podem provocar reconsulta da lista de procedimentos recentes.
 
-Não redesenhar a tela agressivamente nem reposicionar itens enquanto o usuário está interagindo sem necessidade.
+O Client não trata payload de evento como nova fonte oficial de verdade; reconsulta o estado autorizado no Host.
 
-O evento informa mudança; dados atuais devem ser reconsultados conforme contrato vigente.
-
-## 15. Concorrência
-
-O Dashboard é predominantemente leitura.
-
-- não resolve conflitos de edição;
-- não mantém cópia autoritativa de processos;
-- dados exibidos refletem estado confirmado pelo Host;
-- ações de edição futura seguem revisão otimista nas telas correspondentes.
-
-## 16. Navegação
-
-Destinos principais:
+## 10. Navegação
 
 - busca → Tela 04 com termo aplicado;
-- processo recente → Tela 05 — Leitor em formato livro;
-- `Ver todos os processos` → Tela 04.
+- procedimento recente → leitor;
+- `Ver todos os processos` → Tela 04;
+- atendimentos → pela sidebar ou fluxos contextuais aprovados posteriormente.
 
-O Dashboard não deve criar rotas paralelas diferentes para o mesmo objeto.
+## 11. Acessibilidade
 
-## 17. Acessibilidade e teclado
-
-- foco inicial não deve ser forçado de forma que atrapalhe leitura, mas a busca deve ser rapidamente alcançável;
 - campo de busca possui label acessível;
-- Enter executa a ação esperada;
-- itens recentes acessíveis por teclado;
+- Enter executa busca;
+- itens recentes são acessíveis por teclado;
+- foco visível;
 - estados vazio/erro não dependem só de cor;
 - ordem de foco previsível.
 
-Atalho global para foco na busca pode ser considerado depois, mas não é requisito inicial.
-
-## 18. Comportamento em janelas menores
+## 12. Janelas menores
 
 - busca permanece utilizável;
-- tabela/lista recente pode reduzir colunas secundárias ou reorganizar informação sem esconder Código/Título;
-- não criar layout mobile específico sem necessidade demonstrada;
-- rolagem vertical é aceitável.
+- lista recente pode reduzir informação secundária sem esconder Código/Título;
+- rolagem vertical é aceitável;
+- não criar layout mobile sem necessidade comprovada.
 
-A estratégia exata segue a janela mínima que será aprovada no sistema visual.
+## 13. Dados/contratos necessários
 
-## 19. Dados necessários
+- nome de exibição da sessão;
+- capacidades efetivas;
+- consulta de procedimentos visíveis ordenados por atualização oficial;
+- busca/listagem de procedimentos;
+- abertura por identidade estável;
+- eventos/reconsulta quando documentação relevante mudar.
 
-Para o núcleo proposto:
+Não criar novo dado de domínio apenas para enriquecer o Dashboard.
 
-### Sessão/perfil
-
-- nome de exibição;
-- capacidades efetivas.
-
-### Lista recente
-
-- process_id;
-- código;
-- título;
-- área/departamento;
-- versão exibida;
-- status/publicação aplicável;
-- timestamp de atualização/publicação suficiente para ordenação;
-- autorização/visibilidade aplicável.
-
-O Dashboard não cria novo dado de domínio apenas para apresentação.
-
-## 20. Contratos Client ↔ Host
-
-A tela depende conceitualmente de:
-
-1. sessão/perfil já carregados;
-2. consulta de processos visíveis ordenados por atualização oficial;
-3. busca/listagem de processos;
-4. abertura de processo por identidade estável;
-5. eventos/reconsulta quando processos relevantes mudarem.
-
-Nomes finais de rotas pertencem ao contrato de implementação e não são inventados nesta especificação.
-
-## 21. Segurança e autorização
+## 14. Segurança
 
 - Host filtra/autoriza dados;
-- Client não confia apenas em esconder elementos;
-- Funcionário não recebe conteúdo administrativo indevido;
-- rascunhos/revisões não publicadas respeitam autorização;
-- Dashboard não expõe dados sensíveis de usuários ou auditoria.
+- ocultação no Client não concede autoridade;
+- rascunhos/revisões não publicadas respeitam permissões;
+- Dashboard não expõe dados administrativos ou operacionais indevidos.
 
-## 22. Sistema visual
+## 15. Sistema visual
 
-Usar o sistema visual compartilhado pelo Shell:
+Usar o sistema visual compartilhado do Shell:
 
 - área ampla e limpa;
-- uma ação primária clara: encontrar processos;
+- busca como ação principal;
 - poucos blocos;
-- cards somente quando ajudarem hierarquia, não como padrão obrigatório;
-- tipografia e cores seguem as pendências compartilhadas do Bloco 8.
+- categorias como informação secundária discreta;
+- cards somente quando ajudarem, não como padrão obrigatório.
 
-## 23. Fora do escopo
+## 16. Decisões consolidadas
 
-- KPIs executivos;
-- analytics de produtividade/uso;
-- favoritos/bookmarks;
-- histórico pessoal de navegação;
-- feed social/notificações genéricas;
-- edição de processos no próprio Dashboard;
-- detalhes completos de filtros da Tela 04;
-- código de produção.
+1. Dashboard é destino pós-login;
+2. composição enxuta, sem KPIs/gráficos;
+3. busca rápida de processos/procedimentos é o elemento principal;
+4. busca encaminha à Tela 04 com termo aplicado;
+5. seção curta `Atualizados recentemente`;
+6. clique em item recente abre o leitor;
+7. sem favoritos/histórico pessoal inicialmente;
+8. mesma base de Dashboard para todos os perfis;
+9. não duplicar áreas administrativas/operacionais já disponíveis na sidebar;
+10. busca do Dashboard não mistura procedimentos com registros de Atendimento.
 
-## 24. Decisões já consolidadas antes desta tela
+## 17. Critérios de aceite
 
-- Dashboard é destino pós-login;
-- `Início` existe na sidebar;
-- técnico deve localizar processos com baixo atrito;
-- aplicação não deve parecer portal burocrático;
-- autorização é Host-side;
-- atualizações relevantes podem chegar por eventos/reconsulta.
-
-## 25. Propostas para aprovação do PO
-
-1. Dashboard enxuto, sem KPIs/gráficos na primeira versão;
-2. busca rápida de processos como elemento principal;
-3. busca encaminha para a Tela 04 com o termo aplicado;
-4. seção curta `Atualizados recentemente` com processos oficiais visíveis ao usuário;
-5. clique em item recente abre diretamente o leitor;
-6. sem favoritos e sem histórico pessoal de navegação inicialmente;
-7. mesma base de Dashboard para todos os perfis, sem painel gerencial separado;
-8. sem duplicar atalhos administrativos já disponíveis na sidebar.
-
-## 26. Pendências
-
-- quantidade visual de processos recentes;
-- formato exato lista versus cards compactos;
-- microcopy final;
-- detalhes visuais compartilhados do Shell;
-- eventual necessidade futura de rascunhos/atalhos após especificar Editor e Processos.
-
-## 27. Critérios de aceite da especificação
-
-- [x] respeita destino pós-login aprovado;
-- [x] prioriza consulta de processos;
-- [x] não cria conceito de favoritos/recents pessoais sem requisito;
-- [x] não inventa KPIs administrativos;
+- [x] destino pós-login aprovado;
+- [x] prioriza consulta de procedimentos;
+- [x] sem KPIs/gráficos/painel gerencial separado;
+- [x] sem favoritos/recents pessoais não requeridos;
+- [x] categorização pode aparecer de forma discreta;
+- [x] `Atendimentos` permanece domínio separado;
 - [x] autorização continua Host-side;
-- [x] nenhum código de produção criado;
-- [ ] composição enxuta aprovada pelo PO;
-- [ ] busca rápida aprovada pelo PO;
-- [ ] seção de atualizados recentemente aprovada pelo PO;
-- [ ] ausência de painel gerencial separado aprovada pelo PO.
+- [x] nenhum código de produção criado.
 
-## 28. Casos de teste futuros
+## 18. Casos de teste futuros
 
-1. login bem-sucedido chega ao Dashboard;
-2. busca por Código encaminha corretamente para Processos;
-3. busca por Título/termo mantém o termo aplicado;
+1. login chega ao Dashboard;
+2. busca por Código encaminha à Tela 04;
+3. busca por Título/termo mantém termo aplicado;
 4. item recente abre o processo correto;
-5. Funcionário não recebe rascunho administrativo indevido;
-6. lista recente respeita permissões;
+5. lista recente respeita permissões;
+6. categoria aparece sem comprometer legibilidade;
 7. nenhum processo mostra estado vazio coerente;
-8. Host indisponível mostra estado transversal correto;
-9. atualização oficial relevante pode refletir após evento/reconsulta;
-10. navegação por teclado funciona;
+8. Host indisponível mostra estado correto;
+9. atualização relevante reflete após evento/reconsulta;
+10. teclado funciona;
 11. layout funciona na janela mínima aprovada;
-12. não há dependência de favoritos/histórico pessoal para funcionamento.
+12. busca não retorna atendimento/equipamento por engano.
