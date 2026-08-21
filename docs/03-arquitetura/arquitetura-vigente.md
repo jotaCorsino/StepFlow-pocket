@@ -160,6 +160,6 @@ Essas pendências não autorizam hardcode de exemplos.
 
 ## Próximo trabalho
 
-Bloco 8 continua em UI/UX. Telas 01–04 estão consolidadas; próxima superfície: **Tela 05 — Leitor em formato livro**.
+Bloco 8 continua em UI/UX. Telas 01–07 estão consolidadas; próxima superfície: **Tela 08 — Lista/Pesquisa de Atendimentos**.
 
 Lifecycle/checklist/permissões operacionais serão fechados no Bloco 9; tecnologia/formato final da ficha, no Bloco 10.

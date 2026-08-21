@@ -55,8 +55,11 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `01-login.md` — Login consolidado;
 - `02-shell-sidebar.md` — Shell consolidado;
 - `03-dashboard.md` — Dashboard consolidado;
-- `04-lista-pesquisa-processos.md` — Lista/Pesquisa consolidada;
-- próxima especificação: Leitor em formato livro.
+- `04-lista-pesquisa-processos.md` — Lista/Pesquisa de Processos consolidada;
+- `05-leitor-processo.md` — Leitor em formato livro consolidado;
+- `06-editor-processo.md` — Editor de Processo + categorias consolidado;
+- `07-historico-revisoes.md` — Histórico/Revisões consolidado;
+- próxima especificação: Tela 08 — Lista/Pesquisa de Atendimentos.
 
 ### Arquitetura — `03-arquitetura`
 
@@ -91,7 +94,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Bloco 8 em execução. Telas 01–04 consolidadas. Próxima: Tela 05 — Leitor em formato livro.**
+**Fase 1 em andamento; Bloco 8 em execução. Telas 01–07 consolidadas. Próxima: Tela 08 — Lista/Pesquisa de Atendimentos.**
 
 A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas e identidade interna de equipamento estão aprovadas conceitualmente. Lifecycle/permissões/checklist permanecem para o Bloco 9; formato técnico da ficha compacta, para o Bloco 10.
 

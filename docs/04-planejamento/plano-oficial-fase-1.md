@@ -70,7 +70,10 @@ Documentar/aprovar antes do código:
 - `02-shell-sidebar.md` — consolidado, incluindo `Atendimentos`;
 - `03-dashboard.md` — consolidado;
 - `04-lista-pesquisa-processos.md` — consolidado;
-- **próximo: Tela 05 — Leitor em formato livro**;
+- `05-leitor-processo.md` — consolidado;
+- `06-editor-processo.md` — consolidado;
+- `07-historico-revisoes.md` — consolidado;
+- **próximo: Tela 08 — Lista/Pesquisa de Atendimentos**;
 - nenhuma UI de produção criada.
 
 Lifecycle, checklist e permissões operacionais detalhadas permanecem para o Bloco 9. Tecnologia/formato final da ficha compacta permanece para o Bloco 10.

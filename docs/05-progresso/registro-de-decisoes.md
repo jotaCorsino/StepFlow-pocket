@@ -211,7 +211,10 @@ Consolidado:
 - Shell consolidado, incluindo `Atendimentos`;
 - Dashboard consolidado em direção enxuta, sem KPIs/gráficos;
 - Lista/Pesquisa de Processos consolidada com categorização;
-- próxima superfície: **Leitor em formato livro**;
+- Leitor em formato livro consolidado;
+- Editor de Processo + categorias consolidado;
+- Histórico/Revisões consolidado;
+- próxima superfície: **Tela 08 — Lista/Pesquisa de Atendimentos**;
 - mapa de telas inclui Atendimento/Equipamento;
 - nenhuma UI de produção criada.
 
@@ -219,7 +222,7 @@ Consolidado:
 
 ### Bloco 8
 
-Continuar pela Tela 05 — Leitor em formato livro — e depois Editor/Histórico/Atendimentos e demais superfícies.
+Continuar pela Tela 08 — Lista/Pesquisa de Atendimentos — e depois Atendimento/execução + equipamento, usuários/permissões, perfil, configurações, backup/restauração UX, exportação/impressão UX e estados transversais.
 
 ### Bloco 9
 

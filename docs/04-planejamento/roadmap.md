@@ -32,9 +32,12 @@ No Bloco 8 já estão consolidados:
 - Login;
 - Shell/sidebar com `Atendimentos`;
 - Dashboard enxuto;
-- Lista/Pesquisa de Processos com categorização.
+- Lista/Pesquisa de Processos com categorização;
+- Leitor em formato livro;
+- Editor de Processo + categorias;
+- Histórico/Revisões.
 
-Próxima superfície: **Leitor em formato livro**.
+Próxima superfície: **Tela 08 — Lista/Pesquisa de Atendimentos**.
 
 Próximos blocos da Fase 1:
 
