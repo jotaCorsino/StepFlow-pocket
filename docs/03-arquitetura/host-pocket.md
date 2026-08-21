@@ -1,7 +1,7 @@
 # StepFlow Host Pocket
 
 **Status:** CONSOLIDADO PARA A FASE 1  
-**Atualização:** 2026-08-20
+**Atualização:** 2026-08-21
 
 ## Tecnologia
 
@@ -24,6 +24,7 @@ StepFlow fechado
 Controller iniciado sob demanda
 → Host iniciado como processo-filho
 → Clients utilizam o Host
+→ encerramento do ciclo central
 → shutdown controlado
 → Host termina
 → Controller termina
@@ -62,6 +63,22 @@ Responsabilidades:
 9. garantir que não reste processo iniciado por ele ao final normal.
 
 O Controller não instala serviço, altera PATH/registro, cria auto-start nem mantém watchdog residente.
+
+## Propriedade do ciclo de vida
+
+O ciclo de vida central pertence ao **Controller na máquina central**, não a um Client individual.
+
+Regras consolidadas:
+
+- fechar um Client de técnico não encerra o Host central;
+- vários Clients podem entrar e sair durante o mesmo ciclo operacional;
+- encerrar o Controller/ciclo central solicita shutdown gracioso do Host;
+- o Controller só termina normalmente depois de confirmar a saída do Host;
+- nenhum processo StepFlow deve permanecer ativo após o encerramento completo do ciclo central.
+
+**Não está consolidado** um auto-shutdown por “último Client desconectado” ou por timeout de inatividade. Não implementar esse comportamento por suposição. Se futuramente for desejado, deverá ser decisão explícita e configurável, sem criar processo residente adicional.
+
+Quando houver Clients conectados no momento do encerramento central, a política de confirmação/aviso da UX será definida no Bloco 8; a integridade do shutdown continua obrigatória independentemente dessa UX.
 
 ## Host
 
@@ -110,21 +127,20 @@ Eventos mínimos:
 
 Não registrar senha, token reutilizável ou conteúdo sensível desnecessário.
 
-## Shutdown
+## Shutdown técnico
 
 Fluxo normal:
 
-1. parar de aceitar novas mutações;
-2. concluir/abortar transacionalmente trabalho em andamento;
-3. tratar fila ainda não iniciada explicitamente;
-4. encerrar WebSockets;
-5. fechar SQLite/conexões;
-6. terminar Host;
-7. Controller confirma saída e termina.
+1. Controller inicia o encerramento central;
+2. Host para de aceitar novas mutações;
+3. conclui/aborta transacionalmente trabalho em andamento;
+4. trata fila ainda não iniciada explicitamente;
+5. encerra WebSockets;
+6. fecha SQLite/conexões;
+7. Host termina;
+8. Controller confirma a saída e termina.
 
 `kill` forçado não é mecanismo normal.
-
-A UX exata quando houver Clients conectados será tratada nas especificações de UI/fluxo operacional, sem comprometer integridade.
 
 ## Atualização e rollback
 
@@ -153,6 +169,7 @@ Essa limitação é consequência aceita do requisito de zero serviço/agente St
 - instância única;
 - readiness verificável;
 - shutdown gracioso;
-- nenhum processo residual;
+- fechar Client individual não encerra o ciclo central;
+- nenhum processo residual após encerramento do Controller/ciclo central;
 - dados preservados ao substituir binários;
 - multiusuário durante o ciclo ativo.

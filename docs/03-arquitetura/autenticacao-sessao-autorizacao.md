@@ -1,16 +1,18 @@
 # Autenticação, Sessão e Autorização — StepFlow
 
-**Status:** CONSOLIDADO PARA A FASE 1  
-**Atualização:** 2026-08-20
+**Status:** NÚCLEO CONSOLIDADO PARA A FASE 1 / PARÂMETROS OPERACIONAIS PENDENTES  
+**Atualização:** 2026-08-21
 
-## Princípios
+## Princípios consolidados
 
 - autenticação e autorização ocorrem no Host;
 - Client nunca é fonte de verdade de permissão;
 - senha nunca é armazenada em texto puro;
 - sessão inicial é opaca/server-side, sem JWT;
 - token fica somente em memória do Client inicialmente;
-- nenhuma função “lembrar-me” persistente na primeira versão.
+- nenhuma função “lembrar-me” persistente na primeira versão;
+- autorização real é por capacidade no Host;
+- `ADM`, `GERENCIA` e `FUNCIONARIO` são presets de permissões.
 
 ## Usuário
 
@@ -34,18 +36,26 @@ Relacionamentos e histórico usam `user_id` imutável.
 
 ## Senhas
 
-Usar **Argon2id** em formato PHC, com salt aleatório e parâmetros codificados no próprio hash.
+Decisão consolidada:
 
-Baseline inicial de implementação:
+- usar **Argon2id** em formato PHC;
+- salt aleatório;
+- parâmetros codificados no próprio hash;
+- aceitar frases-senha;
+- nunca registrar senha em logs/auditoria.
 
-- memória: ~19 MiB;
-- iterações: 2;
-- paralelismo: 1;
-- mínimo inicial de senha: 10 caracteres, sujeito a ajuste antes da implementação.
+### Parâmetros ainda não autorizados como definitivos
 
-Aceitar frases-senha; não exigir regras artificiais de composição como mecanismo principal. Nunca registrar senha em logs/auditoria.
+Os valores abaixo são referência técnica/proposta e **não devem ser implementados como política definitiva sem confirmação antes da implementação**:
+
+- custo Argon2id aproximado de 19 MiB / 2 iterações / paralelismo 1;
+- senha mínima de 10 caracteres.
+
+A decisão final deverá equilibrar segurança, desempenho das máquinas reais e política interna aplicável.
 
 ## Login e sessão
+
+Fluxo consolidado:
 
 ```text
 Client envia login + senha
@@ -55,22 +65,26 @@ Client envia login + senha
 → Host valida sessão e autorização a cada operação protegida
 ```
 
-Direções iniciais:
+Também estão consolidados:
 
-- entropia do token equivalente a pelo menos 256 bits;
-- persistir somente hash/representação derivada do token quando necessário;
+- token com alta entropia criptográfica;
 - logout revoga sessão;
-- desativação/reset/mudança administrativa relevante podem revogar sessões;
-- expiração por inatividade proposta: 8 h;
-- validade absoluta proposta: 24 h.
+- desativação/reset/mudança administrativa relevante pode revogar sessões;
+- token reutilizável não deve ser persistido em texto puro.
 
-Tempos finais podem ser ajustados à rotina real da empresa.
+### Parâmetros de sessão pendentes
+
+Os valores abaixo são **PROPOSTAS, não contrato de implementação**:
+
+- expiração por inatividade: 8 h;
+- validade absoluta: 24 h;
+- tamanho/entropia numérica exata do token, desde que satisfaça segurança adequada.
+
+A duração final da sessão será confirmada antes da implementação da autenticação, considerando a rotina real da empresa.
 
 ## Perfis e permissões
 
-`ADM`, `GERENCIA` e `FUNCIONARIO` são presets. Autorização real é por capacidade.
-
-Matriz inicial:
+Matriz consolidada onde há decisão explícita:
 
 | Capacidade | ADM | Gerência | Funcionário |
 |---|---:|---:|---:|
@@ -80,9 +94,11 @@ Matriz inicial:
 | Exportar/imprimir | sim | sim | sim |
 | Ler/gerir usuários não-ADM | sim | sim | não |
 | Criar/promover/rebaixar ADM | sim | não | não |
-| Alterar configuração da empresa | sim | não por padrão | não |
-| Backup | sim | não por padrão | não |
+| Alterar configuração da empresa | sim | **PENDENTE** | não |
+| Backup | sim | **PENDENTE** | não |
 | Restore | sim | não | não |
+
+Itens `PENDENTE` não podem ser interpretados pelo executor como “sim” nem “não”. Devem ser resolvidos antes da implementação correspondente.
 
 Regras obrigatórias:
 
@@ -121,3 +137,7 @@ Registrar ações relevantes como criação/desativação de usuário, mudança 
 ## Transporte
 
 Credenciais e sessão usam o canal Client↔Host definido em `comunicacao-client-host.md`. A proteção final de transporte na LAN depende da infraestrutura corporativa real.
+
+## Regra para implementação futura
+
+Nenhum valor marcado como `PENDENTE`, `PROPOSTA`, “aproximado” ou equivalente neste documento pode ser convertido silenciosamente em requisito definitivo pelo Codex. A tarefa de implementação deverá carregar a decisão final correspondente.

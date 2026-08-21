@@ -13,19 +13,41 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–7 da Fase 1 estão fechados; Bloco 8 (UI/UX) é o próximo.
 
-## Leitura obrigatória antes de implementar
+## Precedência e autoridade da tarefa
 
-1. `README.md`;
-2. `docs/README.md`;
-3. `docs/00-governanca/contexto-ambientes.md`;
-4. `docs/00-governanca/metodo-padrao-trabalho-assistido.md`;
-5. `docs/00-governanca/politica-capacidade-codex.md`;
-6. `docs/01-produto/visao-geral.md`;
-7. `docs/03-arquitetura/arquitetura-vigente.md`;
-8. `docs/03-arquitetura/implantacao-pocket.md`;
-9. `docs/05-progresso/registro-de-decisoes.md`;
-10. `docs/04-planejamento/plano-oficial-fase-1.md` enquanto a Fase 1 estiver vigente;
-11. documentos específicos da tarefa.
+O enunciado da tarefa define **o trabalho autorizado**, mas não revoga silenciosamente decisões vigentes.
+
+Em caso de conflito, aplicar esta ordem:
+
+1. `AGENTS.md`;
+2. decisão consolidada mais recente em `docs/05-progresso/registro-de-decisoes.md`;
+3. documento específico vigente da funcionalidade/arquitetura/tela/fase;
+4. `docs/01-produto/visao-geral.md`;
+5. enunciado da tarefa, apenas dentro das decisões vigentes;
+6. material histórico.
+
+Se o enunciado exigir contrariar uma decisão consolidada, só prosseguir quando ele declarar explicitamente que existe **nova decisão aprovada pelo PO** e incluir a atualização dos documentos vigentes afetados. Caso contrário, parar e reportar o conflito.
+
+Ambiguidade nunca autoriza escolher a alternativa mais conveniente ao código.
+
+## Leitura do Codex por camadas
+
+### Sempre ler antes de alterar qualquer arquivo
+
+1. `AGENTS.md`;
+2. o enunciado da tarefa;
+3. `docs/README.md`;
+4. os documentos específicos indicados pela tarefa.
+
+### Ler quando houver impacto correspondente
+
+- `docs/05-progresso/registro-de-decisoes.md` — produto/arquitetura/regra já consolidada;
+- `docs/04-planejamento/plano-oficial-fase-1.md` — autorização/gate da fase atual;
+- `docs/03-arquitetura/arquitetura-vigente.md` — impacto arquitetural ou integração entre componentes;
+- `docs/00-governanca/contexto-ambientes.md` — ambiente, ferramentas, rede, SMB, instalação ou validação externa;
+- demais documentos técnicos específicos do assunto.
+
+`docs/00-governanca/metodo-padrao-trabalho-assistido.md` e `docs/00-governanca/politica-capacidade-codex.md` são governança do fluxo PO/Assistente e **não precisam ser relidos pelo Codex em toda tarefa**, salvo se a própria tarefa tratar dessas políticas.
 
 ## Papéis
 
@@ -33,16 +55,41 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - **Assistente:** analisa, arquiteta, documenta e transforma decisões aprovadas em tarefas.
 - **Codex:** executa tecnicamente o escopo recebido, sem inventar produto ou ampliar tarefa.
 
-## Pré-flight obrigatório
+## Pré-flight de capacidade
 
-Antes de cada nova tarefa destinada ao Codex, o Assistente deve apresentar ao PO, separadamente do prompt técnico:
+A seleção de modelo/raciocínio é responsabilidade do Assistente + PO antes do envio da tarefa ao Codex. O Codex não deve alterar escopo ou comportamento com base nessa seleção.
 
-- modelo recomendado;
-- nível de raciocínio;
-- motivo;
-- condição de escalonamento, quando pertinente.
+## Base Git obrigatória da tarefa
 
-Seguir `docs/00-governanca/politica-capacidade-codex.md` e buscar a menor capacidade que mantenha margem adequada de segurança.
+Toda tarefa que permita alteração do repositório deve informar:
+
+- branch/base esperada;
+- commit SHA esperado.
+
+Antes de escrever:
+
+```text
+git rev-parse HEAD
+git status --short --branch
+```
+
+Se `HEAD` não corresponder ao SHA esperado, **não** fazer `pull`, `merge`, `rebase`, `reset` ou checkout corretivo automaticamente. Parar e reportar o estado encontrado.
+
+## Proteção absoluta do working tree
+
+Qualquer alteração preexistente ao início da tarefa deve ser tratada como trabalho do PO ou de outro fluxo.
+
+É proibido, salvo autorização explícita e específica do PO para aquela ação:
+
+- `git reset --hard`;
+- `git clean`;
+- `git stash`;
+- descartar/restaurar alterações locais;
+- sobrescrever arquivo modificado preexistente;
+- trocar branch de modo que descarte trabalho;
+- incluir alteração preexistente no commit da tarefa.
+
+Se um arquivo necessário à tarefa já estiver modificado antes do início, parar e reportar o conflito em vez de tentar “limpar” o checkout.
 
 ## Regras operacionais
 
@@ -50,7 +97,7 @@ Seguir `docs/00-governanca/politica-capacidade-codex.md` e buscar a menor capaci
 - não declarar trabalho parcial como concluído;
 - não criar funcionalidade, dependência ou estrutura relevante fora do escopo;
 - não alterar UX/visual aprovado sem autorização;
-- não transformar proposta em decisão;
+- não transformar proposta ou parâmetro provisório em decisão;
 - manter documentação e implementação sincronizadas;
 - preservar modularidade e baixo acoplamento;
 - não versionar credenciais, senhas, tokens, banco real ou dados pessoais da empresa;
@@ -58,13 +105,29 @@ Seguir `docs/00-governanca/politica-capacidade-codex.md` e buscar a menor capaci
 - testes dependentes da LAN corporativa feitos fora dela são `NÃO APLICÁVEIS NESTE AMBIENTE`;
 - protótipos descartáveis não podem ser promovidos silenciosamente a produção.
 
+## Ambiente Codex versus sessão normal do PO
+
+Restrições específicas do sandbox/execução do Codex não viram requisito do produto.
+
+O Codex não deve tentar reparar o próprio ambiente por meio de:
+
+- alteração de ACL/permissões globais;
+- mudanças de Schannel/políticas de segurança;
+- alterações de registro/PATH global;
+- reinstalação de ferramentas já válidas no ambiente normal;
+- sequência aberta de microdiagnósticos sem nova evidência.
+
+Quando uma operação realmente exigir credenciais, Internet confiável, elevação ou instalação/configuração global, reportar a necessidade para execução controlada na sessão Windows normal do PO. Não contornar limitações do sandbox enfraquecendo o sistema.
+
 ## Regras Pocket obrigatórias
 
 - implantação central baseada em copiar/publicar pasta pronta;
 - nenhuma toolchain de desenvolvimento exigida no servidor de produção;
 - não usar Windows Service persistente, serviço auto-start, Task Scheduler, watchdog, tray agent ou daemon residente como padrão;
 - Host e Controller iniciam sob demanda;
-- quando o StepFlow está fechado/sem uso, nenhum processo StepFlow deve permanecer ativo no servidor;
+- o Controller aberto representa o ciclo central ativo; quando esse ciclo for encerrado, nenhum processo StepFlow deve permanecer ativo no servidor;
+- fechar um Client individual não encerra o Host central;
+- não inventar auto-shutdown por ausência de Clients ou timeout sem decisão explícita;
 - Client operacional roda localmente na estação, preparado por launcher transitório;
 - launcher também encerra após iniciar o Client;
 - dados/configuração/logs permanecem separados dos binários substituíveis.
@@ -80,17 +143,21 @@ Qualquer exceção futura a essas regras exige mudança explícita do requisito 
 - writer coordenado + fila bounded + revisão otimista;
 - nenhuma sobrescrita silenciosa;
 - sessões opacas e autorização sempre no Host;
-- Argon2id para senha;
+- Argon2id para senha, com parâmetros operacionais finais ainda sujeitos à decisão documentada;
 - processos documentais usam revisões imutáveis;
 - PDF, DOCX e impressão são requisitos do produto;
 - estado das marcações do checklist durante execução ainda é pendência.
 
 ## Tarefa Codex
 
-Toda tarefa deve declarar objetivo, fonte de verdade, escopo incluído, fora do escopo, critérios de aceite, validações e documentação impactada.
+Toda tarefa deve declarar objetivo, base Git esperada, fonte de verdade, escopo incluído, fora do escopo, critérios de aceite, validações e documentação impactada.
 
-O relatório final deve informar: objetivo executado, arquivos alterados, decisões técnicas, validações/resultados, riscos/pendências, documentação atualizada e próximos passos sugeridos.
+O relatório final deve informar: objetivo executado, base/estado inicial observado, arquivos alterados, decisões técnicas, validações/resultados, riscos/pendências, documentação atualizada e próximos passos sugeridos.
 
-## Gate de implementação
+## Gate de implementação da Fase 1
 
-Se a fase/documentação não autorizar implementação definitiva, limitar-se ao trabalho documental, investigativo ou estrutural explicitamente solicitado.
+Durante a Fase 1, trabalho “estrutural” significa apenas documentação, organização documental ou **PoC explicitamente descartável** autorizada pelo plano/tarefa.
+
+Não criar scaffold oficial, módulos runtime definitivos, árvore final de Client/Host/Launcher, código de negócio ou implementação de produção antes do Bloco 12/Fase 2 autorizar explicitamente.
+
+Se a fase/documentação não autorizar implementação definitiva, limitar-se ao trabalho documental ou investigativo explicitamente solicitado.

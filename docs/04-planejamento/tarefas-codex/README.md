@@ -17,8 +17,13 @@ Antes de qualquer prompt ao Codex:
 1. confirmar que o bloco/gate correspondente autoriza a tarefa;
 2. apresentar ao PO o pré-flight de capacidade separado do enunciado;
 3. usar `docs/templates/template-tarefa-codex.md`;
-4. indicar documentos vigentes de referência;
-5. declarar escopo e fora do escopo;
-6. definir critérios de aceite e validações.
+4. registrar branch/base e commit SHA esperado;
+5. indicar somente documentos vigentes necessários;
+6. declarar escopo e fora do escopo;
+7. identificar alterações locais conhecidas que devem permanecer intocadas;
+8. definir critérios de aceite e validações;
+9. confirmar que nenhum parâmetro pendente está sendo tratado como decisão definitiva.
 
-Codex deve ler `AGENTS.md` antes de executar.
+O Codex deve ler `AGENTS.md` antes de executar e inspecionar `HEAD`/working tree antes de alterar arquivos.
+
+Se a base divergir, houver arquivo necessário já modificado ou o prompt conflitar com decisão vigente, a tarefa deve parar em vez de tentar corrigir o checkout ou reinterpretar o produto.

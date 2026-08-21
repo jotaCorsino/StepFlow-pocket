@@ -2,13 +2,13 @@
 
 **Status:** EM ANDAMENTO  
 **Início:** 2026-08-19  
-**Atualização:** 2026-08-20
+**Atualização:** 2026-08-21
 
 ## Objetivo
 
 Transformar requisitos e arquitetura conceitual em decisões e especificações implementáveis antes da fundação executável do StepFlow.
 
-A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis somente quando necessárias. Não autoriza antecipar funcionalidades de negócio definitivas.
+A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis somente quando necessárias. Não autoriza antecipar funcionalidades de negócio definitivas nem criar scaffold/runtime oficial antes do Bloco 12.
 
 ## Estado dos blocos
 
@@ -19,7 +19,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis som
 | 2 | Host Pocket | CONCLUÍDO | `03-arquitetura/host-pocket.md` |
 | 3 | Launcher/distribuição | CONCLUÍDO | `03-arquitetura/launcher-distribuicao-client.md` |
 | 4 | Comunicação Client↔Host | CONCLUÍDO | `03-arquitetura/comunicacao-client-host.md` |
-| 5 | Autenticação/autorização | CONCLUÍDO | `03-arquitetura/autenticacao-sessao-autorizacao.md` |
+| 5 | Autenticação/autorização | CONCLUÍDO NO NÚCLEO / PARÂMETROS PENDENTES | `03-arquitetura/autenticacao-sessao-autorizacao.md` |
 | 6 | Dados/schema/migrations | CONCLUÍDO | `03-arquitetura/modelo-dados-schema-fase-1.md` |
 | 7 | Concorrência/eventos | CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
 | 8 | UI/UX | PRÓXIMO | `02-telas/README.md` |
@@ -47,6 +47,10 @@ Documentar/aprovar antes do código as superfícies críticas:
 13. estados transversais de erro/loading/conflito/Host indisponível.
 
 Usar `docs/templates/template-analise-de-tela.md`. Aparência só vira contrato quando aprovada pelo PO.
+
+No Bloco 8, telas de backup/exportação fecham apenas **UX, fluxo, estados e permissões visíveis**. Estratégia técnica de exportação pertence ao Bloco 10 e estratégia técnica de backup/restore ao Bloco 11. A tela deve registrar dependências sem inventar solução técnica.
+
+O encerramento do Host também deve respeitar `host-pocket.md`: Client individual não derruba o Host; o ciclo central pertence ao Controller. A UX de confirmação/aviso quando houver Clients conectados pode ser especificada no Bloco 8.
 
 ## Bloco 9 — Checklist durante execução
 
@@ -85,11 +89,14 @@ Fechar:
 
 Somente depois dos blocos anteriores:
 
+- resolver parâmetros operacionais ainda pendentes necessários à implementação, como valores finais de sessão/senha/permissões marcadas como pendentes;
 - definir árvore oficial de Client/Host/launcher/contratos/testes/assets;
 - convenções e scripts;
 - arquivos ignorados/configuração de desenvolvimento;
 - tarefas pequenas da fundação;
 - plano oficial da Fase 2.
+
+Até esse gate, “trabalho estrutural” não autoriza scaffold oficial nem código runtime de produção.
 
 ## Pendências do ambiente corporativo
 
@@ -108,7 +115,8 @@ Não bloqueiam a documentação atual, mas devem ser validadas antes da implanta
 - [x] Host Pocket definido;
 - [x] launcher/update definidos arquiteturalmente;
 - [x] comunicação definida;
-- [x] autenticação/autorização definidas;
+- [x] núcleo de autenticação/autorização definido;
+- [ ] parâmetros operacionais pendentes necessários à autenticação fechados antes da implementação correspondente;
 - [x] modelo de dados/migrations definidos;
 - [x] concorrência definida;
 - [ ] telas críticas especificadas/aprovadas;
@@ -121,4 +129,6 @@ Não bloqueiam a documentação atual, mas devem ser validadas antes da implanta
 
 ## Regra de execução
 
-Não criar scaffold/código definitivo de negócio durante a Fase 1 por conveniência. Provas técnicas novas só devem existir quando uma decisão relevante realmente depender de evidência mecânica não disponível.
+Não criar scaffold, árvore runtime definitiva ou código de negócio durante a Fase 1 por conveniência. Provas técnicas novas só devem existir quando uma decisão relevante realmente depender de evidência mecânica não disponível e a tarefa as declarar explicitamente descartáveis.
+
+Toda tarefa Codex que altere arquivos deve trazer base Git esperada (branch + SHA) e respeitar as proteções de working tree definidas em `AGENTS.md`.
