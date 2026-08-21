@@ -1,25 +1,27 @@
 # Modelo de Dados, Schema, Migrations e Histórico — StepFlow
 
-**Status:** NÚCLEO CONSOLIDADO / EXTENSÃO OPERACIONAL PROPOSTA PARA APROVAÇÃO  
+**Status:** NÚCLEO CONSOLIDADO / EXTENSÃO OPERACIONAL CONSOLIDADA CONCEITUALMENTE  
 **Atualização:** 2026-08-21
 
-## Princípios consolidados
+## Princípios
 
 - SQLite acessado somente pelo Host;
 - foreign keys habilitadas;
 - transações em alterações compostas;
 - timestamps em UTC;
-- identificadores estáveis para entidades de negócio/histórico;
+- identificadores internos estáveis para entidades de negócio/histórico;
+- códigos legíveis de operação separados da identidade interna;
 - arquivos administrados ficam no filesystem do Host e o banco guarda referências/metadados;
 - exclusão normal prefere arquivamento/desativação quando há histórico;
-- migrations são versionadas/imutáveis após publicação;
-- revisões de procedimento são imutáveis.
+- migrations versionadas e imutáveis após publicação;
+- revisões de procedimento imutáveis;
+- lifecycle/checklist operacional permanece para o Bloco 9.
 
 ## Usuários, sessões e empresa
 
-`users`, `sessions` e `company_settings` permanecem conforme o núcleo já consolidado de autenticação/empresa.
+`users`, `sessions` e `company_settings` permanecem conforme os documentos vigentes de autenticação/empresa.
 
-## Processos
+## Processos / procedimentos
 
 `processes` mantém identidade estável e ponteiros para revisões:
 
@@ -33,9 +35,9 @@ created_at / created_by_user_id
 archived_at / archived_by_user_id
 ```
 
-`process_revisions` preserva snapshots imutáveis. `revision_no` técnico continua separado de `display_version` editorial.
+`process_revisions` preserva snapshots imutáveis. `revision_no` técnico permanece separado de `display_version` editorial.
 
-Cada revisão possui `process_stages` e `stage_blocks` ordenados. Tipos iniciais permanecem:
+Cada revisão possui `process_stages` e `stage_blocks` ordenados. Tipos iniciais:
 
 ```text
 paragraph
@@ -47,23 +49,13 @@ command
 code
 ```
 
-O estado operacional do checklist continua pendente do Bloco 9.
+O checklist aqui representa a definição documental; estado operacional pertence ao Bloco 9.
 
-## Extensão nova — requisito confirmado, schema proposto
+## Categorias de procedimentos
 
-O PO confirmou necessidade de:
+Categorias são configuráveis e não hardcoded.
 
-- categorização de procedimentos;
-- registro de informações específicas de computador/equipamento em serviços aplicáveis;
-- busca por identificadores/referências úteis;
-- resumo dos procedimentos realizados;
-- ficha compacta imprimível.
-
-As estruturas abaixo são **PROPOSTAS DE MODELAGEM**, não contrato de implementação até aprovação da direção `Procedimento × Atendimento × Equipamento`.
-
-## Categorias — proposta
-
-Direção recomendada:
+Conceitualmente:
 
 ```text
 process_categories
@@ -72,10 +64,11 @@ process_categories
 - normalized_name
 - description NULL
 - is_archived
-- timestamps / usuário responsável
+- created_at / created_by_user_id
+- updated_at / updated_by_user_id
 ```
 
-Se múltiplas categorias forem aprovadas:
+Como um procedimento pode possuir múltiplas categorias:
 
 ```text
 process_category_assignments
@@ -83,11 +76,18 @@ process_category_assignments
 - category_id
 ```
 
-A alternativa categoria única/hierárquica ainda pode ser escolhida pelo PO antes da implementação. Não criar taxonomia complexa sem requisito.
+Regras:
 
-## Equipamentos — proposta
+- evitar duplicação acidental de nomes equivalentes;
+- arquivar categoria preserva histórico/relações existentes;
+- não criar hierarquia complexa na primeira versão;
+- categorias devem ser indexáveis para filtro/listagem.
 
-Se a entidade reutilizável de equipamento for aprovada:
+## Equipamentos
+
+Equipamento é entidade opcional e reutilizável entre atendimentos.
+
+Modelo conceitual:
 
 ```text
 equipment
@@ -107,17 +107,13 @@ equipment
 - observations NULL
 - is_archived
 - row_revision
-- timestamps / usuários responsáveis
+- created_at / created_by_user_id
+- updated_at / updated_by_user_id
 ```
 
-Recomendação:
+`equipment_id` é a identidade canônica. `equipment_code` é o identificador legível operacional; formato final será decidido no Bloco 9/implementação.
 
-- `equipment_id` como identidade interna canônica;
-- código legível operacional separado;
-- serial/patrimônio/MAC como atributos de busca;
-- campos não aplicáveis permanecem nulos.
-
-Para múltiplos identificadores de rede, a proposta é estrutura equivalente a:
+MAC não é chave canônica. Múltiplos identificadores de rede podem ser armazenados em estrutura própria:
 
 ```text
 equipment_network_identifiers
@@ -128,11 +124,13 @@ equipment_network_identifiers
 - label NULL
 ```
 
-MAC não deve ser a única chave de identidade.
+Campos não aplicáveis permanecem nulos.
 
-## Atendimento / registro de serviço — proposta
+## Atendimento / execução
 
-Se a separação operacional for aprovada:
+O atendimento representa uma ocorrência real de trabalho.
+
+Modelo conceitual:
 
 ```text
 service_records
@@ -148,19 +146,22 @@ service_records
 - summary NULL
 - observations NULL
 - row_revision
-- timestamps / usuários responsáveis
+- created_at / created_by_user_id
+- updated_at / updated_by_user_id
 ```
 
-Recomendações:
+Regras consolidadas:
 
-- equipamento opcional;
-- OS/referência externa opcional;
-- controle otimista por `row_revision` ou equivalente;
-- lifecycle/status exatos somente após Bloco 9.
+- equipamento é opcional;
+- OS/referência externa é opcional e não substitui identidade interna;
+- mesmo equipamento pode participar de atendimentos diferentes;
+- um atendimento pode usar múltiplos procedimentos;
+- concorrência relevante usa `row_revision`/controle otimista equivalente;
+- lifecycle/status exatos permanecem pendentes do Bloco 9.
 
-## Procedimentos utilizados no serviço — proposta
+## Procedimentos utilizados em atendimento
 
-Para preservar histórico, recomenda-se vincular o registro de serviço à revisão exata do procedimento:
+O vínculo preserva a revisão realmente utilizada:
 
 ```text
 service_record_processes
@@ -172,87 +173,112 @@ service_record_processes
 - code_snapshot
 - title_snapshot
 - display_version_snapshot NULL
-- added_at / added_by_user_id
+- added_at
+- added_by_user_id
 ```
 
-O snapshot textual evita que relatório histórico mude apenas porque o procedimento oficial foi renomeado depois.
+O snapshot textual evita que relatório histórico mude apenas porque título/código do procedimento foi alterado depois.
 
-Permitir um ou múltiplos procedimentos por atendimento ainda aguarda aprovação explícita do PO.
+Progresso por etapa, checklist marcado e regras de reabertura pertencem ao Bloco 9.
 
-## Busca operacional
+## Busca
 
-Requisito confirmado: localizar registros pelas informações úteis do trabalho/equipamento.
+Consultas devem ser atendidas inicialmente por campos normalizados/índices adequados, sem motor externo.
 
-Índices/normalização propostos devem suportar, quando os campos existirem:
+Procedimentos:
 
-- código do procedimento;
-- título;
-- categoria;
-- código do equipamento/atendimento;
+- código;
+- título/termos compatíveis;
+- área/departamento;
+- categoria.
+
+Equipamentos/atendimentos:
+
+- `equipment_code`;
+- `service_code`;
 - OS/referência externa;
 - nome do equipamento;
-- cliente/solicitante;
+- cliente/solicitante/responsável;
 - serial;
 - patrimônio;
 - MAC normalizado.
 
-FTS5 permanece opcional somente se necessidade real justificar; não introduzir motor externo por antecipação.
+FTS5 só entra se a necessidade real de busca justificar.
 
 ## Ficha compacta imprimível
 
-Requisito confirmado: gerar uma ficha/relatório compacto do serviço/equipamento.
+A ficha de atendimento/equipamento deve ser derivada do estado confirmado de:
 
-A direção recomendada é derivar a ficha do estado confirmado de empresa + registro de serviço + equipamento + procedimentos utilizados + responsável, evitando tabela exclusiva apenas para apresentação.
+- empresa;
+- atendimento;
+- equipamento associado;
+- procedimentos/revisões utilizados;
+- usuário responsável;
+- observações/resumo.
 
-Se o Bloco 10 provar necessidade de snapshot adicional para reprodução histórica, documentar antes da migration correspondente.
+Não criar tabela exclusiva apenas para apresentação. Se o Bloco 10 exigir snapshot adicional para reprodução histórica exata, documentar antes da migration correspondente.
 
 ## Histórico e auditoria
 
-Núcleo consolidado:
+Histórico oficial combina:
 
-- snapshots em `process_revisions`;
-- `audit_events` append-only;
-- sem segredos em auditoria.
+1. snapshots em `process_revisions`;
+2. referências/snapshots operacionais de atendimento;
+3. eventos append-only em `audit_events`.
 
-Se equipamentos/atendimentos forem aprovados como entidades, suas mudanças relevantes também deverão participar de histórico/auditoria proporcional.
+Ações relevantes de categoria/equipamento/atendimento devem ser auditáveis de forma proporcional. Nunca guardar segredos em auditoria.
 
-## Arquivamento
+## Arquivos persistentes
 
-Consolidado para entidades existentes: processos/usuários preferem arquivar/desativar.
+```text
+data\
+├── stepflow.sqlite
+├── company\
+└── avatars\
+```
 
-Proposto para novas entidades:
+Backup inclui banco e arquivos administrados.
 
+## Arquivamento/desativação
+
+- processos: arquivar;
 - categorias: arquivar;
 - equipamentos: arquivar quando houver histórico;
-- registros de serviço históricos: não excluir destrutivamente por operação normal sem regra explícita.
+- usuários: desativar;
+- revisões/auditoria/atendimentos históricos: não excluir por operação normal sem regra explícita.
 
-## Migrations e rollback
+## Migrations
 
-Mantêm-se as regras consolidadas:
+Usar migrations numeradas/versionadas e `schema_migrations` com identificador, nome, data e checksum.
 
-- `schema_migrations` numerada/versionada com checksum;
 - migration publicada é imutável;
-- Host aplica/verifica no startup;
+- Host aplica pendências na inicialização;
+- usar transação quando SQLite permitir;
 - falha bloqueia readiness;
-- correção exige nova migration;
-- backup consistente antes de mudança incompatível;
-- rollback de binário somente com schema compatível, caso contrário restaurar backup correspondente.
+- correção exige nova migration.
 
-## Fora do schema inicial sem novo requisito
+## Rollback
+
+Antes de migration que possa impedir rollback simples, criar backup consistente.
+
+- binário anterior só retorna sem restore se suportar schema atual;
+- caso contrário, restaurar backup correspondente;
+- não usar down migration destrutiva automática por conveniência.
+
+## Fora do schema inicial
 
 - CRM completo;
 - faturamento/financeiro;
 - estoque de peças;
 - RMM/inventário automatizado;
 - descoberta automática de hardware;
-- chat/social;
+- chat social;
 - workflow complexo;
-- notificações persistentes genéricas;
 - fila distribuída;
 - banco externo.
 
 ## Relação com concorrência
 
-Processos mantêm `base_revision` + writer coordenado conforme arquitetura vigente.
+Processos continuam usando `base_revision`/revisão otimista. Categorias, equipamentos e atendimentos usam mecanismo equivalente quando houver risco de perda concorrente.
 
-Se categorias/equipamentos/atendimentos forem aprovados, seguirão o mesmo princípio de fila coordenada e revisão otimista quando houver risco de perda concorrente. Regras específicas de execução serão fechadas no Bloco 9.
+Detalhes gerais permanecem em `concorrencia-fila-conflitos-eventos.md`; regras específicas do atendimento serão fechadas no Bloco 9.
