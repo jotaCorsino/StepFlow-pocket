@@ -20,150 +20,157 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis som
 | 3 | Launcher/distribuição | CONCLUÍDO | `03-arquitetura/launcher-distribuicao-client.md` |
 | 4 | Comunicação Client↔Host | CONCLUÍDO | `03-arquitetura/comunicacao-client-host.md` |
 | 5 | Autenticação/autorização | CONCLUÍDO NO NÚCLEO / PARÂMETROS PENDENTES | `03-arquitetura/autenticacao-sessao-autorizacao.md` |
-| 6 | Dados/schema/migrations | CONCLUÍDO NO NÚCLEO; NOVA EXTENSÃO CONCEITUAL INCORPORADA | `03-arquitetura/modelo-dados-schema-fase-1.md` |
-| 7 | Concorrência/eventos | CONCLUÍDO NO NÚCLEO; regras operacionais específicas dependem do Bloco 9 | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
+| 6 | Dados/schema/migrations | NÚCLEO CONCLUÍDO / EXTENSÃO OPERACIONAL PROPOSTA | `03-arquitetura/modelo-dados-schema-fase-1.md` |
+| 7 | Concorrência/eventos | CONCLUÍDO NO NÚCLEO / detalhes operacionais dependem do Bloco 9 | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
 | 8 | UI/UX | EM ANDAMENTO | `02-telas/README.md` |
-| 9 | Execução operacional, atendimentos e checklist | PENDENTE | `01-produto/categorizacao-atendimentos-equipamentos.md` |
+| 9 | Execução operacional/registro de serviço + checklist | PENDENTE | `01-produto/categorizacao-atendimentos-equipamentos.md` |
 | 10 | Exportação/impressão + ficha compacta | PENDENTE | arquitetura técnica |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
-## Novo requisito incorporado em 2026-08-21
+## Novo requisito confirmado em 2026-08-21
 
-O produto passa a incluir:
+O PO confirmou que o produto deve incluir:
 
-- categorização configurável e múltipla de procedimentos;
-- registro formal de atendimento/execução quando necessário;
-- equipamento opcional associado ao atendimento;
-- ficha de computador/notebook com dados técnicos quando aplicável;
-- busca operacional por equipamento, cliente/referência, OS, serial/patrimônio/MAC e códigos internos;
-- saída compacta imprimível de atendimento/equipamento.
+- categorização de procedimentos;
+- registro de dados específicos de computadores/notebooks quando aplicável;
+- campos como nome, processador, RAM, armazenamento, SO/versão, MAC/identificador útil, saúde da bateria e observações;
+- associação a cliente e/ou ordem de serviço/referência útil para busca;
+- busca operacional por informações disponíveis;
+- resumo dos procedimentos/trabalho realizados;
+- ficha compacta gerável/imprimível para anexação física ao equipamento;
+- uso amplo também em TI, Service Desk, Help Desk, infraestrutura, redes e guias.
 
-Fonte de produto: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
+Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
-Esse requisito **não** transforma o StepFlow em CRM, help desk completo, estoque, RMM ou sistema financeiro.
+## Modelagem recomendada — ainda não aprovada
+
+A direção proposta é separar:
+
+- Procedimento — modelo oficial;
+- Atendimento/Execução — ocorrência real;
+- Equipamento — ativo físico opcional.
+
+Também estão em proposta:
+
+- categorias configuráveis e potencialmente múltiplas;
+- identificador interno/código StepFlow para equipamento;
+- múltiplos procedimentos por atendimento;
+- vínculo histórico à revisão efetivamente utilizada;
+- item `Atendimentos` na sidebar.
+
+Esses detalhes não viram contrato até aprovação do PO.
 
 ## Bloco 8 — UI/UX
 
-Documentar/aprovar antes do código as superfícies críticas:
+Documentar/aprovar antes do código:
 
 1. Login;
 2. Shell/sidebar;
 3. Dashboard;
-4. lista/pesquisa de procedimentos com categorias;
+4. lista/pesquisa de procedimentos com categorização;
 5. leitura em formato livro;
-6. editor de procedimento/etapas + categorias;
-7. histórico de alterações;
-8. lista/pesquisa de atendimentos;
-9. atendimento/execução e ficha de equipamento;
+6. editor de procedimento + categorização;
+7. histórico;
+8. lista/pesquisa do registro operacional de serviço;
+9. registro do serviço + ficha do equipamento quando aplicável;
 10. usuários/permissões;
 11. perfil;
 12. configurações da empresa + gestão de categorias;
 13. backup/restauração;
 14. exportação/impressão + ficha compacta;
-15. estados transversais de erro/loading/conflito/Host indisponível.
+15. estados transversais.
 
-Usar `docs/templates/template-analise-de-tela.md`. Aparência só vira contrato quando aprovada pelo PO.
+A nomenclatura/estrutura exatas das telas 8–9 dependem da aprovação da modelagem proposta.
 
 ### Estado atual
 
-- `docs/02-telas/01-login.md` — contrato funcional consolidado;
-- `docs/02-telas/02-shell-sidebar.md` — núcleo consolidado; **reaberto pontualmente** para posicionar a nova área `Atendimentos`;
-- `docs/02-telas/03-dashboard.md` — em análise/proposta para aprovação do PO;
-- requisitos de categorização/atendimento/equipamento incorporados antes de avançar às telas de Processos;
-- nenhuma UI de produção foi criada.
+- `01-login.md` — consolidado;
+- `02-shell-sidebar.md` — núcleo consolidado, reaberto apenas para a proposta de nova área operacional;
+- `03-dashboard.md` — em análise/proposta;
+- novo requisito incorporado antes de avançar às telas de Processos;
+- nenhuma UI de produção criada.
 
-No Bloco 8, telas operacionais podem definir UX, fluxo, campos, estados e permissões visíveis. Regras de lifecycle/checklist que dependem do Bloco 9 devem ficar marcadas como pendentes, não inventadas.
+Bloco 8 pode fechar UX/campos/fluxos já confirmados. Lifecycle, checklist e regras dependentes da modelagem devem aguardar Bloco 9.
 
-Para Backup/Restauração e Exportação/Impressão, o Bloco 8 fecha somente UX/fluxo/estados. Estratégia técnica de exportação e ficha compacta pertence ao Bloco 10; backup/restore ao Bloco 11.
+## Bloco 9 — Execução operacional/registro de serviço e checklist
 
-## Bloco 9 — Execução operacional, atendimentos e checklist
+Primeiro fechar a modelagem da ocorrência real de trabalho. Se `Atendimento/Execução × Equipamento` for aprovada, detalhar:
 
-Fechar o comportamento da ocorrência real de trabalho:
-
-- lifecycle do atendimento (`novo/em andamento/concluído/...`) apenas na medida necessária;
+- lifecycle mínimo necessário;
 - criação/edição/conclusão/reabertura;
-- vínculo opcional com equipamento;
-- vínculo com uma ou mais revisões de procedimentos executados;
-- estado das marcações de checklist/progresso;
+- equipamento opcional;
+- vínculo com procedimento/revisão;
+- possibilidade de um ou vários procedimentos;
+- checklist/progresso;
 - histórico operacional;
-- concorrência/revisão de atendimento/equipamento;
-- regras quando o procedimento oficial muda durante/depois do atendimento;
-- matriz de permissões operacional.
+- concorrência/revisão;
+- comportamento quando procedimento oficial muda;
+- matriz operacional de permissões.
 
-A solução deve permanecer simples e proporcional ao uso real, sem transformar atendimento em workflow burocrático.
+A solução deve permanecer proporcional, sem virar workflow burocrático.
 
 ## Bloco 10 — Exportação e impressão
 
-PDF, DOCX e impressão continuam obrigatórios para documentação de procedimentos.
+PDF, DOCX e impressão continuam obrigatórios para documentação.
 
-Além disso, fechar a saída compacta de atendimento/equipamento:
+Novo requisito confirmado: ficha compacta de serviço/equipamento. Fechar:
 
-- geração própria, não screenshot;
-- conteúdo e identidade da empresa;
+- conteúdo final e identidade da empresa;
 - tamanho/layout físico;
-- impressão direta e formatos de arquivo necessários;
-- paginação/listas/blocos técnicos;
-- se QR/barcode traz valor real ou permanece fora do escopo;
+- impressão direta;
+- necessidade ou não de PDF da ficha;
+- paginação/listas/blocos;
+- QR/barcode somente se houver valor aprovado;
 - critérios de validação.
 
 ## Bloco 11 — Backup e restauração
 
-Fechar:
-
-- backup consistente do SQLite + arquivos administrados;
-- inclusão de categorias, equipamentos e atendimentos;
-- formato do pacote;
-- validação;
-- retenção;
-- coordenação durante restore;
-- recuperação após falha.
+Fechar backup consistente do SQLite + arquivos administrados. Depois da modelagem operacional aprovada, incluir os novos dados correspondentes.
 
 ## Bloco 12 — Fundação da Fase 2
 
 Somente depois dos blocos anteriores:
 
-- resolver parâmetros operacionais pendentes necessários à implementação;
+- resolver parâmetros operacionais pendentes;
 - definir árvore oficial de Client/Host/launcher/contratos/testes/assets;
-- convenções e scripts;
-- arquivos ignorados/configuração de desenvolvimento;
+- convenções/scripts;
+- configuração de desenvolvimento;
 - tarefas pequenas da fundação;
 - plano oficial da Fase 2.
 
-Até esse gate, “trabalho estrutural” não autoriza scaffold oficial nem código runtime de produção.
-
 ## Pendências do ambiente corporativo
-
-Não bloqueiam a documentação atual, mas devem ser validadas antes da implantação:
 
 - hostname/IP e paths reais;
 - SMB/permissões/políticas;
 - Windows/WebView2 reais;
 - antivírus/EDR/firewall;
-- transporte HTTP/HTTPS;
-- mecanismo existente para iniciar o Controller central quando necessário.
+- HTTP/HTTPS;
+- mecanismo real de start do Controller.
 
 ## Critérios de saída da Fase 1
 
 - [x] Client/Windows definidos;
 - [x] Host Pocket definido;
-- [x] launcher/update definidos arquiteturalmente;
+- [x] launcher/update definidos;
 - [x] comunicação definida;
 - [x] núcleo de autenticação/autorização definido;
-- [ ] parâmetros operacionais pendentes necessários à autenticação fechados antes da implementação correspondente;
-- [x] modelo de dados/migrations definido no núcleo e extensão conceitual nova incorporada;
+- [ ] parâmetros finais de autenticação necessários à implementação;
+- [x] modelo de dados original definido;
+- [ ] extensão operacional do schema aprovada após decisão da modelagem nova;
 - [x] concorrência geral definida;
-- [ ] telas críticas, incluindo categorias/atendimentos/equipamentos, especificadas/aprovadas;
-- [ ] execução operacional e checklist decididos;
-- [ ] matriz de permissões de categorias/equipamentos/atendimentos decidida;
+- [ ] telas críticas, incluindo novos requisitos, especificadas/aprovadas;
+- [ ] modelagem do registro operacional/equipamento aprovada;
+- [ ] execução/checklist decididos;
+- [ ] matriz operacional de permissões decidida;
 - [ ] exportação/impressão + ficha compacta definidas;
 - [ ] backup/restore definidos;
-- [ ] estrutura oficial do repositório definida;
+- [ ] estrutura oficial definida;
 - [x] pendências não bloqueantes registradas;
 - [ ] plano da Fase 2 aprovado.
 
 ## Regra de execução
 
-Não criar scaffold, árvore runtime definitiva ou código de negócio durante a Fase 1 por conveniência. Provas técnicas novas só devem existir quando uma decisão relevante realmente depender de evidência mecânica não disponível e a tarefa as declarar explicitamente descartáveis.
+Não criar scaffold, runtime definitivo ou código de negócio durante a Fase 1. Propostas do novo requisito não podem ser implementadas antes da aprovação explícita correspondente.
 
-Toda tarefa Codex que altere arquivos deve trazer base Git esperada (branch + SHA) e respeitar as proteções de working tree definidas em `AGENTS.md`.
+Toda tarefa Codex que altere arquivos deve trazer base Git esperada e respeitar `AGENTS.md`.
