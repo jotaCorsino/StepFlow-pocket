@@ -50,8 +50,9 @@ Usar `docs/templates/template-analise-de-tela.md`. Aparência só vira contrato 
 
 ### Estado atual
 
-- `docs/02-telas/01-login.md` — **contrato funcional consolidado** em 2026-08-21; composição central, destino `Início/Dashboard` e mostrar/ocultar senha aprovados;
-- `docs/02-telas/02-shell-sidebar.md` — **em análise/proposta para aprovação do PO**;
+- `docs/02-telas/01-login.md` — **contrato funcional consolidado** em 2026-08-21;
+- `docs/02-telas/02-shell-sidebar.md` — **consolidado/aprovado pelo PO** em 2026-08-21;
+- `docs/02-telas/03-dashboard.md` — **em análise/proposta para aprovação do PO**;
 - nenhuma UI de produção foi criada.
 
 No Bloco 8, telas de backup/exportação fecham apenas **UX, fluxo, estados e permissões visíveis**. Estratégia técnica de exportação pertence ao Bloco 10 e estratégia técnica de backup/restore ao Bloco 11. A tela deve registrar dependências sem inventar solução técnica.
