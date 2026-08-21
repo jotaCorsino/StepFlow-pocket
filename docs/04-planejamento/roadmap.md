@@ -1,7 +1,7 @@
 # Roadmap — StepFlow Pocket
 
 **Status:** FASE 1 EM ANDAMENTO  
-**Atualização:** 2026-08-20
+**Atualização:** 2026-08-21
 
 ## Fase 0 — Fundação documental e governança
 
@@ -13,21 +13,29 @@ Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e
 
 **EM ANDAMENTO.**
 
-Blocos concluídos:
+Núcleo arquitetural já fechado:
 
 - Client/Tauri e compatibilidade Windows;
 - Host Pocket sob demanda;
 - launcher e atualização do Client;
 - comunicação HTTP/JSON + WebSocket;
-- autenticação/sessão/autorização;
+- autenticação/sessão/autorização no núcleo;
 - modelo de dados/migrations/histórico;
 - concorrência/fila/conflitos/eventos.
 
+Novo requisito de 2026-08-21 incorporado ao fechamento da Fase 1:
+
+- categorização configurável de procedimentos;
+- atendimento/execução formal quando necessário;
+- equipamento opcional com ficha técnica;
+- busca operacional;
+- ficha compacta imprimível.
+
 Próximos blocos:
 
-1. UI/UX;
-2. comportamento do checklist durante execução;
-3. exportação PDF/DOCX/impressão;
+1. UI/UX incluindo categorias, atendimentos e equipamentos;
+2. execução operacional + checklist;
+3. exportação PDF/DOCX/impressão + ficha compacta;
 4. backup/restore;
 5. estrutura oficial do repositório e plano da Fase 2.
 
@@ -61,25 +69,30 @@ Gate: Client abre, Host Pocket inicia sob demanda, comunicação mínima funcion
 - configuração básica da empresa;
 - autorização real no Host.
 
-## Fase 4 — Núcleo documental de processos
+## Fase 4 — Núcleo documental de procedimentos
 
 **PENDENTE.**
 
 - lista/pesquisa;
+- categorias configuráveis e filtros;
 - criação/edição/arquivamento;
 - etapas e blocos estruturados;
 - histórico/revisões;
 - permissões;
 - conflitos de revisão.
 
-## Fase 5 — Experiência de execução em formato livro
+## Fase 5 — Execução operacional e experiência em formato livro
 
 **PENDENTE.**
 
-- páginas/etapas;
+- páginas/etapas do procedimento;
 - navegação e progresso;
 - passos/alertas/blocos copiáveis;
-- checklist conforme decisão da Fase 1;
+- atendimento/execução formal conforme decisão da Fase 1;
+- equipamento opcional e ficha técnica;
+- vínculo com revisão do procedimento utilizada;
+- checklist/progresso conforme decisão do Bloco 9;
+- busca/lista de atendimentos;
 - estados de UI.
 
 ## Fase 6 — Multiusuário em ambiente real
@@ -90,6 +103,7 @@ Gate: Client abre, Host Pocket inicia sob demanda, comunicação mínima funcion
 - conflitos e fila;
 - eventos/reconexão;
 - comportamento de Host indisponível;
+- concorrência de procedimentos/equipamentos/atendimentos;
 - validação na LAN corporativa quando disponível.
 
 ## Fase 7 — Exportação e identidade
@@ -100,15 +114,16 @@ Gate: Client abre, Host Pocket inicia sob demanda, comunicação mínima funcion
 - DOCX;
 - impressão;
 - template e identidade da empresa;
-- validação em leitores esperados.
+- ficha/relatório compacto de atendimento/equipamento;
+- validação em leitores/impressoras esperados.
 
 ## Fase 8 — Distribuição Pocket, backup e operação
 
 **PENDENTE.**
 
-- pacote da máquina central por pasta, com Controller/Host sob demanda;
+- pacote central por pasta com Controller/Host sob demanda;
 - launcher publicado na rede e Client local versionado;
-- backup/restore;
+- backup/restore incluindo dados operacionais;
 - logs de diagnóstico;
 - documentação de implantação;
 - validação sem Internet e em PCs corporativos.
@@ -119,9 +134,11 @@ Cenário final conceitual:
 
 ```text
 Controller central é iniciado quando o StepFlow será usado
-→ técnico acessa o ponto de entrada interno
+→ técnico acessa ponto de entrada interno
 → launcher prepara Client local
 → login/uso multiusuário
+→ consulta procedimento e, quando aplicável, registra atendimento/equipamento
+→ impressão/exportação quando necessária
 → encerramento operacional fecha Host/Controller
 → nenhum processo StepFlow residual
 ```
