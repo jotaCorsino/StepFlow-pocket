@@ -19,9 +19,10 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `07-historico-revisoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `08-lista-pesquisa-atendimentos.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `09-atendimento-execucao-equipamento.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 10 — Usuários / Permissões**.
+- `10-usuarios-permissoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 11 — Meu perfil**.
 
-A Tela 10 ainda não está em análise neste checkpoint.
+A Tela 11 ainda não está em análise neste checkpoint.
 
 ## Domínio operacional aprovado
 
@@ -56,8 +57,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 7. Histórico/Revisões — consolidado;
 8. Lista/pesquisa de Atendimentos — consolidado;
 9. Atendimento/execução + ficha do equipamento — consolidado;
-10. Usuários/permissões — **próximo**;
-11. Meu perfil;
+10. Usuários/permissões — consolidado;
+11. Meu perfil — **próximo**;
 12. Configurações + gestão de categorias;
 13. Backup/restauração;
 14. Exportação/impressão + ficha compacta;
@@ -87,6 +88,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 - ações administrativas contextuais;
 - `Arquivar` em vez de `Excluir`;
 - retorno preserva busca/filtros.
+
+Fonte: `04-lista-pesquisa-processos.md`.
 
 ## Leitor — consolidado
 
@@ -168,6 +171,28 @@ Fonte: `08-lista-pesquisa-atendimentos.md`.
 
 Fonte: `09-atendimento-execucao-equipamento.md` e `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
+## Usuários/Permissões — consolidado
+
+- lista/tabela compacta de usuários;
+- busca por nome, login ou cargo;
+- filtros `Perfil` + `Estado`;
+- mesmo formulário administrativo para criar/editar usuário;
+- `Ativo/Inativo`, com desativação em vez de exclusão física;
+- `Perfil base` como preset de capacidades;
+- seção opcional `Permissões específicas` para personalização granular;
+- `Restaurar padrão do perfil` para remover personalizações;
+- teto de delegação validado pelo Host, impedindo Gerência de criar um ADM equivalente por capacidades;
+- Gerência administra somente usuários não-ADM;
+- perfil/capacidades da própria conta somente leitura nesta tela, deixando dados pessoais para `Meu perfil`;
+- proteção do último ADM ativo;
+- `is_primary_admin` não aparece como toggle comum;
+- reset administrativo de senha sem revelar senha antiga e com revogação de sessões pertinentes;
+- sem exclusão física e sem ações em massa inicialmente;
+- capacidades operacionais de Atendimento permanecem pendentes do Bloco 9;
+- parâmetros numéricos ainda pendentes de autenticação/sessão continuam pendentes.
+
+Fonte: `10-usuarios-permissoes.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao.md`.
+
 ## Limite do Bloco 8
 
 O Bloco 8 fecha UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional.
@@ -177,9 +202,10 @@ Não decide sozinho:
 - lifecycle/status final do Atendimento;
 - checklist/progresso operacional;
 - matriz de permissões operacional;
+- parâmetros numéricos ainda pendentes de autenticação/sessão;
 - tecnologia/formato final da ficha compacta.
 
-Esses pontos pertencem aos Blocos 9 e 10.
+Esses pontos pertencem aos documentos/blocos correspondentes.
 
 ## Regra de separação de busca
 
@@ -194,4 +220,4 @@ Todo avanço consolidado de fase, bloco ou tela deve atualizar o painel do `READ
 
 ## Regra de parada
 
-Quando uma tela depender de lifecycle/checklist/exportação ainda pendentes, documentar a dependência e parar no limite aprovado. Não inventar solução técnica ou regra de negócio.
+Quando uma tela depender de lifecycle/checklist/exportação/permissões ainda pendentes, documentar a dependência e parar no limite aprovado. Não inventar solução técnica ou regra de negócio.

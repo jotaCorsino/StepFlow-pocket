@@ -42,8 +42,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 7 | Histórico / revisões | ✅ Consolidado |
 | 8 | Lista / pesquisa de Atendimentos | ✅ Consolidado |
 | 9 | Atendimento / execução + equipamento | ✅ Consolidado |
-| 10 | Usuários / permissões | 🟡 Próximo |
-| 11 | Meu perfil | ⏳ Pendente |
+| 10 | Usuários / permissões | ✅ Consolidado |
+| 11 | Meu perfil | 🟡 Próximo |
 | 12 | Configurações + categorias | ⏳ Pendente |
 | 13 | Backup / restauração — UX | ⏳ Pendente |
 | 14 | Exportação / impressão + ficha — UX | ⏳ Pendente |
@@ -72,9 +72,9 @@ Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. 
 
 ### Próximo passo
 
-**Tela 10 — Usuários / permissões.**
+**Tela 11 — Meu perfil.**
 
-A Tela 10 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 09 estar integrada em `main`, a branch encerrada e o checkout local sincronizado.
+A Tela 11 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 10 estar integrada em `main` e a branch remota encerrada.
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 
@@ -158,11 +158,12 @@ Para manter o repositório limpo:
 → revisão/aprovação
 → squash/merge em main
 → apagar branch encerrada
-→ sincronizar checkout local
-→ iniciar o próximo trabalho
+→ iniciar o próximo trabalho documental
 ```
 
-Branches auxiliares descartáveis não devem permanecer no remoto. Alterações locais preexistentes do PO não podem ser resetadas, stashed, descartadas ou incorporadas por agentes sem autorização explícita.
+Durante o fechamento **documental** restante da Fase 1, o GitHub remoto é a fonte operacional. A sincronização do checkout local `C:\dev\StepFlow` fica deliberadamente adiada e deve ser feita de forma explícita **antes do primeiro trabalho de implementação com Codex**.
+
+Branches auxiliares descartáveis não devem permanecer no remoto. Alterações locais preexistentes do PO não podem ser resetadas, stashed, descartadas ou incorporadas por agentes sem autorização explícita durante a futura sincronização.
 
 ## Ambiente de desenvolvimento
 
