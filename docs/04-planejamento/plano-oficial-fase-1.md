@@ -6,9 +6,9 @@
 
 ## Objetivo
 
-Transformar requisitos e arquitetura conceitual em decisões e especificações implementáveis antes da fundação executável do StepFlow.
+Transformar requisitos e arquitetura conceitual em decisões implementáveis antes da fundação executável do StepFlow.
 
-A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis somente quando necessárias. Não autoriza antecipar funcionalidades de negócio definitivas nem criar scaffold/runtime oficial antes do Bloco 12.
+A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis quando necessárias. Não autoriza scaffold/runtime oficial nem código de negócio definitivo antes do Bloco 12/Fase 2.
 
 ## Estado dos blocos
 
@@ -19,148 +19,203 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis som
 | 2 | Host Pocket | CONCLUÍDO | `03-arquitetura/host-pocket.md` |
 | 3 | Launcher/distribuição | CONCLUÍDO | `03-arquitetura/launcher-distribuicao-client.md` |
 | 4 | Comunicação Client↔Host | CONCLUÍDO | `03-arquitetura/comunicacao-client-host.md` |
-| 5 | Autenticação/autorização | CONCLUÍDO NO NÚCLEO / PARÂMETROS PENDENTES | `03-arquitetura/autenticacao-sessao-autorizacao.md` |
-| 6 | Dados/schema/migrations | NÚCLEO + EXTENSÃO OPERACIONAL CONCEITUALMENTE CONSOLIDADOS | `03-arquitetura/modelo-dados-schema-fase-1.md` |
-| 7 | Concorrência/eventos | CONCLUÍDO NO NÚCLEO / detalhes operacionais dependem do Bloco 9 | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
+| 5 | Autenticação/autorização | NÚCLEO CONCLUÍDO / PARÂMETROS FINAIS PENDENTES | `03-arquitetura/autenticacao-sessao-autorizacao.md` |
+| 6 | Dados/schema/migrations | NÚCLEO + EXTENSÃO OPERACIONAL CONSOLIDADOS CONCEITUALMENTE | `03-arquitetura/modelo-dados-schema-fase-1.md` |
+| 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
-| 9 | Execução operacional/Atendimentos + checklist | PRÓXIMO / AINDA NÃO INICIADO | `01-produto/categorizacao-atendimentos-equipamentos.md` |
-| 10 | Exportação/impressão + ficha compacta | PENDENTE | arquitetura técnica |
+| 9 | Execução operacional/Atendimentos + checklist | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
+| 10 | Exportação/impressão + ficha compacta | **PRÓXIMO / AINDA NÃO INICIADO** | arquitetura técnica |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
 ## Extensão de produto consolidada
 
-Ficam incorporados à Fase 1:
+Fazem parte da Fase 1:
 
-- categorização configurável e múltipla de procedimentos;
-- separação `Procedimento × Atendimento/Execução × Equipamento`;
-- `Atendimentos` como área operacional própria;
-- equipamento opcional/reutilizável com identidade interna própria;
-- MAC/serial/patrimônio/cliente/OS como atributos pesquisáveis;
-- múltiplos procedimentos por atendimento;
-- vínculo histórico com a revisão de procedimento utilizada;
-- ficha compacta de Atendimento com ou sem equipamento;
-- ficha limitada a no máximo uma página A4;
-- uso amplo em manutenção, TI, Service Desk, Help Desk, infraestrutura, redes e guias;
-- identidade da empresa centralizada para Shell e documentos;
-- gestão simples de categorias em Configurações, com arquivamento/reativação e preservação de histórico;
-- UX administrativa de Backup/Restauração coordenada pelo Host, com safety backup obrigatório antes do Restore normal destrutivo;
-- exportação contextual de procedimentos em PDF/DOCX/impressão baseada exatamente na revisão selecionada;
-- estados transversais comuns para loading, vazio, Host indisponível, WebSocket degradado, reconexão, sessão, permissão, conflito, mutação incerta e alterações não salvas.
+- categorias configuráveis/múltiplas;
+- `Procedimento × Atendimento/Execução × Equipamento`;
+- Atendimentos como área própria;
+- Equipamento opcional/reutilizável;
+- múltiplos Procedimentos por Atendimento;
+- revisão exata utilizada preservada;
+- ficha compacta com ou sem Equipamento;
+- identidade central da empresa;
+- Backup/Restauração administrativo;
+- PDF/DOCX/impressão contextual de Procedimentos;
+- estados transversais;
+- lifecycle operacional de Atendimentos;
+- checklist persistente em contexto de execução;
+- matriz operacional de capacidades;
+- códigos `AT-000001` / `EQP-000001`.
 
-Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md` e especificações do Bloco 8.
+## Bloco 8 — UI/UX — concluído
 
-## Bloco 8 — UI/UX — CONCLUÍDO
-
-Foram documentadas e aprovadas antes do código:
+Telas 01–15 estão consolidadas/aprovadas:
 
 1. Login;
 2. Shell/sidebar;
 3. Dashboard;
-4. lista/pesquisa de Processos com categorização;
-5. leitura em formato livro;
-6. editor de Processo + categorização;
-7. histórico;
-8. lista/pesquisa de Atendimentos;
-9. Atendimento/execução + ficha do equipamento;
-10. usuários/permissões;
-11. perfil;
-12. configurações da empresa + gestão de categorias;
-13. backup/restauração;
-14. exportação/impressão + ficha compacta;
-15. estados transversais.
+4. Lista/Pesquisa de Processos;
+5. Reader em formato livro;
+6. Editor de Processo + categorias;
+7. Histórico/Revisões;
+8. Lista/Pesquisa de Atendimentos;
+9. Atendimento/Execução + Equipamento;
+10. Usuários/Permissões;
+11. Meu perfil;
+12. Configurações + Categorias;
+13. Backup/Restauração — UX;
+14. Exportação/Impressão + ficha — UX;
+15. Estados transversais.
 
-### Estado consolidado
+Nenhuma UI de produção foi criada.
 
-- Telas 01–15 — **consolidadas/aprovadas**;
-- `12-configuracoes-categorias.md` consolida identidade da empresa e gestão simples de categorias;
-- `13-backup-restauracao.md` consolida a UX de Backup/Restore, mantendo o mecanismo técnico para o Bloco 11;
-- `14-exportacao-impressao-ficha.md` consolida PDF/DOCX/impressão contextual dos procedimentos e a UX da ficha compacta de Atendimento;
-- `15-estados-transversais.md` consolida o padrão comum de loading, erro, indisponibilidade, reconexão, sessão, permissão, conflito e feedback;
-- nenhuma UI de produção foi criada.
+## Bloco 9 — Execução operacional / Atendimentos + checklist — concluído
 
-Lifecycle, checklist e permissões operacionais detalhadas permanecem para o Bloco 9. Engine/template final de exportação e ficha permanecem para o Bloco 10. Política técnica de Backup/Restore permanece para o Bloco 11.
+Fonte canônica: `bloco-9-atendimentos-execucao-checklist.md`.
 
-## Bloco 9 — Execução operacional/Atendimentos e checklist
+### Lifecycle
 
-**Status neste checkpoint: próximo; ainda não iniciado.**
+```text
+Em andamento
+Concluído
+Cancelado
+```
 
-Quando for aberto, deve fechar:
+- primeiro save cria o Atendimento;
+- `Resumo do trabalho` + responsável são obrigatórios para concluir;
+- checklist incompleto avisa, mas não bloqueia automaticamente;
+- cancelamento exige motivo;
+- concluído/cancelado são read-only até reabertura;
+- ADM/Gerência reabrem por preset.
 
-- lifecycle mínimo necessário;
-- criação/edição/conclusão/reabertura;
-- equipamento opcional;
-- vínculo com uma ou mais revisões de procedimentos;
-- checklist/progresso;
-- histórico operacional;
-- concorrência/revisão;
-- comportamento quando procedimento oficial muda;
-- matriz operacional de permissões;
-- formato final dos códigos legíveis;
-- capacidade/preset exato para gestão operacional de categorias quando aplicável;
-- capacidade e lifecycle para gerar/reimprimir ficha de Atendimento.
+### Responsabilidade
 
-A solução deve permanecer proporcional e não virar workflow burocrático.
+- Funcionário cria inicialmente para si;
+- Funcionário opera/conclui o Atendimento do qual é responsável;
+- ADM/Gerência podem atribuir/editar qualquer Atendimento acessível;
+- usuário desativado permanece no histórico.
+
+### Procedimentos e checklist
+
+- Funcionário seleciona revisão publicada;
+- ADM/Gerência podem selecionar explicitamente outras revisões autorizadas;
+- Reader standalone = checklist documental;
+- Reader no Atendimento = checklist persistente;
+- progresso deriva de marcados/total;
+- 100% não conclui automaticamente;
+- concorrência granular por item/equivalente.
+
+### Equipamento
+
+- Funcionário cria/edita;
+- ADM/Gerência arquivam/reativam;
+- não arquivar Equipamento ligado a Atendimento em andamento;
+- conclusão congela projeção histórica relevante do Equipamento.
+
+### Códigos
+
+```text
+AT-000001
+EQP-000001
+```
+
+Host-only, seis dígitos, gaps permitidos.
+
+### Categorias
+
+- gerir categorias: ADM/Gerência por preset;
+- Funcionário não;
+- regra editorial de nova revisão ainda referenciando categoria arquivada permanece pendente antes da implementação editorial.
+
+### Ficha
+
+- capacidade por preset para ADM/Gerência/Funcionário em Atendimento acessível;
+- Em andamento: geração para acompanhamento;
+- Concluído: reimpressão do estado histórico;
+- Cancelado: identificação inequívoca;
+- tecnologia física permanece no Bloco 10.
 
 ## Bloco 10 — Exportação e impressão
 
-A UX já está consolidada pela Tela 14. Este bloco fecha a implementação técnica.
+**Status neste checkpoint: próximo; ainda não iniciado.**
 
-Para procedimentos:
+A UX já foi consolidada no Bloco 8; este bloco fechará implementação técnica.
 
-- PDF;
-- DOCX;
+### Procedimentos
+
+- engine PDF;
+- engine DOCX;
 - impressão;
 - template dedicado;
 - identidade da empresa;
-- paginação e quebras;
+- paginação/quebras;
 - comandos/código legíveis;
 - nomes de arquivo;
 - validação em leitores/impressoras.
 
-Para a ficha compacta de Atendimento:
+### Ficha compacta
 
-- template final com ou sem equipamento;
-- no máximo uma página A4;
-- margens, tipografia e densidade;
+- template final com/sem Equipamento;
+- máximo uma A4;
+- margens, tipografia, densidade;
+- limites numéricos dos textos;
+- regras de priorização/resumo/truncamento controlado;
+- muitos MACs/procedimentos;
+- preview;
 - impressão direta;
-- necessidade ou não de PDF específico da ficha;
-- limites finais dos textos;
-- regras de resumo/truncamento controlado;
-- tratamento de muitos MACs/procedimentos;
-- pré-visualização;
-- QR/barcode somente se houver valor aprovado;
-- critérios técnicos de validação.
+- decidir PDF específico;
+- QR/barcode apenas se houver valor aprovado;
+- reprodução coerente dos snapshots definidos no Bloco 9.
 
-A impressão da ficha é requisito. DOCX específico da ficha não é requisito inicial.
-
-A identidade consumida pelos templates vem da configuração central aprovada na Tela 12.
+DOCX específico da ficha não é requisito inicial.
 
 ## Bloco 11 — Backup e restauração
 
-Fechar backup consistente do SQLite + arquivos administrados, incluindo categorias, equipamentos, atendimentos, identidade/logo da empresa e demais arquivos persistentes aplicáveis.
+Fechar mecanismo técnico de backup consistente do SQLite + arquivos administrados.
 
-A Tela 13 já consolidou a UX normal:
+UX normal já exige:
 
-- Backup/Restore dentro de Configurações;
-- Client não escolhe SQLite/path;
-- Restore apenas para sessão autorizada e backup elegível;
+- operação Host-side;
+- Restore autorizado + backup elegível;
 - confirmação reforçada;
-- safety backup obrigatório antes da etapa destrutiva do Restore normal;
+- safety backup antes da etapa destrutiva;
 - disaster recovery sem Host funcional fora da UI normal.
 
-Este bloco ainda fecha mecanismo, pacote, atomicidade, verificações, retenção, restart/reconexão/sessões e recuperação local de desastre.
+Ainda fechar:
+
+- pacote;
+- atomicidade;
+- verificações/checksums;
+- retenção;
+- compressão/criptografia quando aplicável;
+- restart/reconexão/sessões;
+- recuperação local de desastre.
 
 ## Bloco 12 — Fundação da Fase 2
 
 Somente depois dos blocos anteriores:
 
-- resolver parâmetros operacionais pendentes;
-- definir árvore oficial de Client/Host/launcher/contratos/testes/assets;
+- resolver parâmetros finais que bloqueiam implementação;
+- fechar regra editorial de categoria arquivada;
+- definir árvore oficial Client/Host/launcher/contratos/testes/assets;
 - convenções/scripts;
 - configuração de desenvolvimento;
-- tarefas pequenas da fundação;
-- plano oficial da Fase 2.
+- migrations oficiais iniciais;
+- tarefas pequenas de fundação;
+- plano oficial da Fase 2;
+- sincronizar explicitamente o checkout local antes do primeiro trabalho de implementação com Codex.
+
+## Pendências de autenticação/configuração
+
+Antes da implementação correspondente:
+
+- Argon2id final;
+- senha mínima final;
+- duração de sessão;
+- entropia/tamanho final do token;
+- Gerência × configuração da empresa;
+- Gerência × Backup.
 
 ## Pendências do ambiente corporativo
 
@@ -182,14 +237,16 @@ Somente depois dos blocos anteriores:
 - [x] modelo de dados original definido;
 - [x] extensão operacional conceitual aprovada;
 - [x] concorrência geral definida;
-- [x] todas as telas críticas, incluindo novos requisitos, especificadas/aprovadas;
-- [x] Telas 01–15 do Bloco 8 especificadas/aprovadas;
+- [x] Telas 01–15 especificadas/aprovadas;
 - [x] modelagem `Procedimento × Atendimento × Equipamento` aprovada;
-- [x] Tela 15 — Estados transversais aprovada;
-- [ ] execução/checklist decididos;
-- [ ] matriz operacional de permissões decidida;
-- [ ] exportação/impressão + ficha compacta tecnicamente definidas;
+- [x] lifecycle/execução/checklist decididos;
+- [x] matriz operacional de permissões decidida;
+- [x] códigos legíveis decididos;
+- [x] gestão de categorias por preset decidida;
+- [x] lifecycle/capacidade da ficha decididos;
+- [ ] exportação/impressão + ficha tecnicamente definidas;
 - [ ] backup/restore técnico definido;
+- [ ] regra editorial de categoria arquivada fechada;
 - [ ] estrutura oficial definida;
 - [x] pendências não bloqueantes registradas;
 - [ ] plano da Fase 2 aprovado.
@@ -198,4 +255,4 @@ Somente depois dos blocos anteriores:
 
 Não criar scaffold, runtime definitivo ou código de negócio durante a Fase 1.
 
-Toda tarefa Codex que altere arquivos deve trazer base Git esperada e respeitar `AGENTS.md`.
+Toda tarefa Codex futura que altere arquivos deve trazer base Git esperada, pré-flight de capacidade e obedecer `AGENTS.md`.

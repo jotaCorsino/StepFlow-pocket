@@ -1,331 +1,346 @@
 # Tela 05 — Leitor de Processo em Formato Livro
 
 **Status:** CONSOLIDADO / APROVADO PELO PO  
-**Bloco:** Fase 1 — Bloco 8 (UI/UX)  
-**Última consolidação:** 2026-08-21
+**Bloco original:** Fase 1 — Bloco 8 (UI/UX)  
+**Atualização operacional:** Bloco 9  
+**Última consolidação:** 2026-08-25
 
 ## 1. Objetivo
 
-Ser a principal superfície de consumo de procedimentos do StepFlow, permitindo leitura técnica guiada com baixo atrito, mantendo cada etapa como uma página de manual e preservando claramente a revisão que está sendo consultada.
+Ser a principal superfície de consumo de Procedimentos do StepFlow, com leitura em formato de manual/livro e duas modalidades coerentes:
 
-## 2. Atores e permissões
+1. **consulta documental** — leitura de uma revisão sem estado operacional persistente;
+2. **execução vinculada a Atendimento** — leitura da revisão exata vinculada, com checklist persistente daquele Atendimento.
 
-- ADM;
-- Gerência;
-- Funcionário/Técnico.
+A identidade visual principal é a mesma nos dois contextos.
 
-Todos podem ler procedimentos autorizados. Ações adicionais aparecem conforme capacidades da sessão, mas a autorização real permanece no Host.
+## 2. Estrutura visual
 
-## 3. Entrada e retorno
+O Shell/sidebar global permanece visível. Não existe segunda sidebar permanente.
 
-Fluxo principal:
+Cabeçalho compacto:
+
+```text
+← Processos / ← Atendimento AT-...
+
+PR-014 · Configuração de VLAN
+Versão 2.0 · revisão r18 · Publicada
+[ categorias ] · Infraestrutura
+
+[ Sumário ]                           [ ações contextuais ]
+```
+
+Quando em execução:
+
+```text
+Executando no atendimento AT-000142
+PR-014 · Versão 2.0 · revisão r18
+```
+
+O contexto de Atendimento precisa ficar claro sem transformar o Reader em outra aplicação.
+
+## 3. Páginas do manual
+
+Antes da Etapa 1 existe uma página `Visão geral`, não numerada como etapa.
+
+Pode apresentar:
+
+- objetivo;
+- pré-requisitos;
+- observações;
+- responsável documental;
+- categorias;
+- versão/revisão.
+
+Cada `process_stage` é uma página do manual.
+
+```text
+Visão geral
+→ Etapa 1
+→ Etapa 2
+→ ...
+→ Etapa N
+```
+
+Ao mudar de página, o conteúdo começa no topo.
+
+## 4. Navegação
+
+- `Anterior`;
+- `Próxima`;
+- `Sumário` em painel temporário;
+- indicador `Etapa X de Y`;
+- barra linear discreta de posição.
+
+`Etapa X de Y` e a barra representam **posição de navegação**, nunca conclusão operacional.
+
+A primeira etapa volta para `Visão geral`; a última não oferece avanço inválido.
+
+## 5. Blocos tipados
+
+Tipos iniciais:
+
+- `paragraph`;
+- `numbered_steps`;
+- `checklist`;
+- `note`;
+- `warning`;
+- `command`;
+- `code`.
+
+Não renderizar HTML arbitrário como conteúdo oficial.
+
+### Passos numerados
+
+Suportam passos/subpassos dentro da hierarquia aprovada, com numeração derivada.
+
+### Comando/código
+
+- fonte monoespaçada;
+- preservar whitespace;
+- não executar comando;
+- botão de copiar apenas com ícone, mas com nome acessível;
+- copiar conteúdo exato;
+- feedback curto como `✓ Copiado`.
+
+## 6. Consulta documental
+
+Fluxo normal:
 
 ```text
 Processos
-→ selecionar procedimento
-→ Leitor
+→ selecionar Procedimento
+→ Reader da revisão apropriada
 ```
 
-Também pode ser aberto a partir do Dashboard, Histórico e futuramente de um Atendimento que referencie revisão específica.
+Nesse contexto:
 
-Ao retornar para Lista/Pesquisa, busca e filtros anteriores são preservados.
+- checklist é definição documental;
+- marcar/desmarcar não persiste execução;
+- navegação não grava progresso;
+- não existe estado operacional escondido;
+- nenhum Atendimento é criado apenas por ler.
 
-## 4. Estrutura aprovada
+A primeira versão pode tratar checkbox documental como elemento visual/consulta, mas nunca como execução persistente fora de Atendimento.
+
+## 7. Execução vinculada a Atendimento
+
+Fluxo:
 
 ```text
-← Processos
-
-PR-014  Configuração de VLAN                              [⋯]
-Redes  Infraestrutura      TI       Versão 2.0
-
-Etapa 3 de 7                                      [ Sumário ▾ ]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-3. Configurar a VLAN no switch
-Breve introdução da etapa...
-
-1. Acesse o equipamento...
-2. Entre no modo de configuração...
-
-┌ Observação ────────────────────────────────────────────────┐
-│ ...                                                        │
-└────────────────────────────────────────────────────────────┘
-
-┌ Comando ─────────────────────────────────────────────── [⧉]┐
-│ configure terminal                                        │
-└────────────────────────────────────────────────────────────┘
-
-                         [ ← Etapa anterior ] [ Próxima etapa → ]
+Atendimento AT-...
+→ Procedimento vinculado
+→ Abrir revisão / Executar
+→ Reader da revisão exata em contexto operacional
 ```
 
-O Shell/sidebar global permanece visível. O leitor não cria segunda sidebar permanente.
+Nesse contexto:
 
-## 5. Cabeçalho
+- cabeçalho identifica o Atendimento;
+- revisão fica presa ao `service_record_process`;
+- itens de checklist usam estado persistente do Atendimento;
+- marcar/desmarcar depende de `Em andamento` + capacidade;
+- voltar retorna à Tela 09;
+- navegação entre páginas não marca item nem conclui Atendimento;
+- publicação de revisão nova não muda a revisão em execução.
 
-Exibir de forma compacta:
+## 8. Checklist em execução
 
-- código;
-- título;
-- categorias;
-- Área/Departamento;
-- versão exibida;
-- status editorial somente quando relevante ao contexto/perfil.
+O estado operacional não modifica o Procedimento.
 
-Metadados secundários não devem ocupar permanentemente grande área da tela.
+Enquanto Atendimento está `Em andamento` e sessão autorizada:
 
-## 6. Visão geral
+- marcar item envia mutação ao Host;
+- desmarcar item envia mutação ao Host;
+- Client apresenta estado confirmado/reconciliado;
+- concorrência é granular por item/equivalente;
+- evento remoto nunca sobrescreve edição/estado local silenciosamente.
 
-Antes da Etapa 1 existe uma página lógica **Visão geral**, não numerada como etapa.
+Em `Concluído` ou `Cancelado`, checklist fica somente leitura até eventual reabertura.
 
-Ela apresenta, quando houver:
+## 9. Progresso operacional
 
-- Objetivo;
-- Pré-requisitos;
-- Observações gerais;
-- Responsável documental;
-- categorias;
-- versão e informações editoriais essenciais.
+Somente no contexto de Atendimento, o Reader pode mostrar contagem derivada dos checklists:
 
-`Visão geral` é apenas uma apresentação dos metadados existentes, não uma nova entidade de domínio.
-
-## 7. Etapas como páginas
-
-Cada `process_stage` corresponde a uma página do manual, contendo:
-
-- número/posição;
-- título;
-- introdução quando existir;
-- blocos ordenados;
-- navegação anterior/próxima.
-
-Duas etapas completas não devem ser fundidas em uma página apenas para reduzir cliques.
-
-## 8. Navegação
-
-O leitor possui:
-
-- `Visão geral` antes da Etapa 1;
-- indicador `Etapa X de Y` nas etapas;
-- barra simples de **posição de navegação**, nunca percentual de conclusão do serviço;
-- `Sumário` temporário;
-- Anterior/Próxima.
+```text
+4 de 6 itens concluídos
+```
 
 Regras:
 
-- Visão geral → Próxima = Etapa 1;
-- Etapa 1 → Anterior = Visão geral;
-- última etapa não mostra Próxima inválida;
-- nova página volta ao início do conteúdo.
+- não usar páginas visitadas;
+- não usar `Etapa X de Y` como percentual;
+- revisão sem checklist não mostra `0%` artificial;
+- 100% de checklist não conclui Atendimento automaticamente;
+- conclusão continua ação explícita da Tela 09.
 
-## 9. Sumário
+## 10. Revisão consultada
 
-O `Sumário` é dropdown/painel temporário, não segunda sidebar fixa.
+O Reader sempre deixa claro qual revisão está aberta.
 
-Ele:
+### Operação normal
 
-- lista Visão geral + etapas;
-- marca página atual;
-- permite salto direto;
-- fecha após seleção;
-- permite rolagem própria em procedimentos longos;
-- é operável por teclado;
-- não representa conclusão/progresso operacional.
+Funcionário abre normalmente revisão publicada autorizada.
 
-## 10. Blocos suportados
+### ADM/Gerência
 
-O leitor renderiza os tipos conceituais consolidados:
+Podem abrir revisão atual/histórica/não publicada quando já possuírem autorização correspondente.
 
-- `paragraph` — texto normal;
-- `numbered_steps` — passos/subpassos numerados;
-- `checklist` — definição documental de itens;
-- `note` — observação discreta;
-- `warning` — alerta com maior destaque;
-- `command` — comando/instrução curta monoespaçada;
-- `code` — trecho maior preservando espaços/quebras.
+### Revisão histórica
 
-HTML arbitrário não é fonte de verdade.
+Marca persistente, por exemplo:
 
-## 11. Checklist documental
+```text
+Revisão histórica r17 · Versão 1.9
+```
 
-No leitor independente de Atendimento, checklist representa somente a definição documental.
+### Revisão mais nova disponível
 
-Esta tela não atribui persistência, conclusão, responsável ou estado operacional aos itens. Essas regras pertencem ao Bloco 9.
+Se surgir revisão nova:
 
-## 12. Cópia de comandos/código
+- não trocar automaticamente;
+- mostrar aviso discreto;
+- permitir ação consciente de abrir a nova quando autorizada;
+- em Atendimento, nunca substituir automaticamente a revisão vinculada.
 
-- controle icon-only discreto;
-- nome acessível para leitor de tela;
-- conteúdo copiado exatamente como exibido;
-- feedback curto como `✓ Copiado`;
-- feedback não desloca perceptivelmente a página;
-- falha de Clipboard gera mensagem curta e segura.
+## 11. Iniciar Atendimento a partir do Reader
 
-## 13. Ações contextuais
+Quando a sessão possuir capacidade `Criar Atendimento`, pode existir ação contextual:
 
-Conforme capacidade, menu discreto pode conter:
+```text
+[ Iniciar atendimento ]
+```
 
-- Editar;
-- Histórico;
-- Exportar/Imprimir;
-- ações documentais futuras explicitamente aprovadas.
+Fluxo consolidado:
 
-Fica reservado também um ponto de entrada futuro **`Iniciar atendimento`**. A posição da ação é aprovada no leitor, mas lifecycle, permissões, criação efetiva e dados obrigatórios permanecem para o Bloco 9.
+```text
+Reader da revisão consultada
+→ Iniciar atendimento
+→ Tela 09 em rascunho somente em memória
+→ revisão consultada pré-selecionada
+→ primeiro save aceito cria AT-......
+```
 
-## 14. Revisões
+A revisão pré-selecionada precisa ser elegível conforme o preset:
 
-- Funcionário/Técnico normalmente recebe revisão publicada/autorizada;
-- Gerência/ADM podem abrir revisão específica quando permitido;
-- revisão histórica/draft deve ser claramente identificada;
-- versão editorial e revisão técnica são conceitos distintos.
+- Funcionário: revisão publicada;
+- ADM/Gerência: revisão autorizada selecionada explicitamente.
 
-## 15. Atualização em tempo real
+Se o usuário sair antes do primeiro save, nenhum Atendimento oficial é criado.
 
-Quando uma nova revisão/publicação surgir enquanto o usuário lê:
+## 12. Ações contextuais documentais
 
-- o conteúdo aberto **não é substituído silenciosamente**;
-- a revisão aberta permanece estável;
-- exibir aviso discreto: `Existe uma versão mais recente deste procedimento.`;
-- oferecer atualização consciente para a versão mais recente quando aplicável;
-- WebSocket sinaliza e o Client reconsulta o Host.
+Conforme capacidade:
 
-Isso evita alterar instruções no meio do trabalho.
+- `Editar`;
+- `Histórico`;
+- `Exportar / Imprimir`;
+- `Iniciar atendimento`.
 
-## 16. Estados
+Ações não aplicáveis não ocupam a UI por padrão.
+
+Exportação/impressão usa exatamente a revisão aberta, conforme Tela 14/Bloco 10.
+
+## 13. Estados
 
 ### Loading
 
-Preservar Shell e estrutura do leitor, sem mostrar dados antigos como atuais.
-
-### Processo/revisão indisponível
-
-Mensagem simples e retorno seguro para `Processos`.
+Shell permanece estável; conteúdo usa skeleton/estado local.
 
 ### Sem permissão
 
-Não renderizar conteúdo protegido mantido de estado/cache anterior.
+Host rejeita; conteúdo protegido não fica exposto.
 
 ### Host indisponível
 
-Seguir estado transversal do Shell; cache não vira fonte oficial silenciosamente.
+Segue Tela 15; não exibir campos de IP/porta/path.
 
-### Arquivado
+### Revisão arquivada/histórica
 
-Funcionário sem acesso deixa de receber o recurso. Usuário administrativo autorizado pode receber indicação clara de `Arquivado` em contexto histórico.
+Mostrar identificação contextual sem fingir que é a revisão publicada atual.
 
-### Nova versão disponível
+### Revisão nova disponível
 
-Aviso não intrusivo conforme seção 15.
+Aviso discreto, sem troca automática.
 
-## 17. Dados exibidos
+### Atendimento concluído/cancelado
 
-- código;
-- título;
-- Área/Departamento;
-- responsável documental quando útil;
-- status quando relevante;
-- versão exibida;
-- categorias;
-- objetivo;
-- observações;
-- pré-requisitos;
-- revisão selecionada;
-- etapas e blocos ordenados.
+Quando Reader está no contexto desse Atendimento:
 
-IDs internos não precisam aparecer ao usuário.
+- checklist somente leitura;
+- contexto/lifecycle visível;
+- revisão continua estável.
 
-## 18. Persistência
+### Conflito de checklist
 
-No leitor puro:
+Reconsultar item/estado afetado e informar de forma proporcional; não transformar um checkbox em conflito global de toda a Tela 09 por conveniência.
 
-- navegar não persiste alteração;
-- copiar não persiste alteração;
-- abrir Sumário não persiste alteração;
-- checklist não salva estado nesta fase.
+## 14. Eventos em tempo real
 
-Nenhuma nova persistência é criada pela Tela 05.
+Eventos são sinais de mudança.
 
-## 19. Contratos Client ↔ Host
+### Reader documental
 
-Conceitualmente, o Client precisa:
+- nova revisão → aviso/reconsulta de metadados;
+- revisão aberta não muda silenciosamente.
 
-1. obter procedimento/revisão autorizada por identidade estável;
-2. obter metadados + categorias;
-3. obter etapas/blocos ordenados;
-4. distinguir atual/publicada/histórica conforme capacidade;
-5. receber capacidades da sessão;
-6. reconsultar após eventos relevantes.
+### Reader operacional
 
-Endpoints finais pertencem à implementação.
+- checklist alterado → reconsultar estado relevante;
+- status do Atendimento alterado → atualizar capacidade de edição;
+- reabertura/conclusão/cancelamento → refletir lifecycle;
+- evento não substitui conteúdo local de forma silenciosa.
 
-## 20. Concorrência
+## 15. Concorrência
 
-Leitura não cria lock. Se outra revisão surgir, o leitor não mescla nem troca a revisão automaticamente.
+- Reader documental é leitura e não cria lock;
+- checklist operacional usa controle granular por item/equivalente;
+- writer/fila do Host ordena mutações, mas não autoriza estado obsoleto;
+- resultado incerto após desconexão é reconciliado antes de retry não idempotente.
 
-Edição continua regida por revisão otimista na Tela 06.
+## 16. Acessibilidade
 
-## 21. Acessibilidade
-
-- foco visível;
+- navegação por teclado;
 - headings semânticos;
-- Sumário operável por teclado;
-- Anterior/Próxima com nomes acessíveis;
-- copiar icon-only com nome acessível;
-- blocos de código selecionáveis manualmente;
-- alertas não dependem apenas de cor.
+- foco visível;
+- botões icon-only com nome acessível;
+- feedback de cópia anunciável;
+- estados de checklist não dependem só de cor;
+- avisos de revisão/lifecycle acessíveis.
 
-## 22. Janelas menores
+## 17. Janelas suportadas
 
-Desktop Windows é prioridade.
+Alvo desktop Windows.
 
-- título/metadados podem quebrar linha;
-- categorias podem fluir;
-- metadados secundários podem recolher;
-- código/comando pode rolar horizontalmente dentro do bloco;
-- navegação permanece acessível;
-- não criar layout mobile/hamburger sem necessidade demonstrada.
+Em janelas menores suportadas:
 
-## 23. Direção visual consolidada
+- conteúdo pode reduzir colunas/empilhar metadados;
+- controles permanecem acessíveis;
+- sem transformação mobile/hamburger inicial;
+- evitar scroll horizontal no conteúdo técnico sempre que possível.
 
-- corporativa, clássica e discreta;
-- largura confortável de leitura;
-- aparência de manual sem skeuomorfismo pesado de papel/livro;
-- hierarquia tipográfica clara;
-- conteúdo técnico domina a tela;
-- categorias e metadados ficam secundários;
-- sem segunda sidebar permanente.
+## 18. Decisões preservadas
 
-## 24. Fora do escopo
+- manual/livro é a experiência principal;
+- `Visão geral` precede Etapa 1;
+- uma Etapa = uma página;
+- Sumário é temporário;
+- blocos são tipados;
+- copiar é icon-only com feedback breve;
+- revisão aberta permanece estável;
+- Reader standalone não persiste checklist;
+- Reader em Atendimento persiste checklist;
+- progresso operacional deriva somente de checklist;
+- checklist não conclui Atendimento automaticamente;
+- nenhum lock/merge automático/offline editing é introduzido.
 
-- persistência de checklist/progresso;
-- lifecycle de Atendimento;
-- criação efetiva de Atendimento;
-- edição de procedimento;
-- geração técnica de PDF/DOCX/ficha;
-- implementação Tauri/Host.
+## 19. Fora do escopo
 
-## 25. Critérios de aceite
-
-- [x] Visão geral antes das etapas;
-- [x] uma etapa por página;
-- [x] Sumário temporário;
-- [x] progresso separado de conclusão;
-- [x] blocos tipados respeitados;
-- [x] cópia icon-only com feedback curto;
-- [x] checklist documental separado do operacional;
-- [x] revisão aberta não muda silenciosamente;
-- [x] categorias discretas no cabeçalho;
-- [x] ponto futuro `Iniciar atendimento` reservado sem antecipar Bloco 9;
-- [x] nenhum código de produção criado.
-
-## 26. Casos de teste futuros
-
-1. abrir Visão geral;
-2. navegar todas as etapas;
-3. saltar pelo Sumário;
-4. copiar comando/código;
-5. abrir revisão histórica autorizada;
-6. receber evento de nova publicação durante leitura;
-7. retornar à Lista preservando filtros;
-8. perder Host durante leitura;
-9. validar teclado/acessibilidade;
-10. validar procedimento longo e janela menor.
+- edição do Procedimento dentro do Reader;
+- colaboração simultânea tipo editor compartilhado;
+- presença/soft lock;
+- conclusão automática por navegação;
+- persistência de checklist fora de Atendimento;
+- fila offline/autosave;
+- UI mobile dedicada;
+- implementação funcional nesta fase.

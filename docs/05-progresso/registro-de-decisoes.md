@@ -2,67 +2,87 @@
 
 **Atualização:** 2026-08-25
 
-Este arquivo registra decisões vigentes e pendências atuais. Propostas não aprovadas ficam explicitamente identificadas como **PROPOSTA**, nunca como decisão.
+Este arquivo registra decisões vigentes e pendências atuais. Propostas não aprovadas não podem ser tratadas como contrato.
 
-## Produto e UX
+## 1. Governança
 
-### Nome e propósito — consolidado
+- GitHub é a fonte operacional de verdade durante o fechamento documental restante da Fase 1;
+- checkout local `C:\dev\StepFlow` será sincronizado explicitamente antes do primeiro trabalho de implementação com Codex;
+- alterações locais preexistentes do PO devem ser preservadas;
+- uma tarefa lógica por vez;
+- uma branch ativa por trabalho;
+- um PR por trabalho;
+- revisão/aprovação → squash/merge → limpeza de branch quando possível → próximo trabalho;
+- `AGENTS.md` é a regra operacional superior;
+- todo avanço consolidado de fase/bloco/tela atualiza o README raiz no mesmo checkpoint;
+- toda tarefa Codex futura exige pré-flight de capacidade separado do prompt;
+- Fase 1 não autoriza runtime/scaffold/código de negócio oficial antes do gate correspondente.
 
-- produto: **StepFlow**;
-- aplicação interna para documentação e execução guiada de procedimentos técnicos;
-- uso não restrito à manutenção de computadores;
-- deve acomodar manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias e outros procedimentos internos;
-- evitar burocracia e campos sem valor operacional;
-- etapas funcionam como páginas de manual/livro;
-- sidebar esquerda, logo pequeno no topo esquerdo;
-- blocos copiáveis usam ícone discreto;
-- PDF, DOCX e impressão são requisitos da documentação.
+## 2. Papéis
 
-### Categorização e domínio operacional — consolidado
+- PO: requisitos, prioridade, regra de negócio e aprovação final;
+- Assistente: análise, arquitetura, coerência documental, gates e tarefas fechadas;
+- Codex: implementação de tarefa pequena/aprovada, sem inventar produto.
 
-Ficam aprovados:
+## 3. Produto
 
-- sistema de categorias configuráveis para procedimentos;
-- um procedimento pode possuir múltiplas categorias simples;
-- sem taxonomia hierárquica complexa na primeira versão;
-- separação entre `Procedimento`, `Atendimento/Execução` e `Equipamento`;
-- `Atendimentos` como área operacional própria no Client;
-- equipamento é opcional e reutilizável entre atendimentos;
-- equipamento possui identidade interna estável/código StepFlow próprio;
-- MAC, serial, patrimônio, cliente e OS/referência são atributos de busca, não identidade canônica exclusiva;
-- um atendimento pode utilizar múltiplos procedimentos;
-- atendimento preserva vínculo com a revisão do procedimento realmente utilizada;
-- para computadores, tipo suporta pelo menos `Servidor`, `Desktop` e `Notebook`;
-- `Saúde da bateria` é contextual para Notebook;
-- observações do equipamento são curtas e limitadas;
-- atendimento pode ser relacionado a cliente/solicitante e ordem de serviço/referência externa;
-- deve existir resumo do trabalho/procedimentos realizados;
-- deve existir ficha compacta de Atendimento, inclusive sem equipamento quando aplicável;
-- quando houver equipamento, a ficha pode servir para anexação/acompanhamento físico;
-- ficha compacta deve ocupar no máximo uma página A4;
-- cabeçalho da ficha suporta logo, nome da empresa, contato, site e e-mail;
-- campos vazios/não aplicáveis são omitidos;
-- ficha usa somente estado confirmado pelo Host;
-- conteúdo excepcional que não caiba em uma A4 bloqueia a saída em vez de criar segunda página ou truncar silenciosamente;
-- a nova capacidade não transforma o produto em CRM, estoque, RMM, financeiro ou sistema completo de chamados.
+StepFlow é aplicação interna para documentar, consultar, versionar e executar procedimentos técnicos de forma guiada.
 
-Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
+Uso amplo:
 
-Pendentes:
+- manutenção;
+- TI;
+- Service Desk/Help Desk;
+- infraestrutura/servidores;
+- redes;
+- procedimentos internos;
+- guias técnicos.
 
-- lifecycle/status exatos do atendimento;
-- permissões operacionais;
-- formato dos códigos legíveis;
-- comportamento do checklist/progresso;
-- regras de edição/reabertura após conclusão;
-- capacidade/lifecycle para gerar/reimprimir ficha;
-- template/layout físico final e tecnologia da ficha compacta;
-- limites numéricos dos textos da ficha;
-- necessidade de PDF específico da ficha além da impressão direta.
+Não transformar por inferência em:
 
-### Procedimento documental
+- CRM;
+- financeiro/faturamento;
+- estoque;
+- RMM;
+- sistema completo de chamados/SLA.
 
-Campos principais continuam:
+## 4. Modelo de domínio
+
+Consolidado:
+
+```text
+Procedimento
+   ↓ usado em
+Atendimento/Execução
+   ↓ opcionalmente relacionado a
+Equipamento
+```
+
+- Procedimento = documentação/modelo oficial;
+- Atendimento = ocorrência real de trabalho;
+- Equipamento = ativo físico opcional e reutilizável;
+- Atendimento pode existir sem Equipamento;
+- Atendimento pode usar zero, um ou vários Procedimentos;
+- vínculo preserva revisão exata realmente utilizada;
+- alteração futura do Procedimento não reescreve histórico do Atendimento.
+
+## 5. Categorias
+
+- configuráveis pela empresa;
+- múltiplas por Procedimento;
+- simples, sem árvore hierárquica inicial;
+- pesquisáveis/filtráveis;
+- arquivamento preserva histórico;
+- nomes equivalentes normalizados devem ser evitados;
+- gestão por preset: ADM e Gerência;
+- Funcionário não gere categorias por preset;
+- autorização real continua Host-side/capability-based.
+
+Pendente:
+
+- regra editorial de nova revisão de Procedimento ainda referenciando categoria arquivada.
+
+## 6. Campos principais do Procedimento
 
 - Código;
 - Título;
@@ -77,296 +97,473 @@ Campos principais continuam:
 - Etapas;
 - Histórico.
 
-### Lista/Pesquisa de Processos — consolidado
+## 7. Reader / manual
 
-- visualização padrão em lista/tabela compacta;
-- busca por Código, Título ou termo documental;
-- filtros principais por Categoria e Área;
-- filtro Status somente para perfis que realmente precisem trabalhar com estados diferentes;
-- categorias permitem seleção múltipla simples com semântica **OU** inicialmente;
-- categorias aparecem como labels/chips discretos;
-- ação principal abre o leitor, não o editor;
-- ações administrativas ficam contextuais;
-- `Arquivar` é a operação normal em vez de `Excluir`;
-- retorno do leitor preserva busca/filtros;
-- busca documental de `Processos` permanece separada da busca operacional de `Atendimentos`.
+- experiência principal em formato livro/manual;
+- `Visão geral` antes da Etapa 1;
+- uma Etapa = uma página;
+- `Sumário` temporário;
+- `Anterior`/`Próxima`;
+- `Etapa X de Y` representa posição, não conclusão;
+- blocos tipados: paragraph, numbered_steps, checklist, note, warning, command, code;
+- sem HTML arbitrário;
+- comando/código preserva whitespace e nunca é executado;
+- copiar usa botão icon-only acessível + feedback curto;
+- revisão aberta permanece estável quando nova revisão aparece;
+- revisão histórica recebe identificação persistente.
 
-### Perfis
+### Reader standalone
 
-- ADM;
-- Gerência;
-- Funcionário.
+- checklist é documental;
+- marcação não persiste execução;
+- navegação não grava progresso.
 
-Gerência não administra ADM. Funcionário é leitura/execução por padrão. Usuário pode editar avatar, nome de exibição, cargo e senha dentro das regras.
+### Reader em Atendimento
 
-A autorização real é por capacidades Host-side; presets não substituem verificação granular.
+- cabeçalho identifica `Executando no atendimento AT-...`;
+- revisão fica presa ao vínculo;
+- checklist é persistente;
+- voltar retorna ao Atendimento;
+- lifecycle do Atendimento controla editabilidade do checklist.
 
-## Governança
+## 8. Editor e revisões de Procedimento
 
-- GitHub é a fonte principal de verdade;
-- método PO + Assistente + Codex;
-- uma tarefa por vez;
-- toda tarefa Codex exige pré-flight separado do prompt;
-- `AGENTS.md` é regra operacional superior;
-- prompt autoriza escopo, mas não revoga decisão consolidada;
-- mudança de decisão exige aprovação explícita do PO + atualização documental;
-- tarefa Codex que altera arquivos declara branch/base + SHA;
-- alteração preexistente no working tree pertence ao PO/outro fluxo;
-- base divergente ou arquivo necessário já modificado faz Codex parar/reportar;
-- durante o fechamento documental restante da Fase 1, o remoto é a fonte operacional;
-- sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex;
-- Fase 1 em andamento; Bloco 8 concluído; Bloco 9 é o próximo e ainda não foi iniciado.
+- Editor = `Informações` + `Etapas`;
+- painel local `Estrutura`, sem segunda sidebar global;
+- categorias existentes, sem criação inline;
+- blocos tipados apenas;
+- salvamento explícito, sem autosave inicial;
+- cada save aceito cria revisão imutável;
+- `base_revision`/controle otimista;
+- `409` preserva alterações locais;
+- sem merge automático;
+- publicar é ação separada de salvar;
+- revisão histórica nunca é alterada/destruída;
+- `Criar nova revisão a partir desta` cria novo trabalho baseado no snapshot antigo;
+- `revision_no` técnico separado de `display_version` editorial.
 
-## Ambientes
+## 9. Atendimentos — lifecycle do Bloco 9
 
-- desenvolvimento atual fora da LAN corporativa;
-- sessão normal do PO e sandbox Codex são contextos distintos;
-- limitação do sandbox não vira requisito;
-- Codex não altera ACL/Schannel/registro/PATH global/segurança para reparar ambiente;
-- operações que exigem credenciais/elevação/Internet confiável/configuração global são reportadas para sessão normal do PO;
-- infraestrutura real da empresa ainda não confirmada;
-- exemplos históricos não são configuração;
-- testes LAN/SMB fora do ambiente real não validam nem bloqueiam implantação.
+Estados iniciais:
 
-## Pocket / máquina central
+```text
+Em andamento
+Concluído
+Cancelado
+```
 
-- implantação por pasta pronta;
-- nenhuma toolchain/runtime de desenvolvimento exigida na máquina central;
-- nenhum Windows Service StepFlow persistente;
-- nenhum auto-start, Task Scheduler, watchdog, tray agent ou daemon como padrão;
-- Controller/Host sob demanda;
-- fechar Client individual não encerra Host;
-- encerrado o ciclo central, nenhum processo StepFlow permanece ativo;
-- dados/config/logs/backups separados dos binários;
-- auto-shutdown por último Client/timeout não está consolidado.
+Fluxo:
 
-## Client Windows
+```text
+rascunho Client
+→ primeiro save aceito
+→ Em andamento
+   ├─→ Concluído
+   └─→ Cancelado
 
-- Tauri 2 + HTML/CSS/JavaScript modular;
-- alvo inicial Windows 10/11 x64;
-- WebView2;
-- executável isolado sem toolchain no runtime;
-- Electron apenas contingência.
+Concluído/Cancelado
+→ Reabrir
+→ Em andamento
+```
 
-## Launcher
+- abrir tela nova não persiste registro;
+- primeiro save cria ID, código e `started_at`;
+- não existe draft persistente inicial;
+- Concluído/Cancelado são read-only operacionalmente;
+- correção posterior exige reabertura;
+- lifecycle é auditável/versionado.
 
-- launcher Rust x64 portátil/transitório;
-- ponto de entrada interno → Client versionado em `%LOCALAPPDATA%` → execução local → launcher encerra;
-- versões lado a lado + SHA-256;
-- sem updater residente;
-- launcher não inicia remotamente Host central.
-
-## Host
-
-- Rust + Tokio/Axum + `rusqlite` bundled;
-- Controller inicia Host como filho;
-- readiness, instância única e shutdown gracioso;
-- ciclo central pertence ao Controller;
-- fechar Client individual não encerra Host;
-- primeiro start central depende de ação local ou mecanismo corporativo existente/aprovado.
-
-## Comunicação
-
-- HTTP/JSON + WebSocket;
-- contratos inicialmente `/api/v1`;
-- `deployment.json` sem segredos;
-- handshake de compatibilidade antes do login;
-- primeira versão sem edição offline;
-- perda de WebSocket com HTTP saudável não implica indisponibilidade total do Host;
-- após reconexão, o Client reconsulta/reconcilia estado relevante;
-- mutação com resultado incerto não é repetida cegamente.
-
-## Autenticação/autorização
+## 10. Códigos legíveis
 
 Consolidado:
 
-- Argon2id;
+```text
+Atendimento: AT-000001
+Equipamento: EQP-000001
+```
+
+- Host-only;
+- seis dígitos;
+- sequência simples por implantação/banco ativo;
+- gaps permitidos;
+- não editáveis;
+- não substituem IDs internos estáveis;
+- sem ano/departamento/hostname/dado pessoal inicialmente.
+
+## 11. Responsável do Atendimento
+
+- necessário para conclusão;
+- Funcionário cria inicialmente para si;
+- Funcionário padrão edita/conclui apenas Atendimento do qual é responsável;
+- Funcionário não reatribui para outro usuário;
+- ADM/Gerência podem atribuir/reatribuir;
+- usuário desativado permanece no histórico, não em novas atribuições normais.
+
+## 12. Conclusão
+
+Para `Concluir atendimento`:
+
+- estado `Em andamento`;
+- capacidade apropriada;
+- responsável definido;
+- `Resumo do trabalho` obrigatório;
+- alterações locais relevantes salvas;
+- sem conflito/base obsoleta.
+
+Não são obrigatórios por si só:
+
+- OS;
+- cliente;
+- Equipamento;
+- Procedimento vinculado.
+
+Checklist incompleto:
+
+- gera aviso/confirmação;
+- não bloqueia automaticamente;
+- não há semântica obrigatório/opcional nos itens iniciais.
+
+Ao concluir:
+
+- status `Concluído`;
+- Host define `completed_at`;
+- preserva revisões/checklist final;
+- congela projeção relevante do Equipamento;
+- grava evento de conclusão.
+
+## 13. Cancelamento
+
+- somente `Em andamento`;
+- preset ADM/Gerência;
+- Funcionário não por preset;
+- exige motivo curto;
+- não exclui registro;
+- preserva código/histórico;
+- bloqueia edição direta;
+- pode ser reaberto quando autorizado.
+
+## 14. Reabertura
+
+- Concluído/Cancelado → Em andamento;
+- preset ADM/Gerência;
+- Funcionário não;
+- explícita/auditável;
+- preserva histórico anterior;
+- nova conclusão gera novo estado final.
+
+## 15. Procedimentos usados em Atendimento
+
+- vínculo com revisão exata;
+- snapshots de código/título/versão;
+- nova publicação não altera vínculo existente;
+- Funcionário seleciona revisão publicada que possa ler;
+- ADM/Gerência podem selecionar explicitamente histórica/não publicada já autorizada;
+- revisão histórica/não publicada nunca é escolhida silenciosamente;
+- remoção só em Atendimento editável;
+- remoção com checklist marcado exige confirmação.
+
+## 16. Checklist operacional
+
+Estado separado da revisão documental.
+
+Cada item precisa preservar conceitualmente:
+
+- identidade de execução;
+- vínculo Atendimento × Procedimento/revisão;
+- origem no item documental;
+- texto snapshot quando necessário;
+- marcado/desmarcado;
+- data/usuário;
+- revisão/controle concorrente próprio ou equivalente.
+
+Regras:
+
+- somente Atendimento `Em andamento` + capacidade permite marcar/desmarcar;
+- Concluído/Cancelado = somente leitura;
+- 100% não conclui automaticamente;
+- Reader standalone não persiste estado.
+
+## 17. Progresso operacional
+
+Derivado exclusivamente de checklists:
+
+```text
+PR-001        4 de 6
+PR-022        2 de 2
+Atendimento   6 de 8
+```
+
+- etapas visitadas não contam;
+- `Etapa X de Y` não é percentual;
+- revisão sem checklist não mostra `0%` artificial.
+
+## 18. Equipamento
+
+Opcional/reutilizável.
+
+Campos para computadores conforme aplicável:
+
+- nome;
+- tipo;
+- CPU;
+- RAM;
+- armazenamento;
+- SO/versão;
+- serial;
+- patrimônio;
+- múltiplos MACs;
+- bateria para Notebook;
+- cliente/responsável relacionado;
+- observações curtas.
+
+Tipos mínimos:
+
+- Servidor;
+- Desktop;
+- Notebook.
+
+Não virar enum global rígida.
+
+Bateria:
+
+- opcional/contextual;
+- percentual 0–100 quando informado.
+
+MAC:
+
+- múltiplos;
+- label opcional;
+- normalizado pelo Host;
+- não é identidade canônica.
+
+## 19. Capacidades de Equipamento
+
+Preset:
+
+- criar/editar: ADM/Gerência/Funcionário;
+- arquivar/reativar: ADM/Gerência;
+- Funcionário vincula/troca/desvincula em Atendimento editável do qual é responsável.
+
+Não arquivar Equipamento vinculado a Atendimento `Em andamento`.
+
+## 20. Snapshot histórico do Equipamento
+
+Alteração posterior do cadastro global não reescreve Atendimento concluído/ficha final.
+
+Cada conclusão congela projeção relevante do Equipamento. Reabertura + nova conclusão pode gerar novo estado final; histórico anterior permanece.
+
+## 21. Lista/Pesquisa de Atendimentos
+
+- tabela compacta;
+- busca por Atendimento/OS/cliente/Equipamento/serial/patrimônio/MAC;
+- filtros Responsável + Status + Período;
+- Status = Em andamento/Concluído/Cancelado;
+- Data/Período usam `started_at`;
+- ordenação padrão `started_at DESC`;
+- linha abre Tela 09;
+- retorno preserva busca/filtros/ordenação/página/scroll;
+- busca de Atendimentos permanece separada de Processos.
+
+## 22. Matriz operacional
+
+| Capacidade | ADM | Gerência | Funcionário |
+|---|---:|---:|---:|
+| Consultar Atendimentos | sim | sim | sim |
+| Criar Atendimento | sim | sim | sim |
+| Editar Atendimento próprio em andamento | sim | sim | sim |
+| Editar qualquer Atendimento em andamento | sim | sim | não |
+| Concluir Atendimento próprio | sim | sim | sim |
+| Concluir qualquer Atendimento | sim | sim | não |
+| Cancelar | sim | sim | não |
+| Reabrir | sim | sim | não |
+| Vincular/trocar/desvincular Equipamento editável | sim | sim | sim, quando responsável |
+| Criar/editar Equipamento | sim | sim | sim |
+| Arquivar/reativar Equipamento | sim | sim | não |
+| Adicionar/remover Procedimento | sim | sim | sim, quando responsável |
+| Selecionar revisão não publicada/histórica | sim | sim | não |
+| Marcar/desmarcar checklist | sim | sim | sim, quando responsável |
+| Gerar/reimprimir ficha acessível | sim | sim | sim |
+| Gerir categorias | sim | sim | não |
+
+Presets são defaults. Autorização real é granular e Host-side.
+
+## 23. Usuários/segurança
+
+- Gerência não administra ADM;
+- usuário não eleva a própria autoridade;
+- pelo menos um ADM ativo;
+- `is_primary_admin` não é toggle comum;
+- senha Argon2id;
 - sessão opaca server-side;
-- token somente em memória do Client inicialmente;
-- autorização Host-side;
-- bootstrap ADM local/controlado;
-- desativação preferida à exclusão quando houver histórico;
-- Gerência nunca administra ADM;
-- pelo menos um ADM ativo deve existir;
-- após troca da própria senha, sessão corrente permanece e demais sessões da conta são revogadas;
-- Restore é autorizado para ADM e não para Gerência/Funcionário na matriz vigente;
-- Exportar/imprimir procedimentos é permitido por padrão a ADM, Gerência e Funcionário, limitado às revisões que a sessão pode ler;
-- sessão expirada exige nova autenticação e conteúdo protegido deixa de ser tratado como autorizado;
-- edição local não salva pode permanecer somente em memória e oculta durante reautenticação do mesmo Client; não vira draft persistente.
+- token em memória;
+- troca da própria senha mantém sessão corrente e revoga demais sessões da conta;
+- sessão expirada exige nova autenticação.
 
 Pendentes:
 
-- custo exato Argon2id;
-- senha mínima final;
-- expiração de sessão;
-- permissão da Gerência para configuração da empresa;
-- permissão da Gerência para Backup;
-- permissões operacionais de categorização/equipamentos/atendimentos;
-- capacidade/lifecycle para gerar/reimprimir ficha de Atendimento.
+- custo final Argon2id;
+- senha mínima;
+- duração da sessão;
+- entropia/tamanho final do token;
+- Gerência × configuração da empresa;
+- Gerência × Backup.
 
-## Dados e histórico
-
-Consolidado:
-
-- SQLite local ao Host;
-- revisões de procedimento imutáveis;
-- `revision_no` separado de `display_version`;
-- migrations versionadas;
-- auditoria append-only;
-- arquivamento/desativação preferidos à exclusão destrutiva;
-- categorias, equipamentos e atendimentos fazem parte da extensão conceitual aprovada do schema;
-- atendimento preserva a revisão de procedimento utilizada;
-- MAC não é chave canônica do equipamento;
-- identidade da empresa é central e administrada pelo Host;
-- logo/avatar são arquivos controlados pelo Host, não caminhos arbitrários persistidos pelo Client;
-- Backup/Restore deve tratar banco e arquivos administrados como estado coerente conforme mecanismo do Bloco 11;
-- documentos derivados de procedimentos devem prender sua fonte à revisão selecionada;
-- ficha operacional deve ser derivada do estado confirmado do Atendimento e preservar revisões utilizadas.
-
-## Concorrência
+## 24. Concorrência
 
 - WAL;
 - writer lógico coordenado;
 - fila bounded/backpressure;
-- revisão otimista quando houver risco de perda;
-- conflitos não sobrescrevem automaticamente;
+- revisão otimista;
+- `409` para estado obsoleto;
 - eventos pós-commit;
 - sem soft/hard lock inicial;
-- dois Hosts não usam o mesmo data dir;
-- categorias/equipamentos/atendimentos/configuração da empresa seguem o mesmo princípio de controle otimista quando necessário;
-- operações críticas de Backup/Restore serão coordenadas pelo Host e não executadas concorrentemente de forma independente pelo Client;
-- evento de nova revisão não troca silenciosamente a revisão que já está sendo exportada/impressa;
-- evento remoto não substitui formulário local com edição não salva;
-- timeout/desconexão após envio exige reconciliação antes de qualquer nova tentativa não idempotente.
+- Atendimento e Equipamento têm revisões independentes;
+- checklist usa controle granular por item/equivalente;
+- fila ordena, não valida edição obsoleta;
+- mutação de resultado incerto exige reconciliação, não retry cego;
+- evento remoto não sobrescreve formulário local.
 
-## Bloco 8 — UI/UX — CONCLUÍDO
+## 25. Estados transversais
 
-### Telas 01–15 — consolidadas
-
-- Login;
-- Shell/sidebar, incluindo `Atendimentos`;
-- Dashboard enxuto, sem KPIs/gráficos;
-- Lista/Pesquisa de Processos;
-- Leitor em formato livro;
-- Editor de Processo + categorias;
-- Histórico/Revisões;
-- Lista/Pesquisa de Atendimentos;
-- Atendimento/Execução + Equipamento;
-- Usuários/Permissões;
-- Meu perfil;
-- Configurações + Categorias;
-- Backup/Restauração — UX;
-- Exportação/Impressão + Ficha Compacta — UX;
-- Estados Transversais.
-
-### Tela 12 — Configurações + Categorias — consolidada
-
-- uma única superfície com navegação local `Empresa` + `Categorias`;
-- seções aparecem conforme capacidades efetivas;
-- autorização da Gerência para configuração da empresa permanece `PENDENTE`;
-- identidade da empresa contém inicialmente logo, nome, contato, site e e-mail;
-- logo pode ser escolhido, substituído/removido, com preview antes do save;
-- identidade confirmada alimenta Shell e documentos/ficha sem duplicação manual;
-- salvamento explícito, sem autosave;
-- categorias são lista compacta com busca por nome e filtro por estado;
-- categoria possui inicialmente nome + estado, sem hierarquia/cor/ícone;
-- criação/edição acontece fora do Editor de Processo;
-- arquivar/reativar substitui exclusão física normal;
-- categoria arquivada deixa de ser opção normal para novas associações, preservando histórico;
-- categorias duplicadas/visualmente equivalentes após normalização devem ser impedidas;
-- regra de nova revisão de procedimento ainda referenciando categoria arquivada permanece pendente.
-
-### Tela 13 — Backup/Restauração — UX — consolidada
-
-- permanece dentro de `Configurações` como terceira seção local;
-- não cria item global novo na sidebar;
-- autorização continua Host-side/capability-based;
-- Gerência × Backup permanece `PENDENTE`;
-- Restore permanece não autorizado para Gerência;
-- lista compacta mostra data/hora, origem, autor, tamanho e verificação;
-- `Criar backup agora` não pede SQLite, path ou seleção manual de componentes;
-- backup aceito pelo Host não é cancelado silenciosamente ao fechar Client;
-- `Detalhes` e validação Host antecedem qualquer Restore;
-- Restore só aparece para backup elegível e sessão autorizada;
-- confirmação reforçada exige ciência explícita + texto `RESTAURAR`;
-- safety backup do estado atual é obrigatório antes da etapa destrutiva de Restore normal pela UI;
-- se o safety backup não puder ser confirmado, Restore normal não prossegue;
-- sem delete, scheduler, retention, upload/download ou path editável inicialmente;
-- disaster recovery quando Host não inicia é fluxo local/controlado do Bloco 11;
-- Backup permanece separado de Exportação/Impressão.
-
-### Tela 14 — Exportação/Impressão + Ficha Compacta — UX — consolidada
-
-#### Procedimentos
-
-- exportação/impressão é contextual no Leitor, sem item global novo;
-- PDF, DOCX e impressão são obrigatórios;
-- primeira versão gera o procedimento completo da revisão selecionada;
-- documento é próprio, nunca screenshot da UI;
-- revisão histórica/draft autorizada recebe identificação inequívoca;
-- nova revisão não substitui silenciosamente a revisão escolhida;
-- exportar/imprimir não publica, edita ou cria revisão;
-- identidade da empresa vem da configuração central vigente.
-
-#### Ficha de Atendimento
-
-- entrada pela Tela 09 em `Ficha / Imprimir`;
-- usa somente estado confirmado pelo Host;
-- alterações não salvas/conflitos precisam ser resolvidos antes da geração;
-- suporta Atendimento com ou sem equipamento;
-- seção Equipamento é omitida quando não houver ativo vinculado;
-- campos vazios/não aplicáveis são omitidos;
-- procedimentos utilizados preservam versão/revisão efetivamente utilizada;
-- `Saúde da bateria` aparece somente quando aplicável/informada;
-- no máximo uma página A4;
-- conteúdo excessivo bloqueia a saída em vez de gerar segunda página, reduzir fonte excessivamente ou truncar silenciosamente;
-- impressão da ficha é requisito;
-- PDF específico permanece pendente do Bloco 10;
-- DOCX específico da ficha não é requisito inicial;
-- preview e QR/barcode permanecem pendentes do Bloco 10;
-- capacidade/lifecycle para gerar/reimprimir permanece pendente do Bloco 9.
-
-### Tela 15 — Estados Transversais — consolidada
-
-- contrato transversal, não página navegável;
-- menor superfície adequada: campo → seção → página → Shell;
+- menor superfície: campo → seção → página → Shell;
 - sem indicador permanente de conexão saudável;
-- loading não mostra dado antigo como atual;
-- `sem registros` é distinto de `sem resultados`;
-- Host indisponível bloqueia ações dependentes e não oferece IP/porta editáveis;
-- WebSocket degradado pode ser tratado separadamente quando HTTP continuar saudável;
-- reconexão reconsulta/reconcilia antes de assumir estado atual;
-- mutação com resultado incerto não é repetida cegamente;
-- sessão expirada exige nova autenticação;
-- edição não salva pode permanecer somente em memória/oculta durante reautenticação do mesmo Client, sem draft persistente;
+- loading não mostra cache antigo como atual;
+- `sem registros` distinto de `sem resultados`;
+- Host indisponível separado de WebSocket degradado quando HTTP continua saudável;
 - perda de permissão limpa conteúdo protegido;
-- conflito preserva edição local sem overwrite/merge automático;
-- eventos remotos não substituem formulário local;
-- `SERVER_BUSY` preserva dados locais e não confirma sucesso;
-- incompatibilidade Client↔Host bloqueia uso e orienta reabrir pelo ponto de entrada oficial;
-- saída com alterações não salvas exige proteção proporcional;
-- nenhuma offline queue/autosave/nova persistência é criada.
+- conflito preserva edição local;
+- incompatibilidade Client↔Host bloqueia uso;
+- sem offline queue/autosave/draft persistente.
 
-O Bloco 8 está **documentalmente concluído**. Nenhuma UI de produção foi criada.
+## 26. Ficha compacta
 
-## Pendências vigentes
+- pertence ao Atendimento;
+- com ou sem Equipamento;
+- estado confirmado do Host;
+- Em andamento: pode gerar para acompanhamento;
+- Concluído: reimprime estado histórico aplicável;
+- Cancelado: saída identifica claramente o estado;
+- capacidade padrão para ADM/Gerência/Funcionário em Atendimento acessível;
+- máximo uma página A4;
+- não gerar segunda página normal;
+- conteúdo excessivo bloqueia saída em vez de truncamento silencioso;
+- cabeçalho usa identidade da empresa;
+- impressão é requisito;
+- DOCX específico não é requisito inicial.
 
-### Bloco 9 — próximo; ainda não iniciado
+Bloco 10 fecha engine/template/margens/limites/preview/PDF específico/QR se aprovado.
 
-Fechar lifecycle, checklist/progresso, conclusão/reabertura, concorrência/histórico específicos, matriz operacional de permissões, formatos de códigos legíveis e capacidade/lifecycle para gerar/reimprimir ficha.
+## 27. Backup/Restore
+
+- dentro de Configurações;
+- Host coordena;
+- Client não escolhe SQLite/path;
+- Restore exige capacidade + backup elegível;
+- confirmação reforçada;
+- safety backup obrigatório antes da etapa destrutiva normal;
+- disaster recovery sem Host funcional fica no Bloco 11.
+
+## 28. Pocket / implantação
+
+- máquina central recebe pasta pronta;
+- sem instalação normal/toolchain;
+- sem Windows Service/Task Scheduler/watchdog/tray/daemon;
+- Controller inicia Host como filho;
+- fechar Client individual não encerra Host;
+- encerrado ciclo central, zero processo StepFlow residual;
+- auto-shutdown por último Client/timeout não está consolidado;
+- launcher em workstation não inicia remotamente Host central por si só.
+
+## 29. Tecnologias consolidadas
+
+Client:
+
+- Tauri 2;
+- HTML/CSS/JS modular;
+- Windows 10/11 x64;
+- WebView2.
+
+Host:
+
+- Rust;
+- Tokio/Axum;
+- `rusqlite` bundled;
+- SQLite Host-only.
+
+Comunicação:
+
+- HTTP/JSON `/api/v1` inicialmente;
+- WebSocket autenticado;
+- handshake de compatibilidade;
+- `deployment.json` sem segredos;
+- sem edição offline.
+
+## 30. Estado da Fase 1
+
+- Bloco 0: concluído;
+- Bloco 1: concluído;
+- Bloco 2: concluído;
+- Bloco 3: concluído;
+- Bloco 4: concluído;
+- Bloco 5: núcleo concluído / parâmetros finais pendentes;
+- Bloco 6: núcleo + extensão operacional conceitual consolidados;
+- Bloco 7: núcleo concluído;
+- Bloco 8: concluído;
+- **Bloco 9: concluído**;
+- **Bloco 10: próximo, ainda não iniciado**;
+- Bloco 11: pendente;
+- Bloco 12: pendente.
+
+## 31. Pendências vigentes
 
 ### Bloco 10
 
-Fechar engine/tecnologia de PDF/DOCX/impressão, template de procedimentos, template físico final da ficha, margens, limites textuais, preview, regras de resumo/truncamento controlado, PDF específico da ficha se aprovado, naming e validação em leitores/impressoras.
+- engines PDF/DOCX/impressão;
+- template físico final da ficha;
+- margens/tipografia/densidade;
+- limites numéricos dos textos da ficha;
+- preview;
+- impressão Windows;
+- PDF específico da ficha;
+- tratamento de muitos MACs/Procedimentos;
+- QR/barcode se houver valor.
 
 ### Bloco 11
 
-Fechar mecanismo de Backup/Restore para SQLite + arquivos administrados, incluindo pacote, atomicidade, verificações, retenção, restart/reconexão/sessões e disaster recovery local. A UX normal já exige safety backup confirmado antes do Restore destrutivo.
+- mecanismo/pacote de Backup/Restore;
+- atomicidade/checksums;
+- retenção;
+- restart/reconexão/sessões;
+- disaster recovery local.
 
-### Bloco 12
+### Bloco 12 / antes da implementação correspondente
 
-Parâmetros finais, árvore oficial, scripts, contratos/testes e plano da Fase 2.
+- parâmetros finais de autenticação;
+- Gerência × configuração da empresa;
+- Gerência × Backup;
+- regra editorial de categoria arquivada em nova revisão;
+- árvore oficial/migrations/scripts/testes;
+- plano Fase 2;
+- sincronização do checkout local antes do primeiro Codex de implementação.
 
 ### Ambiente corporativo
 
-Confirmar Windows/WebView2, SMB/permissões, hostname/porta, HTTP/HTTPS, antivírus/EDR/firewall e mecanismo real de start do Controller.
+- hostname/IP/path reais;
+- SMB/permissões;
+- WebView2/Windows reais;
+- HTTP/HTTPS;
+- EDR/firewall;
+- mecanismo real de start central.
+
+## 32. Regra de precedência
+
+Em divergência:
+
+1. `AGENTS.md`;
+2. este registro de decisões, na versão mais recente;
+3. documento específico vigente;
+4. visão de produto;
+5. tarefa dentro das decisões aprovadas;
+6. histórico Git.
+
+Nenhuma pendência pode ser convertida silenciosamente em decisão por executor.
