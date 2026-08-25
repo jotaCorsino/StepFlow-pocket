@@ -27,7 +27,7 @@ Núcleo arquitetural já fechado:
 
 Bloco atual: **UI/UX**.
 
-No Bloco 8 já estão consolidadas as **Telas 01–13**, cobrindo:
+No Bloco 8 já estão consolidadas as **Telas 01–14**, cobrindo:
 
 - Login;
 - Shell/sidebar com `Atendimentos`;
@@ -41,19 +41,18 @@ No Bloco 8 já estão consolidadas as **Telas 01–13**, cobrindo:
 - Usuários/Permissões;
 - Meu perfil;
 - Configurações + Categorias, incluindo identidade central da empresa;
-- Backup/Restauração — UX, com Restore protegido por safety backup prévio no fluxo normal.
+- Backup/Restauração — UX, com Restore protegido por safety backup prévio no fluxo normal;
+- Exportação/Impressão + ficha compacta — UX, incluindo PDF/DOCX/impressão da revisão selecionada e ficha de Atendimento com ou sem equipamento, limitada a uma A4.
 
-Próxima superfície: **Tela 14 — Exportação/Impressão + ficha compacta — UX**.
+Próxima superfície: **Tela 15 — Estados transversais**.
 
-Depois dela, o Bloco 8 ainda precisa fechar:
-
-- Tela 15 — estados transversais.
+Depois da Tela 15, o Bloco 8 poderá ser encerrado documentalmente e a Fase 1 seguirá aos blocos operacionais/técnicos seguintes.
 
 Próximos blocos da Fase 1:
 
-1. concluir UI/UX;
+1. concluir UI/UX com Estados transversais;
 2. fechar execução operacional/Atendimentos + checklist;
-3. fechar exportação PDF/DOCX/impressão + ficha compacta;
+3. fechar exportação PDF/DOCX/impressão + ficha compacta tecnicamente;
 4. fechar backup/restore técnico;
 5. fechar estrutura oficial e plano da Fase 2.
 
@@ -128,12 +127,17 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 
 **PENDENTE.**
 
-- PDF;
-- DOCX;
-- impressão;
-- template usando identidade da empresa administrada centralmente;
-- ficha compacta de atendimento/equipamento;
+- PDF de procedimentos;
+- DOCX de procedimentos;
+- impressão de procedimentos;
+- template usando identidade central da empresa;
+- preservação da revisão selecionada;
+- ficha compacta de Atendimento com ou sem equipamento;
+- impressão da ficha;
+- decisão técnica sobre PDF específico da ficha;
 - validação em leitores/impressoras esperados.
+
+DOCX específico da ficha não é requisito inicial.
 
 ## Fase 8 — Distribuição Pocket, backup e operação
 

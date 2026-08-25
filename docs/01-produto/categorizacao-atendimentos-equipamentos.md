@@ -141,16 +141,24 @@ Separação de navegação:
 
 Essa separação não impede iniciar um atendimento a partir do leitor de um procedimento.
 
-## 9. Ficha compacta / etiqueta imprimível
+## 9. Ficha compacta / saída imprimível
 
-Atendimentos com equipamento devem poder gerar uma saída compacta destinada a acompanhamento físico do equipamento.
+A ficha compacta pertence ao **Atendimento** e pode ser gerada tanto com equipamento vinculado quanto sem equipamento, quando a ação estiver autorizada pelo lifecycle/permissões operacionais.
 
-Requisitos de formato já aprovados:
+Quando houver equipamento, a saída também serve para acompanhamento físico do ativo. Quando não houver, continua útil como ficha operacional resumida de serviços de rede, infraestrutura, Help Desk ou outros trabalhos sem ativo específico.
+
+Requisitos de formato consolidados:
 
 - a ficha deve ocupar **no máximo uma folha A4**;
 - pode ser menor que A4 quando o conteúdo permitir, mas não pode gerar uma segunda página como comportamento normal;
-- o layout deve preservar legibilidade em vez de reduzir tipografia de forma excessiva apenas para fazer o conteúdo caber;
-- textos livres destinados à ficha, especialmente observações do equipamento, devem possuir limites coerentes com esse contrato físico.
+- o layout deve preservar legibilidade em vez de reduzir tipografia de forma excessiva;
+- se conteúdo excepcional não puder caber de forma legível, a saída é bloqueada e o usuário é orientado a revisar/resumir campos aplicáveis;
+- conteúdo importante não é truncado silenciosamente;
+- textos livres destinados à ficha devem possuir limites coerentes com esse contrato físico;
+- a ficha é documento próprio, nunca captura da Tela 09;
+- somente estado confirmado pelo Host pode alimentar a ficha;
+- alterações locais não salvas ou conflitos precisam ser resolvidos antes da geração;
+- campos vazios ou não aplicáveis são omitidos.
 
 O cabeçalho da ficha deve suportar identidade da empresa com:
 
@@ -160,35 +168,34 @@ O cabeçalho da ficha deve suportar identidade da empresa com:
 - site;
 - e-mail.
 
-Direção visual aprovada para o cabeçalho: logo no início/à esquerda e informações da empresa organizadas ao lado, preservando proporção da marca e apresentação corporativa discreta.
+Direção visual aprovada: logo no início/à esquerda e informações da empresa ao lado, preservando proporção da marca e apresentação corporativa discreta.
 
 Conteúdo esperado, quando disponível:
 
-- identidade da empresa/StepFlow;
+- identidade da empresa;
 - código do atendimento;
 - ordem de serviço/referência;
 - cliente/solicitante;
-- código/nome/tipo do equipamento;
-- processador;
-- RAM;
-- armazenamento;
-- sistema/versão;
-- serial/patrimônio/MAC conforme aplicável;
-- saúde da bateria quando o equipamento for Notebook e o dado estiver informado;
-- resumo dos procedimentos realizados;
-- observações curtas e relevantes;
 - técnico/responsável;
-- data do atendimento/conclusão.
+- data aplicável;
+- resumo do trabalho;
+- observações curtas do atendimento;
+- procedimentos utilizados com versão editorial + revisão técnica efetivamente utilizada;
+- e, quando houver equipamento: código/nome/tipo, CPU, RAM, armazenamento, sistema/versão, serial, patrimônio, MACs, saúde da bateria aplicável e observações curtas.
 
-A saída é documento próprio, não captura de tela.
+Se não houver equipamento, a seção correspondente é simplesmente omitida, sem reservar grande área vazia.
+
+A impressão da ficha é requisito consolidado. DOCX específico da ficha não é requisito inicial. A necessidade de PDF específico permanece pendente do Bloco 10.
 
 Permanecem para o Bloco 10:
 
 - template visual final dentro do limite máximo de uma A4;
-- margens, tipografia, densidade e regras de truncamento/resumo;
-- limite numérico final dos campos textuais que entram na ficha;
+- margens, tipografia e densidade;
+- regras de priorização, resumo e truncamento controlado;
+- limite numérico final dos campos textuais;
+- tratamento de muitos MACs/procedimentos;
 - pré-visualização;
-- impressão direta;
+- integração de impressão;
 - necessidade ou não de PDF específico;
 - QR/barcode somente se houver benefício aprovado.
 
@@ -200,6 +207,8 @@ O modelo deve permitir:
 procedimento sem atendimento formal
 procedimento + atendimento sem equipamento
 procedimento + atendimento + equipamento
+ficha de atendimento sem equipamento
+ficha de atendimento com equipamento
 atendimento com múltiplos procedimentos
 mesmo equipamento relacionado a atendimentos diferentes
 ```
@@ -218,31 +227,35 @@ Pendente para o Bloco 9:
 - quem cria/edita categorias;
 - quem cadastra/altera/arquiva equipamento;
 - quem inicia/edita/conclui/reabre atendimento;
-- quem gera/reimprime ficha.
+- quem gera/reimprime ficha;
+- em quais estados do Atendimento a ficha fica disponível.
 
 ## 12. Concorrência e histórico
 
 - equipamentos e atendimentos são dados oficiais do Host;
 - Clients nunca editam SQLite diretamente;
 - alterações concorrentes relevantes usam controle otimista equivalente ao restante do produto;
-- atendimento concluído preserva a revisão do procedimento utilizada;
-- ficha/relatório reflete estado confirmado pelo Host.
+- atendimento preserva a revisão do procedimento utilizada;
+- ficha reflete estado confirmado pelo Host e as revisões efetivamente utilizadas;
+- uma revisão mais nova do procedimento não reescreve silenciosamente a ficha/histórico do Atendimento.
 
 ## 13. Impactos na Fase 1
 
 ### Bloco 8 — UI/UX
 
-Deve incorporar:
+Já incorporado:
 
-- categorias na lista/editor/leitor de procedimentos;
+- categorias na lista/editor/leitor;
 - `Atendimentos` na navegação;
 - superfícies de atendimento/execução;
-- ficha de equipamento;
-- tipo de computador com suporte mínimo a Servidor/Desktop/Notebook;
-- saúde da bateria contextual para Notebook;
+- equipamento opcional;
+- tipo de computador Servidor/Desktop/Notebook;
+- saúde da bateria contextual;
 - observações curtas do equipamento;
-- busca por atendimento/equipamento;
-- ação de gerar/imprimir ficha compacta.
+- busca operacional;
+- ação contextual `Ficha / Imprimir`;
+- UX da ficha com ou sem equipamento;
+- exportação contextual de procedimentos usando a revisão selecionada.
 
 ### Bloco 9 — Execução operacional e checklist
 
@@ -254,11 +267,12 @@ Fechar:
 - regras de edição após conclusão;
 - concorrência operacional;
 - matriz de permissões;
-- formato final dos códigos legíveis.
+- formato final dos códigos legíveis;
+- capacidade/lifecycle para gerar e reimprimir ficha.
 
 ### Bloco 10 — Exportação/impressão
 
-Além de PDF/DOCX/impressão dos procedimentos, fechar a ficha compacta de atendimento/equipamento respeitando os requisitos já aprovados de **máximo uma página A4** e cabeçalho com identidade da empresa.
+Além de PDF/DOCX/impressão dos procedimentos, fechar a implementação da ficha compacta respeitando os requisitos consolidados de **máximo uma página A4**, identidade da empresa, impressão garantida e conteúdo operacional resumido.
 
 ## 14. Fora do escopo inicial
 
@@ -271,7 +285,8 @@ Não transformar automaticamente esta capacidade em:
 - descoberta automática de hardware pela rede;
 - sistema de chamados completo com SLA;
 - QR/barcode obrigatório;
-- taxonomia hierárquica complexa.
+- taxonomia hierárquica complexa;
+- DOCX específico da ficha.
 
 Esses itens só entram mediante requisito futuro explícito.
 
@@ -282,7 +297,10 @@ Esses itens só entram mediante requisito futuro explícito.
 - matriz operacional de permissões;
 - persistência/comportamento do checklist;
 - regras de edição de equipamento/atendimento após conclusão;
+- capacidade/lifecycle para gerar/reimprimir ficha;
 - template/layout final da ficha dentro do limite máximo de uma A4;
 - limite numérico final das observações e demais textos destinados à ficha;
+- regras finais de resumo/truncamento controlado;
+- pré-visualização;
 - necessidade de PDF específico da ficha além da impressão direta;
 - uso futuro de QR/barcode somente se houver benefício real.

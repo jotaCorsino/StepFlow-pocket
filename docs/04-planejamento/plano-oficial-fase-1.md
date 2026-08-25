@@ -39,11 +39,13 @@ Ficam incorporados à Fase 1:
 - MAC/serial/patrimônio/cliente/OS como atributos pesquisáveis;
 - múltiplos procedimentos por atendimento;
 - vínculo histórico com a revisão de procedimento utilizada;
-- ficha compacta imprimível para atendimento/equipamento;
+- ficha compacta de Atendimento com ou sem equipamento;
+- ficha limitada a no máximo uma página A4;
 - uso amplo em manutenção, TI, Service Desk, Help Desk, infraestrutura, redes e guias;
 - identidade da empresa centralizada para Shell e documentos;
 - gestão simples de categorias em Configurações, com arquivamento/reativação e preservação de histórico;
-- UX administrativa de Backup/Restauração coordenada pelo Host, com safety backup obrigatório antes do Restore normal destrutivo.
+- UX administrativa de Backup/Restauração coordenada pelo Host, com safety backup obrigatório antes do Restore normal destrutivo;
+- exportação contextual de procedimentos em PDF/DOCX/impressão baseada exatamente na revisão selecionada.
 
 Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md` e especificações do Bloco 8.
 
@@ -69,14 +71,14 @@ Documentar/aprovar antes do código:
 
 ### Estado atual
 
-- Telas 01–13 — **consolidadas/aprovadas**;
+- Telas 01–14 — **consolidadas/aprovadas**;
 - `12-configuracoes-categorias.md` consolida identidade da empresa e gestão simples de categorias;
 - `13-backup-restauracao.md` consolida a UX de Backup/Restore, mantendo o mecanismo técnico para o Bloco 11;
-- **próximo: Tela 14 — Exportação/Impressão + ficha compacta — UX**;
-- Tela 15 — Estados transversais — pendente;
+- `14-exportacao-impressao-ficha.md` consolida PDF/DOCX/impressão contextual dos procedimentos e a UX da ficha compacta de Atendimento;
+- **próximo: Tela 15 — Estados transversais**;
 - nenhuma UI de produção criada.
 
-Lifecycle, checklist e permissões operacionais detalhadas permanecem para o Bloco 9. Tecnologia/formato final da ficha compacta permanece para o Bloco 10. Política técnica de Backup/Restore permanece para o Bloco 11.
+Lifecycle, checklist e permissões operacionais detalhadas permanecem para o Bloco 9. Engine/template final de exportação e ficha permanecem para o Bloco 10. Política técnica de Backup/Restore permanece para o Bloco 11.
 
 ## Bloco 9 — Execução operacional/Atendimentos e checklist
 
@@ -92,32 +94,50 @@ Fechar:
 - comportamento quando procedimento oficial muda;
 - matriz operacional de permissões;
 - formato final dos códigos legíveis;
-- capacidade/preset exato para gestão operacional de categorias quando aplicável ao contrato de autorização.
+- capacidade/preset exato para gestão operacional de categorias quando aplicável;
+- capacidade e lifecycle para gerar/reimprimir ficha de Atendimento.
 
 A solução deve permanecer proporcional e não virar workflow burocrático.
 
 ## Bloco 10 — Exportação e impressão
 
-PDF, DOCX e impressão continuam obrigatórios para documentação.
+A UX já está consolidada pela Tela 14. Este bloco fecha a implementação técnica.
 
-Também fechar a ficha compacta de Atendimento/Equipamento:
+Para procedimentos:
 
-- conteúdo final e identidade da empresa;
-- tamanho/layout físico com no máximo uma página A4;
+- PDF;
+- DOCX;
+- impressão;
+- template dedicado;
+- identidade da empresa;
+- paginação e quebras;
+- comandos/código legíveis;
+- nomes de arquivo;
+- validação em leitores/impressoras.
+
+Para a ficha compacta de Atendimento:
+
+- template final com ou sem equipamento;
+- no máximo uma página A4;
+- margens, tipografia e densidade;
 - impressão direta;
 - necessidade ou não de PDF específico da ficha;
-- paginação/listas/blocos;
-- limites finais dos textos usados na ficha;
+- limites finais dos textos;
+- regras de resumo/truncamento controlado;
+- tratamento de muitos MACs/procedimentos;
+- pré-visualização;
 - QR/barcode somente se houver valor aprovado;
-- critérios de validação.
+- critérios técnicos de validação.
 
-A identidade da empresa consumida pelos templates vem da configuração central aprovada na Tela 12.
+A impressão da ficha é requisito. DOCX específico da ficha não é requisito inicial.
+
+A identidade consumida pelos templates vem da configuração central aprovada na Tela 12.
 
 ## Bloco 11 — Backup e restauração
 
 Fechar backup consistente do SQLite + arquivos administrados, incluindo categorias, equipamentos, atendimentos, identidade/logo da empresa e demais arquivos persistentes aplicáveis.
 
-A Tela 13 do Bloco 8 já consolidou a UX normal:
+A Tela 13 já consolidou a UX normal:
 
 - Backup/Restore dentro de Configurações;
 - Client não escolhe SQLite/path;
@@ -160,11 +180,12 @@ Somente depois dos blocos anteriores:
 - [x] extensão operacional conceitual aprovada;
 - [x] concorrência geral definida;
 - [ ] todas as telas críticas, incluindo novos requisitos, especificadas/aprovadas;
-- [x] Telas 01–13 do Bloco 8 especificadas/aprovadas;
+- [x] Telas 01–14 do Bloco 8 especificadas/aprovadas;
 - [x] modelagem `Procedimento × Atendimento × Equipamento` aprovada;
+- [ ] Tela 15 — Estados transversais aprovada;
 - [ ] execução/checklist decididos;
 - [ ] matriz operacional de permissões decidida;
-- [ ] exportação/impressão + ficha compacta definidas;
+- [ ] exportação/impressão + ficha compacta tecnicamente definidas;
 - [ ] backup/restore técnico definido;
 - [ ] estrutura oficial definida;
 - [x] pendências não bloqueantes registradas;
