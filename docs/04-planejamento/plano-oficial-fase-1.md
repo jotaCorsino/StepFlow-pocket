@@ -2,7 +2,7 @@
 
 **Status:** EM ANDAMENTO  
 **Início:** 2026-08-19  
-**Atualização:** 2026-08-21
+**Atualização:** 2026-08-25
 
 ## Objetivo
 
@@ -28,7 +28,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis som
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
-## Extensão de produto consolidada em 2026-08-21
+## Extensão de produto consolidada
 
 Ficam incorporados à Fase 1:
 
@@ -40,9 +40,11 @@ Ficam incorporados à Fase 1:
 - múltiplos procedimentos por atendimento;
 - vínculo histórico com a revisão de procedimento utilizada;
 - ficha compacta imprimível para atendimento/equipamento;
-- uso amplo em manutenção, TI, Service Desk, Help Desk, infraestrutura, redes e guias.
+- uso amplo em manutenção, TI, Service Desk, Help Desk, infraestrutura, redes e guias;
+- identidade da empresa centralizada para Shell e documentos;
+- gestão simples de categorias em Configurações, com arquivamento/reativação e preservação de histórico.
 
-Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
+Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md` e especificações do Bloco 8.
 
 ## Bloco 8 — UI/UX
 
@@ -66,17 +68,14 @@ Documentar/aprovar antes do código:
 
 ### Estado atual
 
-- `01-login.md` — consolidado;
-- `02-shell-sidebar.md` — consolidado, incluindo `Atendimentos`;
-- `03-dashboard.md` — consolidado;
-- `04-lista-pesquisa-processos.md` — consolidado;
-- `05-leitor-processo.md` — consolidado;
-- `06-editor-processo.md` — consolidado;
-- `07-historico-revisoes.md` — consolidado;
-- **próximo: Tela 08 — Lista/Pesquisa de Atendimentos**;
+- Telas 01–12 — **consolidadas/aprovadas**;
+- `12-configuracoes-categorias.md` consolida identidade da empresa e gestão simples de categorias;
+- **próximo: Tela 13 — Backup/Restauração — UX**;
+- Tela 14 — Exportação/Impressão + ficha — pendente;
+- Tela 15 — Estados transversais — pendente;
 - nenhuma UI de produção criada.
 
-Lifecycle, checklist e permissões operacionais detalhadas permanecem para o Bloco 9. Tecnologia/formato final da ficha compacta permanece para o Bloco 10.
+Lifecycle, checklist e permissões operacionais detalhadas permanecem para o Bloco 9. Tecnologia/formato final da ficha compacta permanece para o Bloco 10. Política técnica de Backup/Restore permanece para o Bloco 11.
 
 ## Bloco 9 — Execução operacional/Atendimentos e checklist
 
@@ -91,7 +90,8 @@ Fechar:
 - concorrência/revisão;
 - comportamento quando procedimento oficial muda;
 - matriz operacional de permissões;
-- formato final dos códigos legíveis.
+- formato final dos códigos legíveis;
+- capacidade/preset exato para gestão operacional de categorias quando aplicável ao contrato de autorização.
 
 A solução deve permanecer proporcional e não virar workflow burocrático.
 
@@ -102,16 +102,21 @@ PDF, DOCX e impressão continuam obrigatórios para documentação.
 Também fechar a ficha compacta de Atendimento/Equipamento:
 
 - conteúdo final e identidade da empresa;
-- tamanho/layout físico;
+- tamanho/layout físico com no máximo uma página A4;
 - impressão direta;
 - necessidade ou não de PDF específico da ficha;
 - paginação/listas/blocos;
+- limites finais dos textos usados na ficha;
 - QR/barcode somente se houver valor aprovado;
 - critérios de validação.
 
+A identidade da empresa consumida pelos templates vem da configuração central aprovada na Tela 12.
+
 ## Bloco 11 — Backup e restauração
 
-Fechar backup consistente do SQLite + arquivos administrados, incluindo categorias, equipamentos e atendimentos.
+Fechar backup consistente do SQLite + arquivos administrados, incluindo categorias, equipamentos, atendimentos, identidade/logo da empresa e demais arquivos persistentes aplicáveis.
+
+A Tela 13 do Bloco 8 define apenas UX/fluxos/estados visíveis; a política técnica definitiva pertence a este bloco.
 
 ## Bloco 12 — Fundação da Fase 2
 
@@ -144,7 +149,8 @@ Somente depois dos blocos anteriores:
 - [x] modelo de dados original definido;
 - [x] extensão operacional conceitual aprovada;
 - [x] concorrência geral definida;
-- [ ] telas críticas, incluindo novos requisitos, especificadas/aprovadas;
+- [ ] todas as telas críticas, incluindo novos requisitos, especificadas/aprovadas;
+- [x] Telas 01–12 do Bloco 8 especificadas/aprovadas;
 - [x] modelagem `Procedimento × Atendimento × Equipamento` aprovada;
 - [ ] execução/checklist decididos;
 - [ ] matriz operacional de permissões decidida;
