@@ -24,7 +24,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos + checklist | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPA 1 CONSOLIDADA / ETAPA 2 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPA 1 CONSOLIDADA / ETAPA 2 EM ANÁLISE** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -138,7 +138,7 @@ Host-only, seis dígitos, gaps permitidos.
 
 ## Bloco 10 — Exportação e impressão
 
-**Status: EM ANDAMENTO — Etapa 1 consolidada; Etapa 2 próxima, ainda não aberta.**
+**Status: EM ANDAMENTO — Etapa 1 consolidada; Etapa 2 em análise.**
 
 Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 
@@ -149,7 +149,7 @@ A UX já foi consolidada no Bloco 8. O fechamento técnico do Bloco 10 segue uma
 | Ordem | Etapa | Estado |
 |---|---|---|
 | 1 | Arquitetura de geração documental | **CONSOLIDADO / APROVADO PELO PO** |
-| 2 | PDF de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
+| 2 | PDF de Procedimentos | **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO** |
 | 3 | DOCX de Procedimentos | PENDENTE |
 | 4 | Impressão Windows de Procedimentos | PENDENTE |
 | 5 | Template físico de Procedimentos | PENDENTE |
@@ -180,11 +180,27 @@ Contrato aprovado:
 - runtime documental é autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
 - artefatos gerados não viram histórico/backup por padrão.
 
-### Próxima etapa
+### Etapa 2 — em análise
 
-**Etapa 2 — PDF de Procedimentos** está apenas marcada como próxima. Biblioteca/engine PDF e capacidades do renderer ainda não foram analisadas nem aprovadas.
+Proposta atual:
 
-Etapas 3–12 também continuam pendentes. Isso inclui DOCX, impressão Windows, templates físicos, PDF/preview da ficha, limites, MACs, nomes de arquivo/temporários concretos e QR/barcode.
+- renderer PDF de Procedimentos baseado em Typst embutido como biblioteca Rust no Host;
+- nenhum `typst.exe`/CLI ou processo conversor externo;
+- template interno confiável e versionado com o produto;
+- conteúdo de usuário entra como dados estruturados/escapados, nunca como código Typst concatenado;
+- nenhum pacote/recurso remoto é resolvido durante geração;
+- filesystem/imports do renderer ficam restritos aos assets/templates controlados pelo Host;
+- baseline PDF 1.7;
+- texto textual deve permanecer selecionável/pesquisável/copiável;
+- fontes necessárias são empacotadas e incorporadas/subsetadas sem depender das fontes do Windows;
+- todos os blocos semânticos do Procedimento devem ser representados sem descarte silencioso;
+- engine precisa suportar fluxo multipágina e quebra automática;
+- Tagged PDF permanece habilitado como baseline quando suportado, sem prometer conformidade formal PDF/UA/PDF-A;
+- assinatura digital, senha, formulários, anexos, JavaScript e multimídia em PDF ficam fora da primeira versão.
+
+Esses pontos ainda são **PROPOSTA** até aprovação explícita do PO.
+
+Etapas 3–12 continuam pendentes. Isso inclui DOCX, impressão Windows, template físico, PDF/preview da ficha, limites, MACs, nomes de arquivo/temporários concretos e QR/barcode.
 
 ## Bloco 11 — Backup e restauração
 
@@ -263,6 +279,7 @@ Antes da implementação correspondente:
 - [x] gestão de categorias por preset decidida;
 - [x] lifecycle/capacidade da ficha decididos;
 - [x] arquitetura-base de geração documental decidida;
+- [ ] renderer PDF de Procedimentos decidido;
 - [ ] exportação/impressão + ficha tecnicamente definidas por completo;
 - [ ] backup/restore técnico definido;
 - [ ] regra editorial de categoria arquivada fechada;

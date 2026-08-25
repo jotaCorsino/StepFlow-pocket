@@ -6,7 +6,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-25  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 1 consolidada; Etapa 2 próxima  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 2 em análise  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md`, documentos específicos e `docs/04-planejamento/plano-oficial-fase-1.md`.
@@ -25,7 +25,7 @@ Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 1 consolidada |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 2 em análise |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -111,7 +111,7 @@ Também estão aprovados:
 | Ordem | Etapa | Estado |
 |---|---|---|
 | 1 | Arquitetura de geração documental | ✅ Consolidado |
-| 2 | PDF de Procedimentos | 🟡 Próxima — ainda não em análise |
+| 2 | PDF de Procedimentos | 🟡 Em análise |
 | 3 | DOCX de Procedimentos | ⏳ Pendente |
 | 4 | Impressão Windows de Procedimentos | ⏳ Pendente |
 | 5 | Template físico de Procedimentos | ⏳ Pendente |
@@ -141,7 +141,22 @@ Consolidado na Etapa 1:
 - runtime documental permanece autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
 - artefatos gerados não viram histórico/backup por padrão.
 
-A Etapa 2 está apenas marcada como **próxima**. Ela ainda não foi aberta para análise.
+Em análise na Etapa 2:
+
+- Typst embutido como biblioteca Rust no Host para o renderer PDF de Procedimentos;
+- nenhuma dependência de `typst.exe`/CLI ou conversor externo;
+- template interno confiável e versionado;
+- conteúdo do usuário tratado como dado estruturado/escapado, nunca como código Typst concatenado;
+- sem pacotes/recursos remotos durante geração;
+- baseline PDF 1.7;
+- texto selecionável/pesquisável/copiável;
+- fontes empacotadas, sem depender das fontes instaladas no Windows;
+- suporte a todos os blocos semânticos documentais;
+- fluxo multipágina/quebra automática sem decidir ainda o template físico;
+- Tagged PDF como baseline sem prometer conformidade PDF/UA/PDF-A;
+- assinatura, senha, formulários, anexos e JavaScript de PDF fora da primeira versão.
+
+As decisões da Etapa 2 ainda são **proposta** e dependem de aprovação do PO. Etapas 3–12 continuam pendentes e não estão em análise.
 
 A fonte técnica é `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
@@ -177,7 +192,8 @@ Permanecem consolidados:
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de nova revisão ainda referenciando categoria arquivada;
-- Etapas 2–12 do Bloco 10;
+- Etapa 2 do Bloco 10 ainda em análise;
+- Etapas 3–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo.
 
