@@ -25,9 +25,9 @@ Núcleo arquitetural já fechado:
 - extensão conceitual `Procedimento × Atendimento/Execução × Equipamento`;
 - categorias configuráveis/múltiplas e identidade interna de equipamento.
 
-Bloco atual: **UI/UX**.
+O **Bloco 8 — UI/UX está CONCLUÍDO**.
 
-No Bloco 8 já estão consolidadas as **Telas 01–14**, cobrindo:
+Foram consolidadas as **Telas 01–15**, cobrindo:
 
 - Login;
 - Shell/sidebar com `Atendimentos`;
@@ -42,19 +42,17 @@ No Bloco 8 já estão consolidadas as **Telas 01–14**, cobrindo:
 - Meu perfil;
 - Configurações + Categorias, incluindo identidade central da empresa;
 - Backup/Restauração — UX, com Restore protegido por safety backup prévio no fluxo normal;
-- Exportação/Impressão + ficha compacta — UX, incluindo PDF/DOCX/impressão da revisão selecionada e ficha de Atendimento com ou sem equipamento, limitada a uma A4.
+- Exportação/Impressão + ficha compacta — UX, incluindo PDF/DOCX/impressão da revisão selecionada e ficha de Atendimento com ou sem equipamento, limitada a uma A4;
+- Estados transversais, incluindo loading, estados vazios, Host indisponível, WebSocket degradado, reconciliação, sessão, permissão, conflito e alterações não salvas.
 
-Próxima superfície: **Tela 15 — Estados transversais**.
-
-Depois da Tela 15, o Bloco 8 poderá ser encerrado documentalmente e a Fase 1 seguirá aos blocos operacionais/técnicos seguintes.
+Próximo bloco: **Bloco 9 — Execução operacional/Atendimentos + checklist**, ainda não iniciado neste checkpoint.
 
 Próximos blocos da Fase 1:
 
-1. concluir UI/UX com Estados transversais;
-2. fechar execução operacional/Atendimentos + checklist;
-3. fechar exportação PDF/DOCX/impressão + ficha compacta tecnicamente;
-4. fechar backup/restore técnico;
-5. fechar estrutura oficial e plano da Fase 2.
+1. fechar execução operacional/Atendimentos + checklist;
+2. fechar exportação PDF/DOCX/impressão + ficha compacta tecnicamente;
+3. fechar backup/restore técnico;
+4. fechar estrutura oficial e plano da Fase 2.
 
 Detalhes em `plano-oficial-fase-1.md`.
 
@@ -110,7 +108,7 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 - resumo do trabalho;
 - vínculo à revisão executada;
 - ficha compacta conforme contrato dos Blocos 8/10;
-- estados de UI.
+- estados de UI conforme Tela 15.
 
 ## Fase 6 — Multiusuário em ambiente real
 

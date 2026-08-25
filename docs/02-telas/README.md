@@ -2,9 +2,9 @@
 
 ## Estado
 
-**Bloco 8 da Fase 1 — EM ANDAMENTO.**
+**Bloco 8 da Fase 1 — CONCLUÍDO.**
 
-As Telas **01–14 estão consolidadas/aprovadas**. A próxima superfície é a **Tela 15 — Estados transversais**, ainda não iniciada neste checkpoint.
+As Telas **01–15 estão consolidadas/aprovadas**. O próximo trabalho da Fase 1 é o **Bloco 9 — Execução operacional/Atendimentos + checklist**, ainda não iniciado neste checkpoint.
 
 Cada especificação relevante usa `docs/templates/template-analise-de-tela.md`. Uma proposta só vira contrato visual/funcional após aprovação explícita do PO.
 
@@ -24,7 +24,7 @@ Cada especificação relevante usa `docs/templates/template-analise-de-tela.md`.
 - `12-configuracoes-categorias.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `13-backup-restauracao.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `14-exportacao-impressao-ficha.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 15 — Estados transversais**.
+- `15-estados-transversais.md` — **CONSOLIDADO / APROVADO PELO PO**.
 
 ## Mapa de telas
 
@@ -42,7 +42,7 @@ Cada especificação relevante usa `docs/templates/template-analise-de-tela.md`.
 12. Configurações + Categorias — consolidado;
 13. Backup/Restauração — UX — consolidado;
 14. Exportação/Impressão + ficha compacta — UX — consolidado;
-15. Estados transversais — **próximo**.
+15. Estados transversais — consolidado.
 
 ## Direção visual aprovada
 
@@ -169,11 +169,36 @@ Terceira seção de Configurações. Backup coordenado pelo Host; Restore exige 
 
 Fonte: `14-exportacao-impressao-ficha.md` e `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
+### Estados Transversais
+
+A Tela 15 é um contrato comum, não uma nova página navegável.
+
+Ficou consolidado:
+
+- usar a menor superfície adequada para cada estado: campo → seção → página → Shell;
+- não exibir indicador permanente de conexão saudável;
+- loading não reaproveita dado antigo como se fosse atual;
+- distinguir `sem registros` de `sem resultados`;
+- Host indisponível aparece como estado transversal e não oferece IP/porta editáveis;
+- WebSocket degradado pode ser tratado separadamente quando HTTP continuar saudável;
+- reconexão exige reconsulta/reconciliação antes de assumir estado atualizado;
+- mutação de resultado incerto não é repetida cegamente;
+- sessão expirada exige nova autenticação;
+- edição não salva pode permanecer apenas em memória e oculta durante reautenticação do mesmo Client, sem draft persistente;
+- perda de permissão remove conteúdo protegido da superfície;
+- conflitos preservam edição local e nunca usam overwrite/merge automático;
+- eventos remotos não substituem formulário local;
+- alterações não salvas recebem proteção de saída;
+- incompatibilidade Client↔Host bloqueia uso normal e orienta reabrir pelo ponto de entrada oficial;
+- nenhuma offline queue, autosave ou nova persistência é criada.
+
+Fonte: `15-estados-transversais.md`, `docs/03-arquitetura/comunicacao-client-host.md` e `docs/03-arquitetura/concorrencia-fila-conflitos-eventos.md`.
+
 ## Limite do Bloco 8
 
-O Bloco 8 fecha UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional.
+O Bloco 8 fecha UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional e está **concluído**.
 
-Não decide sozinho:
+Ele não decidiu sozinho:
 
 - lifecycle/status final do Atendimento;
 - checklist/progresso operacional;
@@ -183,7 +208,7 @@ Não decide sozinho:
 - template físico final, margens, limites textuais e preview da ficha;
 - mecanismo técnico de consistência, pacote, retenção e disaster recovery de Backup/Restore.
 
-Esses pontos pertencem aos blocos correspondentes.
+Esses pontos permanecem nos blocos correspondentes.
 
 ## Regra de separação de busca
 
@@ -196,6 +221,8 @@ Não misturar os dois domínios em pesquisa global sem requisito explícito.
 
 Todo avanço consolidado de fase, bloco ou tela deve atualizar o painel do `README.md` no mesmo checkpoint documental.
 
-## Regra de parada
+## Próximo trabalho
 
-Quando uma tela depender de lifecycle, checklist, exportação técnica, backup técnico ou permissões ainda pendentes, documentar a dependência e parar no limite aprovado. Não inventar solução técnica ou regra de negócio.
+O próximo bloco é o **Bloco 9 — Execução operacional/Atendimentos + checklist**, mas ele ainda não foi aberto neste checkpoint.
+
+Quando uma regra depender de lifecycle, checklist, exportação técnica, backup técnico ou permissões ainda pendentes, documentar a dependência e parar no limite aprovado. Não inventar solução técnica ou regra de negócio.

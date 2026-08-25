@@ -51,7 +51,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Telas — `02-telas`
 
-- `README.md` — mapa/limites do Bloco 8;
+- `README.md` — mapa consolidado do Bloco 8;
 - `01-login.md` — Login consolidado;
 - `02-shell-sidebar.md` — Shell consolidado;
 - `03-dashboard.md` — Dashboard consolidado;
@@ -66,7 +66,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `12-configuracoes-categorias.md` — Configurações + Categorias consolidado;
 - `13-backup-restauracao.md` — Backup/Restauração — UX consolidado;
 - `14-exportacao-impressao-ficha.md` — Exportação/Impressão + ficha compacta — UX consolidado;
-- próxima especificação: Tela 15 — Estados transversais.
+- `15-estados-transversais.md` — Estados transversais consolidado.
 
 ### Arquitetura — `03-arquitetura`
 
@@ -101,8 +101,8 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Bloco 8 em execução. Telas 01–14 consolidadas. Próxima: Tela 15 — Estados transversais.**
+**Fase 1 em andamento; Bloco 8 concluído. Telas 01–15 consolidadas. Próximo bloco: Bloco 9 — Execução operacional/Atendimentos + checklist, ainda não iniciado.**
 
-A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, identidade interna de equipamento, identidade da empresa/gestão de categorias, UX de Backup/Restauração e UX de Exportação/Impressão + ficha estão aprovadas. Lifecycle/permissões/checklist permanecem para o Bloco 9; implementação técnica de PDF/DOCX/impressão e template final da ficha, para o Bloco 10; mecanismo técnico de Backup/Restore, retenção e disaster recovery, para o Bloco 11.
+A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, identidade interna de equipamento, identidade da empresa/gestão de categorias, UX de Backup/Restauração, UX de Exportação/Impressão + ficha e estados transversais estão aprovados. Lifecycle/permissões/checklist permanecem para o Bloco 9; implementação técnica de PDF/DOCX/impressão e template final da ficha, para o Bloco 10; mecanismo técnico de Backup/Restore, retenção e disaster recovery, para o Bloco 11.
 
 Não há código funcional oficial.

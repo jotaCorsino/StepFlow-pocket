@@ -6,7 +6,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-25  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 8 — UI/UX  
+**Bloco atual:** Bloco 8 — UI/UX concluído; próximo: Bloco 9  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida de andamento. Ele **não substitui** as fontes de decisão: `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md`, documentos específicos e `docs/04-planejamento/plano-oficial-fase-1.md` continuam sendo autoritativos.
@@ -23,8 +23,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 5 | Autenticação / autorização | ✅ Núcleo concluído; parâmetros finais pendentes |
 | 6 | Dados / schema / migrations | ✅ Núcleo + extensão operacional conceitual aprovados |
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
-| 8 | UI/UX | 🟡 Em andamento |
-| 9 | Atendimentos / execução / checklist | ⏳ Pendente |
+| 8 | UI/UX | ✅ Concluído |
+| 9 | Atendimentos / execução / checklist | 🟡 Próximo; ainda não iniciado |
 | 10 | Exportação / impressão / ficha compacta | ⏳ Pendente |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
@@ -47,7 +47,9 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 12 | Configurações + categorias | ✅ Consolidado |
 | 13 | Backup / restauração — UX | ✅ Consolidado |
 | 14 | Exportação / impressão + ficha — UX | ✅ Consolidado |
-| 15 | Estados transversais | 🟡 Próximo |
+| 15 | Estados transversais | ✅ Consolidado |
+
+O **Bloco 8 está concluído documentalmente**. Nenhuma UI de produção foi criada nesta fase.
 
 ### Extensão de produto já aprovada
 
@@ -73,17 +75,18 @@ Estão aprovados conceitualmente:
 - categorias simples administradas em Configurações, com arquivamento/reativação e preservação de histórico;
 - UX de Backup/Restauração dentro de Configurações, coordenada pelo Host;
 - Restore normal pela UI exige safety backup confirmado do estado atual antes da etapa destrutiva;
-- PDF, DOCX e impressão de procedimentos são contextuais e sempre usam documento próprio da revisão selecionada, nunca screenshot.
+- PDF, DOCX e impressão de procedimentos são contextuais e sempre usam documento próprio da revisão selecionada, nunca screenshot;
+- estados transversais usam a menor superfície adequada, distinguem Host indisponível de WebSocket degradado, reconciliam mutações incertas e preservam edição local sem criar autosave/offline queue.
 
 Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. Engine, template final, margens, limites textuais, preview e demais decisões técnicas de exportação/ficha pertencem ao Bloco 10. Mecanismo técnico de Backup/Restore, pacote, retenção e disaster recovery pertencem ao Bloco 11.
 
 ### Próximo passo
 
-**Tela 15 — Estados transversais.**
+**Bloco 9 — Atendimentos / execução / checklist.**
 
-A Tela 15 ainda **não está em análise nem aprovada** neste checkpoint. Ela só deve ser aberta depois que a Tela 14 estiver integrada em `main`.
+O Bloco 9 está apenas marcado como **próximo** neste checkpoint; ele ainda **não está em análise nem foi iniciado**.
 
-Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
+Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 9–12 e seus gates.
 
 ### Regra de atualização deste painel
 
@@ -152,7 +155,7 @@ Comece por:
 4. `docs/04-planejamento/plano-oficial-fase-1.md` — plano, gates e detalhes do andamento;
 5. `docs/01-produto/visao-geral.md` — produto e requisitos;
 6. `docs/03-arquitetura/arquitetura-vigente.md` — visão técnica consolidada;
-7. `docs/02-telas/README.md` — andamento detalhado do Bloco 8.
+7. `docs/02-telas/README.md` — mapa consolidado do Bloco 8.
 
 ## Disciplina de Git
 
