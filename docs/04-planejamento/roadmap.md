@@ -30,7 +30,8 @@ Já consolidados:
 - matriz operacional de capacidades;
 - códigos `AT-000001` / `EQP-000001`;
 - gestão de categorias por ADM/Gerência;
-- lifecycle/capacidade da ficha.
+- lifecycle/capacidade da ficha;
+- arquitetura-base de geração documental do Bloco 10 / Etapa 1.
 
 ### Bloco 8 — UI/UX
 
@@ -57,24 +58,41 @@ Consolidado:
 - gestão de categorias;
 - lifecycle da ficha.
 
-### Próximo bloco
+### Bloco 10 — Exportação / impressão + ficha compacta
 
-**Bloco 10 — Exportação/impressão + ficha compacta — ainda não iniciado.**
+**EM ANDAMENTO.**
 
-Fechará:
+Etapa 1 — Arquitetura de geração documental: **CONSOLIDADA**.
 
-- PDF/DOCX/impressão de Procedimentos;
-- engines/tecnologia;
-- template dedicado;
-- paginação/quebras;
-- template físico final da ficha;
-- margens/tipografia/densidade;
-- limites numéricos dos textos;
-- preview;
-- impressão Windows;
-- decisão de PDF específico da ficha;
-- tratamento de muitos MACs/Procedimentos;
-- QR/barcode somente se houver valor aprovado.
+Consolidado:
+
+- geração documental no Host;
+- solicitação por identidade/revisão esperada;
+- snapshot consistente antes da renderização;
+- `DocumentModel` semântico;
+- leitura SQLite encerrada antes da renderização;
+- geração fora da fila de mutações;
+- limite próprio de renderização/backpressure;
+- sem job/fila persistente de exportação na primeira versão;
+- transporte autenticado Host → Client;
+- runtime documental autocontido;
+- artefatos gerados fora do histórico/backup por padrão.
+
+**Próxima etapa: Etapa 2 — PDF de Procedimentos, ainda não aberta para análise.**
+
+As demais etapas fecharão, uma por vez:
+
+- PDF de Procedimentos;
+- DOCX de Procedimentos;
+- impressão Windows de Procedimentos;
+- template físico de Procedimentos;
+- PDF + preview da ficha;
+- template físico A4 da ficha;
+- limites textuais/densidade;
+- muitos MACs/Procedimentos;
+- nomes de arquivo + temporários concretos;
+- QR/barcode;
+- validação técnica final.
 
 Depois:
 
@@ -157,6 +175,9 @@ Implementará os contratos já fechados:
 
 **PENDENTE.**
 
+Implementará os contratos do Bloco 10:
+
+- geração Host-side;
 - PDF de Procedimentos;
 - DOCX de Procedimentos;
 - impressão de Procedimentos;
@@ -164,7 +185,6 @@ Implementará os contratos já fechados:
 - revisão selecionada preservada;
 - ficha compacta com/sem Equipamento;
 - impressão da ficha;
-- decisão técnica sobre PDF específico;
 - reprodução do snapshot histórico de Atendimento/Equipamento;
 - validação em leitores/impressoras.
 

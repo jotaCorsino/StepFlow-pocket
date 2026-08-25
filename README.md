@@ -6,7 +6,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-25  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 9 concluído; próximo: Bloco 10 — Exportação / impressão / ficha compacta  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 1 consolidada; Etapa 2 próxima  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md`, documentos específicos e `docs/04-planejamento/plano-oficial-fase-1.md`.
@@ -25,7 +25,7 @@ Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Próximo; ainda não iniciado |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 1 consolidada |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -106,6 +106,47 @@ Também estão aprovados:
 - checklist usa concorrência granular por item/equivalente;
 - nenhuma fila de chamados/SLA/workflow complexo foi criada.
 
+### Bloco 10 — etapas e decisões
+
+| Ordem | Etapa | Estado |
+|---|---|---|
+| 1 | Arquitetura de geração documental | ✅ Consolidado |
+| 2 | PDF de Procedimentos | 🟡 Próxima — ainda não em análise |
+| 3 | DOCX de Procedimentos | ⏳ Pendente |
+| 4 | Impressão Windows de Procedimentos | ⏳ Pendente |
+| 5 | Template físico de Procedimentos | ⏳ Pendente |
+| 6 | PDF + preview da Ficha compacta | ⏳ Pendente |
+| 7 | Template físico A4 da Ficha | ⏳ Pendente |
+| 8 | Limites textuais e densidade da Ficha | ⏳ Pendente |
+| 9 | Múltiplos MACs / Procedimentos na Ficha | ⏳ Pendente |
+| 10 | Nomes de arquivo + artefatos temporários | ⏳ Pendente |
+| 11 | QR / barcode | ⏳ Pendente |
+| 12 | Validação técnica final do Bloco 10 | ⏳ Pendente |
+
+A tabela acima é o acompanhamento operacional do Bloco 10 e deve ser atualizada no mesmo checkpoint de cada avanço. Uma etapa só muda para `✅ Consolidado` após aprovação do PO e registro coerente nas fontes canônicas afetadas.
+
+Consolidado na Etapa 1:
+
+- geração documental é responsabilidade do Host;
+- Client solicita por identidade da fonte e revisão esperada, sem enviar documento montado;
+- Host captura snapshot consistente antes da renderização;
+- a leitura/transação SQLite é encerrada antes do trabalho pesado de renderização;
+- `DocumentModel` semântico separa regras de domínio dos renderers;
+- renderers não reconsultam banco nem recebem DOM/HTML da UI;
+- geração é leitura derivada e fica fora da fila de mutações;
+- renderização usa limite próprio de concorrência/backpressure;
+- primeira versão não cria job/fila persistente de exportações;
+- artefato retorna pela API autenticada;
+- Host não grava em path arbitrário do Client;
+- runtime documental permanece autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
+- artefatos gerados não viram histórico/backup por padrão.
+
+A Etapa 2 está apenas marcada como **próxima**. Ela ainda não foi aberta para análise.
+
+A fonte técnica é `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
+
+O Bloco 11 permanece **não iniciado**.
+
 ### Extensão de produto consolidada
 
 O StepFlow deve acomodar manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias e outros procedimentos internos.
@@ -127,29 +168,6 @@ Permanecem consolidados:
 - PDF/DOCX/impressão de Procedimentos pela revisão selecionada;
 - estados transversais comuns.
 
-### Próximo passo
-
-**Bloco 10 — Exportação / impressão + ficha compacta técnica.**
-
-Neste checkpoint ele está somente marcado como **próximo**; ainda não foi aberto.
-
-O Bloco 10 deverá fechar:
-
-- engine PDF;
-- engine DOCX;
-- impressão Windows;
-- template dedicado de Procedimentos;
-- paginação/quebras;
-- template físico final da ficha;
-- margens/tipografia/densidade;
-- limites numéricos dos textos da ficha;
-- tratamento de muitos MACs/Procedimentos;
-- preview;
-- decisão sobre PDF específico da ficha;
-- QR/barcode somente se houver benefício aprovado.
-
-Bloco 11 fecha Backup/Restore técnico. Bloco 12 fecha estrutura oficial, pendências finais e plano da Fase 2.
-
 ### Pendências ainda vigentes
 
 - custo final Argon2id;
@@ -159,13 +177,13 @@ Bloco 11 fecha Backup/Restore técnico. Bloco 12 fecha estrutura oficial, pendê
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de nova revisão ainda referenciando categoria arquivada;
-- parâmetros técnicos do Bloco 10;
+- Etapas 2–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo.
 
 ### Regra de atualização deste painel
 
-Todo avanço consolidado de **fase, bloco ou tela** deve atualizar este README **no mesmo checkpoint documental**. Um avanço não está documentalmente encerrado se este painel ficar atrasado.
+Todo avanço consolidado de **fase, bloco, tela ou etapa do bloco atual** deve atualizar este README **no mesmo checkpoint documental**. Um avanço não está documentalmente encerrado se este painel ficar atrasado.
 
 ## Papéis no desenvolvimento
 
@@ -228,10 +246,11 @@ Comece por:
 2. `docs/README.md`;
 3. `docs/05-progresso/registro-de-decisoes.md`;
 4. `docs/04-planejamento/plano-oficial-fase-1.md`;
-5. `docs/04-planejamento/bloco-9-atendimentos-execucao-checklist.md`;
-6. `docs/01-produto/visao-geral.md`;
-7. `docs/03-arquitetura/arquitetura-vigente.md`;
-8. `docs/02-telas/README.md`.
+5. `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`;
+6. `docs/04-planejamento/bloco-9-atendimentos-execucao-checklist.md`;
+7. `docs/01-produto/visao-geral.md`;
+8. `docs/03-arquitetura/arquitetura-vigente.md`;
+9. `docs/02-telas/README.md`.
 
 ## Disciplina de Git
 
@@ -242,12 +261,13 @@ Comece por:
 → revisão/aprovação
 → squash/merge em main
 → apagar branch encerrada
+→ verificar remoto limpo
 → iniciar o próximo trabalho documental
 ```
 
 Durante o fechamento documental restante da Fase 1, o GitHub remoto é a fonte operacional. A sincronização do checkout local `C:\dev\StepFlow` continua adiada e deve ocorrer explicitamente **antes do primeiro trabalho de implementação com Codex**.
 
-Branches auxiliares encerradas devem ser removidas do remoto quando possível. Alterações locais preexistentes do PO não podem ser resetadas, stashed, descartadas ou incorporadas sem autorização explícita.
+Uma branch mergeada **não é considerada encerrada operacionalmente até ser removida do remoto e a limpeza ser verificada**. Alterações locais preexistentes do PO não podem ser resetadas, stashed, descartadas ou incorporadas sem autorização explícita.
 
 ## Ambiente de desenvolvimento
 

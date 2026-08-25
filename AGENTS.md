@@ -12,9 +12,9 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 estão concluídos; Bloco 5 está concluído no núcleo com parâmetros finais pendentes; Bloco 6 está consolidado conceitualmente; Bloco 7 está concluído no núcleo; Blocos 8 e 9 estão **CONCLUÍDOS**.
-- Próximo bloco: **Bloco 10 — Exportação/impressão + ficha compacta técnica**, ainda não iniciado.
-- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP` e snapshot histórico de Equipamento estão consolidados.
-- Bloco 10 ainda fecha engine/template físico da exportação/ficha; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
+- Bloco 10 está **EM ANDAMENTO**; **Etapa 1 — Arquitetura de geração documental está CONSOLIDADA**; **Etapa 2 — PDF de Procedimentos é a próxima, ainda não aberta**.
+- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento e arquitetura-base de geração documental estão consolidados.
+- Bloco 10 ainda fecha as Etapas 2–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade da tarefa
 
@@ -48,6 +48,7 @@ Se o enunciado contrariar decisão consolidada, só prosseguir quando declarar e
 - `docs/00-governanca/contexto-ambientes.md`;
 - `docs/01-produto/categorizacao-atendimentos-equipamentos.md` para categorias/Atendimentos/Equipamentos/ficha;
 - `docs/04-planejamento/bloco-9-atendimentos-execucao-checklist.md` para lifecycle/checklist/matriz operacional;
+- `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md` para geração documental/exportação/impressão/ficha;
 - demais documentos técnicos específicos.
 
 `metodo-padrao-trabalho-assistido.md` e `politica-capacidade-codex.md` orientam principalmente PO/Assistente e não precisam ser relidos pelo Codex em toda tarefa.
@@ -108,11 +109,12 @@ Durante o fechamento documental restante da Fase 1:
 → 1 PR
 → revisão/aprovação
 → squash/merge em main
-→ apagar branch encerrada quando possível
+→ apagar branch encerrada
+→ verificar remoto limpo
 → iniciar o próximo trabalho documental
 ```
 
-O remoto é a fonte operacional. A sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex.
+Uma branch mergeada não é considerada encerrada operacionalmente enquanto permanecer no remoto. O remoto é a fonte operacional. A sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex.
 
 ## Regras operacionais
 
@@ -122,7 +124,7 @@ O remoto é a fonte operacional. A sincronização do checkout local fica adiada
 - não alterar UX/visual aprovado sem autorização;
 - não transformar proposta, exemplo ou parâmetro provisório em decisão;
 - manter documentação e implementação sincronizadas;
-- **todo avanço consolidado de fase, bloco ou tela deve atualizar o painel do `README.md` no mesmo checkpoint documental**;
+- **todo avanço consolidado de fase, bloco, tela ou etapa do bloco atual deve atualizar o painel do `README.md` no mesmo checkpoint documental**;
 - não considerar avanço documental encerrado se o README estiver atrasado;
 - preservar modularidade e baixo acoplamento;
 - não versionar credenciais, segredos, banco real ou dados pessoais da empresa;
@@ -177,6 +179,22 @@ Operações que exijam credenciais, Internet confiável, elevação ou configura
 - MAC/serial/patrimônio são atributos de busca;
 - Atendimento preserva a revisão realmente utilizada;
 - ficha compacta imprimível é requisito do produto.
+
+## Arquitetura de geração documental consolidada — Bloco 10 / Etapa 1
+
+- geração documental pertence ao Host;
+- Client solicita por identidade da fonte/revisão esperada e não envia documento montado;
+- fonte mutável não pode ser substituída silenciosamente por revisão mais nova;
+- Host captura snapshot consistente, materializa `DocumentModel` semântico e encerra a leitura/transação SQLite antes da renderização;
+- renderers não recebem DOM/HTML da UI e não reconsultam o banco;
+- geração é leitura derivada e fica fora da fila de mutações;
+- renderização usa limite próprio de concorrência/backpressure;
+- primeira versão não cria `export_jobs`, scheduler ou fila persistente de exportação;
+- artefato retorna pela API autenticada;
+- Host não grava em path arbitrário do Client;
+- runtime documental não depende operacionalmente de Office, LibreOffice, Adobe Reader, Chrome/Chromium externo headless, `wkhtmltopdf` ou serviço cloud;
+- artefatos gerados não viram histórico/backup por padrão;
+- engines PDF/DOCX, impressão, templates, limites, preview, MACs, temporários concretos e QR/barcode continuam nas Etapas 2–12.
 
 ## Regras operacionais consolidadas do Bloco 9
 
@@ -243,7 +261,7 @@ Cancelado
 - `Em andamento`: geração para acompanhamento;
 - `Concluído`: reimpressão do estado histórico aplicável;
 - `Cancelado`: saída identifica o estado;
-- template/engine permanecem no Bloco 10.
+- template/engine permanecem nas próximas etapas do Bloco 10.
 
 ## Pendências ainda não consolidáveis para implementação
 

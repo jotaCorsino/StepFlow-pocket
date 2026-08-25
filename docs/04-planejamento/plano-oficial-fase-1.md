@@ -24,7 +24,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos + checklist | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **PRÓXIMO / AINDA NÃO INICIADO** | arquitetura técnica |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPA 1 CONSOLIDADA / ETAPA 2 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -138,39 +138,57 @@ Host-only, seis dígitos, gaps permitidos.
 
 ## Bloco 10 — Exportação e impressão
 
-**Status neste checkpoint: próximo; ainda não iniciado.**
+**Status: EM ANDAMENTO — Etapa 1 consolidada; Etapa 2 próxima, ainda não aberta.**
 
-A UX já foi consolidada no Bloco 8; este bloco fechará implementação técnica.
+Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 
-### Procedimentos
+A UX já foi consolidada no Bloco 8. O fechamento técnico do Bloco 10 segue uma etapa por vez.
 
-- engine PDF;
-- engine DOCX;
-- impressão;
-- template dedicado;
-- identidade da empresa;
-- paginação/quebras;
-- comandos/código legíveis;
-- nomes de arquivo;
-- validação em leitores/impressoras.
+### Etapas
 
-### Ficha compacta
+| Ordem | Etapa | Estado |
+|---|---|---|
+| 1 | Arquitetura de geração documental | **CONSOLIDADO / APROVADO PELO PO** |
+| 2 | PDF de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
+| 3 | DOCX de Procedimentos | PENDENTE |
+| 4 | Impressão Windows de Procedimentos | PENDENTE |
+| 5 | Template físico de Procedimentos | PENDENTE |
+| 6 | PDF + preview da Ficha compacta | PENDENTE |
+| 7 | Template físico A4 da Ficha | PENDENTE |
+| 8 | Limites textuais e densidade da Ficha | PENDENTE |
+| 9 | Múltiplos MACs / Procedimentos na Ficha | PENDENTE |
+| 10 | Nomes de arquivo + artefatos temporários | PENDENTE |
+| 11 | QR / barcode | PENDENTE |
+| 12 | Validação técnica final do Bloco 10 | PENDENTE |
 
-- template final com/sem Equipamento;
-- máximo uma A4;
-- margens, tipografia, densidade;
-- limites numéricos dos textos;
-- regras de priorização/resumo/truncamento controlado;
-- muitos MACs/procedimentos;
-- preview;
-- impressão direta;
-- decidir PDF específico;
-- QR/barcode apenas se houver valor aprovado;
-- reprodução coerente dos snapshots definidos no Bloco 9.
+### Etapa 1 — consolidado
 
-DOCX específico da ficha não é requisito inicial.
+Contrato aprovado:
+
+- geração documental é responsabilidade do Host;
+- Client solicita por identidade da fonte/revisão esperada, sem enviar documento montado;
+- fonte mutável não é substituída silenciosamente por revisão mais nova;
+- Host captura snapshot consistente antes da renderização;
+- leitura/transação SQLite é encerrada antes do trabalho pesado de renderização;
+- `DocumentModel` semântico separa regras de domínio dos renderers;
+- renderers não reconsultam o banco nem recebem DOM/HTML da UI;
+- geração é leitura derivada e não passa pela fila de mutações;
+- renderização tem limite próprio de concorrência/backpressure;
+- primeira versão não cria `export_jobs`, scheduler ou fila persistente;
+- artefato retorna pela API autenticada;
+- Host não escreve em path arbitrário do Client;
+- runtime documental é autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
+- artefatos gerados não viram histórico/backup por padrão.
+
+### Próxima etapa
+
+**Etapa 2 — PDF de Procedimentos** está apenas marcada como próxima. Biblioteca/engine PDF e capacidades do renderer ainda não foram analisadas nem aprovadas.
+
+Etapas 3–12 também continuam pendentes. Isso inclui DOCX, impressão Windows, templates físicos, PDF/preview da ficha, limites, MACs, nomes de arquivo/temporários concretos e QR/barcode.
 
 ## Bloco 11 — Backup e restauração
+
+**Ainda não iniciado.**
 
 Fechar mecanismo técnico de backup consistente do SQLite + arquivos administrados.
 
@@ -244,7 +262,8 @@ Antes da implementação correspondente:
 - [x] códigos legíveis decididos;
 - [x] gestão de categorias por preset decidida;
 - [x] lifecycle/capacidade da ficha decididos;
-- [ ] exportação/impressão + ficha tecnicamente definidas;
+- [x] arquitetura-base de geração documental decidida;
+- [ ] exportação/impressão + ficha tecnicamente definidas por completo;
 - [ ] backup/restore técnico definido;
 - [ ] regra editorial de categoria arquivada fechada;
 - [ ] estrutura oficial definida;
