@@ -12,9 +12,10 @@ Este arquivo registra decisões vigentes e pendências atuais. Propostas não ap
 - uma tarefa lógica por vez;
 - uma branch ativa por trabalho;
 - um PR por trabalho;
-- revisão/aprovação → squash/merge → limpeza de branch quando possível → próximo trabalho;
+- revisão/aprovação → squash/merge → apagar branch encerrada → verificar remoto limpo → próximo trabalho;
+- branch mergeada não é considerada encerrada enquanto permanecer no remoto;
 - `AGENTS.md` é a regra operacional superior;
-- todo avanço consolidado de fase/bloco/tela atualiza o README raiz no mesmo checkpoint;
+- todo avanço consolidado de fase/bloco/tela/etapa atualiza o README raiz no mesmo checkpoint;
 - toda tarefa Codex futura exige pré-flight de capacidade separado do prompt;
 - Fase 1 não autoriza runtime/scaffold/código de negócio oficial antes do gate correspondente.
 
@@ -219,7 +220,7 @@ Não são obrigatórios por si só:
 
 Checklist incompleto:
 
-- gera aviso/confirmação;
+- gera aviso/confirmação;
 - não bloqueia automaticamente;
 - não há semântica obrigatório/opcional nos itens iniciais.
 
@@ -421,7 +422,9 @@ Pendentes:
 - checklist usa controle granular por item/equivalente;
 - fila ordena, não valida edição obsoleta;
 - mutação de resultado incerto exige reconciliação, não retry cego;
-- evento remoto não sobrescreve formulário local.
+- evento remoto não sobrescreve formulário local;
+- geração documental é leitura derivada, fora da fila de mutações;
+- renderização documental usa limite próprio de concorrência/backpressure.
 
 ## 25. Estados transversais
 
@@ -451,7 +454,26 @@ Pendentes:
 - impressão é requisito;
 - DOCX específico não é requisito inicial.
 
-Bloco 10 fecha engine/template/margens/limites/preview/PDF específico/QR se aprovado.
+### Arquitetura de geração documental — Bloco 10 / Etapa 1
+
+Consolidado:
+
+1. geração documental é responsabilidade do Host;
+2. Client solicita por IDs/revisão esperada e não envia documento montado;
+3. Host captura snapshot consistente e encerra leitura/transação SQLite antes de renderizar;
+4. fonte mutável usa revisão esperada para impedir substituição silenciosa por estado mais novo;
+5. `DocumentModel` semântico separa domínio de renderers;
+6. renderers não reconsultam banco nem recebem DOM/HTML da UI;
+7. geração é leitura derivada e fica fora da fila de mutações;
+8. renderização usa limite próprio de concorrência/backpressure, sem fila persistente;
+9. fluxo inicial é request → renderização → resposta, sem `export_jobs` persistentes;
+10. artefato retorna pela API autenticada; Host não escreve em path arbitrário do Client;
+11. runtime documental não depende operacionalmente de Office, LibreOffice, Adobe Reader, Chrome/Chromium externo headless, `wkhtmltopdf` ou serviço cloud/conversor obrigatório;
+12. artefatos gerados não viram histórico/backup por padrão;
+13. Client permanece responsável pela UX e pelo destino local;
+14. engine PDF/DOCX, impressão, templates, limites, preview, MACs, temporários concretos e QR/barcode permanecem nas Etapas 2–12.
+
+A Etapa 2 — PDF de Procedimentos é a próxima, mas ainda não está em análise.
 
 ## 27. Backup/Restore
 
@@ -509,8 +531,8 @@ Comunicação:
 - Bloco 6: núcleo + extensão operacional conceitual consolidados;
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
-- **Bloco 9: concluído**;
-- **Bloco 10: próximo, ainda não iniciado**;
+- Bloco 9: concluído;
+- **Bloco 10: em andamento — Etapa 1 consolidada; Etapa 2 próxima, ainda não aberta**;
 - Bloco 11: pendente;
 - Bloco 12: pendente.
 
@@ -518,15 +540,17 @@ Comunicação:
 
 ### Bloco 10
 
-- engines PDF/DOCX/impressão;
-- template físico final da ficha;
-- margens/tipografia/densidade;
-- limites numéricos dos textos da ficha;
-- preview;
-- impressão Windows;
-- PDF específico da ficha;
-- tratamento de muitos MACs/Procedimentos;
-- QR/barcode se houver valor.
+- Etapa 2: engine/capacidades PDF de Procedimentos;
+- Etapa 3: DOCX de Procedimentos;
+- Etapa 4: impressão Windows de Procedimentos;
+- Etapa 5: template físico de Procedimentos;
+- Etapa 6: PDF + preview da ficha;
+- Etapa 7: template físico A4 da ficha;
+- Etapa 8: limites textuais/densidade;
+- Etapa 9: muitos MACs/Procedimentos;
+- Etapa 10: nomes de arquivo + temporários concretos;
+- Etapa 11: QR/barcode;
+- Etapa 12: validação técnica final.
 
 ### Bloco 11
 

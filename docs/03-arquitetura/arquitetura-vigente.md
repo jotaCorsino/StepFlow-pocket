@@ -1,6 +1,6 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 OPERACIONAL  
+**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPA 1  
 **Atualização:** 2026-08-25
 
 ## Visão geral
@@ -28,7 +28,9 @@ Responsabilidades:
 - consumir API do Host;
 - receber eventos e reconsultar estado;
 - apresentar conflitos/estados transversais;
-- executar contexto operacional de Atendimento sem abrir SQLite diretamente.
+- executar contexto operacional de Atendimento sem abrir SQLite diretamente;
+- iniciar geração documental e receber artefatos produzidos pelo Host;
+- encaminhar artefatos para fluxos locais de salvar/preview/impressão conforme os contratos específicos.
 
 Baseline inicial: Windows 10/11 x64 + WebView2. Validação corporativa ainda pendente.
 
@@ -50,7 +52,7 @@ Sem updater residente.
 Tecnologia: Rust + Tokio/Axum + `rusqlite` bundled.
 
 - Controller: lifecycle central, paths/config, instância única, readiness/shutdown;
-- Host: autenticação, autorização, API, eventos, SQLite, writer/fila, revisões, Atendimentos, Equipamentos, checklist, auditoria, backup/restore e geração documental futura.
+- Host: autenticação, autorização, API, eventos, SQLite, writer/fila, revisões, Atendimentos, Equipamentos, checklist, auditoria, backup/restore e geração documental.
 
 Sem Windows Service, Task Scheduler, auto-start, watchdog ou daemon StepFlow como padrão.
 
@@ -219,7 +221,9 @@ Princípios:
 - dois Hosts não usam o mesmo data dir;
 - checklist usa granularidade por item/equivalente;
 - Atendimento/Equipamento têm revisões separadas;
-- timeout após mutação exige reconciliação, não retry cego.
+- timeout após mutação exige reconciliação, não retry cego;
+- geração documental é leitura derivada e não passa pela fila de mutações;
+- renderização documental usa limite próprio de concorrência/backpressure.
 
 ## Autenticação
 
@@ -236,6 +240,42 @@ Princípios:
 Parâmetros numéricos finais ainda pendentes antes da implementação.
 
 ## Exportação e impressão
+
+### Arquitetura de geração documental — Bloco 10 / Etapa 1
+
+Consolidado:
+
+```text
+Client
+  ↓ solicita por identidade da fonte + revisão esperada
+Host
+  ↓ autentica/autoriza
+  ↓ captura snapshot consistente
+  ↓ materializa DocumentModel semântico
+  ↓ encerra leitura/transação SQLite
+  ↓ renderiza fora da fila de mutações
+  ↓ devolve artefato pela API autenticada
+Client
+  ↓ recebe
+  └─→ destino local/preview/impressão conforme etapas específicas
+```
+
+Regras:
+
+- geração é responsabilidade do Host;
+- Client não envia documento montado nem usa DOM/HTML como fonte;
+- fonte mutável usa revisão esperada; estado mais novo não substitui silenciosamente o confirmado pelo Client;
+- `DocumentModel` semântico separa domínio de renderers;
+- renderers não reconsultam SQLite nem reconstruem regras de negócio;
+- captura consistente termina antes do trabalho pesado de renderização;
+- geração não cria revisão, não altera Atendimento/checklist e não muda `updated_at` funcional;
+- limite de renderização é separado do writer;
+- primeira versão não cria `export_jobs`, scheduler ou fila persistente documental;
+- artefato retorna pela API autenticada; Host não escreve em path arbitrário do Client;
+- artefatos gerados não viram histórico/backup por padrão;
+- runtime documental não depende de Office, LibreOffice, Adobe Reader, Chrome/Chromium externo headless, `wkhtmltopdf` ou serviço cloud obrigatório;
+- bibliotecas compiladas com o Host podem ser usadas;
+- endpoints, engines e parâmetros exatos pertencem às etapas/implementação correspondentes.
 
 ### Procedimentos
 
@@ -258,7 +298,7 @@ Parâmetros numéricos finais ainda pendentes antes da implementação.
 - impressão é requisito;
 - DOCX específico não é requisito inicial.
 
-Bloco 10 ainda fecha engine, template, margens, preview, limites textuais, impressão Windows, PDF específico e QR/barcode se aprovado.
+Bloco 10 ainda fecha, uma etapa por vez, engine PDF, DOCX, impressão Windows, templates, limites, preview, PDF específico da ficha, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários e QR/barcode.
 
 ## Backup / Restore
 
@@ -302,8 +342,8 @@ Exemplos históricos não podem virar hardcode.
 - Bloco 6: núcleo + extensão operacional conceitual consolidados;
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
-- **Bloco 9: concluído documentalmente**;
-- **próximo: Bloco 10 — Exportação/impressão + ficha compacta técnica**;
+- Bloco 9: concluído documentalmente;
+- **Bloco 10: em andamento — Etapa 1 consolidada; Etapa 2 próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 Nenhum runtime/código funcional oficial foi criado durante esse fechamento documental.

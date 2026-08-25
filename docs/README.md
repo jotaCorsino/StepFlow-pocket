@@ -68,7 +68,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9;
+- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapa 1;
 - `implantacao-pocket.md` — implantação/ciclo de vida central;
 - `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
@@ -83,6 +83,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado do Bloco 9;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapa 1 consolidada, Etapa 2 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -100,7 +101,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Blocos 8 e 9 concluídos. Próximo: Bloco 10 — Exportação/impressão + ficha compacta técnica, ainda não iniciado.**
+**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com a Etapa 1 — Arquitetura de geração documental consolidada. Etapa 2 — PDF de Procedimentos é a próxima, ainda não aberta.**
 
 Consolidado no Bloco 9:
 
@@ -117,16 +118,25 @@ Consolidado no Bloco 9:
 - Gerência gere categorias por preset;
 - lifecycle/capacidade da ficha.
 
-Permanecem para o Bloco 10:
+### Bloco 10 — Etapa 1 consolidada
 
-- engines PDF/DOCX/impressão;
-- template final da ficha A4;
-- margens/tipografia/densidade;
-- limites numéricos dos textos;
-- preview;
-- PDF específico da ficha;
-- QR/barcode se aprovado.
+Contrato vigente:
 
-Bloco 11 ainda fecha Backup/Restore técnico. Bloco 12 fecha parâmetros finais, regra editorial de categoria arquivada, estrutura oficial e plano da Fase 2.
+- geração sob responsabilidade do Host;
+- solicitação por identidade/revisão esperada;
+- snapshot consistente antes da renderização;
+- `DocumentModel` semântico entre domínio e renderers;
+- leitura/transação SQLite encerrada antes da renderização;
+- geração como leitura derivada, fora da fila de mutações;
+- limite próprio de concorrência/backpressure;
+- fluxo request → artefato sem job persistente inicial;
+- transporte autenticado Host → Client;
+- Host não grava em path arbitrário do Client;
+- runtime autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
+- ausência de persistência/histórico/backup de exportações por padrão.
+
+Etapas 2–12 permanecem pendentes. A Etapa 2 está somente marcada como próxima; escolha de engine PDF ainda não foi analisada.
+
+Bloco 11 continua não iniciado. Bloco 12 fecha parâmetros finais, regra editorial de categoria arquivada, estrutura oficial e plano da Fase 2.
 
 Não há código funcional oficial.
