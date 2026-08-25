@@ -22,9 +22,10 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `10-usuarios-permissoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `11-meu-perfil.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `12-configuracoes-categorias.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 13 — Backup / restauração — UX**.
+- `13-backup-restauracao.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 14 — Exportação / impressão + ficha compacta — UX**.
 
-A Tela 13 ainda não está em análise neste checkpoint.
+A Tela 14 ainda não está em análise neste checkpoint.
 
 ## Domínio operacional aprovado
 
@@ -46,9 +47,11 @@ Também estão aprovados:
 - observações curtas e limitadas do equipamento;
 - ficha compacta com no máximo uma página A4 e cabeçalho de identidade da empresa;
 - identidade da empresa centralizada em Configurações;
-- categorias simples administradas em Configurações, com arquivamento/reativação e preservação de histórico.
+- categorias simples administradas em Configurações, com arquivamento/reativação e preservação de histórico;
+- Backup/Restauração como UX administrativa Host-side dentro de Configurações;
+- safety backup obrigatório antes da etapa destrutiva de Restore normal pela UI.
 
-Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
+Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`, `13-backup-restauracao.md` e arquitetura vigente.
 
 ## Mapa de telas
 
@@ -64,9 +67,9 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 10. Usuários/permissões — consolidado;
 11. Meu perfil — consolidado;
 12. Configurações + gestão de categorias — consolidado;
-13. Backup/restauração — **próximo**;
-14. Exportação/impressão + ficha compacta;
-15. estados transversais.
+13. Backup/restauração — consolidado;
+14. Exportação/impressão + ficha compacta — **próximo**;
+15. estados transversais — pendente.
 
 ## Direção visual aprovada
 
@@ -236,6 +239,27 @@ Fonte: `11-meu-perfil.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao
 
 Fonte: `12-configuracoes-categorias.md`, `docs/01-produto/categorizacao-atendimentos-equipamentos.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao.md`.
 
+## Backup/Restauração — consolidado
+
+- permanece dentro de `Configurações` como terceira seção local `Backup e restauração`, sem novo item global na sidebar;
+- seção aparece somente com capacidade aplicável;
+- ADM pode Backup e Restore conforme matriz vigente;
+- Gerência × Backup permanece `PENDENTE`; Gerência não recebe Restore;
+- lista compacta de backups conhecidos pelo Host;
+- metadados iniciais: data/hora, origem, autor, tamanho e verificação;
+- `Criar backup agora` não pede SQLite/path nem seleção manual de componentes;
+- backup aceito é coordenado pelo Host e fechar Client não significa cancelamento silencioso;
+- `Detalhes` antecede Restore;
+- Restore só aparece para backup elegível e sessão autorizada;
+- confirmação reforçada exige ciência explícita + texto `RESTAURAR`;
+- safety backup do estado atual é obrigatório antes da etapa destrutiva de Restore normal via UI;
+- sem safety backup confirmado, Restore normal não prossegue;
+- sem delete, scheduler, retention, upload/download ou path editável inicialmente;
+- disaster recovery quando o Host não inicia fica fora da UX normal e pertence ao Bloco 11;
+- Backup permanece separado de Exportação/Impressão.
+
+Fonte: `13-backup-restauracao.md`, `docs/03-arquitetura/autenticacao-sessao-autorizacao.md` e `docs/03-arquitetura/host-pocket.md`.
+
 ## Limite do Bloco 8
 
 O Bloco 8 fecha UX, fluxo, estados, navegação, permissões visíveis e contrato visual/funcional.
@@ -246,7 +270,8 @@ Não decide sozinho:
 - checklist/progresso operacional;
 - matriz de permissões operacional;
 - parâmetros numéricos ainda pendentes de autenticação/sessão;
-- tecnologia/formato final da ficha compacta.
+- tecnologia/formato final da ficha compacta;
+- mecanismo técnico de consistência, pacote, retenção e disaster recovery de backup/restore.
 
 Esses pontos pertencem aos documentos/blocos correspondentes.
 

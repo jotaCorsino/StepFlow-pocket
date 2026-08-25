@@ -27,7 +27,7 @@ Núcleo arquitetural já fechado:
 
 Bloco atual: **UI/UX**.
 
-No Bloco 8 já estão consolidadas as **Telas 01–12**, cobrindo:
+No Bloco 8 já estão consolidadas as **Telas 01–13**, cobrindo:
 
 - Login;
 - Shell/sidebar com `Atendimentos`;
@@ -40,13 +40,13 @@ No Bloco 8 já estão consolidadas as **Telas 01–12**, cobrindo:
 - Atendimento/Execução + Equipamento;
 - Usuários/Permissões;
 - Meu perfil;
-- Configurações + Categorias, incluindo identidade central da empresa.
+- Configurações + Categorias, incluindo identidade central da empresa;
+- Backup/Restauração — UX, com Restore protegido por safety backup prévio no fluxo normal.
 
-Próxima superfície: **Tela 13 — Backup/Restauração — UX**.
+Próxima superfície: **Tela 14 — Exportação/Impressão + ficha compacta — UX**.
 
 Depois dela, o Bloco 8 ainda precisa fechar:
 
-- Tela 14 — Exportação/Impressão + ficha compacta — UX;
 - Tela 15 — estados transversais.
 
 Próximos blocos da Fase 1:
@@ -54,7 +54,7 @@ Próximos blocos da Fase 1:
 1. concluir UI/UX;
 2. fechar execução operacional/Atendimentos + checklist;
 3. fechar exportação PDF/DOCX/impressão + ficha compacta;
-4. fechar backup/restore;
+4. fechar backup/restore técnico;
 5. fechar estrutura oficial e plano da Fase 2.
 
 Detalhes em `plano-oficial-fase-1.md`.
@@ -142,6 +142,8 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 - pacote central por pasta com Controller/Host sob demanda;
 - launcher em rede + Client local versionado;
 - backup/restore incluindo categorias, equipamentos, atendimentos e arquivos administrados;
+- safety backup antes do Restore normal conforme contrato da Tela 13;
+- disaster recovery local quando o Host não inicia;
 - logs;
 - documentação de implantação;
 - validação sem Internet e em PCs corporativos.

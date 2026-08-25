@@ -42,7 +42,8 @@ Ficam incorporados à Fase 1:
 - ficha compacta imprimível para atendimento/equipamento;
 - uso amplo em manutenção, TI, Service Desk, Help Desk, infraestrutura, redes e guias;
 - identidade da empresa centralizada para Shell e documentos;
-- gestão simples de categorias em Configurações, com arquivamento/reativação e preservação de histórico.
+- gestão simples de categorias em Configurações, com arquivamento/reativação e preservação de histórico;
+- UX administrativa de Backup/Restauração coordenada pelo Host, com safety backup obrigatório antes do Restore normal destrutivo.
 
 Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md` e especificações do Bloco 8.
 
@@ -68,10 +69,10 @@ Documentar/aprovar antes do código:
 
 ### Estado atual
 
-- Telas 01–12 — **consolidadas/aprovadas**;
+- Telas 01–13 — **consolidadas/aprovadas**;
 - `12-configuracoes-categorias.md` consolida identidade da empresa e gestão simples de categorias;
-- **próximo: Tela 13 — Backup/Restauração — UX**;
-- Tela 14 — Exportação/Impressão + ficha — pendente;
+- `13-backup-restauracao.md` consolida a UX de Backup/Restore, mantendo o mecanismo técnico para o Bloco 11;
+- **próximo: Tela 14 — Exportação/Impressão + ficha compacta — UX**;
 - Tela 15 — Estados transversais — pendente;
 - nenhuma UI de produção criada.
 
@@ -116,7 +117,16 @@ A identidade da empresa consumida pelos templates vem da configuração central 
 
 Fechar backup consistente do SQLite + arquivos administrados, incluindo categorias, equipamentos, atendimentos, identidade/logo da empresa e demais arquivos persistentes aplicáveis.
 
-A Tela 13 do Bloco 8 define apenas UX/fluxos/estados visíveis; a política técnica definitiva pertence a este bloco.
+A Tela 13 do Bloco 8 já consolidou a UX normal:
+
+- Backup/Restore dentro de Configurações;
+- Client não escolhe SQLite/path;
+- Restore apenas para sessão autorizada e backup elegível;
+- confirmação reforçada;
+- safety backup obrigatório antes da etapa destrutiva do Restore normal;
+- disaster recovery sem Host funcional fora da UI normal.
+
+Este bloco ainda fecha mecanismo, pacote, atomicidade, verificações, retenção, restart/reconexão/sessões e recuperação local de desastre.
 
 ## Bloco 12 — Fundação da Fase 2
 
@@ -150,12 +160,12 @@ Somente depois dos blocos anteriores:
 - [x] extensão operacional conceitual aprovada;
 - [x] concorrência geral definida;
 - [ ] todas as telas críticas, incluindo novos requisitos, especificadas/aprovadas;
-- [x] Telas 01–12 do Bloco 8 especificadas/aprovadas;
+- [x] Telas 01–13 do Bloco 8 especificadas/aprovadas;
 - [x] modelagem `Procedimento × Atendimento × Equipamento` aprovada;
 - [ ] execução/checklist decididos;
 - [ ] matriz operacional de permissões decidida;
 - [ ] exportação/impressão + ficha compacta definidas;
-- [ ] backup/restore definidos;
+- [ ] backup/restore técnico definido;
 - [ ] estrutura oficial definida;
 - [x] pendências não bloqueantes registradas;
 - [ ] plano da Fase 2 aprovado.

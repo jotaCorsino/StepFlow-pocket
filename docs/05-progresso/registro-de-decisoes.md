@@ -179,7 +179,8 @@ Consolidado:
 - desativação preferida à exclusão quando houver histórico;
 - Gerência nunca administra ADM;
 - pelo menos um ADM ativo deve existir;
-- após troca da própria senha, sessão corrente permanece e demais sessões da conta são revogadas.
+- após troca da própria senha, sessão corrente permanece e demais sessões da conta são revogadas;
+- Restore é autorizado para ADM e não para Gerência/Funcionário na matriz vigente.
 
 Pendentes:
 
@@ -204,7 +205,8 @@ Consolidado:
 - atendimento preserva a revisão de procedimento utilizada;
 - MAC não é chave canônica do equipamento;
 - identidade da empresa é central e administrada pelo Host;
-- logo/avatar são arquivos controlados pelo Host, não caminhos arbitrários persistidos pelo Client.
+- logo/avatar são arquivos controlados pelo Host, não caminhos arbitrários persistidos pelo Client;
+- Backup/Restore deve tratar banco e arquivos administrados como estado coerente conforme mecanismo do Bloco 11.
 
 ## Concorrência
 
@@ -216,11 +218,12 @@ Consolidado:
 - eventos pós-commit;
 - sem soft/hard lock inicial;
 - dois Hosts não usam o mesmo data dir;
-- categorias/equipamentos/atendimentos/configuração da empresa seguem o mesmo princípio de controle otimista quando necessário.
+- categorias/equipamentos/atendimentos/configuração da empresa seguem o mesmo princípio de controle otimista quando necessário;
+- operações críticas de Backup/Restore serão coordenadas pelo Host e não executadas concorrentemente de forma independente pelo Client.
 
 ## Bloco 8 — UI/UX
 
-### Telas 01–12 — consolidadas
+### Telas 01–13 — consolidadas
 
 - Login;
 - Shell/sidebar, incluindo `Atendimentos`;
@@ -233,7 +236,8 @@ Consolidado:
 - Atendimento/Execução + Equipamento;
 - Usuários/Permissões;
 - Meu perfil;
-- Configurações + Categorias.
+- Configurações + Categorias;
+- Backup/Restauração — UX.
 
 ### Tela 12 — Configurações + Categorias — consolidada
 
@@ -250,11 +254,28 @@ Consolidado:
 - arquivar/reativar substitui exclusão física normal;
 - categoria arquivada deixa de ser opção normal para novas associações, preservando histórico;
 - categorias duplicadas/visualmente equivalentes após normalização devem ser impedidas;
-- regra de nova revisão de procedimento ainda referenciando categoria arquivada permanece pendente;
-- Backup/Restore não foi antecipado;
-- Exportação/Impressão e template A4 não foram antecipados.
+- regra de nova revisão de procedimento ainda referenciando categoria arquivada permanece pendente.
 
-Próxima superfície do Bloco 8: **Tela 13 — Backup/Restauração — UX**.
+### Tela 13 — Backup/Restauração — UX — consolidada
+
+- permanece dentro de `Configurações` como terceira seção local;
+- não cria item global novo na sidebar;
+- autorização continua Host-side/capability-based;
+- Gerência × Backup permanece `PENDENTE`;
+- Restore permanece não autorizado para Gerência;
+- lista compacta mostra data/hora, origem, autor, tamanho e verificação;
+- `Criar backup agora` não pede SQLite, path ou seleção manual de componentes;
+- backup aceito pelo Host não é cancelado silenciosamente ao fechar Client;
+- `Detalhes` e validação Host antecedem qualquer Restore;
+- Restore só aparece para backup elegível e sessão autorizada;
+- confirmação reforçada exige ciência explícita + texto `RESTAURAR`;
+- safety backup do estado atual é obrigatório antes da etapa destrutiva de Restore normal pela UI;
+- se o safety backup não puder ser confirmado, Restore normal não prossegue;
+- sem delete, scheduler, retention, upload/download ou path editável inicialmente;
+- disaster recovery quando Host não inicia é fluxo local/controlado do Bloco 11;
+- Backup permanece separado de Exportação/Impressão.
+
+Próxima superfície do Bloco 8: **Tela 14 — Exportação/Impressão + ficha compacta — UX**.
 
 Nenhuma UI de produção foi criada.
 
@@ -262,7 +283,6 @@ Nenhuma UI de produção foi criada.
 
 ### Bloco 8
 
-- Tela 13 — Backup/Restauração — UX;
 - Tela 14 — Exportação/Impressão + ficha compacta — UX;
 - Tela 15 — estados transversais.
 
@@ -276,7 +296,7 @@ Fechar tecnologia/formato da ficha compacta, limite físico A4, limites textuais
 
 ### Bloco 11
 
-Backup/restore incluindo SQLite e arquivos administrados: categorias, equipamentos, atendimentos, identidade/logo da empresa, avatares e demais dados persistentes aplicáveis.
+Fechar mecanismo de Backup/Restore para SQLite + arquivos administrados, incluindo pacote, atomicidade, verificações, retenção, restart/reconexão/sessões e disaster recovery local. A UX normal já exige safety backup confirmado antes do Restore destrutivo.
 
 ### Bloco 12
 
