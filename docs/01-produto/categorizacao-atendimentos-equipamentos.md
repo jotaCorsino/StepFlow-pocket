@@ -1,7 +1,7 @@
 # Categorização, Atendimentos e Equipamentos — StepFlow
 
 **Status:** CONSOLIDADO NO NÚCLEO DE PRODUTO / DETALHES OPERACIONAIS PENDENTES  
-**Atualização:** 2026-08-21
+**Atualização:** 2026-08-25
 
 ## 1. Objetivo
 
@@ -55,10 +55,18 @@ A hierarquia de categorias só será adicionada se uma necessidade real futura j
 
 Equipamento é opcional. O StepFlow não exige ficha de computador para procedimentos de rede, servidor, Help Desk ou guias gerais.
 
-Para computadores/notebooks, a ficha deve suportar conforme aplicável:
+Para equipamentos de computação, o campo de tipo deve suportar pelo menos:
+
+- `Servidor`;
+- `Desktop`;
+- `Notebook`.
+
+Esses valores descrevem tipos de computador e não devem virar uma enumeração global rígida que impeça outros tipos de equipamento futuros aprovados.
+
+Para computadores, a ficha deve suportar conforme aplicável:
 
 - nome do equipamento;
-- tipo do equipamento;
+- tipo do equipamento/computador;
 - processador;
 - memória RAM;
 - armazenamento;
@@ -67,11 +75,16 @@ Para computadores/notebooks, a ficha deve suportar conforme aplicável:
 - número de série;
 - patrimônio/asset tag;
 - um ou mais endereços MAC;
-- saúde da bateria quando aplicável;
+- saúde da bateria para `Notebook`;
 - cliente/solicitante/responsável relacionado;
-- observações.
+- observações curtas sobre o equipamento.
 
-Campos sem aplicação ao equipamento permanecem vazios/ocultos; não devem se tornar burocracia obrigatória.
+Regras específicas aprovadas:
+
+- `Saúde da bateria` é campo opcional e contextual para `Notebook`; para `Servidor` e `Desktop` não deve ocupar a interface como campo obrigatório;
+- `Observações do equipamento` deve aceitar texto curto e possuir limite explícito;
+- o limite numérico final das observações será fechado junto do template da ficha no Bloco 10 para preservar legibilidade e garantir que a saída compacta não ultrapasse uma folha A4;
+- campos sem aplicação ao equipamento permanecem vazios/ocultos e não devem se tornar burocracia obrigatória.
 
 ## 5. Identidade e busca do equipamento
 
@@ -132,27 +145,52 @@ Essa separação não impede iniciar um atendimento a partir do leitor de um pro
 
 Atendimentos com equipamento devem poder gerar uma saída compacta destinada a acompanhamento físico do equipamento.
 
+Requisitos de formato já aprovados:
+
+- a ficha deve ocupar **no máximo uma folha A4**;
+- pode ser menor que A4 quando o conteúdo permitir, mas não pode gerar uma segunda página como comportamento normal;
+- o layout deve preservar legibilidade em vez de reduzir tipografia de forma excessiva apenas para fazer o conteúdo caber;
+- textos livres destinados à ficha, especialmente observações do equipamento, devem possuir limites coerentes com esse contrato físico.
+
+O cabeçalho da ficha deve suportar identidade da empresa com:
+
+- logo da empresa, quando configurado;
+- nome da empresa;
+- forma(s) de contato;
+- site;
+- e-mail.
+
+Direção visual aprovada para o cabeçalho: logo no início/à esquerda e informações da empresa organizadas ao lado, preservando proporção da marca e apresentação corporativa discreta.
+
 Conteúdo esperado, quando disponível:
 
 - identidade da empresa/StepFlow;
 - código do atendimento;
 - ordem de serviço/referência;
 - cliente/solicitante;
-- código/nome do equipamento;
+- código/nome/tipo do equipamento;
 - processador;
 - RAM;
 - armazenamento;
 - sistema/versão;
 - serial/patrimônio/MAC conforme aplicável;
-- saúde da bateria quando informada;
+- saúde da bateria quando o equipamento for Notebook e o dado estiver informado;
 - resumo dos procedimentos realizados;
-- observações relevantes;
+- observações curtas e relevantes;
 - técnico/responsável;
 - data do atendimento/conclusão.
 
 A saída é documento próprio, não captura de tela.
 
-Tamanho físico, paginação, QR/barcode, tecnologia de geração e necessidade de PDF além da impressão direta pertencem ao Bloco 10.
+Permanecem para o Bloco 10:
+
+- template visual final dentro do limite máximo de uma A4;
+- margens, tipografia, densidade e regras de truncamento/resumo;
+- limite numérico final dos campos textuais que entram na ficha;
+- pré-visualização;
+- impressão direta;
+- necessidade ou não de PDF específico;
+- QR/barcode somente se houver benefício aprovado.
 
 ## 10. Cenários suportados
 
@@ -200,6 +238,9 @@ Deve incorporar:
 - `Atendimentos` na navegação;
 - superfícies de atendimento/execução;
 - ficha de equipamento;
+- tipo de computador com suporte mínimo a Servidor/Desktop/Notebook;
+- saúde da bateria contextual para Notebook;
+- observações curtas do equipamento;
 - busca por atendimento/equipamento;
 - ação de gerar/imprimir ficha compacta.
 
@@ -217,7 +258,7 @@ Fechar:
 
 ### Bloco 10 — Exportação/impressão
 
-Além de PDF/DOCX/impressão dos procedimentos, fechar a ficha compacta de atendimento/equipamento.
+Além de PDF/DOCX/impressão dos procedimentos, fechar a ficha compacta de atendimento/equipamento respeitando os requisitos já aprovados de **máximo uma página A4** e cabeçalho com identidade da empresa.
 
 ## 14. Fora do escopo inicial
 
@@ -241,6 +282,7 @@ Esses itens só entram mediante requisito futuro explícito.
 - matriz operacional de permissões;
 - persistência/comportamento do checklist;
 - regras de edição de equipamento/atendimento após conclusão;
-- tamanho/layout físico da ficha;
+- template/layout final da ficha dentro do limite máximo de uma A4;
+- limite numérico final das observações e demais textos destinados à ficha;
 - necessidade de PDF específico da ficha além da impressão direta;
 - uso futuro de QR/barcode somente se houver benefício real.

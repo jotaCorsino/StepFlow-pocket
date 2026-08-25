@@ -4,7 +4,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 ## Painel de acompanhamento do projeto
 
-**Atualização:** 2026-08-21  
+**Atualização:** 2026-08-25  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
 **Bloco atual:** Bloco 8 — UI/UX  
 **Implementação funcional oficial:** ainda não iniciada
@@ -41,8 +41,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 6 | Editor de Processo + categorias | ✅ Consolidado |
 | 7 | Histórico / revisões | ✅ Consolidado |
 | 8 | Lista / pesquisa de Atendimentos | ✅ Consolidado |
-| 9 | Atendimento / execução + equipamento | 🟡 Próximo |
-| 10 | Usuários / permissões | ⏳ Pendente |
+| 9 | Atendimento / execução + equipamento | ✅ Consolidado |
+| 10 | Usuários / permissões | 🟡 Próximo |
 | 11 | Meu perfil | ⏳ Pendente |
 | 12 | Configurações + categorias | ⏳ Pendente |
 | 13 | Backup / restauração — UX | ⏳ Pendente |
@@ -62,15 +62,19 @@ Estão aprovados conceitualmente:
 - MAC, serial, patrimônio, cliente e OS/referência como atributos de busca, não identidade canônica exclusiva;
 - múltiplos procedimentos por atendimento;
 - vínculo histórico com a revisão do procedimento realmente utilizada;
-- ficha compacta imprimível de atendimento/equipamento.
+- ficha compacta imprimível de atendimento/equipamento;
+- para computadores, tipos mínimos `Servidor`, `Desktop` e `Notebook`;
+- saúde da bateria contextual para `Notebook`;
+- observações curtas e limitadas do equipamento;
+- ficha compacta com no máximo uma página A4 e cabeçalho com identidade da empresa.
 
-Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. Formato físico e tecnologia da ficha compacta pertencem ao Bloco 10.
+Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. Template final, margens, pré-visualização e tecnologia de geração/impressão da ficha compacta pertencem ao Bloco 10.
 
 ### Próximo passo
 
-**Tela 09 — Atendimento / Execução + Equipamento.**
+**Tela 10 — Usuários / permissões.**
 
-A Tela 09 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 08 estar integrada em `main`, a branch encerrada e o checkout local sincronizado.
+A Tela 10 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 09 estar integrada em `main`, a branch encerrada e o checkout local sincronizado.
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 
