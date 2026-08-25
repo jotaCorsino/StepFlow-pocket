@@ -4,40 +4,46 @@
 
 - código/nome da tela: Tela 09 — Atendimento / Execução + Equipamento;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
-- origem do insumo visual: requisitos e decisões consolidadas do StepFlow;
-- data da última consolidação: 2026-08-25.
+- bloco original: Fase 1 — Bloco 8 (UI/UX);
+- atualização operacional: Bloco 9;
+- última consolidação: 2026-08-25.
 
-## 2. Objetivo da tela
+## 2. Objetivo
 
-Ser o workspace principal de um atendimento real, reunindo em uma única superfície:
+Ser o workspace principal de um Atendimento real, reunindo numa única página vertical:
 
-- dados básicos do atendimento;
-- cliente/solicitante e OS/referência quando existirem;
-- equipamento opcional;
-- procedimentos/revisões utilizados;
-- resumo do trabalho realizado;
+- lifecycle/status;
+- dados básicos do Atendimento;
+- responsável/técnico;
+- cliente/solicitante e OS/referência opcionais;
+- Equipamento opcional;
+- Procedimentos/revisões utilizados;
+- progresso/checklist operacional;
+- resumo do trabalho;
 - observações;
-- ponto de entrada para a futura ficha compacta/impressão.
+- histórico operacional compacto;
+- `Ficha / Imprimir`.
 
-A tela não deve transformar o StepFlow em sistema completo de chamados, CRM, estoque ou RMM.
+A tela não transforma o StepFlow em CRM, estoque, RMM ou sistema completo de chamados.
 
-## 3. Ator(es) e permissões
+## 3. Acesso e capacidades
 
-A tela pode ser acessada por usuários autenticados com capacidade de consultar Atendimentos.
+Preset inicial:
 
-Perfis conceituais existentes:
+- ADM: consulta/criação/gestão ampla;
+- Gerência: consulta/criação/gestão ampla, sem administrar ADM;
+- Funcionário: consulta/criação e edição/conclusão do Atendimento do qual é responsável.
 
-- ADM;
-- Gerência;
-- Funcionário/Técnico.
+Autorização real permanece no Host.
 
-A matriz exata de quem cria, edita, conclui, reabre, vincula/troca equipamento, altera cadastro do equipamento ou gera ficha permanece para o Bloco 9.
+A tela pode estar:
 
-O Client apresenta/oculta ações conforme capacidades recebidas, mas a autorização real permanece no Host.
+- em rascunho de novo Atendimento;
+- `Em andamento`;
+- `Concluído`;
+- `Cancelado`.
 
-## 4. Como o usuário chega à tela
-
-Fluxos conceituais:
+## 4. Entrada na tela
 
 ```text
 Atendimentos
@@ -45,33 +51,59 @@ Atendimentos
 → Tela 09
 ```
 
-ou futuramente:
-
-```text
-Leitor de Processo
-→ Iniciar atendimento
-→ Tela 09 com a revisão consultada pré-selecionada
-```
-
 ou:
 
 ```text
 Atendimentos
 → Novo atendimento
-→ Tela 09 em modo de criação
+→ Tela 09 em rascunho somente em memória
 ```
 
-A regra exata de criação e os estados permitidos permanecem para o Bloco 9.
+ou:
 
-## 5. Layout e hierarquia visual
+```text
+Leitor de Processo
+→ Iniciar atendimento
+→ Tela 09 em rascunho
+→ revisão consultada pré-selecionada quando elegível
+```
 
-Estrutura aprovada em uma única página vertical, sem segunda sidebar e sem esconder informações principais atrás de muitas abas:
+Abrir a tela em modo novo não cria registro oficial. O primeiro save aceito pelo Host cria o Atendimento.
+
+## 5. Lifecycle consolidado
+
+```text
+rascunho local
+    ↓ primeiro save aceito
+Em andamento
+   ├─→ Concluído
+   └─→ Cancelado
+
+Concluído/Cancelado
+   ↓ Reabrir
+Em andamento
+```
+
+Estados visíveis iniciais:
+
+- `Em andamento`;
+- `Concluído`;
+- `Cancelado`.
+
+Não criar `Aguardando`, `Pausado`, `Resolvido`, SLA etc. sem novo requisito.
+
+## 6. Layout consolidado
+
+Exemplo em `Em andamento`:
 
 ```text
 ← Atendimentos
 
-Atendimento AT-00142                              [ Ficha / Imprimir* ]
-OS-4587 · João Silva · Responsável: Maria               [ Salvar* ]
+Atendimento AT-00142                    Em andamento
+OS-4587 · João Silva · Responsável: Maria
+
+[ Ficha / Imprimir ]                    [ Salvar ]
+[ Concluir atendimento ]                [ Mais ▾ ]
 
 ────────────────────────────────────────────────────────────
 ATENDIMENTO
@@ -87,7 +119,7 @@ Observações
 [ ......................................................... ]
 
 ────────────────────────────────────────────────────────────
-EQUIPAMENTO                                              [ Editar* ]
+EQUIPAMENTO                                              [ Editar ]
 
 NOTE-15 · EQP-0031                                 Notebook
 
@@ -103,648 +135,549 @@ MAC                 A0:B1:C2:D3:E4:F5
 Bateria             82%
 Observações         Texto curto...
 
-[ Trocar/Vincular equipamento* ] [ Desvincular* ]
+[ Trocar/Vincular equipamento ] [ Desvincular ]
 
 ────────────────────────────────────────────────────────────
 PROCEDIMENTOS UTILIZADOS
 
 PR-001  Manutenção preventiva
-Versão 1.3 · revisão r18                       [ Abrir revisão ]
+Versão 1.3 · revisão r18                  4 de 6 itens
+[ Executar ] [ Abrir revisão ] [ Remover ]
 
 PR-022  Substituição de SSD
-Versão 2.0 · revisão r7                        [ Abrir revisão ]
+Versão 2.0 · revisão r7                   2 de 2 itens
+[ Executar ] [ Abrir revisão ] [ Remover ]
 
-[ + Adicionar procedimento* ]
+[ + Adicionar procedimento ]
+
+────────────────────────────────────────────────────────────
+PROGRESSO DO ATENDIMENTO
+6 de 8 itens concluídos
+
+────────────────────────────────────────────────────────────
+HISTÓRICO
+25/08 10:21 · Atendimento criado · Maria
+25/08 10:28 · Equipamento EQP-0031 vinculado · Maria
 ```
 
-`*` indica ação dependente de capacidade/lifecycle ainda pendente dos Blocos 9/10.
+Ações aparecem somente quando estado + capacidade permitirem.
 
-## 6. Elementos fixos
+## 7. Novo Atendimento
 
-- retorno para `Atendimentos`;
-- identificação legível do atendimento;
-- resumo operacional curto no cabeçalho;
-- seção `Atendimento`;
-- seção `Equipamento`, quando houver, ou estado `Sem equipamento`;
-- seção `Procedimentos utilizados`;
-- feedback de salvamento/erro/conflito;
-- ação contextual futura `Ficha / Imprimir`.
+Antes do primeiro save:
 
-## 7. Componentes e blocos
+- sem `AT-...` definitivo;
+- rascunho somente em memória;
+- se veio do Reader, revisão elegível pode vir pré-selecionada;
+- Funcionário começa como responsável por padrão;
+- sair com alterações pede confirmação;
+- sair descarta rascunho; não existe draft persistente inicial.
 
-### 7.1 Dados do atendimento
+No primeiro save aceito:
 
-Campos conceituais já aprovados:
+- Host cria `service_record_id`;
+- gera `AT-000001`/sequência aplicável;
+- define `started_at`;
+- define `Em andamento`;
+- registra criador/responsável;
+- devolve estado confirmado.
 
-- código legível do atendimento — gerado pelo sistema;
-- OS/referência externa opcional;
-- cliente/solicitante/responsável relacionado, quando aplicável;
-- técnico/responsável pelo atendimento;
-- datas aplicáveis conforme lifecycle futuro;
-- resumo do trabalho realizado;
-- observações.
+## 8. Códigos
 
-Não introduzir campos burocráticos sem requisito aprovado.
-
-### 7.2 Equipamento opcional
-
-A tela funciona nos dois cenários:
+Atendimento:
 
 ```text
-Atendimento sem equipamento
-Atendimento com equipamento
+AT-000001
 ```
 
-Quando não houver equipamento associado, mostrar estado simples:
+Equipamento:
 
-`Nenhum equipamento vinculado a este atendimento.`
+```text
+EQP-000001
+```
 
-Quando houver capacidade correspondente, pode existir ação `Vincular equipamento`.
+Regras:
 
-### 7.3 Busca/vínculo de equipamento
+- Host-only;
+- seis dígitos;
+- gaps permitidos;
+- não editáveis;
+- não substituem IDs internos.
 
-`Vincular equipamento` abre painel/modal contextual com busca por:
+## 9. Dados do Atendimento
 
-- código StepFlow do equipamento;
+Campos principais:
+
+- código legível — somente leitura;
+- Status — derivado do lifecycle, não dropdown livre;
+- OS/referência externa opcional;
+- cliente/solicitante opcional;
+- responsável/técnico;
+- `started_at`/datas de lifecycle quando relevantes;
+- resumo do trabalho;
+- observações.
+
+`Resumo do trabalho` é obrigatório para conclusão, não necessariamente para primeiro save.
+
+## 10. Responsável
+
+- Atendimento precisa de responsável para concluir;
+- Funcionário cria inicialmente para si;
+- Funcionário preset não reatribui para outro usuário;
+- ADM/Gerência podem atribuir/reatribuir;
+- usuário inativo não é escolha normal para nova atribuição;
+- histórico continua identificando usuários antigos;
+- troca de responsável é auditável.
+
+## 11. Edição por estado
+
+### Em andamento
+
+Conforme capacidade, pode alterar:
+
+- OS/Ref.;
+- cliente;
+- responsável;
+- resumo;
+- observações;
+- vínculo de Equipamento;
+- cadastro do Equipamento em fluxo separado;
+- Procedimentos/revisões;
+- checklist operacional.
+
+### Concluído
+
+Somente leitura operacional.
+
+Permitido conforme capacidade:
+
+- consultar;
+- abrir revisões usadas;
+- consultar checklist final;
+- reimprimir ficha;
+- reabrir.
+
+Qualquer correção operacional exige `Reabrir`.
+
+### Cancelado
+
+Somente leitura operacional.
+
+- permanece consultável/pesquisável;
+- não é excluído;
+- pode ser reaberto por ADM/Gerência por preset;
+- ficha, quando acessada, identifica `Cancelado`.
+
+## 12. Salvar
+
+Salvamento é explícito; não existe autosave inicial.
+
+- Host valida capacidade, estado e `row_revision`/base;
+- sucesso só aparece após confirmação de commit;
+- conflito preserva alterações locais;
+- evento remoto não substitui formulário;
+- resultado incerto após desconexão é reconciliado, não repetido cegamente.
+
+## 13. Concluir Atendimento
+
+Disponível apenas em `Em andamento` e conforme capacidade.
+
+Preset:
+
+- ADM/Gerência: podem concluir qualquer Atendimento acessível;
+- Funcionário: pode concluir Atendimento do qual é responsável.
+
+Pré-condições:
+
+- responsável definido;
+- `Resumo do trabalho` válido;
+- estado confirmado/sem conflito;
+- alterações locais relevantes salvas.
+
+Não são obrigatórios por si só:
+
+- OS;
+- cliente;
+- Equipamento;
+- Procedimento vinculado.
+
+### Checklist incompleto
+
+Se houver itens desmarcados:
+
+```text
+Ainda existem itens de checklist não concluídos.
+Deseja concluir este atendimento mesmo assim?
+
+[ Continuar execução ] [ Concluir mesmo assim ]
+```
+
+Não bloquear automaticamente; não existe semântica obrigatório/opcional nos checklists documentais iniciais.
+
+### Ao concluir
+
+Host:
+
+- grava `Concluído`;
+- define `completed_at`;
+- preserva revisões usadas/checklist final;
+- congela projeção relevante do Equipamento;
+- registra evento;
+- publica pós-commit.
+
+## 14. Cancelar Atendimento
+
+Ação contextual, por exemplo em `Mais`.
+
+Preset:
+
+- ADM/Gerência: sim;
+- Funcionário: não.
+
+Regras:
+
+- apenas `Em andamento`;
+- motivo curto obrigatório;
+- confirmação explícita;
+- preserva código/vínculos/histórico;
+- não exclui;
+- bloqueia edição após commit.
+
+## 15. Reabrir
+
+Preset:
+
+- ADM/Gerência: sim;
+- Funcionário: não.
+
+Disponível em `Concluído` ou `Cancelado`.
+
+- ação explícita;
+- auditável;
+- volta para `Em andamento`;
+- preserva histórico anterior;
+- checklist/vínculos continuam disponíveis;
+- nova conclusão grava novo estado final.
+
+## 16. Equipamento opcional
+
+A tela funciona com ou sem Equipamento.
+
+Sem Equipamento:
+
+```text
+Nenhum equipamento vinculado a este atendimento.
+[ Vincular equipamento ]
+```
+
+Não renderizar ficha técnica vazia.
+
+## 17. Vincular Equipamento
+
+Busca por:
+
+- código `EQP-...`;
 - nome;
 - serial;
 - patrimônio;
 - MAC;
 - cliente/solicitante relacionado quando aplicável.
 
-Quando autorizado, também pode oferecer `Cadastrar novo equipamento`.
+Fluxo:
 
-A busca deve reutilizar o cadastro existente e evitar duplicação silenciosa só porque o usuário informou um MAC, serial ou patrimônio já conhecido.
+```text
+Vincular equipamento
+→ pesquisar cadastro existente
+→ selecionar
+ou
+→ Cadastrar novo equipamento, se autorizado
+```
 
-### 7.4 Ficha técnica do equipamento
+Evitar duplicação silenciosa baseada apenas em MAC/serial/patrimônio.
 
-Para equipamentos de computação, o campo `Tipo` deve suportar pelo menos:
+## 18. Cadastro do Equipamento
 
-- `Servidor`;
-- `Desktop`;
-- `Notebook`.
+Campos para computadores, conforme aplicável:
 
-Esses valores não devem formar uma enumeração global rígida que impeça outros tipos de equipamento futuros aprovados.
-
-Exibir conforme disponibilidade:
-
-- código StepFlow;
 - nome;
 - tipo;
-- processador;
-- memória RAM;
-- armazenamento;
-- sistema operacional;
-- versão do sistema;
-- número de série;
-- patrimônio/asset tag;
-- um ou mais MACs;
-- saúde da bateria quando aplicável;
-- cliente/solicitante/responsável relacionado;
-- observações curtas sobre o equipamento.
-
-Campos vazios ou não aplicáveis não ocupam a tela com ruído.
-
-RAM, armazenamento e processador são inicialmente resumos textuais. O StepFlow não tenta inventariar automaticamente o hardware.
-
-### 7.5 Edição do equipamento
-
-Como Equipamento é entidade reutilizável, suas alterações não são misturadas silenciosamente com os campos do Atendimento.
-
-`Editar equipamento` abre modo/painel próprio dentro desta superfície, com salvamento explícito e conflito próprio.
-
-A regra final de quem pode editar, quando pode alterar após conclusão e se determinadas alterações exigem tratamento histórico adicional pertence aos Blocos 9/10.
-
-### 7.6 MACs
-
-Um equipamento pode possuir múltiplos identificadores de rede.
-
-Na UI:
-
-- permitir listar múltiplos MACs;
-- label opcional, como `Wi-Fi`, `Ethernet`, `Dock`;
-- aceitar formatos comuns que o Host consiga normalizar com segurança;
-- não usar MAC como identidade canônica do equipamento.
-
-### 7.7 Saúde da bateria
-
-Para `Notebook`:
-
-- campo opcional e contextual;
-- valor percentual de 0 a 100 quando informado;
-- não deve aparecer como obrigação para `Servidor` ou `Desktop`.
-
-Outros tipos futuros com bateria relevante podem reutilizar o conceito mediante regra apropriada, sem tornar o campo globalmente obrigatório.
-
-### 7.8 Observações do equipamento
-
-Campo de texto curto para informação relevante específica do equipamento que não possua campo estruturado próprio.
-
-Regras aprovadas:
-
-- deve possuir limite explícito;
-- não deve servir como depósito de dados estruturados;
-- o limite numérico final será fechado no Bloco 10 junto do template real da ficha;
-- o limite deve contribuir para que a ficha permaneça legível e não ultrapasse uma página A4.
-
-### 7.9 Procedimentos utilizados
-
-A seção lista um ou mais procedimentos vinculados ao atendimento.
-
-Cada item mostra pelo menos:
-
-- código snapshot;
-- título snapshot;
-- versão editorial utilizada quando disponível;
-- revisão técnica utilizada;
-- ação `Abrir revisão`.
-
-A revisão vinculada não muda automaticamente quando o procedimento oficial receber nova versão.
-
-### 7.10 Adicionar procedimento
-
-`Adicionar procedimento` abre busca de Processos e vincula uma revisão específica.
-
-Se a Tela 09 foi aberta por `Iniciar atendimento` no Leitor, a revisão que estava sendo consultada pode vir pré-selecionada.
-
-Qual revisão pode ser escolhida por cada perfil — publicada, atual, histórica — será fechado com permissões/regras operacionais no Bloco 9.
-
-### 7.11 Resumo do trabalho
-
-Campo de texto objetivo para descrever o que foi efetivamente realizado.
-
-Ele não substitui os vínculos com procedimentos; complementa o registro com contexto específico do atendimento.
-
-### 7.12 Observações do atendimento
-
-Campo livre para informações relevantes do atendimento não cobertas pelos demais campos.
-
-Não deve servir como depósito para dados estruturados que já possuem campo próprio.
-
-### 7.13 Ficha / Imprimir
-
-A Tela 09 possui ponto de entrada contextual para a ficha compacta do atendimento/equipamento.
-
-Requisitos de produto já aprovados para essa ficha:
-
-- ocupar **no máximo uma folha A4**;
-- poder ser menor que A4 quando o conteúdo permitir;
-- não gerar segunda página como comportamento normal;
-- priorizar conteúdo essencial e legibilidade, sem reduzir tipografia de forma excessiva apenas para caber;
-- suportar cabeçalho com logo configurado da empresa;
-- incluir no cabeçalho nome da empresa, forma(s) de contato, site e e-mail quando configurados;
-- usar observações curtas/limitadas de forma compatível com o contrato de uma página.
-
-O Bloco 10 ainda definirá:
-
-- template visual final;
-- margens e dimensões úteis;
-- regras exatas de priorização/truncamento quando necessário;
-- pré-visualização;
-- impressão direta;
-- PDF específico ou não;
-- QR/barcode ou não;
-- tecnologia de geração.
-
-## 8. Interações do usuário
-
-Conforme capacidade/lifecycle futuro:
-
-- consultar atendimento;
-- editar campos do atendimento;
-- salvar alterações explicitamente;
-- vincular equipamento existente;
-- cadastrar equipamento novo;
-- editar equipamento vinculado;
-- trocar/desvincular equipamento;
-- adicionar/remover procedimentos;
-- abrir revisão utilizada no Leitor;
-- retornar à lista preservando contexto;
-- acessar `Ficha / Imprimir`.
-
-Nenhuma dessas ações recebe permissão definitiva neste Bloco 8.
-
-## 9. Navegação e destinos
-
-### Voltar
-
-```text
-Tela 09
-→ Atendimentos
-```
-
-Preservar, quando possível:
-
-- busca;
-- filtros;
-- ordenação;
-- posição de rolagem/página.
-
-### Abrir revisão utilizada
-
-```text
-Tela 09
-→ Abrir revisão
-→ Leitor em modo de revisão específica
-```
-
-O Leitor deve deixar claro quando a revisão é histórica.
-
-### Ficha / Imprimir
-
-```text
-Tela 09
-→ Ficha / Imprimir
-→ futura UX da Tela 14
-```
-
-## 10. Estados da interface
-
-### Carregando
-
-Exibir estrutura estável com loading no conteúdo principal.
-
-### Novo atendimento
-
-Apresentar campos necessários à criação conforme regras do Bloco 9. O código legível é gerado pelo sistema, não digitado livremente pelo usuário.
-
-### Atendimento existente
-
-Exibir estado confirmado pelo Host e ações conforme capacidade.
-
-### Sem equipamento
-
-Mostrar estado simples e não ocupar espaço com ficha técnica vazia.
-
-### Equipamento associado
-
-Mostrar resumo/ficha técnica conforme dados disponíveis.
-
-### Sem procedimentos vinculados
-
-`Nenhum procedimento vinculado a este atendimento.`
-
-Ação `Adicionar procedimento` aparece apenas quando permitida.
-
-### Erro de carregamento
-
-`Não foi possível carregar este atendimento.`
-
-Permitir tentar novamente quando apropriado.
-
-### Host indisponível
-
-Indicar indisponibilidade sem campos de IP/porta/path.
-
-### Sem permissão
-
-Não exibir dados ou ações não autorizados pelo Host.
-
-### Registro indisponível/arquivado
-
-Informar claramente quando o atendimento ou equipamento não puder mais receber determinadas ações. Regras definitivas de lifecycle ficam no Bloco 9.
-
-### Alterações não salvas
-
-Ao tentar sair com mudanças locais pendentes, solicitar confirmação antes de descartá-las.
-
-### Conflito de Atendimento
-
-Em `409 Conflict`:
-
-- não sobrescrever automaticamente o estado mais recente;
-- preservar alterações locais visíveis;
-- informar que o atendimento foi alterado por outro usuário;
-- oferecer reconsulta/reconciliação conforme contrato futuro.
-
-### Conflito de Equipamento
-
-Conflito no cadastro do equipamento deve ser tratado separadamente do Atendimento, preservando as alterações locais daquele formulário.
-
-## 11. Validações
-
-### Atendimento
-
-- OS/referência pode ser vazia;
-- cliente/solicitante pode ser vazio quando não aplicável;
-- equipamento é opcional;
-- pelo menos um responsável/técnico pode ser exigido conforme regra operacional futura;
-- resumo e observações respeitam limites definidos antes da implementação correspondente;
-- código interno/legível não é editado livremente.
-
-### Equipamento
-
-- nome pode ser exigido para novo equipamento, decisão final de Bloco 9/implementação;
-- tipo de computador suporta pelo menos `Servidor`, `Desktop` e `Notebook`;
-- bateria, quando percentual, deve ficar entre 0 e 100;
-- saúde da bateria é contextual para `Notebook` e não obrigatória para `Servidor`/`Desktop`;
-- observações do equipamento possuem limite explícito a ser quantificado no Bloco 10;
-- MAC deve ser normalizável quando informado;
-- múltiplos MACs idênticos normalizados no mesmo equipamento não devem ser criados acidentalmente;
-- serial/patrimônio/MAC não viram chave canônica exclusiva por inferência;
-- campos não aplicáveis permanecem opcionais.
-
-## 12. Mensagens e feedbacks
-
-Exemplos curtos:
-
-- `Atendimento salvo.`
-- `Equipamento atualizado.`
-- `Procedimento adicionado.`
-- `Não foi possível salvar as alterações.`
-- `Este atendimento foi alterado por outro usuário.`
-- `Este equipamento foi alterado por outro usuário.`
-
-Nunca expor stack trace, SQL, caminhos internos ou detalhes sensíveis.
-
-## 13. Dados exibidos
-
-### Atendimento
-
-- código legível;
-- OS/referência;
-- cliente/solicitante;
-- responsável;
-- datas aplicáveis;
-- resumo;
-- observações.
-
-### Equipamento
-
-- código legível;
-- nome/tipo;
 - processador;
 - RAM;
 - armazenamento;
 - SO/versão;
 - serial;
 - patrimônio;
-- MACs;
-- bateria quando aplicável;
-- observações curtas e vínculo de cliente/responsável quando disponível.
+- um ou mais MACs com label opcional;
+- saúde da bateria;
+- cliente/responsável relacionado;
+- observações curtas.
 
-### Procedimentos
+Tipos mínimos:
 
-- código/título snapshot;
-- versão snapshot;
-- revisão efetivamente utilizada.
+- Servidor;
+- Desktop;
+- Notebook.
 
-## 14. Dados enviados/alterados
+Não transformar isso em enum global rígida.
 
-Conceitualmente, a tela pode enviar mutações separadas para:
+### Bateria
 
-- criar/alterar Atendimento;
-- vincular/desvincular Equipamento;
-- criar/alterar Equipamento;
-- adicionar/remover vínculo de Procedimento/Revisão.
+- contextual para Notebook;
+- opcional;
+- percentual 0–100 quando informado;
+- não aparece como obrigação para Servidor/Desktop.
 
-Os limites transacionais e payloads finais não são definidos neste Bloco 8.
+### MACs
 
-## 15. Regras de negócio
+- múltiplos;
+- labels opcionais como Wi-Fi/Ethernet/Dock;
+- Host normaliza formatos;
+- MAC não é identidade canônica.
 
-- Atendimento representa trabalho real;
-- Equipamento é opcional e reutilizável;
-- Atendimento pode utilizar múltiplos procedimentos;
-- vínculo preserva revisão exata utilizada;
-- alteração futura do procedimento não reescreve o atendimento histórico;
-- MAC/serial/patrimônio são atributos pesquisáveis, não identidade principal;
-- ficha técnica não é obrigatória para atendimentos sem equipamento;
-- ficha compacta deriva do estado confirmado, não de screenshot;
-- ficha compacta tem limite máximo de uma página A4;
-- cabeçalho da ficha suporta identidade configurada da empresa;
-- não criar lifecycle/status nesta tela por inferência;
-- não criar checklist operacional persistente antes do Bloco 9;
-- não transformar a tela em CRM, estoque, RMM ou help desk completo.
+### Observações
 
-## 16. Regras de autorização
+- texto curto;
+- limite explícito;
+- valor numérico final no Bloco 10 por causa da ficha A4.
 
-O Host decide:
+## 19. Capacidades de Equipamento
 
-- quem consulta;
-- quem cria/edita Atendimento;
-- quem vincula/troca equipamento;
-- quem cria/edita/arquiva equipamento;
-- quem adiciona/remove procedimento;
-- quem acessa ficha/impressão.
+Preset:
 
-A matriz final será consolidada no Bloco 9.
+- criar/editar: ADM/Gerência/Funcionário;
+- arquivar/reativar: ADM/Gerência;
+- Funcionário pode vincular/trocar/desvincular em Atendimento editável do qual é responsável.
 
-## 17. Impacto em persistência
+Equipamento possui salvamento/conflito separado do Atendimento.
 
-Esta tela utiliza a extensão conceitual já aprovada:
+Não arquivar Equipamento vinculado a Atendimento `Em andamento`.
 
-- `service_records`;
-- `equipment`;
-- `equipment_network_identifiers`;
-- `service_record_processes`.
+## 20. Histórico do Equipamento no Atendimento concluído
 
-Não cria migration nem schema novo neste Bloco 8.
+Alteração futura no cadastro global não reescreve o estado histórico/ficha final já concluídos.
 
-A necessidade de limites físicos/textuais da ficha deve ser refletida no contrato de validação antes da implementação, sem criar persistência de apresentação desnecessária.
+Ao concluir, Host congela a projeção relevante do Equipamento.
 
-## 18. Contratos Client ↔ Host necessários
+Após reabertura e nova conclusão, um novo estado final pode ser capturado; o histórico anterior não desaparece.
 
-Conceitualmente serão necessários contratos para:
+## 21. Procedimentos utilizados
 
-- obter Atendimento por ID/código;
-- criar/alterar Atendimento;
-- pesquisar Equipamentos;
-- obter Equipamento;
-- criar/alterar Equipamento;
-- vincular/desvincular Equipamento;
-- listar Procedimentos/Revisões vinculados;
-- adicionar/remover vínculo de Procedimento/Revisão;
-- obter capacidades da sessão para cada ação.
+Cada item mostra:
 
-Rotas, payloads, códigos de erro e atomicidade final serão definidos antes da implementação correspondente.
+- código snapshot;
+- título snapshot;
+- versão editorial usada;
+- revisão técnica exata;
+- progresso de checklist quando houver;
+- ações contextuais.
 
-## 19. Eventos em tempo real relevantes
+A revisão nunca é atualizada automaticamente após nova publicação.
 
-Eventos pós-commit conceituais podem indicar:
+## 22. Adicionar Procedimento
+
+Enquanto `Em andamento` e autorizado:
+
+- abrir busca de Processos;
+- selecionar revisão elegível;
+- vincular explicitamente.
+
+Por preset:
+
+- Funcionário: revisão publicada que possa ler;
+- ADM/Gerência: publicada por padrão; podem selecionar explicitamente histórica/não publicada autorizada.
+
+Se Atendimento veio do Reader, a revisão consultada pode estar pré-selecionada conforme essas regras.
+
+## 23. Remover Procedimento
+
+Somente `Em andamento` + capacidade.
+
+Se houver checklist marcado:
+
+- mostrar confirmação;
+- remover da composição ativa somente após ação consciente;
+- preservar auditoria da remoção.
+
+## 24. Executar Procedimento / Checklist
+
+Ação `Executar` abre Tela 05 na revisão exata e contexto do Atendimento.
+
+```text
+Atendimento AT-00142
+→ PR-001 r18
+→ Executar
+→ Reader: "Executando no atendimento AT-00142"
+```
+
+Checklist nesse contexto é persistente.
+
+Em Reader standalone, continua documental.
+
+## 25. Progresso
+
+Por Procedimento e agregado do Atendimento:
+
+```text
+PR-001        4 de 6
+PR-022        2 de 2
+Atendimento   6 de 8
+```
+
+- deriva apenas de checklist;
+- etapas visitadas não contam;
+- revisão sem checklist não mostra 0%;
+- 100% não conclui automaticamente.
+
+## 26. Concorrência do checklist
+
+- controle granular por item/equivalente;
+- usuários marcando itens diferentes não conflitam globalmente;
+- mesmo item concorrente recebe resultado determinístico/conflito apropriado;
+- não usar revisão global do Atendimento para invalidar todo checkbox por conveniência.
+
+## 27. Histórico operacional compacto
+
+Eventos de alto valor podem aparecer numa área/painel compacto:
+
+- criado;
+- responsável alterado;
+- Equipamento vinculado/trocado/desvinculado;
+- Procedimento adicionado/removido;
+- concluído;
+- cancelado + motivo;
+- reaberto.
+
+Não mostrar timeline enorme de cada checkbox/campo por padrão.
+
+## 28. Ficha / Imprimir
+
+Preset de capacidade:
+
+- ADM: sim;
+- Gerência: sim;
+- Funcionário: sim para Atendimento acessível.
+
+Lifecycle:
+
+- `Em andamento`: pode gerar ficha de acompanhamento;
+- `Concluído`: pode reimprimir usando estado histórico aplicável;
+- `Cancelado`: saída precisa identificar claramente o estado;
+- alterações não salvas/conflitos bloqueiam geração.
+
+A ficha:
+
+- usa estado confirmado do Host;
+- pode existir com ou sem Equipamento;
+- nunca é screenshot;
+- máximo uma página A4;
+- usa identidade central da empresa.
+
+Template, preview, PDF específico, margens, limites textuais e impressão Windows ficam no Bloco 10.
+
+## 29. Voltar para lista
+
+Preservar quando possível:
+
+- busca;
+- filtros Responsável/Status/Período;
+- ordenação;
+- página;
+- scroll.
+
+## 30. Estados transversais
+
+Segue Tela 15:
+
+- loading local;
+- Host indisponível;
+- WebSocket degradado;
+- sessão expirada;
+- sem permissão;
+- recurso indisponível;
+- conflito;
+- `SERVER_BUSY`;
+- resultado incerto;
+- alterações não salvas.
+
+## 31. Validações principais
+
+### Atendimento
+
+- código não é editável;
+- equipamento é opcional;
+- OS é opcional;
+- cliente é opcional;
+- responsável obrigatório para conclusão;
+- resumo obrigatório para conclusão;
+- cancelamento exige motivo;
+- lifecycle é transição explícita, não dropdown livre.
+
+### Equipamento
+
+- código não editável;
+- múltiplos MACs normalizáveis;
+- bateria 0–100 quando informada;
+- bateria contextual;
+- observações limitadas;
+- campos não aplicáveis opcionais.
+
+## 32. Eventos em tempo real
+
+Pós-commit podem sinalizar:
 
 - Atendimento alterado;
-- Equipamento alterado;
-- procedimento/revisão vinculada ou removida;
-- equipamento arquivado/indisponível.
+- status alterado;
+- responsável alterado;
+- Equipamento alterado/vinculado;
+- Procedimento vinculado/removido;
+- checklist alterado;
+- conclusão/reabertura/cancelamento.
 
-Durante edição local:
+Client reconsulta estado relevante; nunca sobrescreve formulário local silenciosamente.
 
-- evento não substitui silenciosamente campos sendo editados;
-- Client informa que existe alteração mais recente;
-- próximo save pode encontrar conflito.
+## 33. Acessibilidade e janelas
 
-## 20. Comportamento de concorrência
-
-Atendimento e Equipamento utilizam controle otimista equivalente ao restante do produto.
-
-Regras de UX:
-
-- nunca `last write wins` silencioso;
-- preservar conteúdo local em conflito;
-- informar qual recurso conflitou;
-- reconsultar estado confirmado quando solicitado;
-- não alterar automaticamente a revisão de procedimento já vinculada.
-
-## 21. Acessibilidade e teclado
-
-- labels visíveis para campos;
-- ordem de Tab coerente;
+- labels visíveis;
+- headings semânticos;
 - foco visível;
-- botões icon-only com nome acessível;
-- seções com headings semânticos;
-- conflitos/erros não dependem apenas de cor;
-- listas de MAC/procedimentos operáveis por teclado;
-- modais/painéis contextuais com gerenciamento correto de foco.
+- icon-only com nome acessível;
+- listas/checklists operáveis por teclado;
+- mensagens não dependem só de cor;
+- desktop Windows como alvo;
+- em janela menor, colunas empilham sem transformar em UI mobile/hamburger.
 
-## 22. Comportamento em tamanhos de janela suportados
+## 34. Decisões consolidadas
 
-Desktop Windows é o alvo principal.
-
-Em janelas menores suportadas:
-
-- campos em duas colunas podem passar para uma coluna;
-- preservar código do atendimento e ações principais;
-- ficha do equipamento quebra em linhas sem truncar identificadores importantes;
-- procedimentos permanecem legíveis;
-- não transformar automaticamente em layout mobile;
-- evitar scroll horizontal sempre que possível.
-
-## 23. Preservação visual / decisões de UI aprovadas
-
-Manter:
-
-- visual corporativo, limpo e discreto;
-- sidebar global à esquerda;
-- sem topbar global redundante;
-- seções técnicas simples;
-- densidade moderada;
-- ações primárias limitadas;
-- sem cards decorativos ou KPIs;
-- identidade visual coerente com Lista de Atendimentos e Leitor.
-
-## 24. Divergências com documentação anterior
-
-Nenhuma divergência de produto.
-
-Esta tela materializa o domínio `Procedimento × Atendimento × Equipamento` já aprovado, sem antecipar lifecycle/checklist/permissões do Bloco 9 nem a tecnologia/template final da ficha do Bloco 10.
-
-O requisito de tamanho da ficha foi refinado durante esta análise: fica aprovado o limite de **no máximo uma página A4**, embora o template final permaneça para o Bloco 10.
-
-## 25. Decisões consolidadas nesta análise
-
-Aprovadas pelo PO:
-
-1. usar uma única página vertical com seções `Atendimento`, `Equipamento` e `Procedimentos utilizados`, sem tabs obrigatórias;
-2. reutilizar a mesma Tela 09 para novo atendimento e atendimento existente;
-3. `Vincular equipamento` pesquisa existente antes de permitir cadastrar novo;
-4. ficha técnica do equipamento mostra somente campos preenchidos/aplicáveis;
-5. edição do Equipamento fica visualmente separada da edição do Atendimento, com salvamento/conflito próprio;
-6. múltiplos MACs podem ser exibidos com label opcional;
-7. procedimentos vinculados exibem versão editorial + revisão técnica utilizada;
-8. `Abrir revisão` leva ao Leitor na revisão específica;
-9. atendimento iniciado pelo Leitor pode pré-selecionar a revisão consultada;
-10. `Resumo do trabalho` e `Observações` permanecem campos distintos;
-11. a tela expõe ação contextual `Ficha / Imprimir`, delegando o fluxo final à Tela 14/Bloco 10;
-12. `Status`, conclusão, reabertura e checklist persistente não são definidos antes do Bloco 9;
-13. para computadores, `Tipo` suporta pelo menos `Servidor`, `Desktop` e `Notebook`;
-14. `Saúde da bateria` é contextual para `Notebook`;
-15. `Observações do equipamento` é texto curto com limite explícito, a quantificar no Bloco 10;
-16. a ficha compacta ocupa no máximo uma folha A4;
-17. o cabeçalho da ficha suporta logo configurado, nome da empresa, forma(s) de contato, site e e-mail;
-18. o template prioriza conteúdo essencial e legibilidade em vez de gerar segunda página ou reduzir excessivamente a tipografia.
-
-Continuam herdadas dos documentos superiores:
-
-- Atendimento como ocorrência real;
+- workspace vertical único;
+- lifecycle de três estados;
+- primeiro save cria registro;
+- Funcionário opera por responsabilidade;
+- resumo obrigatório para conclusão;
+- checklist incompleto avisa, não bloqueia;
+- concluído/cancelado são read-only até reabertura;
+- cancelamento exige motivo;
+- ADM/Gerência reabrem por preset;
 - Equipamento opcional/reutilizável;
-- identidade própria do equipamento;
-- múltiplos procedimentos por atendimento;
-- vínculo à revisão exata utilizada;
-- ficha compacta derivada do estado confirmado;
-- autorização Host-side.
+- Funcionário cria/edita Equipamento;
+- ADM/Gerência arquivam/reativam;
+- revisão exata do Procedimento é preservada;
+- Funcionário usa revisão publicada por padrão;
+- checklist persiste só em contexto de Atendimento;
+- progresso deriva só de checklist;
+- snapshot de Equipamento protege histórico concluído;
+- ficha segue lifecycle e estado confirmado;
+- concorrência continua otimista e granular.
 
-## 26. Pendências remanescentes
+## 35. Fora do escopo
 
-### Bloco 9
-
-- lifecycle/status final do Atendimento;
-- criação/edição/conclusão/reabertura;
-- persistência de checklist/progresso;
-- regra de edição após conclusão;
-- matriz operacional de permissões;
-- formato exato de `AT-...` e `EQP-...`;
-- regra final sobre quais revisões podem ser vinculadas por cada perfil.
-
-### Bloco 10
-
-- valor numérico do limite das observações do equipamento;
-- template físico final da ficha dentro do limite A4;
-- margens, tipografia e densidade;
-- regra de priorização/truncamento quando o conteúdo for maior que a área útil;
-- pré-visualização;
-- impressão direta;
-- geração de PDF específico ou não;
-- QR/barcode ou não.
-
-## 27. Fora do escopo
-
-- descoberta automática de hardware;
-- estoque/peças;
-- SLA/fila de chamados completa;
-- CRM/financeiro;
-- RMM/inventário automatizado;
-- paginação em múltiplas folhas da ficha como comportamento normal.
-
-## 28. Critérios de aceite
-
-- [x] PO aprova a estrutura vertical da Tela 09;
-- [x] PO aprova uso da mesma tela para novo/existente;
-- [x] PO aprova fluxo de vincular/pesquisar/cadastrar Equipamento;
-- [x] PO aprova ficha técnica com campos condicionais;
-- [x] PO aprova edição separada do Equipamento;
-- [x] PO aprova exibição de múltiplos MACs;
-- [x] PO aprova lista de Procedimentos com revisão exata;
-- [x] PO aprova `Resumo do trabalho` separado de `Observações`;
-- [x] PO aprova ponto de entrada `Ficha / Imprimir`;
-- [x] PO aprova tipos mínimos `Servidor`, `Desktop` e `Notebook` para computadores;
-- [x] PO aprova bateria contextual para Notebook;
-- [x] PO aprova observações curtas/limitadas do equipamento;
-- [x] PO aprova ficha com no máximo uma página A4;
-- [x] PO aprova cabeçalho com identidade da empresa;
-- [x] lifecycle/checklist não foram inventados;
-- [x] equipamento permanece opcional;
-- [x] alteração de procedimento não muda revisão vinculada;
-- [x] conflitos não sobrescrevem silenciosamente;
-- [x] nenhuma implementação funcional foi criada.
-
-## 29. Casos de teste/smoke sugeridos
-
-Quando houver implementação:
-
-- abrir atendimento existente sem equipamento;
-- abrir atendimento existente com equipamento;
-- criar atendimento sem equipamento;
-- iniciar atendimento a partir do Leitor;
-- vincular equipamento existente por código;
-- buscar equipamento por serial/patrimônio/MAC;
-- cadastrar equipamento novo;
-- selecionar tipo Servidor, Desktop e Notebook;
-- editar CPU/RAM/armazenamento/SO;
-- registrar múltiplos MACs;
-- registrar bateria válida para Notebook e rejeitar percentual inválido;
-- não exigir bateria para Servidor/Desktop;
-- validar limite de observações do equipamento quando definido;
-- adicionar dois procedimentos;
-- abrir revisão vinculada no Leitor;
-- procedimento receber versão nova sem alterar vínculo existente;
-- salvar Atendimento;
-- salvar Equipamento;
-- conflito de Atendimento;
-- conflito de Equipamento;
-- sair com alterações não salvas;
-- Host indisponível;
-- usuário sem capacidade de edição;
-- atendimento sem cliente/OS;
-- equipamento com campos técnicos parciais;
-- acessar ponto `Ficha / Imprimir` quando permitido;
-- validar que a futura ficha respeita o limite de uma página A4.
+- CRM;
+- estoque;
+- RMM;
+- financeiro;
+- SLA/prioridade;
+- aprovação gerencial;
+- workflow customizável;
+- apontamento complexo de horas;
+- chat social;
+- autosave/offline queue;
+- implementação funcional nesta fase.

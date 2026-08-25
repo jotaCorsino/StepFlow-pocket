@@ -4,48 +4,31 @@
 
 - código/nome da tela: Tela 08 — Lista e Pesquisa de Atendimentos;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
-- origem do insumo visual: requisitos e decisões consolidadas do StepFlow;
-- data da última consolidação: 2026-08-21.
+- bloco original: Fase 1 — Bloco 8 (UI/UX);
+- atualização operacional: Bloco 9;
+- última consolidação: 2026-08-25.
 
-## 2. Objetivo da tela
+## 2. Objetivo
 
-Permitir localizar e abrir rapidamente registros reais de serviço/execução, mantendo a separação conceitual entre:
+Ser a superfície compacta de consulta e entrada para Atendimentos reais, mantendo busca operacional separada da busca documental de Processos.
 
-- `Processos` — documentação/modelos oficiais;
-- `Atendimentos` — ocorrências concretas de serviço;
-- `Equipamentos` — ativos físicos opcionais associados a atendimentos quando aplicável.
+A tela não vira dashboard, fila de chamados, kanban, SLA ou CRM.
 
-A tela favorece busca operacional por qualquer informação disponível do atendimento, sem exigir que o usuário saiba antecipadamente qual campo contém o dado procurado.
+## 3. Ator(es) e autorização
 
-## 3. Ator(es) e permissões
+Pode consultar quem possuir capacidade de `Consultar Atendimentos`.
 
-A tela pode ser acessada por usuários autenticados com capacidade de consultar Atendimentos.
+Preset inicial:
 
-Perfis conceituais existentes:
+- ADM: sim;
+- Gerência: sim;
+- Funcionário: sim.
 
-- ADM;
-- Gerência;
-- Funcionário/Técnico.
+`Novo atendimento` aparece somente para sessão com capacidade de criação; preset inicial sim para os três perfis.
 
-A matriz exata de quem pode visualizar todos os atendimentos, apenas os próprios, criar, editar, concluir ou reabrir permanece para o Bloco 9.
+Autorização real é Host-side.
 
-O Client pode ocultar ações sem capacidade, mas a autorização real é sempre validada pelo Host.
-
-## 4. Como o usuário chega à tela
-
-Fluxo principal:
-
-```text
-Shell/sidebar
-→ Atendimentos
-→ Lista/Pesquisa de Atendimentos
-```
-
-O retorno futuro da Tela 09 deve preservar busca, filtros, ordenação vigente e posição da lista quando possível.
-
-## 5. Layout e hierarquia visual
-
-Estrutura aprovada:
+## 4. Layout consolidado
 
 ```text
 Atendimentos                                      [ Novo atendimento* ]
@@ -53,366 +36,231 @@ Atendimentos                                      [ Novo atendimento* ]
 [ Buscar por atendimento, OS, cliente, equipamento,
   serial, patrimônio ou MAC...                                 ]
 
-[ Responsável ▾ ] [ Período ▾ ]                 [ Limpar filtros ]
+[ Responsável ▾ ] [ Status ▾ ] [ Período ▾ ]     [ Limpar filtros ]
 
-Atendimento   OS/Ref.   Cliente        Equipamento         Responsável   Data
-AT-00142      OS-4587   João Silva     NOTE-15 · EQP-31    Maria         21/08
-AT-00141      —         Financeiro     —                   Carlos        21/08
-AT-00140      CH-991    Empresa Alfa   PC-ADM · EQP-28     Maria         20/08
+Atendimento   Status        OS/Ref.   Cliente      Equipamento      Responsável   Data
+AT-00142      Em andamento  OS-4587   João Silva   NOTE-15 · EQP-31 Maria         21/08
+AT-00141      Concluído     —         Financeiro   —                Carlos        21/08
+AT-00140      Cancelado     CH-991    Empresa Alfa PC-ADM · EQP-28 Maria         20/08
 ```
 
-`Novo atendimento` aparece somente quando a capacidade correspondente existir. Sua regra final permanece pendente do Bloco 9.
+`*` depende de capacidade.
 
-A tela usa a sidebar global aprovada e não cria navegação paralela.
+Visual continua em lista/tabela compacta, não cards.
 
-## 6. Elementos fixos
+## 5. Lifecycle exibido
 
-- título `Atendimentos`;
-- campo principal de busca;
-- filtros `Responsável` e `Período`;
-- resultado em lista/tabela compacta;
-- ação `Limpar filtros` quando houver filtro ativo;
-- feedback de loading/erro/vazio no espaço da lista.
-
-## 7. Componentes e blocos
-
-### 7.1 Busca principal
-
-Campo único para procurar informações operacionais disponíveis.
-
-Deve considerar, quando existentes:
-
-- código do atendimento;
-- ordem de serviço/referência externa;
-- cliente/solicitante/responsável relacionado;
-- código interno/legível do equipamento;
-- nome do equipamento;
-- número de série;
-- patrimônio/asset tag;
-- endereço MAC normalizado.
-
-Exemplos conceituais:
+Estados consolidados pelo Bloco 9:
 
 ```text
-AT-00142
-OS-4587
-João Silva
-NOTE-15
-EQP-0031
-SN123456
-PAT-884
-A0:B1:C2:D3:E4:F5
+Em andamento
+Concluído
+Cancelado
 ```
 
-O usuário não precisa selecionar previamente o tipo de identificador.
+A lista mostra estado de forma discreta e permite filtro `Status`.
 
-### 7.2 Filtros iniciais
+Não inventar outros estados sem decisão futura explícita.
 
-Filtros aprovados para a primeira versão desta tela:
+## 6. Busca
+
+Um único campo operacional combina referências úteis.
+
+Busca pode localizar por:
+
+- código do Atendimento (`AT-000001`);
+- OS/referência externa;
+- cliente/solicitante;
+- código/nome do Equipamento;
+- serial;
+- patrimônio;
+- MAC normalizado.
+
+Não misturar conteúdo documental de Procedimentos nessa busca.
+
+## 7. Filtros
+
+Filtros iniciais consolidados:
 
 - `Responsável`;
+- `Status`;
 - `Período`.
 
-Não incluir filtro definitivo de `Status` enquanto o lifecycle de Atendimento não for consolidado no Bloco 9.
+Busca e filtros são combináveis.
 
-### 7.3 Tabela/lista
+### Responsável
 
-Colunas aprovadas:
+Filtra por responsável/técnico atual do Atendimento.
+
+A visibilidade dos registros continua limitada pela autorização da sessão; filtro não amplia acesso.
+
+### Status
+
+Pode selecionar um ou mais estados conforme componente final, preservando semântica clara.
+
+Estados disponíveis inicialmente são apenas os três consolidados.
+
+### Período
+
+Usa `started_at` como referência temporal inicial.
+
+- `Data` na tabela representa `started_at`;
+- intervalo inválido/reverso é rejeitado;
+- ausência de filtro significa todos os períodos acessíveis conforme paginação/consulta.
+
+## 8. Ordenação
+
+Ordenação padrão:
+
+```text
+started_at DESC
+```
+
+Atendimentos iniciados mais recentemente aparecem primeiro.
+
+A implementação pode oferecer outras ordenações depois, sem alterar o default consolidado.
+
+## 9. Resultado e navegação
+
+Clique na linha/título/código abre Tela 09.
+
+```text
+Tela 08
+→ Atendimento AT-...
+→ Tela 09
+```
+
+Ao voltar, preservar quando possível:
+
+- busca;
+- filtros;
+- ordenação;
+- página;
+- posição de rolagem.
+
+## 10. Novo Atendimento
+
+`Novo atendimento` abre Tela 09 em rascunho somente em memória.
+
+- abrir não cria registro;
+- código ainda não existe;
+- primeiro save aceito pelo Host cria o Atendimento, gera `AT-......`, define `started_at` e `Em andamento`;
+- sair antes do primeiro save segue proteção de alterações não salvas.
+
+## 11. Colunas
+
+Colunas principais:
 
 - Atendimento;
-- OS/Referência;
-- Cliente/Solicitante;
+- Status;
+- OS/Ref.;
+- Cliente;
 - Equipamento;
 - Responsável;
 - Data.
 
-A coluna `Equipamento` mostra somente resumo curto, como nome/código. CPU, RAM, armazenamento, bateria e demais detalhes pertencem à futura Tela 09.
-
-A coluna `Data` representa a referência temporal operacional disponível. A lista usa ordenação de mais recentes primeiro, mas qual timestamp exato governa essa ordenação será definido junto ao lifecycle no Bloco 9.
-
-## 8. Interações do usuário
-
-- digitar termo de busca;
-- aplicar/remover filtros;
-- limpar filtros;
-- selecionar uma linha para abrir o atendimento;
-- usar teclado para navegar pelos resultados;
-- acionar `Novo atendimento` somente se autorizado.
-
-Busca e filtros são combináveis.
-
-## 9. Navegação e destinos
-
-Ação principal da linha:
+Equipamento aparece apenas como resumo, por exemplo:
 
 ```text
-Lista de Atendimentos
-→ selecionar atendimento
-→ Tela 09 — Atendimento/Execução + Equipamento
+NOTE-15 · EQP-000031
 ```
 
-Ao retornar da Tela 09, preservar quando possível:
+Sem equipamento:
 
-- termo de busca;
-- filtros;
-- ordenação vigente;
-- posição de rolagem/página.
+```text
+—
+```
 
-Não abrir `Processos` a partir da linha como ação principal.
+Não transformar a lista em ficha técnica.
 
-## 10. Estados da interface
+## 12. Estados vazios
 
-### Inicial
-
-Lista recente compatível com a autorização do usuário.
-
-### Loading
-
-Exibir carregamento no conteúdo da lista, mantendo busca/filtros estáveis.
-
-### Vazio sem busca/filtro
+### Nenhum Atendimento existente/acessível
 
 `Nenhum atendimento disponível.`
 
-Se o usuário puder criar, pode haver ação contextual `Novo atendimento`.
+Se a sessão puder criar, pode aparecer CTA contextual.
 
-### Vazio com busca/filtro
+### Busca/filtros sem resultado
 
-`Nenhum atendimento encontrado com os critérios informados.`
+`Nenhum resultado encontrado com os filtros atuais.`
 
 Oferecer `Limpar filtros` quando aplicável.
 
-### Erro de consulta
+Não confundir os dois estados.
 
-`Não foi possível carregar os atendimentos.`
+## 13. Loading e Host indisponível
 
-Permitir tentar novamente.
+Segue padrão da Tela 15:
 
-### Sem permissão
+- manter busca/filtros estáveis durante reconsulta;
+- não mostrar dados antigos como atuais;
+- Host indisponível não oferece IP/porta/path;
+- WebSocket degradado pode permitir consultas HTTP quando o Host continuar saudável.
 
-Não mostrar dados que o Host não autorizou. Se a própria área não for autorizada, o Shell deve ocultar `Atendimentos`; acesso direto deve resultar em estado de permissão negada.
+## 14. Atualizações em tempo real
 
-### Host indisponível
+Eventos pós-commit relevantes:
 
-Indicar indisponibilidade do Host sem oferecer edição de IP, porta ou caminhos técnicos.
+- Atendimento criado/alterado;
+- status alterado;
+- responsável alterado;
+- Equipamento vinculado/alterado;
+- Atendimento concluído/reaberto/cancelado.
 
-### Item removido/indisponível
+Client reconsulta lista quando necessário.
 
-Se um item desaparecer entre listagem e abertura, informar que o atendimento não está mais disponível e atualizar a lista.
+Preservar contexto e evitar deslocamento abrupto durante leitura.
 
-### Conflito
+## 15. Concorrência
 
-Esta tela é predominantemente de leitura. Conflitos de edição pertencem à futura Tela 09 e ao Bloco 9.
+A lista é somente leitura.
 
-## 11. Validações
+Conflitos de edição/lifecycle pertencem à Tela 09.
 
-- busca vazia significa consulta normal, não erro;
-- filtros inválidos ou combinações impossíveis devem ser rejeitados claramente;
-- período não aceita intervalo invertido;
-- normalização de MAC pertence ao contrato/Host e não deve exigir formato visual único do usuário quando puder ser interpretado com segurança.
+Evento remoto não transforma item local em estado oficial sem reconsulta.
 
-## 12. Mensagens e feedbacks
+## 16. Segurança
 
-Mensagens curtas e operacionais. Não expor stack trace, SQL, IDs internos desnecessários, caminhos locais ou detalhes de infraestrutura.
+- área/ações aparecem por capacidade;
+- acesso direto não autorizado é rejeitado pelo Host;
+- filtros não revelam registros fora do escopo autorizado;
+- mensagens não expõem dados protegidos de registros sem acesso.
 
-## 13. Dados exibidos
-
-Por linha, conforme disponibilidade/autorização:
-
-- código legível do atendimento;
-- OS/referência externa;
-- cliente/solicitante;
-- resumo do equipamento;
-- técnico/responsável;
-- data operacional apropriada.
-
-A ficha técnica completa não aparece na lista.
-
-## 14. Dados enviados/alterados
-
-A tela de lista não altera o Atendimento por si só.
-
-Envia somente critérios de consulta, como:
-
-- termo de busca;
-- responsável;
-- período;
-- paginação/limite;
-- ordenação quando suportada.
-
-Criação/edição pertence à futura Tela 09 e ao Bloco 9.
-
-## 15. Regras de negócio
-
-- `Atendimentos` representa trabalho real, não documentação;
-- equipamento é opcional;
-- cliente/OS também podem ser opcionais;
-- um atendimento pode usar múltiplos procedimentos;
-- vínculo com procedimento preserva revisão efetivamente utilizada;
-- MAC, serial e patrimônio são atributos de busca, não identidade canônica exclusiva;
-- não criar lifecycle/status por inferência nesta tela;
-- não transformar a lista em CRM, help desk completo, estoque ou RMM.
-
-## 16. Regras de autorização
-
-- Host filtra/autoriza os registros retornados;
-- Client não assume que esconder botão é controle de segurança;
-- capacidades exatas de visualizar todos/próprios atendimentos permanecem para o Bloco 9;
-- `Novo atendimento` só aparece quando permitido.
-
-## 17. Impacto em persistência
-
-Nenhuma nova persistência é decidida por esta tela.
-
-A especificação exige apenas que os dados operacionais aprovados possam ser consultados eficientemente. Índices, normalização e implementação de busca pertencem à arquitetura/implementação posterior.
-
-## 18. Contratos Client ↔ Host necessários
-
-Conceitualmente, listagem/pesquisa deve receber:
-
-- termo de busca opcional;
-- filtros autorizados;
-- paginação;
-- ordenação;
-- contexto de sessão.
-
-E retornar:
-
-- registros resumidos autorizados;
-- total/continuação quando necessário;
-- metadados mínimos para renderização.
-
-Rotas e payloads finais não são definidos no Bloco 8.
-
-## 19. Eventos em tempo real relevantes
-
-Evento pós-commit de criação/alteração/arquivamento de Atendimento relevante à consulta pode provocar reconsulta da lista.
-
-A atualização deve preservar contexto e evitar deslocar silenciosamente o usuário de forma brusca. Eventos de Equipamento podem exigir reconsulta quando alterarem o resumo exibido.
-
-## 20. Comportamento de concorrência
-
-A lista não executa escrita concorrente.
-
-Se um Atendimento mudar enquanto está listado:
-
-- evento pode sinalizar/reconsultar;
-- ao abrir, o Host fornece o estado atual autorizado;
-- se deixou de existir/ficou indisponível, informar e remover da lista.
-
-Controle otimista de alterações do Atendimento pertence à futura Tela 09/Bloco 9.
-
-## 21. Acessibilidade e teclado
-
-- busca com label acessível;
-- filtros navegáveis por Tab;
-- foco visível;
-- linhas/ações acionáveis por teclado;
-- headers de tabela semanticamente identificados;
-- estado vazio/erro não depende apenas de cor;
-- filtros ativos possuem indicação textual.
-
-## 22. Comportamento em tamanhos de janela suportados
+## 17. Janelas suportadas
 
 Desktop Windows é o alvo principal.
 
-Em janelas menores suportadas:
+Em janelas menores:
 
-- preservar busca e identificação principal;
-- reduzir/ocultar progressivamente colunas secundárias antes de prejudicar legibilidade;
-- não transformar automaticamente em experiência mobile;
-- scroll horizontal apenas como último recurso e sem esconder a ação principal.
+- colunas secundárias podem ser ocultadas progressivamente;
+- Atendimento, Status e contexto principal permanecem legíveis;
+- evitar scroll horizontal; usar como último recurso;
+- sem transformação mobile/hamburger inicial.
 
-Dimensões mínimas exatas permanecem no contrato visual transversal do Bloco 8.
+## 18. Decisões consolidadas
 
-## 23. Preservação visual / decisões de UI aprovadas
+- lista/tabela compacta;
+- busca operacional única;
+- filtros Responsável + Status + Período;
+- estados `Em andamento`, `Concluído`, `Cancelado`;
+- Data/Período = `started_at`;
+- default mais recente primeiro;
+- Equipamento apenas como resumo;
+- linha abre Tela 09;
+- retorno preserva contexto;
+- `Novo atendimento` depende de capacidade;
+- busca de Atendimentos permanece separada de Processos;
+- sem KPIs/cards/kanban/SLA.
 
-- visual corporativo, limpo e discreto;
-- sidebar esquerda persistente;
-- sem topbar global redundante;
-- lista/tabela compacta coerente com `Processos`;
-- feedback textual curto;
-- sem gráficos/KPIs;
-- sem cards grandes como padrão para cada atendimento.
+## 19. Fora do escopo
 
-## 24. Divergências com documentação anterior
-
-Nenhuma divergência de produto.
-
-Esta tela concretiza a separação já aprovada entre busca documental de `Processos` e busca operacional de `Atendimentos`.
-
-## 25. Decisões consolidadas nesta análise
-
-Aprovadas pelo PO em 2026-08-21:
-
-1. lista/tabela compacta como visualização padrão;
-2. campo único de busca operacional;
-3. filtros iniciais `Responsável` + `Período`;
-4. equipamento aparece apenas como resumo na linha;
-5. selecionar a linha abre a futura Tela 09;
-6. retorno preserva busca/filtros/ordenação/posição quando possível;
-7. coluna/filtro `Status` não entra antes da decisão de lifecycle do Bloco 9;
-8. ordenação padrão por registros mais recentes, mantendo o timestamp exato pendente do Bloco 9.
-
-Continuam vigentes as decisões superiores de existência da área `Atendimentos`, separação `Procedimento × Atendimento × Equipamento`, equipamento opcional, busca por identificadores operacionais e MAC não canônico.
-
-## 26. Pendências
-
-Não são pendências de aprovação da Tela 08. Permanecem para blocos posteriores:
-
-- lifecycle/status do Atendimento;
-- timestamp exato que define a ordenação por mais recentes;
-- matriz de permissões de próprios/todos/criação/edição/conclusão/reabertura;
-- comportamento de edição e concorrência do detalhe;
-- checklist/progresso operacional;
-- impressão/PDF da ficha compacta.
-
-## 27. Fora do escopo
-
-- lifecycle/status do Atendimento;
-- concluir/reabrir;
-- checklist/progresso operacional;
-- edição do Atendimento;
-- cadastro detalhado de equipamento;
-- regras finais de quem vê próprios/todos;
-- impressão da ficha compacta;
-- PDF da ficha;
-- QR/barcode;
-- SLA, fila de chamados, financeiro, estoque ou CRM.
-
-## 28. Critérios de aceite
-
-- [x] PO aprovou tabela compacta;
-- [x] PO aprovou busca operacional única;
-- [x] PO aprovou filtros iniciais Responsável + Período;
-- [x] PO aprovou preservação de busca/filtros no retorno;
-- [x] PO aprovou manter Status fora até decisão do Bloco 9;
-- [x] a tela não mistura busca de Processos e Atendimentos;
-- [x] a tela não exige equipamento em todo atendimento;
-- [x] nenhum lifecycle operacional foi inventado;
-- [x] autorização permanece Host-side;
-- [x] estados loading/vazio/erro/Host indisponível estão definidos;
-- [x] nenhuma implementação funcional foi criada nesta análise.
-
-## 29. Casos de teste/smoke sugeridos
-
-Quando houver implementação:
-
-- abrir Atendimentos sem filtros;
-- buscar por código de atendimento;
-- buscar por OS/referência;
-- buscar por cliente;
-- buscar por nome/código de equipamento;
-- buscar por serial;
-- buscar por patrimônio;
-- buscar MAC em formatos aceitos;
-- aplicar Responsável;
-- aplicar Período;
-- combinar busca + filtros;
-- limpar filtros;
-- abrir resultado e retornar preservando estado;
-- consulta vazia;
-- item removido entre lista e abertura;
-- Host indisponível;
-- usuário sem capacidade de consulta;
-- atualização em tempo real preservando contexto visual.
+- dashboard operacional;
+- SLA/prioridade/severidade;
+- fila por equipe;
+- kanban;
+- ações em massa;
+- edição inline;
+- CRM;
+- estoque/RMM/faturamento;
+- implementação funcional nesta fase.

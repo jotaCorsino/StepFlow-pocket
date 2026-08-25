@@ -7,54 +7,79 @@
 
 **CONCLUÍDA em 2026-08-19.**
 
-Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e templates foram estabelecidos.
+Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e templates estabelecidos.
 
 ## Fase 1 — Fechamento arquitetural e especificação
 
 **EM ANDAMENTO.**
 
-Núcleo arquitetural já fechado:
+Já consolidados:
 
 - Client/Tauri e Windows;
 - Host Pocket sob demanda;
 - launcher/update;
 - HTTP/JSON + WebSocket;
 - autenticação/sessão/autorização no núcleo;
-- modelo de dados/migrations/histórico;
+- modelo de dados/migrations/histórico conceitual;
 - concorrência/fila/conflitos/eventos;
-- extensão conceitual `Procedimento × Atendimento/Execução × Equipamento`;
-- categorias configuráveis/múltiplas e identidade interna de equipamento.
+- `Procedimento × Atendimento/Execução × Equipamento`;
+- categorias configuráveis/múltiplas;
+- UI/UX completa das Telas 01–15;
+- lifecycle operacional de Atendimentos;
+- checklist persistente em contexto de execução;
+- matriz operacional de capacidades;
+- códigos `AT-000001` / `EQP-000001`;
+- gestão de categorias por ADM/Gerência;
+- lifecycle/capacidade da ficha.
 
-O **Bloco 8 — UI/UX está CONCLUÍDO**.
+### Bloco 8 — UI/UX
 
-Foram consolidadas as **Telas 01–15**, cobrindo:
+**CONCLUÍDO.**
 
-- Login;
-- Shell/sidebar com `Atendimentos`;
-- Dashboard enxuto;
-- Lista/Pesquisa de Processos com categorização;
-- Leitor em formato livro;
-- Editor de Processo + categorias;
-- Histórico/Revisões;
-- Lista/Pesquisa de Atendimentos;
-- Atendimento/Execução + Equipamento;
-- Usuários/Permissões;
-- Meu perfil;
-- Configurações + Categorias, incluindo identidade central da empresa;
-- Backup/Restauração — UX, com Restore protegido por safety backup prévio no fluxo normal;
-- Exportação/Impressão + ficha compacta — UX, incluindo PDF/DOCX/impressão da revisão selecionada e ficha de Atendimento com ou sem equipamento, limitada a uma A4;
-- Estados transversais, incluindo loading, estados vazios, Host indisponível, WebSocket degradado, reconciliação, sessão, permissão, conflito e alterações não salvas.
+Telas 01–15 consolidadas, incluindo estados transversais.
 
-Próximo bloco: **Bloco 9 — Execução operacional/Atendimentos + checklist**, ainda não iniciado neste checkpoint.
+### Bloco 9 — Execução operacional / Atendimentos + checklist
 
-Próximos blocos da Fase 1:
+**CONCLUÍDO.**
 
-1. fechar execução operacional/Atendimentos + checklist;
-2. fechar exportação PDF/DOCX/impressão + ficha compacta tecnicamente;
-3. fechar backup/restore técnico;
-4. fechar estrutura oficial e plano da Fase 2.
+Consolidado:
 
-Detalhes em `plano-oficial-fase-1.md`.
+- `Em andamento`, `Concluído`, `Cancelado`;
+- primeiro save cria Atendimento;
+- responsabilidade por técnico;
+- conclusão/reabertura/cancelamento;
+- checklist persistente apenas em Atendimento;
+- progresso por checklist;
+- vínculo com revisão exata;
+- snapshot histórico de Equipamento na conclusão;
+- matriz operacional;
+- códigos legíveis;
+- gestão de categorias;
+- lifecycle da ficha.
+
+### Próximo bloco
+
+**Bloco 10 — Exportação/impressão + ficha compacta — ainda não iniciado.**
+
+Fechará:
+
+- PDF/DOCX/impressão de Procedimentos;
+- engines/tecnologia;
+- template dedicado;
+- paginação/quebras;
+- template físico final da ficha;
+- margens/tipografia/densidade;
+- limites numéricos dos textos;
+- preview;
+- impressão Windows;
+- decisão de PDF específico da ficha;
+- tratamento de muitos MACs/Procedimentos;
+- QR/barcode somente se houver valor aprovado.
+
+Depois:
+
+1. Bloco 11 — Backup/Restore técnico;
+2. Bloco 12 — estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Fase 2 — Fundação técnica executável
 
@@ -82,7 +107,7 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 - configuração básica da empresa;
 - autorização Host-side.
 
-## Fase 4 — Núcleo documental de procedimentos
+## Fase 4 — Núcleo documental de Procedimentos
 
 **PENDENTE.**
 
@@ -98,17 +123,23 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 
 **PENDENTE.**
 
-- páginas/etapas em formato livro;
-- navegação/progresso;
+Implementará os contratos já fechados:
+
+- Reader em páginas/etapas;
+- navegação;
 - passos/alertas/blocos copiáveis;
-- checklist conforme decisão da Fase 1;
+- contexto de execução ligado ao Atendimento;
+- checklist persistente;
+- progresso por checklist;
 - Atendimentos;
-- equipamento opcional;
+- lifecycle de três estados;
+- Equipamento opcional;
 - busca/lista operacional;
 - resumo do trabalho;
-- vínculo à revisão executada;
-- ficha compacta conforme contrato dos Blocos 8/10;
-- estados de UI conforme Tela 15.
+- revisão exata utilizada;
+- snapshot histórico de Equipamento;
+- ficha compacta conforme Blocos 8–10;
+- estados transversais.
 
 ## Fase 6 — Multiusuário em ambiente real
 
@@ -116,24 +147,26 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 
 - múltiplos Clients;
 - conflitos/fila;
+- concorrência granular de checklist;
 - eventos/reconexão;
 - Host indisponível;
-- concorrência dos registros operacionais;
+- concorrência operacional;
 - validação LAN corporativa.
 
 ## Fase 7 — Exportação e identidade
 
 **PENDENTE.**
 
-- PDF de procedimentos;
-- DOCX de procedimentos;
-- impressão de procedimentos;
-- template usando identidade central da empresa;
-- preservação da revisão selecionada;
-- ficha compacta de Atendimento com ou sem equipamento;
+- PDF de Procedimentos;
+- DOCX de Procedimentos;
+- impressão de Procedimentos;
+- identidade central da empresa;
+- revisão selecionada preservada;
+- ficha compacta com/sem Equipamento;
 - impressão da ficha;
-- decisão técnica sobre PDF específico da ficha;
-- validação em leitores/impressoras esperados.
+- decisão técnica sobre PDF específico;
+- reprodução do snapshot histórico de Atendimento/Equipamento;
+- validação em leitores/impressoras.
 
 DOCX específico da ficha não é requisito inicial.
 
@@ -141,11 +174,12 @@ DOCX específico da ficha não é requisito inicial.
 
 **PENDENTE.**
 
-- pacote central por pasta com Controller/Host sob demanda;
+- pacote central por pasta;
+- Controller/Host sob demanda;
 - launcher em rede + Client local versionado;
-- backup/restore incluindo categorias, equipamentos, atendimentos e arquivos administrados;
-- safety backup antes do Restore normal conforme contrato da Tela 13;
-- disaster recovery local quando o Host não inicia;
+- backup/restore de banco + arquivos administrados;
+- safety backup antes do Restore normal;
+- disaster recovery local quando Host não inicia;
 - logs;
 - documentação de implantação;
 - validação sem Internet e em PCs corporativos.
@@ -158,10 +192,12 @@ Cenário final conceitual:
 Controller iniciado quando StepFlow será usado
 → launcher prepara Client local
 → login/uso multiusuário
-→ consulta procedimento
-→ quando necessário, registra Atendimento/equipamento
+→ consulta Procedimento
+→ registra/executa Atendimento quando necessário
+→ checklist/progresso por revisão vinculada
+→ conclusão/cancelamento/reabertura conforme capacidade
 → impressão/exportação quando necessária
-→ encerramento fecha Host/Controller
+→ encerramento central fecha Host/Controller
 → zero processo StepFlow residual
 ```
 
@@ -178,6 +214,14 @@ Controller iniciado quando StepFlow será usado
 - smoke tests end-to-end;
 - revisão documental.
 
+## Pendências transversais antes da implementação correspondente
+
+- parâmetros finais Argon2/senha/sessão;
+- Gerência × configuração da empresa;
+- Gerência × Backup;
+- regra editorial de nova revisão ainda referenciando categoria arquivada;
+- validações do ambiente corporativo real.
+
 ## Regra do roadmap
 
-Fases dependem de gates, não de cronograma. Mudanças de requisito atualizam documentação antes da implementação. Propostas só viram implementação após aprovação explícita.
+Fases dependem de gates, não de cronograma. Mudança de requisito atualiza documentação antes da implementação. Proposta só vira contrato após aprovação explícita.
