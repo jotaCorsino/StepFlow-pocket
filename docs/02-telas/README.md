@@ -21,9 +21,9 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `09-atendimento-execucao-equipamento.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `10-usuarios-permissoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `11-meu-perfil.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 12 — Configurações + categorias**.
+- `12-configuracoes-categorias.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
 
-A Tela 12 ainda não está em análise neste checkpoint.
+A Tela 13 não deve ser iniciada antes da consolidação e integração da Tela 12.
 
 ## Domínio operacional aprovado
 
@@ -60,8 +60,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 9. Atendimento/execução + ficha do equipamento — consolidado;
 10. Usuários/permissões — consolidado;
 11. Meu perfil — consolidado;
-12. Configurações + gestão de categorias — **próximo**;
-13. Backup/restauração;
+12. Configurações + gestão de categorias — **em análise**;
+13. Backup/restauração — pendente;
 14. Exportação/impressão + ficha compacta;
 15. estados transversais.
 
@@ -212,6 +212,27 @@ Fonte: `10-usuarios-permissoes.md` e `docs/03-arquitetura/autenticacao-sessao-au
 - concorrência com alteração administrativa não sobrescreve conteúdo local silenciosamente.
 
 Fonte: `11-meu-perfil.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao.md`.
+
+## Configurações + Categorias — em análise
+
+Propostas atuais, ainda não consolidadas:
+
+- uma única Tela 12 com navegação local `Empresa` + `Categorias`;
+- seções aparecem conforme capacidades efetivas da sessão;
+- capacidade da Gerência para alterar configuração da empresa permanece `PENDENTE`;
+- identidade da empresa inicialmente limitada a logo, nome, contato, site e e-mail;
+- logo com escolher/substituir/remover e preview antes do save;
+- identidade confirmada pelo Host alimenta Shell e documentos/ficha sem duplicação manual;
+- salvamento explícito, sem autosave;
+- categorias em lista compacta com busca por nome e filtro por estado;
+- categoria simples com nome + estado, sem hierarquia/cor/ícone inicialmente;
+- criação/edição de categoria acontece fora do Editor de Processo;
+- arquivar/reativar em vez de excluir fisicamente;
+- categoria arquivada deixa de ser opção normal para novas associações e preserva histórico;
+- evitar categorias duplicadas/visualmente equivalentes após normalização;
+- Backup/Restore e Exportação/Impressão permanecem nas telas/blocos próprios.
+
+Fonte: `12-configuracoes-categorias.md`, `docs/01-produto/categorizacao-atendimentos-equipamentos.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao.md`.
 
 ## Limite do Bloco 8
 

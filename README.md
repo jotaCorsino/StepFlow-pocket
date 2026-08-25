@@ -44,7 +44,7 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 9 | Atendimento / execução + equipamento | ✅ Consolidado |
 | 10 | Usuários / permissões | ✅ Consolidado |
 | 11 | Meu perfil | ✅ Consolidado |
-| 12 | Configurações + categorias | 🟡 Próximo |
+| 12 | Configurações + categorias | 🟡 Em análise |
 | 13 | Backup / restauração — UX | ⏳ Pendente |
 | 14 | Exportação / impressão + ficha — UX | ⏳ Pendente |
 | 15 | Estados transversais | ⏳ Pendente |
@@ -72,9 +72,9 @@ Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. 
 
 ### Próximo passo
 
-**Tela 12 — Configurações + categorias.**
+**Tela 12 — Configurações + categorias — em análise.**
 
-A Tela 12 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 11 estar integrada em `main` e a branch remota encerrada.
+Neste checkpoint remoto, somente a Tela 12 está aberta para análise. A Tela 13 não deve ser iniciada antes da aprovação, consolidação e merge deste trabalho.
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 
