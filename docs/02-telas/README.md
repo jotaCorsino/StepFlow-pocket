@@ -18,9 +18,10 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `06-editor-processo.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `07-historico-revisoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `08-lista-pesquisa-atendimentos.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 09 — Atendimento/Execução + Equipamento**.
+- `09-atendimento-execucao-equipamento.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 10 — Usuários / Permissões**.
 
-A Tela 09 ainda não está em análise neste checkpoint.
+A Tela 10 ainda não está em análise neste checkpoint.
 
 ## Domínio operacional aprovado
 
@@ -36,7 +37,11 @@ Também estão aprovados:
 - identidade interna própria do equipamento;
 - múltiplos procedimentos por atendimento;
 - vínculo histórico à revisão realmente utilizada;
-- ficha compacta imprimível de atendimento/equipamento.
+- ficha compacta imprimível de atendimento/equipamento;
+- para computadores, tipos mínimos `Servidor`, `Desktop` e `Notebook`;
+- saúde da bateria contextual para `Notebook`;
+- observações curtas e limitadas do equipamento;
+- ficha compacta com no máximo uma página A4 e cabeçalho de identidade da empresa.
 
 Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
@@ -50,8 +55,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 6. Editor de Processo + categorias — consolidado;
 7. Histórico/Revisões — consolidado;
 8. Lista/pesquisa de Atendimentos — consolidado;
-9. Atendimento/execução + ficha do equipamento — **próximo**;
-10. Usuários/permissões;
+9. Atendimento/execução + ficha do equipamento — consolidado;
+10. Usuários/permissões — **próximo**;
 11. Meu perfil;
 12. Configurações + gestão de categorias;
 13. Backup/restauração;
@@ -132,12 +137,36 @@ Fonte: `07-historico-revisoes.md`.
 - campo único de busca por código de atendimento, OS/referência, cliente/solicitante, equipamento, serial, patrimônio ou MAC;
 - filtros iniciais `Responsável` + `Período`;
 - equipamento aparece apenas como resumo na lista;
-- linha abre a futura Tela 09;
+- linha abre a Tela 09;
 - retorno preserva busca/filtros/ordenação/posição quando possível;
 - não criar coluna/filtro `Status` antes do lifecycle do Bloco 9;
 - mais recentes primeiro, com timestamp exato definido somente no Bloco 9.
 
 Fonte: `08-lista-pesquisa-atendimentos.md`.
+
+## Atendimento/Execução + Equipamento — consolidado
+
+- uma única página vertical com seções `Atendimento`, `Equipamento` e `Procedimentos utilizados`;
+- mesma Tela 09 para novo atendimento e atendimento existente;
+- equipamento continua opcional;
+- `Vincular equipamento` pesquisa cadastro existente antes de cadastrar novo;
+- ficha técnica mostra somente campos preenchidos/aplicáveis;
+- edição do Equipamento fica visualmente separada da edição do Atendimento;
+- múltiplos MACs com label opcional;
+- procedimentos exibem versão editorial + revisão técnica efetivamente utilizada;
+- `Abrir revisão` leva ao Leitor na revisão específica;
+- iniciar pelo Leitor pode pré-selecionar a revisão consultada;
+- `Resumo do trabalho` separado de `Observações`;
+- ponto de entrada `Ficha / Imprimir`, com fluxo final reservado à Tela 14/Bloco 10;
+- não definir `Status`, conclusão, reabertura ou checklist persistente antes do Bloco 9;
+- para computadores, `Tipo` suporta pelo menos `Servidor`, `Desktop` e `Notebook`;
+- `Saúde da bateria` é contextual para `Notebook`;
+- `Observações do equipamento` é texto curto e limitado, com valor numérico a fechar no Bloco 10;
+- ficha compacta ocupa no máximo uma folha A4;
+- cabeçalho da ficha suporta logo da empresa, nome, forma(s) de contato, site e e-mail;
+- template deve priorizar conteúdo essencial e legibilidade, sem segunda página como comportamento normal.
+
+Fonte: `09-atendimento-execucao-equipamento.md` e `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
 ## Limite do Bloco 8
 
