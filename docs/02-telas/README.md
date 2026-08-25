@@ -21,9 +21,10 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `09-atendimento-execucao-equipamento.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `10-usuarios-permissoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `11-meu-perfil.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- `12-configuracoes-categorias.md` — **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO**.
+- `12-configuracoes-categorias.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 13 — Backup / restauração — UX**.
 
-A Tela 13 não deve ser iniciada antes da consolidação e integração da Tela 12.
+A Tela 13 ainda não está em análise neste checkpoint.
 
 ## Domínio operacional aprovado
 
@@ -43,7 +44,9 @@ Também estão aprovados:
 - para computadores, tipos mínimos `Servidor`, `Desktop` e `Notebook`;
 - saúde da bateria contextual para `Notebook`;
 - observações curtas e limitadas do equipamento;
-- ficha compacta com no máximo uma página A4 e cabeçalho de identidade da empresa.
+- ficha compacta com no máximo uma página A4 e cabeçalho de identidade da empresa;
+- identidade da empresa centralizada em Configurações;
+- categorias simples administradas em Configurações, com arquivamento/reativação e preservação de histórico.
 
 Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 
@@ -60,8 +63,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 9. Atendimento/execução + ficha do equipamento — consolidado;
 10. Usuários/permissões — consolidado;
 11. Meu perfil — consolidado;
-12. Configurações + gestão de categorias — **em análise**;
-13. Backup/restauração — pendente;
+12. Configurações + gestão de categorias — consolidado;
+13. Backup/restauração — **próximo**;
 14. Exportação/impressão + ficha compacta;
 15. estados transversais.
 
@@ -213,9 +216,7 @@ Fonte: `10-usuarios-permissoes.md` e `docs/03-arquitetura/autenticacao-sessao-au
 
 Fonte: `11-meu-perfil.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao.md`.
 
-## Configurações + Categorias — em análise
-
-Propostas atuais, ainda não consolidadas:
+## Configurações + Categorias — consolidado
 
 - uma única Tela 12 com navegação local `Empresa` + `Categorias`;
 - seções aparecem conforme capacidades efetivas da sessão;
@@ -229,7 +230,8 @@ Propostas atuais, ainda não consolidadas:
 - criação/edição de categoria acontece fora do Editor de Processo;
 - arquivar/reativar em vez de excluir fisicamente;
 - categoria arquivada deixa de ser opção normal para novas associações e preserva histórico;
-- evitar categorias duplicadas/visualmente equivalentes após normalização;
+- categorias duplicadas/visualmente equivalentes após normalização devem ser impedidas;
+- regra de nova revisão ainda referenciando categoria arquivada permanece pendente;
 - Backup/Restore e Exportação/Impressão permanecem nas telas/blocos próprios.
 
 Fonte: `12-configuracoes-categorias.md`, `docs/01-produto/categorizacao-atendimentos-equipamentos.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao.md`.
