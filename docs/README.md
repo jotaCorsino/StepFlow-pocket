@@ -64,7 +64,8 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `10-usuarios-permissoes.md` — Usuários/Permissões consolidado;
 - `11-meu-perfil.md` — Meu perfil consolidado;
 - `12-configuracoes-categorias.md` — Configurações + Categorias consolidado;
-- próxima especificação: Tela 13 — Backup/Restauração — UX.
+- `13-backup-restauracao.md` — Backup/Restauração — UX consolidado;
+- próxima especificação: Tela 14 — Exportação/Impressão + ficha compacta — UX.
 
 ### Arquitetura — `03-arquitetura`
 
@@ -99,8 +100,8 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Bloco 8 em execução. Telas 01–12 consolidadas. Próxima: Tela 13 — Backup/Restauração — UX.**
+**Fase 1 em andamento; Bloco 8 em execução. Telas 01–13 consolidadas. Próxima: Tela 14 — Exportação/Impressão + ficha compacta — UX.**
 
-A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, identidade interna de equipamento e a UX de identidade da empresa/gestão de categorias estão aprovadas. Lifecycle/permissões/checklist permanecem para o Bloco 9; formato técnico da ficha compacta, para o Bloco 10; Backup/Restore técnico, para o Bloco 11.
+A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, identidade interna de equipamento, identidade da empresa/gestão de categorias e a UX de Backup/Restauração estão aprovadas. Lifecycle/permissões/checklist permanecem para o Bloco 9; formato técnico da ficha compacta, para o Bloco 10; mecanismo técnico de Backup/Restore, retenção e disaster recovery, para o Bloco 11.
 
 Não há código funcional oficial.

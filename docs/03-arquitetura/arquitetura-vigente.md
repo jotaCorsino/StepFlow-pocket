@@ -44,7 +44,8 @@ A arquitetura deve suportar:
 - resumo do trabalho realizado;
 - vínculo do atendimento com uma ou mais revisões de procedimentos utilizadas;
 - ficha compacta imprimível de atendimento/equipamento;
-- identidade da empresa centralizada e reutilizada pelo Shell e documentos.
+- identidade da empresa centralizada e reutilizada pelo Shell e documentos;
+- UX administrativa de Backup/Restauração coordenada pelo Host.
 
 Separação consolidada:
 
@@ -126,6 +127,8 @@ Detalhes: `modelo-dados-schema-fase-1.md`.
 - Gerência não administra ADM;
 - bootstrap ADM local/controlado;
 - autorização da Gerência para alterar configuração da empresa permanece pendente;
+- autorização da Gerência para Backup permanece pendente;
+- Restore permanece não autorizado para Gerência;
 - matriz operacional de permissões de Atendimentos/equipamentos/categorias permanece pendente do bloco correspondente.
 
 ## Concorrência
@@ -148,9 +151,21 @@ A ficha compacta imprimível de atendimento/equipamento também é requisito. Es
 
 A identidade central da empresa administrada na Tela 12 fornece logo, nome, contato, site e e-mail para os templates que a utilizarem.
 
-## Backup
+## Backup / Restore — UX consolidada
 
-Backup/restore é coordenado pelo Host e será especificado no Bloco 11, incluindo categorias, equipamentos, atendimentos e arquivos administrados aplicáveis.
+A Tela 13 consolidou o contrato visual/funcional, sem fechar o mecanismo técnico do Bloco 11:
+
+- Backup/Restauração fica dentro de `Configurações`;
+- Client não copia SQLite nem escolhe paths internos;
+- backups conhecidos pelo Host são listados com metadados administrativos;
+- criação é coordenada pelo Host e não é cancelada silenciosamente ao fechar um Client;
+- Restore só é oferecido para sessão autorizada e backup elegível;
+- Restore exige confirmação reforçada;
+- Restore normal pela UI exige safety backup do estado atual confirmado antes da etapa destrutiva;
+- se o safety backup não puder ser confirmado, o Restore normal não prossegue;
+- disaster recovery quando o Host não inicia fica fora da UX normal e pertence ao Bloco 11.
+
+O Bloco 11 ainda fechará pacote, atomicidade, checksums, retenção, compressão/criptografia quando aplicável, coordenação de conexões/restart, sessões e recuperação local de desastre.
 
 ## Ambiente corporativo ainda pendente
 
@@ -165,6 +180,6 @@ Essas pendências não autorizam hardcode de exemplos.
 
 ## Próximo trabalho
 
-Bloco 8 continua em UI/UX. **Telas 01–12 estão consolidadas; próxima superfície: Tela 13 — Backup/Restauração — UX.**
+Bloco 8 continua em UI/UX. **Telas 01–13 estão consolidadas; próxima superfície: Tela 14 — Exportação/Impressão + ficha compacta — UX.**
 
 Lifecycle/checklist/permissões operacionais serão fechados no Bloco 9; tecnologia/formato final da ficha, no Bloco 10; política técnica de backup/restore, no Bloco 11.

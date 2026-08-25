@@ -45,8 +45,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 10 | Usuários / permissões | ✅ Consolidado |
 | 11 | Meu perfil | ✅ Consolidado |
 | 12 | Configurações + categorias | ✅ Consolidado |
-| 13 | Backup / restauração — UX | 🟡 Próximo |
-| 14 | Exportação / impressão + ficha — UX | ⏳ Pendente |
+| 13 | Backup / restauração — UX | ✅ Consolidado |
+| 14 | Exportação / impressão + ficha — UX | 🟡 Próximo |
 | 15 | Estados transversais | ⏳ Pendente |
 
 ### Extensão de produto já aprovada
@@ -68,15 +68,17 @@ Estão aprovados conceitualmente:
 - observações curtas e limitadas do equipamento;
 - ficha compacta com no máximo uma página A4 e cabeçalho com identidade da empresa;
 - identidade da empresa centralizada em Configurações, inicialmente com logo, nome, contato, site e e-mail;
-- categorias simples administradas em Configurações, com arquivamento/reativação e preservação de histórico.
+- categorias simples administradas em Configurações, com arquivamento/reativação e preservação de histórico;
+- UX de Backup/Restauração dentro de Configurações, coordenada pelo Host;
+- Restore normal pela UI exige safety backup confirmado do estado atual antes da etapa destrutiva.
 
-Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. Template final, margens, pré-visualização e tecnologia de geração/impressão da ficha compacta pertencem ao Bloco 10.
+Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. Template final, margens, pré-visualização e tecnologia de geração/impressão da ficha compacta pertencem ao Bloco 10. Mecanismo técnico de Backup/Restore, pacote, retenção e disaster recovery pertencem ao Bloco 11.
 
 ### Próximo passo
 
-**Tela 13 — Backup / restauração — UX.**
+**Tela 14 — Exportação / impressão + ficha — UX.**
 
-A Tela 13 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 12 estar integrada em `main`.
+A Tela 14 ainda **não está em análise nem aprovada** neste checkpoint. Ela só deve ser aberta depois que a Tela 13 estiver integrada em `main`.
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 
