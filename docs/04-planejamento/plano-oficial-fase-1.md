@@ -22,8 +22,8 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis som
 | 5 | Autenticação/autorização | CONCLUÍDO NO NÚCLEO / PARÂMETROS PENDENTES | `03-arquitetura/autenticacao-sessao-autorizacao.md` |
 | 6 | Dados/schema/migrations | NÚCLEO + EXTENSÃO OPERACIONAL CONCEITUALMENTE CONSOLIDADOS | `03-arquitetura/modelo-dados-schema-fase-1.md` |
 | 7 | Concorrência/eventos | CONCLUÍDO NO NÚCLEO / detalhes operacionais dependem do Bloco 9 | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
-| 8 | UI/UX | EM ANDAMENTO | `02-telas/README.md` |
-| 9 | Execução operacional/Atendimentos + checklist | PENDENTE | `01-produto/categorizacao-atendimentos-equipamentos.md` |
+| 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
+| 9 | Execução operacional/Atendimentos + checklist | PRÓXIMO / AINDA NÃO INICIADO | `01-produto/categorizacao-atendimentos-equipamentos.md` |
 | 10 | Exportação/impressão + ficha compacta | PENDENTE | arquitetura técnica |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
@@ -45,13 +45,14 @@ Ficam incorporados à Fase 1:
 - identidade da empresa centralizada para Shell e documentos;
 - gestão simples de categorias em Configurações, com arquivamento/reativação e preservação de histórico;
 - UX administrativa de Backup/Restauração coordenada pelo Host, com safety backup obrigatório antes do Restore normal destrutivo;
-- exportação contextual de procedimentos em PDF/DOCX/impressão baseada exatamente na revisão selecionada.
+- exportação contextual de procedimentos em PDF/DOCX/impressão baseada exatamente na revisão selecionada;
+- estados transversais comuns para loading, vazio, Host indisponível, WebSocket degradado, reconexão, sessão, permissão, conflito, mutação incerta e alterações não salvas.
 
 Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md` e especificações do Bloco 8.
 
-## Bloco 8 — UI/UX
+## Bloco 8 — UI/UX — CONCLUÍDO
 
-Documentar/aprovar antes do código:
+Foram documentadas e aprovadas antes do código:
 
 1. Login;
 2. Shell/sidebar;
@@ -69,20 +70,22 @@ Documentar/aprovar antes do código:
 14. exportação/impressão + ficha compacta;
 15. estados transversais.
 
-### Estado atual
+### Estado consolidado
 
-- Telas 01–14 — **consolidadas/aprovadas**;
+- Telas 01–15 — **consolidadas/aprovadas**;
 - `12-configuracoes-categorias.md` consolida identidade da empresa e gestão simples de categorias;
 - `13-backup-restauracao.md` consolida a UX de Backup/Restore, mantendo o mecanismo técnico para o Bloco 11;
 - `14-exportacao-impressao-ficha.md` consolida PDF/DOCX/impressão contextual dos procedimentos e a UX da ficha compacta de Atendimento;
-- **próximo: Tela 15 — Estados transversais**;
-- nenhuma UI de produção criada.
+- `15-estados-transversais.md` consolida o padrão comum de loading, erro, indisponibilidade, reconexão, sessão, permissão, conflito e feedback;
+- nenhuma UI de produção foi criada.
 
 Lifecycle, checklist e permissões operacionais detalhadas permanecem para o Bloco 9. Engine/template final de exportação e ficha permanecem para o Bloco 10. Política técnica de Backup/Restore permanece para o Bloco 11.
 
 ## Bloco 9 — Execução operacional/Atendimentos e checklist
 
-Fechar:
+**Status neste checkpoint: próximo; ainda não iniciado.**
+
+Quando for aberto, deve fechar:
 
 - lifecycle mínimo necessário;
 - criação/edição/conclusão/reabertura;
@@ -179,10 +182,10 @@ Somente depois dos blocos anteriores:
 - [x] modelo de dados original definido;
 - [x] extensão operacional conceitual aprovada;
 - [x] concorrência geral definida;
-- [ ] todas as telas críticas, incluindo novos requisitos, especificadas/aprovadas;
-- [x] Telas 01–14 do Bloco 8 especificadas/aprovadas;
+- [x] todas as telas críticas, incluindo novos requisitos, especificadas/aprovadas;
+- [x] Telas 01–15 do Bloco 8 especificadas/aprovadas;
 - [x] modelagem `Procedimento × Atendimento × Equipamento` aprovada;
-- [ ] Tela 15 — Estados transversais aprovada;
+- [x] Tela 15 — Estados transversais aprovada;
 - [ ] execução/checklist decididos;
 - [ ] matriz operacional de permissões decidida;
 - [ ] exportação/impressão + ficha compacta tecnicamente definidas;

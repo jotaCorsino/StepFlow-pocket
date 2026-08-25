@@ -115,7 +115,7 @@ A autorização real é por capacidades Host-side; presets não substituem verif
 - base divergente ou arquivo necessário já modificado faz Codex parar/reportar;
 - durante o fechamento documental restante da Fase 1, o remoto é a fonte operacional;
 - sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex;
-- Fase 1 em andamento; Bloco 8 em execução.
+- Fase 1 em andamento; Bloco 8 concluído; Bloco 9 é o próximo e ainda não foi iniciado.
 
 ## Ambientes
 
@@ -171,7 +171,10 @@ A autorização real é por capacidades Host-side; presets não substituem verif
 - contratos inicialmente `/api/v1`;
 - `deployment.json` sem segredos;
 - handshake de compatibilidade antes do login;
-- primeira versão sem edição offline.
+- primeira versão sem edição offline;
+- perda de WebSocket com HTTP saudável não implica indisponibilidade total do Host;
+- após reconexão, o Client reconsulta/reconcilia estado relevante;
+- mutação com resultado incerto não é repetida cegamente.
 
 ## Autenticação/autorização
 
@@ -187,7 +190,9 @@ Consolidado:
 - pelo menos um ADM ativo deve existir;
 - após troca da própria senha, sessão corrente permanece e demais sessões da conta são revogadas;
 - Restore é autorizado para ADM e não para Gerência/Funcionário na matriz vigente;
-- Exportar/imprimir procedimentos é permitido por padrão a ADM, Gerência e Funcionário, limitado às revisões que a sessão pode ler.
+- Exportar/imprimir procedimentos é permitido por padrão a ADM, Gerência e Funcionário, limitado às revisões que a sessão pode ler;
+- sessão expirada exige nova autenticação e conteúdo protegido deixa de ser tratado como autorizado;
+- edição local não salva pode permanecer somente em memória e oculta durante reautenticação do mesmo Client; não vira draft persistente.
 
 Pendentes:
 
@@ -230,11 +235,13 @@ Consolidado:
 - dois Hosts não usam o mesmo data dir;
 - categorias/equipamentos/atendimentos/configuração da empresa seguem o mesmo princípio de controle otimista quando necessário;
 - operações críticas de Backup/Restore serão coordenadas pelo Host e não executadas concorrentemente de forma independente pelo Client;
-- evento de nova revisão não troca silenciosamente a revisão que já está sendo exportada/impressa.
+- evento de nova revisão não troca silenciosamente a revisão que já está sendo exportada/impressa;
+- evento remoto não substitui formulário local com edição não salva;
+- timeout/desconexão após envio exige reconciliação antes de qualquer nova tentativa não idempotente.
 
-## Bloco 8 — UI/UX
+## Bloco 8 — UI/UX — CONCLUÍDO
 
-### Telas 01–14 — consolidadas
+### Telas 01–15 — consolidadas
 
 - Login;
 - Shell/sidebar, incluindo `Atendimentos`;
@@ -249,7 +256,8 @@ Consolidado:
 - Meu perfil;
 - Configurações + Categorias;
 - Backup/Restauração — UX;
-- Exportação/Impressão + Ficha Compacta — UX.
+- Exportação/Impressão + Ficha Compacta — UX;
+- Estados Transversais.
 
 ### Tela 12 — Configurações + Categorias — consolidada
 
@@ -318,17 +326,32 @@ Consolidado:
 - preview e QR/barcode permanecem pendentes do Bloco 10;
 - capacidade/lifecycle para gerar/reimprimir permanece pendente do Bloco 9.
 
-Próxima superfície do Bloco 8: **Tela 15 — Estados transversais**.
+### Tela 15 — Estados Transversais — consolidada
 
-Nenhuma UI de produção foi criada.
+- contrato transversal, não página navegável;
+- menor superfície adequada: campo → seção → página → Shell;
+- sem indicador permanente de conexão saudável;
+- loading não mostra dado antigo como atual;
+- `sem registros` é distinto de `sem resultados`;
+- Host indisponível bloqueia ações dependentes e não oferece IP/porta editáveis;
+- WebSocket degradado pode ser tratado separadamente quando HTTP continuar saudável;
+- reconexão reconsulta/reconcilia antes de assumir estado atual;
+- mutação com resultado incerto não é repetida cegamente;
+- sessão expirada exige nova autenticação;
+- edição não salva pode permanecer somente em memória/oculta durante reautenticação do mesmo Client, sem draft persistente;
+- perda de permissão limpa conteúdo protegido;
+- conflito preserva edição local sem overwrite/merge automático;
+- eventos remotos não substituem formulário local;
+- `SERVER_BUSY` preserva dados locais e não confirma sucesso;
+- incompatibilidade Client↔Host bloqueia uso e orienta reabrir pelo ponto de entrada oficial;
+- saída com alterações não salvas exige proteção proporcional;
+- nenhuma offline queue/autosave/nova persistência é criada.
+
+O Bloco 8 está **documentalmente concluído**. Nenhuma UI de produção foi criada.
 
 ## Pendências vigentes
 
-### Bloco 8
-
-- Tela 15 — Estados transversais.
-
-### Bloco 9
+### Bloco 9 — próximo; ainda não iniciado
 
 Fechar lifecycle, checklist/progresso, conclusão/reabertura, concorrência/histórico específicos, matriz operacional de permissões, formatos de códigos legíveis e capacidade/lifecycle para gerar/reimprimir ficha.
 

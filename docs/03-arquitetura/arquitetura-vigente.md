@@ -145,6 +145,27 @@ Detalhes: `modelo-dados-schema-fase-1.md`.
 - dois Hosts não usam o mesmo data dir;
 - categorias/equipamentos/atendimentos e identidade da empresa seguem controle otimista equivalente quando houver risco de perda.
 
+## Estados transversais — UX consolidada
+
+A Tela 15 fecha o contrato comum do Client para estados recorrentes:
+
+- usar a menor superfície adequada: campo → seção → página → Shell;
+- não exibir indicador permanente de conexão saudável;
+- loading não apresenta dado antigo como se fosse atual;
+- distinguir ausência de registros de ausência por busca/filtros;
+- Host indisponível bloqueia ações dependentes dele e não oferece edição de IP/porta/path;
+- WebSocket degradado pode ser tratado separadamente enquanto HTTP permanecer saudável;
+- reconexão exige reconsulta/reconciliação antes de assumir estado atualizado;
+- mutação de resultado incerto não é repetida cegamente;
+- conflitos preservam edição local e nunca aplicam overwrite/merge automático;
+- eventos remotos não substituem formulário local;
+- sessão expirada exige nova autenticação e conteúdo protegido deixa de ser tratado como autorizado;
+- edição não salva pode permanecer somente em memória e oculta durante reautenticação do mesmo Client, sem draft persistente;
+- perda definitiva de autorização remove conteúdo protegido da superfície;
+- nenhuma offline queue, autosave ou nova persistência é criada por esse contrato.
+
+Essas regras complementam os contratos de `comunicacao-client-host.md` e `concorrencia-fila-conflitos-eventos.md`; não substituem regras específicas mais fortes de uma tela ou operação.
+
 ## Exportação e impressão — UX consolidada
 
 A Tela 14 consolidou o contrato funcional, mantendo a implementação técnica para o Bloco 10.
@@ -206,6 +227,6 @@ Essas pendências não autorizam hardcode de exemplos.
 
 ## Próximo trabalho
 
-Bloco 8 continua em UI/UX. **Telas 01–14 estão consolidadas; próxima superfície: Tela 15 — Estados transversais.**
+O **Bloco 8 — UI/UX está concluído com Telas 01–15 consolidadas**.
 
-Lifecycle/checklist/permissões operacionais serão fechados no Bloco 9; engine/template final de exportação e ficha, no Bloco 10; política técnica de backup/restore, no Bloco 11.
+O próximo bloco da Fase 1 é o **Bloco 9 — Execução operacional/Atendimentos + checklist**, ainda não aberto neste checkpoint. Lifecycle/checklist/permissões operacionais serão fechados nele; engine/template final de exportação e ficha, no Bloco 10; política técnica de backup/restore, no Bloco 11.
