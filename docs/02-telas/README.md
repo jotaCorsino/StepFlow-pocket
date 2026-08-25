@@ -20,9 +20,10 @@ Uma especificação só vira contrato visual/funcional quando explicitamente apr
 - `08-lista-pesquisa-atendimentos.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `09-atendimento-execucao-equipamento.md` — **CONSOLIDADO / APROVADO PELO PO**;
 - `10-usuarios-permissoes.md` — **CONSOLIDADO / APROVADO PELO PO**;
-- próxima: **Tela 11 — Meu perfil**.
+- `11-meu-perfil.md` — **CONSOLIDADO / APROVADO PELO PO**;
+- próxima: **Tela 12 — Configurações + categorias**.
 
-A Tela 11 ainda não está em análise neste checkpoint.
+A Tela 12 ainda não está em análise neste checkpoint.
 
 ## Domínio operacional aprovado
 
@@ -58,8 +59,8 @@ Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
 8. Lista/pesquisa de Atendimentos — consolidado;
 9. Atendimento/execução + ficha do equipamento — consolidado;
 10. Usuários/permissões — consolidado;
-11. Meu perfil — **próximo**;
-12. Configurações + gestão de categorias;
+11. Meu perfil — consolidado;
+12. Configurações + gestão de categorias — **próximo**;
 13. Backup/restauração;
 14. Exportação/impressão + ficha compacta;
 15. estados transversais.
@@ -192,6 +193,25 @@ Fonte: `09-atendimento-execucao-equipamento.md` e `docs/01-produto/categorizacao
 - parâmetros numéricos ainda pendentes de autenticação/sessão continuam pendentes.
 
 Fonte: `10-usuarios-permissoes.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao.md`.
+
+## Meu perfil — consolidado
+
+- página simples com seções `Perfil` e `Segurança`;
+- acesso pelo bloco de perfil no rodapé da sidebar, sem item global novo;
+- avatar, nome de exibição e cargo editáveis pelo próprio usuário;
+- login somente leitura;
+- perfil base e indicação de permissões personalizadas somente informativos;
+- nenhuma alteração de autoridade pela Tela 11;
+- avatar com escolher/substituir/remover e preview antes do salvamento;
+- placeholder/iniciais quando não houver avatar;
+- `Salvar alterações` explícito para avatar/nome/cargo, sem autosave;
+- alteração de senha em fluxo separado com senha atual, nova senha e confirmação;
+- política numérica de senha continua vinda do contrato do Host e permanece pendente onde ainda não consolidada;
+- após troca de senha, manter a sessão atual e revogar as demais sessões da conta;
+- sem recuperação de senha por e-mail; esquecimento usa redefinição administrativa quando autorizada;
+- concorrência com alteração administrativa não sobrescreve conteúdo local silenciosamente.
+
+Fonte: `11-meu-perfil.md` e `docs/03-arquitetura/autenticacao-sessao-autorizacao.md`.
 
 ## Limite do Bloco 8
 
