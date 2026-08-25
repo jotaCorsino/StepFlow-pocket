@@ -1,7 +1,7 @@
 # Roadmap — StepFlow Pocket
 
 **Status:** FASE 1 EM ANDAMENTO  
-**Atualização:** 2026-08-21
+**Atualização:** 2026-08-25
 
 ## Fase 0 — Fundação documental e governança
 
@@ -27,7 +27,7 @@ Núcleo arquitetural já fechado:
 
 Bloco atual: **UI/UX**.
 
-No Bloco 8 já estão consolidados:
+No Bloco 8 já estão consolidadas as **Telas 01–12**, cobrindo:
 
 - Login;
 - Shell/sidebar com `Atendimentos`;
@@ -35,9 +35,19 @@ No Bloco 8 já estão consolidados:
 - Lista/Pesquisa de Processos com categorização;
 - Leitor em formato livro;
 - Editor de Processo + categorias;
-- Histórico/Revisões.
+- Histórico/Revisões;
+- Lista/Pesquisa de Atendimentos;
+- Atendimento/Execução + Equipamento;
+- Usuários/Permissões;
+- Meu perfil;
+- Configurações + Categorias, incluindo identidade central da empresa.
 
-Próxima superfície: **Tela 08 — Lista/Pesquisa de Atendimentos**.
+Próxima superfície: **Tela 13 — Backup/Restauração — UX**.
+
+Depois dela, o Bloco 8 ainda precisa fechar:
+
+- Tela 14 — Exportação/Impressão + ficha compacta — UX;
+- Tela 15 — estados transversais.
 
 Próximos blocos da Fase 1:
 
@@ -121,7 +131,7 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 - PDF;
 - DOCX;
 - impressão;
-- template/identidade da empresa;
+- template usando identidade da empresa administrada centralmente;
 - ficha compacta de atendimento/equipamento;
 - validação em leitores/impressoras esperados.
 
@@ -131,7 +141,7 @@ Gate: Client abre, Host inicia sob demanda, comunicação mínima funciona, banc
 
 - pacote central por pasta com Controller/Host sob demanda;
 - launcher em rede + Client local versionado;
-- backup/restore incluindo categorias, equipamentos e atendimentos;
+- backup/restore incluindo categorias, equipamentos, atendimentos e arquivos administrados;
 - logs;
 - documentação de implantação;
 - validação sem Internet e em PCs corporativos.

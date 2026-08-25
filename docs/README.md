@@ -59,7 +59,12 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `05-leitor-processo.md` — Leitor em formato livro consolidado;
 - `06-editor-processo.md` — Editor de Processo + categorias consolidado;
 - `07-historico-revisoes.md` — Histórico/Revisões consolidado;
-- próxima especificação: Tela 08 — Lista/Pesquisa de Atendimentos.
+- `08-lista-pesquisa-atendimentos.md` — Lista/Pesquisa de Atendimentos consolidada;
+- `09-atendimento-execucao-equipamento.md` — Atendimento/Execução + Equipamento consolidado;
+- `10-usuarios-permissoes.md` — Usuários/Permissões consolidado;
+- `11-meu-perfil.md` — Meu perfil consolidado;
+- `12-configuracoes-categorias.md` — Configurações + Categorias consolidado;
+- próxima especificação: Tela 13 — Backup/Restauração — UX.
 
 ### Arquitetura — `03-arquitetura`
 
@@ -94,8 +99,8 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Bloco 8 em execução. Telas 01–07 consolidadas. Próxima: Tela 08 — Lista/Pesquisa de Atendimentos.**
+**Fase 1 em andamento; Bloco 8 em execução. Telas 01–12 consolidadas. Próxima: Tela 13 — Backup/Restauração — UX.**
 
-A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas e identidade interna de equipamento estão aprovadas conceitualmente. Lifecycle/permissões/checklist permanecem para o Bloco 9; formato técnico da ficha compacta, para o Bloco 10.
+A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, identidade interna de equipamento e a UX de identidade da empresa/gestão de categorias estão aprovadas. Lifecycle/permissões/checklist permanecem para o Bloco 9; formato técnico da ficha compacta, para o Bloco 10; Backup/Restore técnico, para o Bloco 11.
 
 Não há código funcional oficial.

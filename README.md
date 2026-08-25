@@ -44,8 +44,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 9 | Atendimento / execução + equipamento | ✅ Consolidado |
 | 10 | Usuários / permissões | ✅ Consolidado |
 | 11 | Meu perfil | ✅ Consolidado |
-| 12 | Configurações + categorias | 🟡 Próximo |
-| 13 | Backup / restauração — UX | ⏳ Pendente |
+| 12 | Configurações + categorias | ✅ Consolidado |
+| 13 | Backup / restauração — UX | 🟡 Próximo |
 | 14 | Exportação / impressão + ficha — UX | ⏳ Pendente |
 | 15 | Estados transversais | ⏳ Pendente |
 
@@ -66,15 +66,17 @@ Estão aprovados conceitualmente:
 - para computadores, tipos mínimos `Servidor`, `Desktop` e `Notebook`;
 - saúde da bateria contextual para `Notebook`;
 - observações curtas e limitadas do equipamento;
-- ficha compacta com no máximo uma página A4 e cabeçalho com identidade da empresa.
+- ficha compacta com no máximo uma página A4 e cabeçalho com identidade da empresa;
+- identidade da empresa centralizada em Configurações, inicialmente com logo, nome, contato, site e e-mail;
+- categorias simples administradas em Configurações, com arquivamento/reativação e preservação de histórico.
 
 Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. Template final, margens, pré-visualização e tecnologia de geração/impressão da ficha compacta pertencem ao Bloco 10.
 
 ### Próximo passo
 
-**Tela 12 — Configurações + categorias.**
+**Tela 13 — Backup / restauração — UX.**
 
-A Tela 12 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 11 estar integrada em `main` e a branch remota encerrada.
+A Tela 13 ainda **não está em análise nem aprovada** neste checkpoint. Ela só será aberta após a Tela 12 estar integrada em `main`.
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 
