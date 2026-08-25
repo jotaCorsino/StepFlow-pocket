@@ -46,8 +46,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** as fontes d
 | 11 | Meu perfil | ✅ Consolidado |
 | 12 | Configurações + categorias | ✅ Consolidado |
 | 13 | Backup / restauração — UX | ✅ Consolidado |
-| 14 | Exportação / impressão + ficha — UX | 🟡 Próximo |
-| 15 | Estados transversais | ⏳ Pendente |
+| 14 | Exportação / impressão + ficha — UX | ✅ Consolidado |
+| 15 | Estados transversais | 🟡 Próximo |
 
 ### Extensão de produto já aprovada
 
@@ -62,23 +62,26 @@ Estão aprovados conceitualmente:
 - MAC, serial, patrimônio, cliente e OS/referência como atributos de busca, não identidade canônica exclusiva;
 - múltiplos procedimentos por atendimento;
 - vínculo histórico com a revisão do procedimento realmente utilizada;
-- ficha compacta imprimível de atendimento/equipamento;
+- ficha compacta imprimível de Atendimento, com ou sem equipamento vinculado;
 - para computadores, tipos mínimos `Servidor`, `Desktop` e `Notebook`;
 - saúde da bateria contextual para `Notebook`;
 - observações curtas e limitadas do equipamento;
 - ficha compacta com no máximo uma página A4 e cabeçalho com identidade da empresa;
+- ficha baseada somente em estado confirmado pelo Host, omitindo campos vazios/não aplicáveis;
+- conteúdo excepcional que não caiba em uma A4 bloqueia a saída em vez de gerar segunda página ou truncar silenciosamente;
 - identidade da empresa centralizada em Configurações, inicialmente com logo, nome, contato, site e e-mail;
 - categorias simples administradas em Configurações, com arquivamento/reativação e preservação de histórico;
 - UX de Backup/Restauração dentro de Configurações, coordenada pelo Host;
-- Restore normal pela UI exige safety backup confirmado do estado atual antes da etapa destrutiva.
+- Restore normal pela UI exige safety backup confirmado do estado atual antes da etapa destrutiva;
+- PDF, DOCX e impressão de procedimentos são contextuais e sempre usam documento próprio da revisão selecionada, nunca screenshot.
 
-Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. Template final, margens, pré-visualização e tecnologia de geração/impressão da ficha compacta pertencem ao Bloco 10. Mecanismo técnico de Backup/Restore, pacote, retenção e disaster recovery pertencem ao Bloco 11.
+Lifecycle, permissões operacionais e checklist/progresso pertencem ao Bloco 9. Engine, template final, margens, limites textuais, preview e demais decisões técnicas de exportação/ficha pertencem ao Bloco 10. Mecanismo técnico de Backup/Restore, pacote, retenção e disaster recovery pertencem ao Bloco 11.
 
 ### Próximo passo
 
-**Tela 14 — Exportação / impressão + ficha — UX.**
+**Tela 15 — Estados transversais.**
 
-A Tela 14 ainda **não está em análise nem aprovada** neste checkpoint. Ela só deve ser aberta depois que a Tela 13 estiver integrada em `main`.
+A Tela 15 ainda **não está em análise nem aprovada** neste checkpoint. Ela só deve ser aberta depois que a Tela 14 estiver integrada em `main`.
 
 Antes de implementação funcional, a Fase 1 ainda precisa concluir os Blocos 8–12 e seus gates.
 

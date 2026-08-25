@@ -47,7 +47,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 ### Produto — `01-produto`
 
 - `visao-geral.md` — propósito, usuários, requisitos e limites;
-- `categorizacao-atendimentos-equipamentos.md` — categorização e domínio `Procedimento × Atendimento × Equipamento`, já aprovados conceitualmente, além das pendências dos Blocos 9/10.
+- `categorizacao-atendimentos-equipamentos.md` — categorização e domínio `Procedimento × Atendimento × Equipamento`, incluindo a ficha compacta consolidada no Bloco 8 e pendências dos Blocos 9/10.
 
 ### Telas — `02-telas`
 
@@ -65,7 +65,8 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `11-meu-perfil.md` — Meu perfil consolidado;
 - `12-configuracoes-categorias.md` — Configurações + Categorias consolidado;
 - `13-backup-restauracao.md` — Backup/Restauração — UX consolidado;
-- próxima especificação: Tela 14 — Exportação/Impressão + ficha compacta — UX.
+- `14-exportacao-impressao-ficha.md` — Exportação/Impressão + ficha compacta — UX consolidado;
+- próxima especificação: Tela 15 — Estados transversais.
 
 ### Arquitetura — `03-arquitetura`
 
@@ -100,8 +101,8 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Bloco 8 em execução. Telas 01–13 consolidadas. Próxima: Tela 14 — Exportação/Impressão + ficha compacta — UX.**
+**Fase 1 em andamento; Bloco 8 em execução. Telas 01–14 consolidadas. Próxima: Tela 15 — Estados transversais.**
 
-A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, identidade interna de equipamento, identidade da empresa/gestão de categorias e a UX de Backup/Restauração estão aprovadas. Lifecycle/permissões/checklist permanecem para o Bloco 9; formato técnico da ficha compacta, para o Bloco 10; mecanismo técnico de Backup/Restore, retenção e disaster recovery, para o Bloco 11.
+A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, identidade interna de equipamento, identidade da empresa/gestão de categorias, UX de Backup/Restauração e UX de Exportação/Impressão + ficha estão aprovadas. Lifecycle/permissões/checklist permanecem para o Bloco 9; implementação técnica de PDF/DOCX/impressão e template final da ficha, para o Bloco 10; mecanismo técnico de Backup/Restore, retenção e disaster recovery, para o Bloco 11.
 
 Não há código funcional oficial.

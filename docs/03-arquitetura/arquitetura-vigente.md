@@ -43,9 +43,10 @@ A arquitetura deve suportar:
 - busca documental separada da busca operacional;
 - resumo do trabalho realizado;
 - vínculo do atendimento com uma ou mais revisões de procedimentos utilizadas;
-- ficha compacta imprimível de atendimento/equipamento;
+- ficha compacta de Atendimento, com ou sem equipamento vinculado;
 - identidade da empresa centralizada e reutilizada pelo Shell e documentos;
-- UX administrativa de Backup/Restauração coordenada pelo Host.
+- UX administrativa de Backup/Restauração coordenada pelo Host;
+- exportação contextual de procedimentos baseada na revisão selecionada.
 
 Separação consolidada:
 
@@ -129,7 +130,8 @@ Detalhes: `modelo-dados-schema-fase-1.md`.
 - autorização da Gerência para alterar configuração da empresa permanece pendente;
 - autorização da Gerência para Backup permanece pendente;
 - Restore permanece não autorizado para Gerência;
-- matriz operacional de permissões de Atendimentos/equipamentos/categorias permanece pendente do bloco correspondente.
+- matriz operacional de permissões de Atendimentos/equipamentos/categorias permanece pendente do bloco correspondente;
+- capacidade/lifecycle para gerar/reimprimir ficha operacional permanece pendente do Bloco 9.
 
 ## Concorrência
 
@@ -143,13 +145,37 @@ Detalhes: `modelo-dados-schema-fase-1.md`.
 - dois Hosts não usam o mesmo data dir;
 - categorias/equipamentos/atendimentos e identidade da empresa seguem controle otimista equivalente quando houver risco de perda.
 
-## Exportação e impressão
+## Exportação e impressão — UX consolidada
 
-PDF, DOCX e impressão são requisitos da documentação de procedimentos.
+A Tela 14 consolidou o contrato funcional, mantendo a implementação técnica para o Bloco 10.
 
-A ficha compacta imprimível de atendimento/equipamento também é requisito. Estratégia, layout físico, PDF específico e eventuais identificadores visuais serão fechados no Bloco 10.
+### Procedimentos
 
-A identidade central da empresa administrada na Tela 12 fornece logo, nome, contato, site e e-mail para os templates que a utilizarem.
+- PDF, DOCX e impressão são obrigatórios;
+- `Exportar / Imprimir` é contextual no Leitor;
+- a primeira versão gera o procedimento completo da revisão selecionada;
+- documento é derivado da revisão explicitamente escolhida/autorizada;
+- nova revisão não substitui silenciosamente a fonte de uma geração já iniciada;
+- revisão histórica/draft é identificada de forma inequívoca;
+- exportação/impressão gera documento próprio, nunca screenshot;
+- gerar documento não publica, edita nem cria revisão;
+- identidade da empresa usa configuração central vigente.
+
+### Ficha de Atendimento
+
+- documento próprio, derivado somente de estado confirmado pelo Host;
+- pode existir com ou sem equipamento vinculado;
+- quando não houver equipamento, a seção correspondente é omitida;
+- campos vazios/não aplicáveis são omitidos;
+- procedimentos utilizados preservam versão/revisão efetivamente utilizada;
+- `Saúde da bateria` aparece somente quando aplicável/informada;
+- limite rígido de no máximo uma página A4;
+- conteúdo excepcional que não caiba bloqueia a saída em vez de gerar segunda página ou truncar silenciosamente;
+- impressão da ficha é requisito;
+- DOCX específico da ficha não é requisito inicial;
+- PDF específico da ficha, preview, QR/barcode, margens, limites textuais e engine permanecem para o Bloco 10.
+
+A identidade central da empresa administrada na Tela 12 fornece logo, nome, contato, site e e-mail aos templates.
 
 ## Backup / Restore — UX consolidada
 
@@ -180,6 +206,6 @@ Essas pendências não autorizam hardcode de exemplos.
 
 ## Próximo trabalho
 
-Bloco 8 continua em UI/UX. **Telas 01–13 estão consolidadas; próxima superfície: Tela 14 — Exportação/Impressão + ficha compacta — UX.**
+Bloco 8 continua em UI/UX. **Telas 01–14 estão consolidadas; próxima superfície: Tela 15 — Estados transversais.**
 
-Lifecycle/checklist/permissões operacionais serão fechados no Bloco 9; tecnologia/formato final da ficha, no Bloco 10; política técnica de backup/restore, no Bloco 11.
+Lifecycle/checklist/permissões operacionais serão fechados no Bloco 9; engine/template final de exportação e ficha, no Bloco 10; política técnica de backup/restore, no Bloco 11.

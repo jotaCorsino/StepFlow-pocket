@@ -37,9 +37,13 @@ Ficam aprovados:
 - observações do equipamento são curtas e limitadas;
 - atendimento pode ser relacionado a cliente/solicitante e ordem de serviço/referência externa;
 - deve existir resumo do trabalho/procedimentos realizados;
-- deve existir ficha compacta imprimível para anexação/acompanhamento físico do equipamento;
+- deve existir ficha compacta de Atendimento, inclusive sem equipamento quando aplicável;
+- quando houver equipamento, a ficha pode servir para anexação/acompanhamento físico;
 - ficha compacta deve ocupar no máximo uma página A4;
 - cabeçalho da ficha suporta logo, nome da empresa, contato, site e e-mail;
+- campos vazios/não aplicáveis são omitidos;
+- ficha usa somente estado confirmado pelo Host;
+- conteúdo excepcional que não caiba em uma A4 bloqueia a saída em vez de criar segunda página ou truncar silenciosamente;
 - a nova capacidade não transforma o produto em CRM, estoque, RMM, financeiro ou sistema completo de chamados.
 
 Fonte: `docs/01-produto/categorizacao-atendimentos-equipamentos.md`.
@@ -51,7 +55,9 @@ Pendentes:
 - formato dos códigos legíveis;
 - comportamento do checklist/progresso;
 - regras de edição/reabertura após conclusão;
+- capacidade/lifecycle para gerar/reimprimir ficha;
 - template/layout físico final e tecnologia da ficha compacta;
+- limites numéricos dos textos da ficha;
 - necessidade de PDF específico da ficha além da impressão direta.
 
 ### Procedimento documental
@@ -180,7 +186,8 @@ Consolidado:
 - Gerência nunca administra ADM;
 - pelo menos um ADM ativo deve existir;
 - após troca da própria senha, sessão corrente permanece e demais sessões da conta são revogadas;
-- Restore é autorizado para ADM e não para Gerência/Funcionário na matriz vigente.
+- Restore é autorizado para ADM e não para Gerência/Funcionário na matriz vigente;
+- Exportar/imprimir procedimentos é permitido por padrão a ADM, Gerência e Funcionário, limitado às revisões que a sessão pode ler.
 
 Pendentes:
 
@@ -189,7 +196,8 @@ Pendentes:
 - expiração de sessão;
 - permissão da Gerência para configuração da empresa;
 - permissão da Gerência para Backup;
-- permissões operacionais de categorização/equipamentos/atendimentos.
+- permissões operacionais de categorização/equipamentos/atendimentos;
+- capacidade/lifecycle para gerar/reimprimir ficha de Atendimento.
 
 ## Dados e histórico
 
@@ -206,7 +214,9 @@ Consolidado:
 - MAC não é chave canônica do equipamento;
 - identidade da empresa é central e administrada pelo Host;
 - logo/avatar são arquivos controlados pelo Host, não caminhos arbitrários persistidos pelo Client;
-- Backup/Restore deve tratar banco e arquivos administrados como estado coerente conforme mecanismo do Bloco 11.
+- Backup/Restore deve tratar banco e arquivos administrados como estado coerente conforme mecanismo do Bloco 11;
+- documentos derivados de procedimentos devem prender sua fonte à revisão selecionada;
+- ficha operacional deve ser derivada do estado confirmado do Atendimento e preservar revisões utilizadas.
 
 ## Concorrência
 
@@ -219,11 +229,12 @@ Consolidado:
 - sem soft/hard lock inicial;
 - dois Hosts não usam o mesmo data dir;
 - categorias/equipamentos/atendimentos/configuração da empresa seguem o mesmo princípio de controle otimista quando necessário;
-- operações críticas de Backup/Restore serão coordenadas pelo Host e não executadas concorrentemente de forma independente pelo Client.
+- operações críticas de Backup/Restore serão coordenadas pelo Host e não executadas concorrentemente de forma independente pelo Client;
+- evento de nova revisão não troca silenciosamente a revisão que já está sendo exportada/impressa.
 
 ## Bloco 8 — UI/UX
 
-### Telas 01–13 — consolidadas
+### Telas 01–14 — consolidadas
 
 - Login;
 - Shell/sidebar, incluindo `Atendimentos`;
@@ -237,7 +248,8 @@ Consolidado:
 - Usuários/Permissões;
 - Meu perfil;
 - Configurações + Categorias;
-- Backup/Restauração — UX.
+- Backup/Restauração — UX;
+- Exportação/Impressão + Ficha Compacta — UX.
 
 ### Tela 12 — Configurações + Categorias — consolidada
 
@@ -275,7 +287,38 @@ Consolidado:
 - disaster recovery quando Host não inicia é fluxo local/controlado do Bloco 11;
 - Backup permanece separado de Exportação/Impressão.
 
-Próxima superfície do Bloco 8: **Tela 14 — Exportação/Impressão + ficha compacta — UX**.
+### Tela 14 — Exportação/Impressão + Ficha Compacta — UX — consolidada
+
+#### Procedimentos
+
+- exportação/impressão é contextual no Leitor, sem item global novo;
+- PDF, DOCX e impressão são obrigatórios;
+- primeira versão gera o procedimento completo da revisão selecionada;
+- documento é próprio, nunca screenshot da UI;
+- revisão histórica/draft autorizada recebe identificação inequívoca;
+- nova revisão não substitui silenciosamente a revisão escolhida;
+- exportar/imprimir não publica, edita ou cria revisão;
+- identidade da empresa vem da configuração central vigente.
+
+#### Ficha de Atendimento
+
+- entrada pela Tela 09 em `Ficha / Imprimir`;
+- usa somente estado confirmado pelo Host;
+- alterações não salvas/conflitos precisam ser resolvidos antes da geração;
+- suporta Atendimento com ou sem equipamento;
+- seção Equipamento é omitida quando não houver ativo vinculado;
+- campos vazios/não aplicáveis são omitidos;
+- procedimentos utilizados preservam versão/revisão efetivamente utilizada;
+- `Saúde da bateria` aparece somente quando aplicável/informada;
+- no máximo uma página A4;
+- conteúdo excessivo bloqueia a saída em vez de gerar segunda página, reduzir fonte excessivamente ou truncar silenciosamente;
+- impressão da ficha é requisito;
+- PDF específico permanece pendente do Bloco 10;
+- DOCX específico da ficha não é requisito inicial;
+- preview e QR/barcode permanecem pendentes do Bloco 10;
+- capacidade/lifecycle para gerar/reimprimir permanece pendente do Bloco 9.
+
+Próxima superfície do Bloco 8: **Tela 15 — Estados transversais**.
 
 Nenhuma UI de produção foi criada.
 
@@ -283,16 +326,15 @@ Nenhuma UI de produção foi criada.
 
 ### Bloco 8
 
-- Tela 14 — Exportação/Impressão + ficha compacta — UX;
-- Tela 15 — estados transversais.
+- Tela 15 — Estados transversais.
 
 ### Bloco 9
 
-Fechar lifecycle, checklist/progresso, conclusão/reabertura, concorrência/histórico específicos, matriz operacional de permissões, formatos de códigos legíveis e regras operacionais ainda pendentes.
+Fechar lifecycle, checklist/progresso, conclusão/reabertura, concorrência/histórico específicos, matriz operacional de permissões, formatos de códigos legíveis e capacidade/lifecycle para gerar/reimprimir ficha.
 
 ### Bloco 10
 
-Fechar tecnologia/formato da ficha compacta, limite físico A4, limites textuais relacionados, além de PDF/DOCX/impressão dos procedimentos.
+Fechar engine/tecnologia de PDF/DOCX/impressão, template de procedimentos, template físico final da ficha, margens, limites textuais, preview, regras de resumo/truncamento controlado, PDF específico da ficha se aprovado, naming e validação em leitores/impressoras.
 
 ### Bloco 11
 
