@@ -24,7 +24,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos + checklist | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–3 CONSOLIDADAS / ETAPA 4 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–4 CONSOLIDADAS / ETAPA 5 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -138,7 +138,7 @@ Host-only, seis dígitos, gaps permitidos.
 
 ## Bloco 10 — Exportação e impressão
 
-**Status: EM ANDAMENTO — Etapas 1–3 consolidadas; Etapa 4 próxima, ainda não aberta.**
+**Status: EM ANDAMENTO — Etapas 1–4 consolidadas; Etapa 5 próxima, ainda não aberta.**
 
 Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 
@@ -151,8 +151,8 @@ A UX já foi consolidada no Bloco 8. O fechamento técnico do Bloco 10 segue uma
 | 1 | Arquitetura de geração documental | **CONSOLIDADO / APROVADO PELO PO** |
 | 2 | PDF de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 3 | DOCX de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
-| 4 | Impressão Windows de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 5 | Template físico de Procedimentos | PENDENTE |
+| 4 | Impressão Windows de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
+| 5 | Template físico de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 6 | PDF + preview da Ficha compacta | PENDENTE |
 | 7 | Template físico A4 da Ficha | PENDENTE |
 | 8 | Limites textuais e densidade da Ficha | PENDENTE |
@@ -225,7 +225,28 @@ Contrato aprovado:
 - geração só é sucesso com pacote OPC/ZIP e OOXML coerentes; artefato incompleto/corrompido não é devolvido como sucesso;
 - versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
 
-A **Etapa 4 — Impressão Windows de Procedimentos** é apenas a próxima. Ela ainda não está em análise. Etapas 5–12 continuam pendentes.
+### Etapa 4 — consolidada
+
+Contrato aprovado:
+
+- impressão física de Procedimentos acontece no Client Windows da estação do usuário, não no Host central;
+- o artefato canônico de impressão é o mesmo PDF produzido pelo renderer da Etapa 2 para a revisão exata selecionada;
+- não existe renderer separado de impressão e não se imprime HTML da UI nem DOCX;
+- o Client usa uma WebView2 transitória/dedicada, sem navegar a webview principal para o PDF;
+- a WebView2 recebe somente recurso PDF local controlado, sem Internet ou path arbitrário originado do conteúdo;
+- baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
+- o diálogo padrão é o diálogo de impressão do Windows; impressão silenciosa e seletor próprio de impressoras ficam fora da primeira versão;
+- StepFlow não enumera/persiste impressoras no Host e não gerencia drivers/spooler corporativo;
+- `ShellExecute`/handler PDF externo, Word/COM, LibreOffice, browser/visualizador externo e spool PDF bruto não são baseline/fallback silencioso;
+- recurso local de impressão é transitório; estratégia concreta, nomes, paths e limpeza ficam para a Etapa 10;
+- `ShowPrintUI` não confirma impressão física: sucesso da integração significa fluxo entregue ao Windows, sem falso `Impresso com sucesso` ou auditoria `printed=true`;
+- fechamento/cancelamento do diálogo não é erro funcional; falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo são distintas;
+- duplicidade concorrente acidental da mesma ação é impedida localmente sem criar fila/job persistente;
+- gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, Unicode/logo, impressoras locais/de rede, opções do diálogo e operação offline;
+- versão mínima concreta do WebView2 fica para matriz corporativa/gate de implementação;
+- layout físico final do Procedimento continua integralmente reservado para a Etapa 5.
+
+A **Etapa 5 — Template físico de Procedimentos** é apenas a próxima. Ela ainda não está em análise. Etapas 6–12 continuam pendentes.
 
 ## Bloco 11 — Backup e restauração
 
@@ -306,6 +327,7 @@ Antes da implementação correspondente:
 - [x] arquitetura-base de geração documental decidida;
 - [x] renderer PDF de Procedimentos decidido;
 - [x] renderer DOCX de Procedimentos decidido;
+- [x] impressão Windows de Procedimentos decidida;
 - [ ] exportação/impressão + ficha tecnicamente definidas por completo;
 - [ ] backup/restore técnico definido;
 - [ ] regra editorial de categoria arquivada fechada;
