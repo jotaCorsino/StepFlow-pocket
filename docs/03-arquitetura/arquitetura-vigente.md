@@ -1,7 +1,7 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPA 1  
-**Atualização:** 2026-08-25
+**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–2  
+**Atualização:** 2026-08-26
 
 ## Visão geral
 
@@ -275,7 +275,31 @@ Regras:
 - artefatos gerados não viram histórico/backup por padrão;
 - runtime documental não depende de Office, LibreOffice, Adobe Reader, Chrome/Chromium externo headless, `wkhtmltopdf` ou serviço cloud obrigatório;
 - bibliotecas compiladas com o Host podem ser usadas;
-- endpoints, engines e parâmetros exatos pertencem às etapas/implementação correspondentes.
+- endpoints e parâmetros exatos pertencem às etapas/implementação correspondentes.
+
+### PDF de Procedimentos — Bloco 10 / Etapa 2
+
+Consolidado:
+
+- renderer PDF usa **Typst embutido como biblioteca Rust no Host**, com crates oficiais e adaptador interno StepFlow;
+- nenhuma execução de `typst.exe`/CLI, browser ou processo conversor externo;
+- template Typst é interno, confiável e versionado com o produto;
+- conteúdo do domínio entra no renderer somente como valores/dados estruturados e nunca participa da construção textual do source Typst;
+- o mundo virtual do renderer restringe imports/filesystem aos templates, fontes e assets controlados pelo Host; não resolve pacotes, URLs ou recursos remotos em runtime;
+- exporter solicita explicitamente **PDF 1.7** e mantém **Tagged PDF habilitado** como baseline;
+- Tagged PDF não equivale nem promete conformidade formal PDF/UA ou PDF/A;
+- texto originado como texto permanece selecionável, pesquisável e copiável;
+- fontes necessárias são empacotadas e incorporadas/subsetadas, sem depender das fontes instaladas no Windows;
+- todos os blocos semânticos conhecidos devem ser representados; tipo desconhecido/incompatível falha explicitamente em vez de ser descartado;
+- comandos e código permanecem texto e preservam whitespace relevante;
+- engine suporta fluxo multipágina e quebra automática, sem definir margens, A4, tipografia, cabeçalho, rodapé ou paginação visual;
+- PNG/JPEG e SVG controlado podem ser incorporados somente a partir de assets previamente aceitos/resolvidos pelo Host;
+- conteúdo visual não pode depender implicitamente de relógio/ambiente da máquina central; data/hora visível vem de dados explícitos do `DocumentModel`/`generation_metadata`;
+- mesma versão do Host/template/fontes/assets/modelo deve manter estabilidade visual/semântica, sem exigir identidade byte-a-byte quando metadados técnicos variarem;
+- falha do renderer não devolve artefato parcial como sucesso;
+- assinatura digital, senha, formulários, anexos, JavaScript, multimídia, PDF/A formal e PDF/UA formal não são requisitos da primeira versão.
+
+A versão exata das crates não é consolidada na Fase 1; será fixada no `Cargo.lock` e validada no gate técnico de implementação. Limites numéricos de memória, tamanho, tempo e concorrência continuam dependentes de medição/validação posterior.
 
 ### Procedimentos
 
@@ -298,7 +322,7 @@ Regras:
 - impressão é requisito;
 - DOCX específico não é requisito inicial.
 
-Bloco 10 ainda fecha, uma etapa por vez, engine PDF, DOCX, impressão Windows, templates, limites, preview, PDF específico da ficha, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários e QR/barcode.
+Bloco 10 ainda fecha, uma etapa por vez, DOCX, impressão Windows, templates, limites, preview, PDF específico da ficha, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários e QR/barcode. **Etapa 3 — DOCX de Procedimentos é a próxima e ainda não está aberta para análise.**
 
 ## Backup / Restore
 
@@ -343,7 +367,7 @@ Exemplos históricos não podem virar hardcode.
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído documentalmente;
-- **Bloco 10: em andamento — Etapa 1 consolidada; Etapa 2 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1 e 2 consolidadas; Etapa 3 próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 Nenhum runtime/código funcional oficial foi criado durante esse fechamento documental.

@@ -12,9 +12,9 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 estão concluídos; Bloco 5 está concluído no núcleo com parâmetros finais pendentes; Bloco 6 está consolidado conceitualmente; Bloco 7 está concluído no núcleo; Blocos 8 e 9 estão **CONCLUÍDOS**.
-- Bloco 10 está **EM ANDAMENTO**; **Etapa 1 — Arquitetura de geração documental está CONSOLIDADA**; **Etapa 2 — PDF de Procedimentos é a próxima, ainda não aberta**.
-- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento e arquitetura-base de geração documental estão consolidados.
-- Bloco 10 ainda fecha as Etapas 2–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
+- Bloco 10 está **EM ANDAMENTO**; **Etapa 1 — Arquitetura de geração documental e Etapa 2 — PDF de Procedimentos estão CONSOLIDADAS**; **Etapa 3 — DOCX de Procedimentos é a próxima, ainda não aberta**.
+- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento, arquitetura-base de geração documental e renderer PDF de Procedimentos estão consolidados.
+- Bloco 10 ainda fecha as Etapas 3–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade da tarefa
 
@@ -180,7 +180,9 @@ Operações que exijam credenciais, Internet confiável, elevação ou configura
 - Atendimento preserva a revisão realmente utilizada;
 - ficha compacta imprimível é requisito do produto.
 
-## Arquitetura de geração documental consolidada — Bloco 10 / Etapa 1
+## Arquitetura de geração documental consolidada — Bloco 10 / Etapas 1 e 2
+
+Etapa 1:
 
 - geração documental pertence ao Host;
 - Client solicita por identidade da fonte/revisão esperada e não envia documento montado;
@@ -193,8 +195,26 @@ Operações que exijam credenciais, Internet confiável, elevação ou configura
 - artefato retorna pela API autenticada;
 - Host não grava em path arbitrário do Client;
 - runtime documental não depende operacionalmente de Office, LibreOffice, Adobe Reader, Chrome/Chromium externo headless, `wkhtmltopdf` ou serviço cloud;
-- artefatos gerados não viram histórico/backup por padrão;
-- engines PDF/DOCX, impressão, templates, limites, preview, MACs, temporários concretos e QR/barcode continuam nas Etapas 2–12.
+- artefatos gerados não viram histórico/backup por padrão.
+
+Etapa 2 — PDF de Procedimentos:
+
+- renderer baseado em Typst embutido no Host Rust, usando crates oficiais com adaptador interno StepFlow;
+- sem `typst.exe`/CLI, browser ou processo conversor externo;
+- template Typst interno, confiável e versionado;
+- conteúdo do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst;
+- sem resolução de pacotes/recursos remotos em runtime; filesystem/imports ficam limitados ao mundo virtual controlado pelo Host;
+- PDF 1.7 e Tagged PDF são solicitados/habilitados explicitamente; Tagged PDF não implica conformidade formal PDF/UA ou PDF/A;
+- fontes necessárias são empacotadas e incorporadas/subsetadas, sem depender das fontes instaladas no Windows;
+- texto permanece selecionável/pesquisável/copiável; comandos/código permanecem texto e preservam whitespace relevante;
+- todos os blocos semânticos conhecidos devem ser representados sem descarte silencioso;
+- fluxo multipágina e quebra automática são obrigatórios, sem antecipar margens, A4, tipografia, cabeçalho/rodapé ou paginação visual da Etapa 5;
+- PNG/JPEG e SVG controlado são suportados somente a partir de assets já aceitos e resolvidos pelo Host;
+- conteúdo visual não pode depender implicitamente de relógio/ambiente da máquina central; data/hora exibida vem de dados explícitos do modelo;
+- falha de renderer não produz artefato parcial tratado como sucesso;
+- assinatura, senha, formulários, anexos, JavaScript, multimídia e conformidade formal PDF/A ou PDF/UA ficam fora da primeira versão.
+
+DOCX, impressão Windows, templates físicos, limites, preview da ficha, MACs, temporários concretos e QR/barcode continuam nas Etapas 3–12.
 
 ## Regras operacionais consolidadas do Bloco 9
 
@@ -267,8 +287,8 @@ Cancelado
 
 Não inventar por suposição:
 
-- engine/tecnologia final PDF/DOCX/impressão;
-- template físico final da ficha;
+- engine/tecnologia final DOCX/impressão;
+- template físico final de Procedimentos e da ficha;
 - margens/tipografia/densidade;
 - limites numéricos finais dos textos destinados à ficha;
 - necessidade de PDF específico da ficha;

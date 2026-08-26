@@ -1,23 +1,24 @@
 # Bloco 10 — Exportação / Impressão + Ficha Compacta
 
-**Status:** EM ANDAMENTO — ETAPA 1 CONSOLIDADA / ETAPA 2 EM ANÁLISE  
+**Status:** EM ANDAMENTO — ETAPAS 1 E 2 CONSOLIDADAS / ETAPA 3 PRÓXIMA  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-25  
-**Etapa 1 consolidada:** 2026-08-25
+**Etapa 1 consolidada:** 2026-08-25  
+**Etapa 2 consolidada:** 2026-08-26
 
 ## 1. Objetivo do bloco
 
 Fechar, uma etapa por vez, o contrato técnico de geração documental do StepFlow, preservando o caráter Pocket e a UX já aprovada no Bloco 8.
 
-Este documento é o mapa técnico do Bloco 10. Apenas a etapa explicitamente marcada como `EM ANÁLISE` pode receber decisões novas. Não pertence a este bloco implementar código de produção, fechar Backup/Restore técnico ou abrir o Bloco 11.
+Este documento é o mapa técnico do Bloco 10. Uma etapa futura só entra em análise quando for explicitamente aberta. Não pertence a este bloco implementar código de produção, fechar Backup/Restore técnico ou abrir o Bloco 11.
 
 ## 2. Etapas do Bloco 10
 
 | Ordem | Etapa | Estado |
 |---|---|---|
 | 1 | Arquitetura de geração documental | **CONSOLIDADO / APROVADO PELO PO** |
-| 2 | PDF de Procedimentos | **EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO** |
-| 3 | DOCX de Procedimentos | PENDENTE |
+| 2 | PDF de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
+| 3 | DOCX de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 4 | Impressão Windows de Procedimentos | PENDENTE |
 | 5 | Template físico de Procedimentos | PENDENTE |
 | 6 | PDF + preview da Ficha compacta | PENDENTE |
@@ -28,7 +29,7 @@ Este documento é o mapa técnico do Bloco 10. Apenas a etapa explicitamente mar
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
 
-As Etapas 3–12 permanecem pendentes e não estão em análise neste trabalho.
+As Etapas 3–12 permanecem fora de análise neste checkpoint. A Etapa 3 está apenas marcada como próxima.
 
 ---
 
@@ -372,7 +373,7 @@ A geração fica sob a API versionada do Host e respeita o handshake Client↔Ho
 
 # Etapa 2 — PDF de Procedimentos
 
-**Status:** EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO
+**Status:** CONSOLIDADO / APROVADO PELO PO
 
 ## 22. Objetivo da Etapa 2
 
@@ -380,64 +381,69 @@ Definir somente a base técnica do renderer PDF de Procedimentos e as capacidade
 
 Esta etapa **não define** margens, tamanhos de fonte, cabeçalho/rodapé, paginação visual, densidade, layout final ou impressão Windows. Esses pontos permanecem nas Etapas 4 e 5.
 
-## 23. Engine PDF proposta
+## 23. Engine PDF consolidada
 
-A proposta é usar **Typst embutido como biblioteca Rust no Host**, sem executar `typst.exe`/CLI e sem depender de instalação externa.
+O StepFlow usa **Typst embutido como biblioteca Rust no Host**, sem executar `typst.exe`/CLI, browser ou processo conversor externo e sem depender de instalação externa.
 
-A integração deve utilizar crates Rust do ecossistema oficial do Typst para compilar/renderizar o documento dentro do processo do Host. O wrapper concreto poderá usar a camada oficial de embedding disponível e estável no momento da implementação, desde que preserve este contrato.
+A integração usa crates Rust oficiais do ecossistema Typst, encapsuladas por um **adaptador interno StepFlow ↔ Typst**. A arquitetura não depende da existência de um wrapper ou “camada oficial de embedding” específica.
 
-Não consolidar uma versão exata de crate durante a Fase 1. Na implementação, versões serão fixadas em `Cargo.lock` e validadas pelo gate técnico correspondente.
+Não se consolida versão exata de crate durante a Fase 1. Na implementação, versões serão fixadas em `Cargo.lock` e validadas pelo gate técnico correspondente.
 
 ### Por que essa direção
 
 O StepFlow precisa de documento multipágina com fluxo de texto, quebras automáticas, Unicode, imagens, estrutura semântica e PDF final reproduzível sem navegador/conversor externo.
 
-A engine escolhida deve entregar layout documental de alto nível. Não queremos construir no Host um motor próprio de paginação, medição de parágrafos e quebras apenas para escrever primitivas PDF.
+A engine escolhida entrega layout documental de alto nível. Não será construído no Host um motor próprio de paginação, medição de parágrafos e quebras apenas para escrever primitivas PDF.
 
-## 24. Template interno confiável
+## 24. Template interno confiável e fronteira de dados
 
-O renderer PDF usa **template Typst interno, versionado com o Host**.
+O renderer PDF usa **template Typst interno, confiável e versionado com o Host**.
 
-O conteúdo do Procedimento não é concatenado como código Typst.
+Conteúdo originado do domínio **nunca participa da construção textual do source Typst**, inclusive após escaping.
 
 Fluxo conceitual:
 
 ```text
 DocumentModel
-→ serialização estruturada controlada
-→ template interno confiável
+→ valores/dados estruturados controlados
+→ adaptador interno StepFlow
+→ template Typst interno confiável
 → engine Typst embutida
 → PDF bytes
 ```
 
 Regras de segurança:
 
-- texto vindo de usuário é tratado como dado, nunca como fonte Typst executável;
+- texto vindo do usuário é dado, nunca fonte Typst executável;
+- não concatenar conteúdo do domínio para construir source Typst;
 - não permitir `#eval`, imports, paths ou código arbitrário originado do conteúdo do Procedimento;
 - não resolver pacotes Typst pela Internet em runtime;
 - não permitir template escolhido pelo usuário na primeira versão;
-- assets e templates necessários ficam empacotados/versionados com o produto;
-- acesso a filesystem do renderer fica restrito ao mundo/projeto virtual controlado pelo Host;
+- assets, templates e fontes necessários ficam empacotados/versionados ou resolvidos pelo Host;
+- acesso a filesystem/imports do renderer fica restrito ao mundo/projeto virtual controlado pelo Host;
+- o renderer não recebe path arbitrário, URL remota ou filesystem genérico originados do conteúdo;
 - nenhuma URL remota é buscada durante a geração.
 
-A forma concreta de ponte estruturada pode ser JSON/estrutura virtual equivalente, desde que o conteúdo seja escapado e não seja transformado em código por concatenação de strings.
+A ponte concreta pode usar inputs/valores tipados, JSON ou estrutura virtual equivalente, desde que preserve a separação entre **dados** e **source Typst**.
 
 ## 25. Contrato do PDF gerado
 
 O renderer deve produzir PDF válido e autocontido com MIME `application/pdf`.
 
-Baseline proposto:
+Baseline consolidado:
 
-- **PDF 1.7** para a primeira versão;
+- **PDF 1.7 solicitado explicitamente ao exporter**;
+- **Tagged PDF explicitamente habilitado** como baseline de acessibilidade;
 - texto real, selecionável, pesquisável e copiável quando a origem é textual;
 - fontes necessárias incorporadas/subsetadas no PDF;
 - Unicode adequado para português e caracteres técnicos usados pelos Procedimentos;
 - imagens/logo controlados podem ser incorporados sem dependência externa;
 - documento multipágina com quebra automática;
-- metadados básicos do documento podem ser gravados no PDF;
-- Tagged PDF permanece habilitado como baseline de acessibilidade quando suportado pela engine.
+- metadados básicos do documento podem ser gravados no PDF.
 
-A primeira versão **não promete conformidade formal PDF/UA ou PDF/A** sem validação específica. Tagged PDF é baseline, não certificação.
+A primeira versão **não promete conformidade formal PDF/UA ou PDF/A** sem validação específica. Tagged PDF é baseline estrutural, não certificação.
+
+Uma versão de engine que não consiga preservar PDF 1.7 e Tagged PDF conforme este contrato não atende ao renderer consolidado da Etapa 2.
 
 ## 26. Fontes
 
@@ -479,13 +485,13 @@ Regras:
 
 A engine deve suportar a identidade corporativa capturada no `DocumentModel`, inclusive logo controlado pelo Host.
 
-Capacidade mínima desejada do renderer:
+Capacidade mínima do renderer:
 
 - PNG;
 - JPEG;
 - SVG vetorial controlado quando o formato estiver autorizado pela política de upload da empresa.
 
-Esta etapa não altera a política de upload da Tela 12 nem decide seus limites de bytes/dimensões. O renderer recebe somente assets já aceitos pelo domínio/Host.
+Esta etapa não altera a política de upload da Tela 12 nem decide seus limites de bytes/dimensões. O renderer recebe somente assets já aceitos e resolvidos pelo domínio/Host, nunca paths ou URLs arbitrários vindos do documento.
 
 Não há necessidade inicial de incorporar PDF como imagem, anexos ou conteúdo remoto.
 
@@ -513,7 +519,9 @@ Mesmo assim, o renderer nunca pode resolver overflow por truncamento silencioso 
 
 Com a mesma versão do Host, mesmo template, mesmas fontes/assets e mesmo `DocumentModel`, o layout do PDF deve ser estável.
 
-Não se exige identidade byte-a-byte se metadados como timestamp de geração forem diferentes. O requisito é estabilidade semântica/visual sob a mesma versão do renderer.
+Conteúdo visual **não pode depender implicitamente do relógio, locale, fontes do sistema ou outro estado ambiental da máquina central**. Data/hora que apareçam no documento devem vir explicitamente do `DocumentModel`/`generation_metadata`.
+
+Não se exige identidade byte-a-byte se metadados técnicos, como timestamp de geração, forem diferentes. O requisito é estabilidade semântica/visual sob a mesma versão do renderer.
 
 Template e engine fazem parte da versão do Host. Não existe atualização de template pela Internet em runtime.
 
@@ -558,37 +566,40 @@ Esses recursos não devem ser adicionados por inferência.
 
 Fornece motor documental e exportação PDF no ecossistema Rust, com suporte a padrões PDF, texto, imagens, layout multipágina e tagging, sem exigir um executável externo quando integrado por biblioteca.
 
-Por isso é a proposta preferida para o StepFlow.
+Por isso é a direção consolidada para o renderer PDF de Procedimentos do StepFlow.
 
-## 34. Decisões propostas ao PO — Etapa 2
+## 34. Decisões consolidadas — Etapa 2
 
-A Etapa 2 propõe consolidar somente:
+1. renderer PDF de Procedimentos baseado em **Typst embutido como biblioteca Rust no Host**, com crates oficiais e adaptador interno StepFlow;
+2. nenhuma execução de `typst.exe`/CLI, browser ou processo conversor externo;
+3. template Typst interno, confiável, versionado e controlado pelo produto;
+4. conteúdo originado do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst, mesmo após escaping;
+5. sem acesso à Internet/pacotes/recursos remotos durante geração;
+6. filesystem/imports do renderer restritos ao mundo virtual, assets, fontes e templates controlados pelo Host;
+7. PDF 1.7 é solicitado explicitamente ao exporter;
+8. Tagged PDF é explicitamente habilitado como baseline, sem prometer PDF/UA/PDF-A formal;
+9. texto textual permanece selecionável/pesquisável/copiável;
+10. fontes necessárias são empacotadas/incorporadas, sem depender de fontes do Windows;
+11. renderer suporta os blocos semânticos do Procedimento sem descarte silencioso e falha explicitamente em incompatibilidade;
+12. comandos/código permanecem texto e preservam whitespace relevante;
+13. renderer suporta fluxo multipágina e quebra automática, sem definir ainda o template físico;
+14. capacidade para logo/imagens controladas PNG/JPEG e SVG quando autorizado, somente a partir de assets aceitos/resolvidos pelo Host;
+15. conteúdo visual não depende implicitamente do relógio/ambiente da máquina central; data/hora visível vem de dados explícitos;
+16. falha de renderer não produz artefato parcial tratado como sucesso;
+17. estabilidade visual/semântica sob mesma versão do Host/template/fontes/assets/modelo, sem exigir bytes idênticos quando metadados técnicos variarem;
+18. assinatura, senha, formulários, anexos, JavaScript, multimídia, PDF/A e PDF/UA formais ficam fora da primeira versão;
+19. versão exata das crates e limites numéricos de memória/tamanho/tempo ficam para implementação/medição e validação técnica posterior.
 
-1. renderer PDF de Procedimentos baseado em **Typst embutido como biblioteca Rust no Host**;
-2. nenhuma execução de `typst.exe`/CLI ou processo conversor externo;
-3. template Typst interno, versionado e controlado pelo produto;
-4. conteúdo de usuário entra como dados estruturados/escapados e nunca como código Typst concatenado;
-5. sem acesso à Internet/pacotes remotos durante geração;
-6. filesystem/imports do renderer restritos aos assets/templates controlados pelo Host;
-7. baseline PDF 1.7;
-8. texto textual permanece selecionável/pesquisável/copiável;
-9. fontes necessárias são empacotadas/incorporadas, sem depender de fontes do Windows;
-10. renderer suporta os blocos semânticos do Procedimento sem descarte silencioso;
-11. renderer suporta fluxo multipágina e quebra automática, sem definir ainda o template físico;
-12. capacidade para logo/imagens controladas PNG/JPEG e SVG quando autorizado;
-13. Tagged PDF fica habilitado como baseline quando suportado, sem prometer PDF/UA/PDF-A formal;
-14. falha de renderer não produz artefato parcial tratado como sucesso;
-15. estabilidade visual/semântica sob mesma versão do Host/template/fonts, sem exigir bytes idênticos;
-16. assinatura, senha, formulários, anexos, JavaScript, multimídia, PDF/A e PDF/UA formais ficam fora da primeira versão.
+## 35. Fechamento da Etapa 2
 
-## 35. Critério de fechamento da Etapa 2
+A Etapa 2 está **CONSOLIDADA / APROVADA PELO PO** neste checkpoint.
 
-A Etapa 2 só pode mudar para `CONSOLIDADO / APROVADO PELO PO` quando:
+Foram cumpridos os critérios de fechamento documental:
 
-- as decisões propostas forem aprovadas ou ajustadas;
-- README raiz marcar Etapa 2 como `✅ Consolidado` no mesmo checkpoint;
-- arquitetura/registro/plano afetados forem alinhados;
-- Etapa 3 continuar apenas como próxima até ser aberta explicitamente;
-- o PR continuar documental, sem código funcional, migration ou scaffold.
+- decisões aprovadas e ajustadas;
+- README raiz atualizado para `✅ Consolidado`;
+- `AGENTS.md`, arquitetura, registro de decisões e plano oficial alinhados no mesmo checkpoint;
+- Etapa 3 permanece apenas como próxima até abertura explícita;
+- trabalho permanece documental, sem código funcional, migration ou scaffold.
 
-Até lá, a Etapa 2 permanece proposta.
+**Etapa 3 — DOCX de Procedimentos** é a próxima etapa do Bloco 10, mas **ainda não está em análise**.
