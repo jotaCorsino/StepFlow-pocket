@@ -24,7 +24,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos + checklist | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–2 CONSOLIDADAS / ETAPA 3 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–3 CONSOLIDADAS / ETAPA 4 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -138,7 +138,7 @@ Host-only, seis dígitos, gaps permitidos.
 
 ## Bloco 10 — Exportação e impressão
 
-**Status: EM ANDAMENTO — Etapas 1 e 2 consolidadas; Etapa 3 próxima, ainda não aberta.**
+**Status: EM ANDAMENTO — Etapas 1–3 consolidadas; Etapa 4 próxima, ainda não aberta.**
 
 Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 
@@ -150,8 +150,8 @@ A UX já foi consolidada no Bloco 8. O fechamento técnico do Bloco 10 segue uma
 |---|---|---|
 | 1 | Arquitetura de geração documental | **CONSOLIDADO / APROVADO PELO PO** |
 | 2 | PDF de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
-| 3 | DOCX de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 4 | Impressão Windows de Procedimentos | PENDENTE |
+| 3 | DOCX de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
+| 4 | Impressão Windows de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 5 | Template físico de Procedimentos | PENDENTE |
 | 6 | PDF + preview da Ficha compacta | PENDENTE |
 | 7 | Template físico A4 da Ficha | PENDENTE |
@@ -203,7 +203,29 @@ Contrato aprovado:
 - assinatura digital, senha, formulários, anexos, JavaScript, multimídia, PDF/A formal e PDF/UA formal ficam fora da primeira versão;
 - versão exata das crates e limites numéricos de memória/tamanho/tempo não são congelados na Fase 1; ficam para implementação/medição e validação técnica posterior.
 
-A **Etapa 3 — DOCX de Procedimentos** é apenas a próxima. Ela ainda não está em análise. Etapas 4–12 continuam pendentes.
+### Etapa 3 — consolidada
+
+Contrato aprovado:
+
+- DOCX de Procedimentos é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem converter PDF/Typst;
+- saída é `.docx` real em OOXML/WordprocessingML e **OOXML Transitional** é o baseline inicial de compatibilidade; Strict não é baseline da primeira versão;
+- `docx-rs` é a biblioteca preferida, encapsulada por adaptador interno StepFlow;
+- não depende de Microsoft Word/COM, LibreOffice, browser/headless, CLI conversor ou serviço cloud;
+- conteúdo do domínio entra apenas como dados estruturados e não pode injetar XML/OOXML, relationships, partes OPC, paths ou URLs arbitrários;
+- estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário é carregado como template em runtime na primeira versão;
+- texto textual permanece texto Word real, selecionável, pesquisável, copiável e editável;
+- todos os blocos semânticos conhecidos são representados sem descarte silencioso; incompatibilidade falha explicitamente;
+- passos/subpassos usam numeração/lista Word real quando aplicável;
+- checklist exportado é documental e não vira formulário/content control interativo;
+- comandos/código permanecem texto e preservam whitespace relevante;
+- PNG/JPEG são baseline de imagem; SVG não é requisito direto do DOCX v1 e exige representação interna compatível ou falha explícita, nunca omissão silenciosa;
+- DOCX é refluível: não há promessa de paginação idêntica ao PDF ou entre versões/consumidores Word;
+- política de fontes/embedding do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/gate técnico;
+- macros/VBA/`.docm`, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura digital, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
+- geração só é sucesso com pacote OPC/ZIP e OOXML coerentes; artefato incompleto/corrompido não é devolvido como sucesso;
+- versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
+
+A **Etapa 4 — Impressão Windows de Procedimentos** é apenas a próxima. Ela ainda não está em análise. Etapas 5–12 continuam pendentes.
 
 ## Bloco 11 — Backup e restauração
 
@@ -283,6 +305,7 @@ Antes da implementação correspondente:
 - [x] lifecycle/capacidade da ficha decididos;
 - [x] arquitetura-base de geração documental decidida;
 - [x] renderer PDF de Procedimentos decidido;
+- [x] renderer DOCX de Procedimentos decidido;
 - [ ] exportação/impressão + ficha tecnicamente definidas por completo;
 - [ ] backup/restore técnico definido;
 - [ ] regra editorial de categoria arquivada fechada;
