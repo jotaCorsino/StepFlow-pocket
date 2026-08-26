@@ -1,6 +1,6 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–3  
+**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–4  
 **Atualização:** 2026-08-26
 
 ## Visão geral
@@ -30,7 +30,8 @@ Responsabilidades:
 - apresentar conflitos/estados transversais;
 - executar contexto operacional de Atendimento sem abrir SQLite diretamente;
 - iniciar geração documental e receber artefatos produzidos pelo Host;
-- encaminhar artefatos para fluxos locais de salvar/preview/impressão conforme os contratos específicos.
+- encaminhar artefatos para fluxos locais de salvar/preview/impressão conforme os contratos específicos;
+- realizar impressão física de Procedimentos no contexto local da estação Windows usando o PDF oficial recebido do Host.
 
 Baseline inicial: Windows 10/11 x64 + WebView2. Validação corporativa ainda pendente.
 
@@ -325,6 +326,42 @@ Consolidado:
 
 Versão exata da crate, limites numéricos e matriz de compatibilidade real permanecem para implementação/Etapa 12. Layout físico final permanece na Etapa 5.
 
+### Impressão Windows de Procedimentos — Bloco 10 / Etapa 4
+
+Consolidado:
+
+```text
+Leitor
+→ Imprimir
+→ Client solicita a revisão esperada
+→ Host autentica/autoriza e gera o PDF oficial
+→ Client recebe os bytes
+→ recurso local transitório controlado
+→ WebView2 dedicada/transitória
+→ ShowPrintUI(System)
+→ diálogo de impressão do Windows
+```
+
+Regras:
+
+- impressão física acontece no Client Windows da estação do usuário, não no Host central;
+- o artefato canônico de impressão é exatamente o PDF produzido pelo renderer da Etapa 2 para a revisão exata selecionada;
+- não existe renderer separado de impressão, não imprimir HTML da UI e não usar DOCX como fonte física;
+- a webview principal não é navegada para o PDF; uma WebView2 transitória/dedicada recebe somente o recurso local controlado;
+- baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
+- o diálogo de impressão do Windows é a superfície padrão; não criar seletor próprio de impressoras nem impressão silenciosa na primeira versão;
+- StepFlow não enumera/persiste impressoras no Host e não gerencia drivers, descoberta ou spooler corporativo;
+- não usar `ShellExecute`/handler `.pdf`, Word/COM, LibreOffice, browser externo, visualizador PDF externo ou spool PDF bruto como baseline/fallback silencioso;
+- o recurso local é transitório; estratégia em memória/arquivo, nomes, paths e limpeza concreta pertencem à Etapa 10;
+- abrir `ShowPrintUI` significa que o fluxo foi entregue ao Windows, não que houve impressão física; a UI não pode afirmar `Impresso com sucesso` nem gravar `printed=true` por inferência;
+- fechamento/cancelamento do diálogo não é erro funcional; falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo são classes distintas;
+- a implementação impede duplicidade concorrente acidental local da mesma ação sem criar job/fila persistente;
+- a webview de impressão não busca Internet, não recebe token/senha em URL nem path/HTML arbitrário originado do conteúdo;
+- gate técnico posterior valida Windows 10/11 x64, runtime WebView2, PDF multipágina, Unicode/logo, impressoras locais/de rede, opções do diálogo e operação offline;
+- incompatibilidade de WebView2 deve ser explícita, sem fallback silencioso para software externo;
+- versão mínima concreta de WebView2 fica para matriz corporativa/gate de implementação;
+- layout físico final do Procedimento permanece integralmente reservado à Etapa 5.
+
 ### Procedimentos
 
 - PDF, DOCX e impressão obrigatórios;
@@ -346,7 +383,7 @@ Versão exata da crate, limites numéricos e matriz de compatibilidade real perm
 - impressão é requisito;
 - DOCX específico não é requisito inicial.
 
-Bloco 10 ainda fecha, uma etapa por vez, impressão Windows, templates, limites, preview, PDF específico da ficha, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários e QR/barcode. **Etapa 4 — Impressão Windows de Procedimentos é a próxima e ainda não está aberta para análise.**
+Bloco 10 ainda fecha, uma etapa por vez, templates, limites, preview, PDF específico da ficha, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários e QR/barcode. **Etapa 5 — Template físico de Procedimentos é a próxima e ainda não está aberta para análise.**
 
 ## Backup / Restore
 
@@ -391,7 +428,7 @@ Exemplos históricos não podem virar hardcode.
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído documentalmente;
-- **Bloco 10: em andamento — Etapas 1–3 consolidadas; Etapa 4 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–4 consolidadas; Etapa 5 próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 Nenhum runtime/código funcional oficial foi criado durante esse fechamento documental.
