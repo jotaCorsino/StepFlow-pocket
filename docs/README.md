@@ -68,7 +68,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–3;
+- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–4;
 - `implantacao-pocket.md` — implantação/ciclo de vida central;
 - `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
@@ -83,7 +83,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1–3 consolidadas, Etapa 4 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1–4 consolidadas, Etapa 5 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -101,7 +101,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos e 3 — DOCX de Procedimentos consolidadas. Etapa 4 — Impressão Windows de Procedimentos é a próxima, ainda não aberta.**
+**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos, 3 — DOCX de Procedimentos e 4 — Impressão Windows de Procedimentos consolidadas. Etapa 5 — Template físico de Procedimentos é a próxima, ainda não aberta.**
 
 Consolidado no Bloco 9:
 
@@ -176,7 +176,25 @@ Contrato vigente:
 - macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
 - artefato incompleto/corrompido nunca é tratado como sucesso.
 
-Etapas 4–12 permanecem pendentes. A Etapa 4 está somente marcada como próxima e ainda não foi aberta para análise.
+### Bloco 10 — Etapa 4 consolidada
+
+Contrato vigente:
+
+- impressão física de Procedimentos acontece no Client Windows, não no Host central;
+- o artefato canônico de impressão é o mesmo PDF produzido pelo renderer da Etapa 2 para a revisão exata selecionada;
+- não existe renderer separado de impressão e não se imprime HTML da UI nem DOCX;
+- o Client usa WebView2 transitória/dedicada para carregar somente o recurso PDF local controlado;
+- baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
+- o diálogo padrão é o diálogo de impressão do Windows, sem impressão silenciosa ou seletor próprio de impressoras na primeira versão;
+- StepFlow não enumera/persiste impressoras no Host nem gerencia drivers/spooler corporativo;
+- `ShellExecute`, visualizador PDF externo, Word/COM, LibreOffice, browser externo e spool PDF bruto não são baseline;
+- recurso local de impressão é transitório; mecanismo/nome/path concreto permanece para a Etapa 10;
+- abrir o diálogo não equivale a confirmação física de impressão: a UI não exibe falso `Impresso com sucesso` nem grava `printed=true` por inferência;
+- falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo permanecem distinguíveis;
+- gate técnico posterior valida Windows 10/11 x64, WebView2, PDFs multipágina, impressoras locais/de rede e operação offline;
+- layout físico do Procedimento continua integralmente reservado para a Etapa 5.
+
+Etapas 5–12 permanecem pendentes. A Etapa 5 está somente marcada como próxima e ainda não foi aberta para análise.
 
 Bloco 11 continua não iniciado. Bloco 12 fecha parâmetros finais, regra editorial de categoria arquivada, estrutura oficial e plano da Fase 2.
 
