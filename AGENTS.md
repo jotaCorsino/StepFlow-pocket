@@ -12,9 +12,9 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 estão concluídos; Bloco 5 está concluído no núcleo com parâmetros finais pendentes; Bloco 6 está consolidado conceitualmente; Bloco 7 está concluído no núcleo; Blocos 8 e 9 estão **CONCLUÍDOS**.
-- Bloco 10 está **EM ANDAMENTO**; **Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos e 3 — DOCX de Procedimentos estão CONSOLIDADAS**; **Etapa 4 — Impressão Windows de Procedimentos é a próxima, ainda não aberta**.
-- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento, arquitetura-base de geração documental e renderers PDF/DOCX de Procedimentos estão consolidados.
-- Bloco 10 ainda fecha as Etapas 4–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
+- Bloco 10 está **EM ANDAMENTO**; **Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos, 3 — DOCX de Procedimentos e 4 — Impressão Windows de Procedimentos estão CONSOLIDADAS**; **Etapa 5 — Template físico de Procedimentos é a próxima, ainda não aberta**.
+- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento, arquitetura-base de geração documental, renderers PDF/DOCX e impressão Windows de Procedimentos estão consolidados.
+- Bloco 10 ainda fecha as Etapas 5–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade da tarefa
 
@@ -180,7 +180,7 @@ Operações que exijam credenciais, Internet confiável, elevação ou configura
 - Atendimento preserva a revisão realmente utilizada;
 - ficha compacta imprimível é requisito do produto.
 
-## Arquitetura de geração documental consolidada — Bloco 10 / Etapas 1–3
+## Arquitetura de geração documental consolidada — Bloco 10 / Etapas 1–4
 
 Etapa 1:
 
@@ -233,7 +233,25 @@ Etapa 3 — DOCX de Procedimentos:
 - artefato incompleto/corrompido nunca é devolvido como sucesso;
 - versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
 
-Impressão Windows, templates físicos, limites, preview da ficha, MACs, temporários concretos e QR/barcode continuam nas Etapas 4–12.
+Etapa 4 — Impressão Windows de Procedimentos:
+
+- impressão física acontece no Client Windows da estação do usuário, não no Host central;
+- artefato canônico de impressão é o mesmo PDF produzido pelo renderer da Etapa 2 para a revisão exata selecionada;
+- não existe renderer separado de impressão e o Client não imprime HTML da UI nem DOCX;
+- Client usa WebView2 transitória/dedicada para carregar somente recurso PDF local controlado, sem substituir a webview principal;
+- baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
+- diálogo padrão é o diálogo de impressão do Windows; impressão silenciosa e seletor próprio de impressoras ficam fora da primeira versão;
+- StepFlow não enumera/persiste impressoras no Host e não gerencia drivers/spooler corporativo;
+- não usar `ShellExecute`/handler PDF externo, Word/COM, LibreOffice, browser externo ou spool PDF bruto como fallback silencioso;
+- recurso local de impressão é transitório; materialização/nome/path/limpeza concreta ficam para a Etapa 10;
+- `ShowPrintUI` não confirma impressão física: a UI só pode afirmar que o fluxo foi entregue ao Windows e não grava `printed=true` por inferência;
+- fechamento/cancelamento do diálogo não é erro funcional; falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo permanecem distintas;
+- duplicidade concorrente da mesma ação é controlada localmente sem criar fila/job persistente;
+- gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, impressoras locais/de rede e operação offline;
+- versão mínima concreta do WebView2 fica para matriz corporativa/gate técnico;
+- layout físico do Procedimento permanece integralmente reservado para a Etapa 5.
+
+Templates físicos, limites, preview da ficha, MACs, temporários concretos e QR/barcode continuam nas Etapas 5–12.
 
 ## Regras operacionais consolidadas do Bloco 9
 
@@ -306,9 +324,10 @@ Cancelado
 
 Não inventar por suposição:
 
-- engine/tecnologia final de impressão Windows;
 - template físico final de Procedimentos e da ficha;
 - margens/tipografia/densidade;
+- versão mínima concreta do WebView2 para impressão e detalhes de integração sujeitos ao gate técnico;
+- nomes/paths/limpeza concretos do recurso temporário de impressão;
 - limites numéricos finais dos textos destinados à ficha;
 - necessidade de PDF específico da ficha;
 - QR/barcode;

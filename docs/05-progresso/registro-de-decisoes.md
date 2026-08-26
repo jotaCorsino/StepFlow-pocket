@@ -518,7 +518,29 @@ Consolidado / aprovado pelo PO:
 16. mesma versão do Host/modelo/assets/estilos deve manter estrutura e conteúdo semânticos estáveis quando razoável, sem exigir ZIP byte-a-byte idêntico;
 17. versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
 
-A Etapa 4 — Impressão Windows de Procedimentos é a próxima, mas ainda não está em análise.
+### Impressão Windows de Procedimentos — Bloco 10 / Etapa 4
+
+Consolidado / aprovado pelo PO:
+
+1. impressão física de Procedimentos acontece no **Client Windows** da estação do usuário, não no Host central;
+2. o artefato canônico de impressão é o **PDF produzido pelo renderer da Etapa 2** para a revisão exata selecionada;
+3. não existe renderer separado de impressão e não se imprime HTML da UI nem DOCX;
+4. o Client usa WebView2 transitória/dedicada, mantendo a webview principal e o estado do Reader intactos;
+5. a WebView2 recebe somente recurso PDF local controlado, sem Internet, URL/path arbitrário originado do conteúdo ou token em URL;
+6. o mecanismo baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
+7. o diálogo padrão é o diálogo de impressão do Windows; impressão silenciosa e seletor próprio de impressoras não são requisitos iniciais;
+8. StepFlow não enumera/persiste impressoras no Host e não gerencia drivers, descoberta ou spooler corporativo;
+9. `ShellExecute`/handler `.pdf`, Word/COM, LibreOffice, browser/visualizador externo e spool PDF bruto não são baseline nem fallback silencioso;
+10. o recurso local de impressão é transitório; estratégia, nome, path e limpeza concretos ficam para a Etapa 10;
+11. `ShowPrintUI` não permite afirmar impressão física concluída: fluxo entregue ao Windows é sucesso da integração, não confirmação de papel impresso;
+12. fechamento/cancelamento do diálogo não é erro funcional e não gera auditoria persistente `printed=true`;
+13. falhas de geração PDF, preparação local, compatibilidade WebView2 e abertura do diálogo são classes distintas;
+14. duplicidade concorrente acidental da mesma ação é impedida localmente sem criar fila/job persistente;
+15. gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, Unicode/logo, impressoras locais/de rede, opções do diálogo, cancelamento e operação offline;
+16. incompatibilidade de WebView2 deve ser explícita; versão mínima concreta fica para matriz corporativa/gate de implementação;
+17. layout físico final do Procedimento permanece integralmente na Etapa 5.
+
+A Etapa 5 — Template físico de Procedimentos é a próxima, mas ainda não está em análise.
 
 ## 27. Backup/Restore
 
@@ -577,7 +599,7 @@ Comunicação:
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído;
-- **Bloco 10: em andamento — Etapas 1–3 consolidadas; Etapa 4 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–4 consolidadas; Etapa 5 próxima, ainda não aberta**;
 - Bloco 11: pendente;
 - Bloco 12: pendente.
 
@@ -585,15 +607,14 @@ Comunicação:
 
 ### Bloco 10
 
-- Etapa 4: impressão Windows de Procedimentos;
 - Etapa 5: template físico de Procedimentos;
 - Etapa 6: PDF + preview da ficha;
 - Etapa 7: template físico A4 da ficha;
 - Etapa 8: limites textuais/densidade;
 - Etapa 9: muitos MACs/Procedimentos;
-- Etapa 10: nomes de arquivo + temporários concretos;
+- Etapa 10: nomes de arquivo + temporários concretos, incluindo materialização/limpeza do recurso local de impressão;
 - Etapa 11: QR/barcode;
-- Etapa 12: validação técnica final.
+- Etapa 12: validação técnica final, incluindo matriz real Windows/WebView2/impressoras.
 
 ### Bloco 11
 

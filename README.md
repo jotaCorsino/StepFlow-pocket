@@ -6,7 +6,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-26  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 3 consolidada; Etapa 4 próxima  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 4 consolidada; Etapa 5 próxima  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md`, documentos específicos e `docs/04-planejamento/plano-oficial-fase-1.md`.
@@ -25,7 +25,7 @@ Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 3 consolidada |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 4 consolidada |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -113,8 +113,8 @@ Também estão aprovados:
 | 1 | Arquitetura de geração documental | ✅ Consolidado |
 | 2 | PDF de Procedimentos | ✅ Consolidado |
 | 3 | DOCX de Procedimentos | ✅ Consolidado |
-| 4 | Impressão Windows de Procedimentos | 🟡 Próxima — ainda não em análise |
-| 5 | Template físico de Procedimentos | ⏳ Pendente |
+| 4 | Impressão Windows de Procedimentos | ✅ Consolidado |
+| 5 | Template físico de Procedimentos | 🟡 Próxima — ainda não em análise |
 | 6 | PDF + preview da Ficha compacta | ⏳ Pendente |
 | 7 | Template físico A4 da Ficha | ⏳ Pendente |
 | 8 | Limites textuais e densidade da Ficha | ⏳ Pendente |
@@ -178,7 +178,24 @@ Consolidado na Etapa 3:
 - macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
 - artefato incompleto/corrompido nunca é devolvido como sucesso.
 
-A Etapa 4 — Impressão Windows de Procedimentos é apenas a próxima. Ela ainda não está em análise. Etapas 5–12 permanecem pendentes.
+Consolidado na Etapa 4:
+
+- impressão física de Procedimentos acontece no Client Windows, não no Host central;
+- o mesmo PDF do renderer consolidado da Etapa 2 é o artefato canônico de impressão para a revisão exata selecionada;
+- não existe renderer separado de impressão e o Client não imprime HTML da UI nem DOCX;
+- o Client usa WebView2 transitória/dedicada para carregar somente recurso PDF local controlado;
+- baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
+- o diálogo padrão é o diálogo de impressão do Windows; impressão silenciosa e seletor próprio de impressoras não são requisitos iniciais;
+- StepFlow não enumera/persiste impressoras no Host e não gerencia drivers/spooler corporativo;
+- `ShellExecute`/visualizador PDF externo, Word/COM, LibreOffice, browser externo e spool PDF bruto não são baseline;
+- o recurso local de impressão é transitório e seus nomes/paths/limpeza concreta ficam para a Etapa 10;
+- abrir o diálogo não confirma impressão física; a UI não exibe falso `Impresso com sucesso` nem grava `printed=true` por inferência;
+- cancelamento/fechamento do diálogo não é erro funcional;
+- falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo permanecem distinguíveis;
+- gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, impressoras locais/de rede e operação offline;
+- layout físico do Procedimento continua integralmente reservado para a Etapa 5.
+
+A Etapa 5 — Template físico de Procedimentos é apenas a próxima. Ela ainda não está em análise. Etapas 6–12 permanecem pendentes.
 
 A fonte técnica é `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
@@ -214,7 +231,7 @@ Permanecem consolidados:
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de nova revisão ainda referenciando categoria arquivada;
-- Etapas 4–12 do Bloco 10;
+- Etapas 5–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo.
 
