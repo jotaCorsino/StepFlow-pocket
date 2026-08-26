@@ -12,9 +12,9 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 estão concluídos; Bloco 5 está concluído no núcleo com parâmetros finais pendentes; Bloco 6 está consolidado conceitualmente; Bloco 7 está concluído no núcleo; Blocos 8 e 9 estão **CONCLUÍDOS**.
-- Bloco 10 está **EM ANDAMENTO**; **Etapa 1 — Arquitetura de geração documental e Etapa 2 — PDF de Procedimentos estão CONSOLIDADAS**; **Etapa 3 — DOCX de Procedimentos é a próxima, ainda não aberta**.
-- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento, arquitetura-base de geração documental e renderer PDF de Procedimentos estão consolidados.
-- Bloco 10 ainda fecha as Etapas 3–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
+- Bloco 10 está **EM ANDAMENTO**; **Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos e 3 — DOCX de Procedimentos estão CONSOLIDADAS**; **Etapa 4 — Impressão Windows de Procedimentos é a próxima, ainda não aberta**.
+- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento, arquitetura-base de geração documental e renderers PDF/DOCX de Procedimentos estão consolidados.
+- Bloco 10 ainda fecha as Etapas 4–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade da tarefa
 
@@ -180,7 +180,7 @@ Operações que exijam credenciais, Internet confiável, elevação ou configura
 - Atendimento preserva a revisão realmente utilizada;
 - ficha compacta imprimível é requisito do produto.
 
-## Arquitetura de geração documental consolidada — Bloco 10 / Etapas 1 e 2
+## Arquitetura de geração documental consolidada — Bloco 10 / Etapas 1–3
 
 Etapa 1:
 
@@ -214,7 +214,26 @@ Etapa 2 — PDF de Procedimentos:
 - falha de renderer não produz artefato parcial tratado como sucesso;
 - assinatura, senha, formulários, anexos, JavaScript, multimídia e conformidade formal PDF/A ou PDF/UA ficam fora da primeira versão.
 
-DOCX, impressão Windows, templates físicos, limites, preview da ficha, MACs, temporários concretos e QR/barcode continuam nas Etapas 3–12.
+Etapa 3 — DOCX de Procedimentos:
+
+- DOCX é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem conversão de PDF/Typst;
+- saída é `.docx` real em OOXML/WordprocessingML, com baseline de compatibilidade **OOXML Transitional**; Strict não é baseline da primeira versão;
+- `docx-rs` é a biblioteca preferida, encapsulada por adaptador interno StepFlow;
+- sem Microsoft Word/COM, LibreOffice, browser/headless, CLI conversor ou serviço cloud;
+- conteúdo do domínio entra apenas como dados estruturados e nunca como XML/OOXML arbitrário;
+- estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário em runtime na primeira versão;
+- texto permanece real, selecionável, pesquisável, copiável e editável;
+- todos os blocos semânticos conhecidos devem ser representados sem descarte silencioso;
+- passos/subpassos usam numeração/lista Word real quando aplicável; checklist permanece documental, não formulário interativo;
+- comandos/código permanecem texto e preservam whitespace relevante;
+- PNG/JPEG são baseline de imagem; SVG não é requisito direto do DOCX v1 e não pode ser omitido silenciosamente;
+- DOCX é refluível e não promete paginação idêntica ao PDF; layout físico final permanece reservado à Etapa 5;
+- política tipográfica/embedding de fontes do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/gate técnico;
+- relationships externos, macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
+- artefato incompleto/corrompido nunca é devolvido como sucesso;
+- versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
+
+Impressão Windows, templates físicos, limites, preview da ficha, MACs, temporários concretos e QR/barcode continuam nas Etapas 4–12.
 
 ## Regras operacionais consolidadas do Bloco 9
 
@@ -287,7 +306,7 @@ Cancelado
 
 Não inventar por suposição:
 
-- engine/tecnologia final DOCX/impressão;
+- engine/tecnologia final de impressão Windows;
 - template físico final de Procedimentos e da ficha;
 - margens/tipografia/densidade;
 - limites numéricos finais dos textos destinados à ficha;

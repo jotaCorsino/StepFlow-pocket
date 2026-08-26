@@ -1,6 +1,6 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–2  
+**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–3  
 **Atualização:** 2026-08-26
 
 ## Visão geral
@@ -301,6 +301,30 @@ Consolidado:
 
 A versão exata das crates não é consolidada na Fase 1; será fixada no `Cargo.lock` e validada no gate técnico de implementação. Limites numéricos de memória, tamanho, tempo e concorrência continuam dependentes de medição/validação posterior.
 
+### DOCX de Procedimentos — Bloco 10 / Etapa 3
+
+Consolidado:
+
+- renderer DOCX usa o mesmo `DocumentModel` e gera `.docx` diretamente no Host Rust, sem converter PDF ou Typst;
+- o artefato é OOXML/WordprocessingML real, empacotado segundo OPC, com **OOXML Transitional** como baseline de compatibilidade;
+- `docx-rs` é a biblioteca preferida, encapsulada por adaptador interno StepFlow para evitar acoplamento do domínio;
+- não executar Microsoft Word/COM, LibreOffice, browser/headless, CLI conversor ou serviço cloud;
+- conteúdo do domínio entra somente como dados estruturados e não pode injetar XML/OOXML, relationships, partes OPC, paths ou URLs arbitrários;
+- estilos/template são internos e versionados pelo StepFlow; a primeira versão não aceita `.docx`/`.dotx` externo como template em runtime;
+- texto permanece texto Word real, selecionável, pesquisável, copiável e editável; imagens permanecem objetos incorporados;
+- todos os blocos semânticos conhecidos devem ser representados; incompatibilidade falha explicitamente em vez de descartar conteúdo;
+- passos/subpassos usam numeração/lista Word real quando aplicável;
+- checklist exportado é documental e não vira formulário/content control interativo;
+- comandos e código permanecem texto e preservam espaços, tabs, quebras e indentação relevantes;
+- PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e precisa de representação interna compatível ou falha explícita, nunca omissão silenciosa;
+- DOCX é formato refluível: estabilidade exigida é semântica/estrutural, não paginação idêntica ao PDF ou entre consumidores Word;
+- política de fontes/embedding do DOCX não é herdada automaticamente da Etapa 2 e fica para Etapa 5/gate técnico, considerando compatibilidade e licenciamento;
+- relationships externos, macros/VBA/`.docm`, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura digital, senha/DRM e importação de DOCX editado não são requisitos da primeira versão;
+- mesmo modelo/assets/estilos/versão do Host devem manter conteúdo e estrutura OOXML estáveis quando razoável, sem exigir ZIP byte-a-byte idêntico;
+- geração só é sucesso com pacote DOCX completo e coerente; validação posterior deve incluir OPC/ZIP, XML/relationships e abertura sem reparo na matriz corporativa real.
+
+Versão exata da crate, limites numéricos e matriz de compatibilidade real permanecem para implementação/Etapa 12. Layout físico final permanece na Etapa 5.
+
 ### Procedimentos
 
 - PDF, DOCX e impressão obrigatórios;
@@ -322,7 +346,7 @@ A versão exata das crates não é consolidada na Fase 1; será fixada no `Cargo
 - impressão é requisito;
 - DOCX específico não é requisito inicial.
 
-Bloco 10 ainda fecha, uma etapa por vez, DOCX, impressão Windows, templates, limites, preview, PDF específico da ficha, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários e QR/barcode. **Etapa 3 — DOCX de Procedimentos é a próxima e ainda não está aberta para análise.**
+Bloco 10 ainda fecha, uma etapa por vez, impressão Windows, templates, limites, preview, PDF específico da ficha, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários e QR/barcode. **Etapa 4 — Impressão Windows de Procedimentos é a próxima e ainda não está aberta para análise.**
 
 ## Backup / Restore
 
@@ -367,7 +391,7 @@ Exemplos históricos não podem virar hardcode.
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído documentalmente;
-- **Bloco 10: em andamento — Etapas 1 e 2 consolidadas; Etapa 3 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–3 consolidadas; Etapa 4 próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 Nenhum runtime/código funcional oficial foi criado durante esse fechamento documental.

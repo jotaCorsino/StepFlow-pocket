@@ -6,7 +6,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-26  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 2 consolidada; Etapa 3 próxima  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 3 consolidada; Etapa 4 próxima  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md`, documentos específicos e `docs/04-planejamento/plano-oficial-fase-1.md`.
@@ -25,7 +25,7 @@ Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 2 consolidada |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 3 consolidada |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -112,8 +112,8 @@ Também estão aprovados:
 |---|---|---|
 | 1 | Arquitetura de geração documental | ✅ Consolidado |
 | 2 | PDF de Procedimentos | ✅ Consolidado |
-| 3 | DOCX de Procedimentos | 🟡 Próxima — ainda não em análise |
-| 4 | Impressão Windows de Procedimentos | ⏳ Pendente |
+| 3 | DOCX de Procedimentos | ✅ Consolidado |
+| 4 | Impressão Windows de Procedimentos | 🟡 Próxima — ainda não em análise |
 | 5 | Template físico de Procedimentos | ⏳ Pendente |
 | 6 | PDF + preview da Ficha compacta | ⏳ Pendente |
 | 7 | Template físico A4 da Ficha | ⏳ Pendente |
@@ -160,7 +160,25 @@ Consolidado na Etapa 2:
 - falha de renderer não produz artefato parcial tratado como sucesso;
 - assinatura, senha, formulários, anexos, JavaScript, multimídia e conformidade formal PDF/A ou PDF/UA ficam fora da primeira versão.
 
-A Etapa 3 — DOCX de Procedimentos é apenas a próxima. Ela ainda não está em análise. Etapas 4–12 permanecem pendentes.
+Consolidado na Etapa 3:
+
+- DOCX de Procedimentos é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem conversão de PDF/Typst;
+- saída é `.docx` real em OOXML/WordprocessingML com baseline **OOXML Transitional**;
+- `docx-rs` é a biblioteca Rust preferida, isolada por adaptador interno StepFlow;
+- nenhuma dependência de Word/COM, LibreOffice, browser/headless, CLI conversor ou cloud;
+- conteúdo do domínio entra somente como dados estruturados e nunca como XML/OOXML arbitrário;
+- estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário em runtime na primeira versão;
+- texto permanece real, selecionável, pesquisável, copiável e editável;
+- todos os blocos semânticos conhecidos são representados sem descarte silencioso;
+- passos/subpassos usam listas/numeração Word reais quando aplicável; checklist é documental, não formulário interativo;
+- comandos/código permanecem texto e preservam whitespace relevante;
+- PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e não pode ser omitido silenciosamente;
+- DOCX é refluível e não promete paginação idêntica ao PDF;
+- política de fontes/embedding do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/gate técnico;
+- macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
+- artefato incompleto/corrompido nunca é devolvido como sucesso.
+
+A Etapa 4 — Impressão Windows de Procedimentos é apenas a próxima. Ela ainda não está em análise. Etapas 5–12 permanecem pendentes.
 
 A fonte técnica é `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
@@ -196,7 +214,7 @@ Permanecem consolidados:
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de nova revisão ainda referenciando categoria arquivada;
-- Etapas 3–12 do Bloco 10;
+- Etapas 4–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo.
 

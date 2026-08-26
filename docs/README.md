@@ -68,7 +68,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–2;
+- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–3;
 - `implantacao-pocket.md` — implantação/ciclo de vida central;
 - `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
@@ -83,7 +83,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1 e 2 consolidadas, Etapa 3 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1–3 consolidadas, Etapa 4 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -101,7 +101,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental e 2 — PDF de Procedimentos consolidadas. Etapa 3 — DOCX de Procedimentos é a próxima, ainda não aberta.**
+**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos e 3 — DOCX de Procedimentos consolidadas. Etapa 4 — Impressão Windows de Procedimentos é a próxima, ainda não aberta.**
 
 Consolidado no Bloco 9:
 
@@ -156,7 +156,27 @@ Contrato vigente:
 - falha do renderer não gera artefato parcial tratado como sucesso;
 - recursos avançados e conformidades formais ficam fora da primeira versão.
 
-Etapas 3–12 permanecem pendentes. A Etapa 3 está somente marcada como próxima e ainda não foi aberta para análise.
+### Bloco 10 — Etapa 3 consolidada
+
+Contrato vigente:
+
+- DOCX é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem conversão de PDF/Typst;
+- saída é `.docx` OOXML/WordprocessingML real, com OOXML Transitional como baseline de compatibilidade;
+- `docx-rs` é a biblioteca preferida sob adaptador interno StepFlow;
+- sem Word/COM, LibreOffice, browser/headless, CLI conversor ou cloud;
+- dados do domínio não viram XML/OOXML arbitrário;
+- estilos/template são internos e versionados, sem `.docx`/`.dotx` fornecido pelo usuário em runtime;
+- texto permanece selecionável, pesquisável, copiável e editável;
+- blocos semânticos conhecidos não são descartados silenciosamente;
+- passos/subpassos usam numeração/listas Word reais; checklist permanece documental;
+- comandos/código preservam whitespace e permanecem texto;
+- PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e não pode ser omitido silenciosamente;
+- DOCX é refluível e não promete paginação idêntica ao PDF;
+- política tipográfica/embedding de fontes do DOCX permanece para Etapa 5/gate técnico e não é herdada automaticamente do PDF;
+- macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
+- artefato incompleto/corrompido nunca é tratado como sucesso.
+
+Etapas 4–12 permanecem pendentes. A Etapa 4 está somente marcada como próxima e ainda não foi aberta para análise.
 
 Bloco 11 continua não iniciado. Bloco 12 fecha parâmetros finais, regra editorial de categoria arquivada, estrutura oficial e plano da Fase 2.
 

@@ -496,7 +496,29 @@ Consolidado / aprovado pelo PO:
 17. assinatura digital, senha, formulários, anexos, JavaScript, multimídia, PDF/A formal e PDF/UA formal ficam fora da primeira versão;
 18. versão exata das crates e limites numéricos de memória/tamanho/tempo ficam para implementação/medição e validação técnica posterior.
 
-A Etapa 3 — DOCX de Procedimentos é a próxima, mas ainda não está em análise.
+### DOCX de Procedimentos — Bloco 10 / Etapa 3
+
+Consolidado / aprovado pelo PO:
+
+1. DOCX de Procedimentos é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem converter PDF/Typst;
+2. saída é `.docx` real em OOXML/WordprocessingML, empacotada segundo OPC, com **OOXML Transitional** como baseline inicial de compatibilidade;
+3. `docx-rs` é a biblioteca Rust preferida, encapsulada por adaptador interno StepFlow;
+4. não há dependência de Microsoft Word/COM, LibreOffice, browser/headless, CLI conversor ou serviço cloud;
+5. conteúdo do domínio entra somente como dados estruturados e nunca como XML/OOXML arbitrário, relationship, parte OPC, path ou URL controlados pelo usuário;
+6. estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário é template de runtime na primeira versão;
+7. texto permanece Word real, selecionável, pesquisável, copiável e editável;
+8. todos os blocos semânticos conhecidos são representados; incompatibilidade/tipo desconhecido falha explicitamente em vez de ser descartado;
+9. passos/subpassos usam numeração/listas Word reais quando aplicável; checklist permanece documental e não vira formulário interativo;
+10. comandos/código permanecem texto e preservam whitespace relevante;
+11. PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e precisa de representação interna compatível ou falha explícita, nunca omissão silenciosa;
+12. DOCX é formato refluível e não promete paginação idêntica ao PDF nem entre consumidores Word;
+13. política tipográfica/embedding de fontes do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/gate técnico;
+14. relationships externos, macros/VBA/`.docm`, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
+15. pacote incompleto/corrompido nunca é tratado como sucesso; validação posterior cobre OPC/ZIP, XML/relationships e abertura sem reparo na matriz corporativa;
+16. mesma versão do Host/modelo/assets/estilos deve manter estrutura e conteúdo semânticos estáveis quando razoável, sem exigir ZIP byte-a-byte idêntico;
+17. versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
+
+A Etapa 4 — Impressão Windows de Procedimentos é a próxima, mas ainda não está em análise.
 
 ## 27. Backup/Restore
 
@@ -555,7 +577,7 @@ Comunicação:
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído;
-- **Bloco 10: em andamento — Etapas 1 e 2 consolidadas; Etapa 3 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–3 consolidadas; Etapa 4 próxima, ainda não aberta**;
 - Bloco 11: pendente;
 - Bloco 12: pendente.
 
@@ -563,7 +585,6 @@ Comunicação:
 
 ### Bloco 10
 
-- Etapa 3: DOCX de Procedimentos;
 - Etapa 4: impressão Windows de Procedimentos;
 - Etapa 5: template físico de Procedimentos;
 - Etapa 6: PDF + preview da ficha;
