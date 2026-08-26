@@ -68,7 +68,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapa 1;
+- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–2;
 - `implantacao-pocket.md` — implantação/ciclo de vida central;
 - `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
@@ -83,7 +83,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapa 1 consolidada, Etapa 2 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1 e 2 consolidadas, Etapa 3 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -101,7 +101,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com a Etapa 1 — Arquitetura de geração documental consolidada. Etapa 2 — PDF de Procedimentos é a próxima, ainda não aberta.**
+**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental e 2 — PDF de Procedimentos consolidadas. Etapa 3 — DOCX de Procedimentos é a próxima, ainda não aberta.**
 
 Consolidado no Bloco 9:
 
@@ -135,7 +135,28 @@ Contrato vigente:
 - runtime autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
 - ausência de persistência/histórico/backup de exportações por padrão.
 
-Etapas 2–12 permanecem pendentes. A Etapa 2 está somente marcada como próxima; escolha de engine PDF ainda não foi analisada.
+### Bloco 10 — Etapa 2 consolidada
+
+Contrato vigente:
+
+- PDF de Procedimentos usa Typst embutido no Host Rust, com crates oficiais e adaptador interno StepFlow;
+- sem `typst.exe`/CLI, browser ou conversor externo;
+- template interno confiável/versionado;
+- dados do domínio nunca são concatenados ao source Typst;
+- renderer opera em mundo virtual controlado, sem pacotes/recursos remotos em runtime;
+- PDF 1.7 e Tagged PDF são configurados explicitamente;
+- Tagged PDF não implica conformidade formal PDF/UA/PDF-A;
+- texto permanece selecionável/pesquisável/copiável;
+- fontes são empacotadas/incorporadas sem depender das fontes do Windows;
+- blocos semânticos conhecidos não são descartados silenciosamente;
+- comandos/código permanecem texto e preservam whitespace;
+- multipágina e quebra automática são obrigatórias;
+- layout físico final continua reservado para a Etapa 5;
+- conteúdo visual não depende implicitamente do relógio/ambiente da máquina central;
+- falha do renderer não gera artefato parcial tratado como sucesso;
+- recursos avançados e conformidades formais ficam fora da primeira versão.
+
+Etapas 3–12 permanecem pendentes. A Etapa 3 está somente marcada como próxima e ainda não foi aberta para análise.
 
 Bloco 11 continua não iniciado. Bloco 12 fecha parâmetros finais, regra editorial de categoria arquivada, estrutura oficial e plano da Fase 2.
 

@@ -4,9 +4,9 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 ## Painel de acompanhamento do projeto
 
-**Atualização:** 2026-08-25  
+**Atualização:** 2026-08-26  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 1 consolidada; Etapa 2 próxima  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 2 consolidada; Etapa 3 próxima  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md`, documentos específicos e `docs/04-planejamento/plano-oficial-fase-1.md`.
@@ -25,7 +25,7 @@ Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 1 consolidada |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 2 consolidada |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -111,8 +111,8 @@ Também estão aprovados:
 | Ordem | Etapa | Estado |
 |---|---|---|
 | 1 | Arquitetura de geração documental | ✅ Consolidado |
-| 2 | PDF de Procedimentos | 🟡 Próxima — ainda não em análise |
-| 3 | DOCX de Procedimentos | ⏳ Pendente |
+| 2 | PDF de Procedimentos | ✅ Consolidado |
+| 3 | DOCX de Procedimentos | 🟡 Próxima — ainda não em análise |
 | 4 | Impressão Windows de Procedimentos | ⏳ Pendente |
 | 5 | Template físico de Procedimentos | ⏳ Pendente |
 | 6 | PDF + preview da Ficha compacta | ⏳ Pendente |
@@ -141,7 +141,26 @@ Consolidado na Etapa 1:
 - runtime documental permanece autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
 - artefatos gerados não viram histórico/backup por padrão.
 
-A Etapa 2 está apenas marcada como **próxima**. Ela ainda não foi aberta para análise.
+Consolidado na Etapa 2:
+
+- renderer PDF de Procedimentos usa Typst embutido como biblioteca Rust no Host, por crates oficiais + adaptador interno StepFlow;
+- nenhuma dependência de `typst.exe`/CLI, browser ou processo conversor externo;
+- template Typst interno, confiável e versionado;
+- conteúdo originado do domínio entra somente como valores/dados estruturados; nunca participa da construção textual do source Typst, mesmo após escaping;
+- nenhum pacote/recurso remoto é resolvido em runtime e o renderer não recebe filesystem genérico, path arbitrário ou URL originados do conteúdo;
+- PDF 1.7 é solicitado explicitamente ao exporter;
+- Tagged PDF permanece explicitamente habilitado como baseline, sem prometer conformidade formal PDF/UA/PDF-A;
+- texto textual permanece selecionável, pesquisável e copiável;
+- fontes necessárias são empacotadas/incorporadas, sem depender das fontes instaladas no Windows;
+- todos os blocos semânticos do Procedimento são representados sem descarte silencioso;
+- comandos/código permanecem texto e preservam whitespace relevante;
+- fluxo multipágina e quebra automática são obrigatórios, sem antecipar o template físico da Etapa 5;
+- PNG/JPEG e SVG controlado são capacidades do renderer, recebendo somente assets já aceitos pelo Host;
+- conteúdo visual não depende implicitamente do relógio/ambiente da máquina central; data/hora exibida vem de dados explícitos do modelo;
+- falha de renderer não produz artefato parcial tratado como sucesso;
+- assinatura, senha, formulários, anexos, JavaScript, multimídia e conformidade formal PDF/A ou PDF/UA ficam fora da primeira versão.
+
+A Etapa 3 — DOCX de Procedimentos é apenas a próxima. Ela ainda não está em análise. Etapas 4–12 permanecem pendentes.
 
 A fonte técnica é `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
@@ -177,7 +196,7 @@ Permanecem consolidados:
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de nova revisão ainda referenciando categoria arquivada;
-- Etapas 2–12 do Bloco 10;
+- Etapas 3–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo.
 

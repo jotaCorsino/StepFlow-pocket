@@ -1,6 +1,6 @@
 # Registro de Decisões — StepFlow Pocket
 
-**Atualização:** 2026-08-25
+**Atualização:** 2026-08-26
 
 Este arquivo registra decisões vigentes e pendências atuais. Propostas não aprovadas não podem ser tratadas como contrato.
 
@@ -471,9 +471,32 @@ Consolidado:
 11. runtime documental não depende operacionalmente de Office, LibreOffice, Adobe Reader, Chrome/Chromium externo headless, `wkhtmltopdf` ou serviço cloud/conversor obrigatório;
 12. artefatos gerados não viram histórico/backup por padrão;
 13. Client permanece responsável pela UX e pelo destino local;
-14. engine PDF/DOCX, impressão, templates, limites, preview, MACs, temporários concretos e QR/barcode permanecem nas Etapas 2–12.
+14. detalhes de PDF, DOCX, impressão, templates, limites, preview, MACs, temporários concretos e QR/barcode permanecem nas respectivas etapas.
 
-A Etapa 2 — PDF de Procedimentos é a próxima, mas ainda não está em análise.
+### PDF de Procedimentos — Bloco 10 / Etapa 2
+
+Consolidado / aprovado pelo PO:
+
+1. renderer PDF baseado em Typst embutido como biblioteca Rust no Host, com crates oficiais e adaptador interno StepFlow;
+2. nenhuma execução de `typst.exe`/CLI, browser ou processo conversor externo;
+3. template Typst interno, confiável e versionado com o produto;
+4. conteúdo do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst, mesmo após escaping;
+5. nenhum pacote/recurso remoto é resolvido durante geração; filesystem/imports ficam restritos ao mundo virtual, templates, fontes e assets controlados pelo Host;
+6. PDF 1.7 é solicitado explicitamente ao exporter;
+7. Tagged PDF permanece explicitamente habilitado como baseline, sem promessa de conformidade formal PDF/UA/PDF-A;
+8. texto textual permanece selecionável, pesquisável e copiável;
+9. fontes necessárias são empacotadas e incorporadas/subsetadas, sem depender das fontes instaladas no Windows;
+10. todos os blocos semânticos conhecidos são representados; incompatibilidade/tipo desconhecido falha explicitamente em vez de ser descartado;
+11. comandos e código permanecem texto e preservam whitespace relevante;
+12. fluxo multipágina e quebra automática são obrigatórios, sem antecipar margens, A4, tipografia, cabeçalho/rodapé ou paginação visual da Etapa 5;
+13. PNG/JPEG e SVG controlado são suportados somente a partir de assets previamente aceitos/resolvidos pelo Host;
+14. conteúdo visual não depende implicitamente de relógio/ambiente da máquina central; data/hora visível vem de dados explícitos do `DocumentModel`/`generation_metadata`;
+15. estabilidade visual/semântica é exigida sob mesma versão do Host/template/fontes/assets/modelo, sem exigir identidade byte-a-byte quando metadados técnicos variarem;
+16. falha do renderer não produz artefato parcial tratado como sucesso;
+17. assinatura digital, senha, formulários, anexos, JavaScript, multimídia, PDF/A formal e PDF/UA formal ficam fora da primeira versão;
+18. versão exata das crates e limites numéricos de memória/tamanho/tempo ficam para implementação/medição e validação técnica posterior.
+
+A Etapa 3 — DOCX de Procedimentos é a próxima, mas ainda não está em análise.
 
 ## 27. Backup/Restore
 
@@ -532,7 +555,7 @@ Comunicação:
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído;
-- **Bloco 10: em andamento — Etapa 1 consolidada; Etapa 2 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1 e 2 consolidadas; Etapa 3 próxima, ainda não aberta**;
 - Bloco 11: pendente;
 - Bloco 12: pendente.
 
@@ -540,7 +563,6 @@ Comunicação:
 
 ### Bloco 10
 
-- Etapa 2: engine/capacidades PDF de Procedimentos;
 - Etapa 3: DOCX de Procedimentos;
 - Etapa 4: impressão Windows de Procedimentos;
 - Etapa 5: template físico de Procedimentos;
