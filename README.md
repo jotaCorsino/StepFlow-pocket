@@ -51,7 +51,15 @@ Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`
 
 O Bloco 8 está concluído documentalmente. Nenhuma UI de produção foi criada.
 
-Direção visual transversal consolidada: o Pocket busca **clareza com baixa densidade textual permanente**, usando cor, forma, símbolo, posição e ícones reconhecíveis quando isso simplificar sem gerar ambiguidade; detalhes secundários podem aparecer sob demanda e cor nunca é o único meio para comunicar estado importante. No Reader, o progresso entre Etapas usa stepper compacto de círculos/linhas e permanece separado do progresso operacional de checklist.
+Direção visual transversal consolidada:
+
+- clareza com baixa densidade textual permanente;
+- uso de cor, forma, símbolo, posição e ícones reconhecíveis quando isso simplificar sem gerar ambiguidade;
+- detalhes secundários podem aparecer sob demanda;
+- cor nunca é o único meio para comunicar estado importante;
+- no Reader, `Visão geral` é a primeira página lógica e cada Etapa mantém página própria;
+- o stepper do Reader é compacto, horizontal e navegável, com círculos/linhas e estados anteriores/atual/seguintes;
+- o estado do stepper é navegação e não conclusão operacional/checklist.
 
 ### Bloco 9 — decisões operacionais consolidadas
 
@@ -148,17 +156,17 @@ Consolidado na Etapa 2:
 - renderer PDF de Procedimentos usa Typst embutido como biblioteca Rust no Host, por crates oficiais + adaptador interno StepFlow;
 - nenhuma dependência de `typst.exe`/CLI, browser ou processo conversor externo;
 - template Typst interno, confiável e versionado;
-- conteúdo originado do domínio entra somente como valores/dados estruturados; nunca participa da construção textual do source Typst, mesmo após escaping;
+- conteúdo originado do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst;
 - nenhum pacote/recurso remoto é resolvido em runtime e o renderer não recebe filesystem genérico, path arbitrário ou URL originados do conteúdo;
 - PDF 1.7 é solicitado explicitamente ao exporter;
 - Tagged PDF permanece explicitamente habilitado como baseline, sem prometer conformidade formal PDF/UA/PDF-A;
-- texto textual permanece selecionável, pesquisável e copiável;
+- texto permanece selecionável, pesquisável e copiável;
 - fontes necessárias são empacotadas/incorporadas, sem depender das fontes instaladas no Windows;
 - todos os blocos semânticos do Procedimento são representados sem descarte silencioso;
 - comandos/código permanecem texto e preservam whitespace relevante;
-- fluxo multipágina e quebra automática são obrigatórios; template físico segue a Etapa 5 consolidada;
+- fluxo multipágina e quebra automática são obrigatórios e usam o template físico consolidado na Etapa 5;
 - PNG/JPEG e SVG controlado são capacidades do renderer, recebendo somente assets já aceitos pelo Host;
-- conteúdo visual não depende implicitamente do relógio/ambiente da máquina central; data/hora exibida vem de dados explícitos do modelo;
+- conteúdo visual não depende implicitamente do relógio/ambiente da máquina central;
 - falha de renderer não produz artefato parcial tratado como sucesso;
 - assinatura, senha, formulários, anexos, JavaScript, multimídia e conformidade formal PDF/A ou PDF/UA ficam fora da primeira versão.
 
@@ -169,7 +177,7 @@ Consolidado na Etapa 3:
 - `docx-rs` é a biblioteca Rust preferida, isolada por adaptador interno StepFlow;
 - nenhuma dependência de Word/COM, LibreOffice, browser/headless, CLI conversor ou cloud;
 - conteúdo do domínio entra somente como dados estruturados e nunca como XML/OOXML arbitrário;
-- estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário em runtime na primeira versão;
+- estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário em runtime;
 - texto permanece real, selecionável, pesquisável, copiável e editável;
 - todos os blocos semânticos conhecidos são representados sem descarte silencioso;
 - passos/subpassos usam listas/numeração Word reais quando aplicável; checklist é documental, não formulário interativo;
@@ -183,7 +191,7 @@ Consolidado na Etapa 3:
 Consolidado na Etapa 4:
 
 - impressão física de Procedimentos acontece no Client Windows, não no Host central;
-- o mesmo PDF do renderer consolidado da Etapa 2 é o artefato canônico de impressão para a revisão exata selecionada;
+- o mesmo PDF do renderer da Etapa 2 é o artefato canônico de impressão para a revisão exata selecionada;
 - não existe renderer separado de impressão e o Client não imprime HTML da UI nem DOCX;
 - o Client usa WebView2 transitória/dedicada para carregar somente recurso PDF local controlado;
 - baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
@@ -195,12 +203,12 @@ Consolidado na Etapa 4:
 - cancelamento/fechamento do diálogo não é erro funcional;
 - falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo permanecem distinguíveis;
 - gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, impressoras locais/de rede e operação offline;
-- impressão usa o template físico consolidado da Etapa 5 e não cria layout alternativo.
+- impressão usa o template físico consolidado da Etapa 5.
 
 Consolidado na Etapa 5:
 
 - Reader diário e documento físico são superfícies distintas; A4 não participa da geometria/navegação do app;
-- o Reader mantém `Visão geral` como primeira página lógica e uma página lógica por Etapa;
+- `Visão geral` é a primeira página lógica do Reader e cada Etapa mantém página lógica própria;
 - stepper superior é compacto, horizontal e navegável por círculos/linhas, com estados anteriores/atual/seguintes sem rótulos permanentes repetitivos;
 - estado anterior no stepper representa percurso de navegação, nunca conclusão operacional ou checklist persistido;
 - Procedimento exportado usa **A4 retrato multipágina**, com margens-base de **18 mm**;
