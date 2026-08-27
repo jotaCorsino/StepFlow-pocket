@@ -12,9 +12,9 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 estão concluídos; Bloco 5 está concluído no núcleo com parâmetros finais pendentes; Bloco 6 está consolidado conceitualmente; Bloco 7 está concluído no núcleo; Blocos 8 e 9 estão **CONCLUÍDOS**.
-- Bloco 10 está **EM ANDAMENTO**; **Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos, 3 — DOCX de Procedimentos e 4 — Impressão Windows de Procedimentos estão CONSOLIDADAS**; **Etapa 5 — Template físico de Procedimentos é a próxima, ainda não aberta**.
-- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento, arquitetura-base de geração documental, renderers PDF/DOCX e impressão Windows de Procedimentos estão consolidados.
-- Bloco 10 ainda fecha as Etapas 5–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
+- Bloco 10 está **EM ANDAMENTO**; **Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos, 3 — DOCX de Procedimentos, 4 — Impressão Windows de Procedimentos e 5 — Template físico de Procedimentos estão CONSOLIDADAS**; **Etapa 6 — PDF + preview da Ficha compacta é a próxima, ainda não aberta**.
+- A modelagem `Procedimento × Atendimento/Execução × Equipamento`, categorias múltiplas, lifecycle operacional, checklist persistente, matriz operacional, códigos `AT/EQP`, snapshot histórico de Equipamento, arquitetura-base de geração documental, renderers PDF/DOCX, impressão Windows e template físico de Procedimentos estão consolidados.
+- Bloco 10 ainda fecha as Etapas 6–12; Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade da tarefa
 
@@ -178,9 +178,11 @@ Operações que exijam credenciais, Internet confiável, elevação ou configura
 - Equipamento possui identidade interna própria;
 - MAC/serial/patrimônio são atributos de busca;
 - Atendimento preserva a revisão realmente utilizada;
-- ficha compacta imprimível é requisito do produto.
+- ficha compacta imprimível é requisito do produto;
+- UI busca clareza com baixa densidade textual permanente: usar cor, forma, símbolo, posição e ícones reconhecíveis quando isso simplificar sem criar ambiguidade; cor nunca é o único meio para estado importante;
+- Reader de Procedimentos usa stepper compacto navegável de círculos/linhas para Etapas anteriores/atual/seguintes; esse estado é navegação e nunca conclusão operacional do Atendimento.
 
-## Arquitetura de geração documental consolidada — Bloco 10 / Etapas 1–4
+## Arquitetura de geração documental consolidada — Bloco 10 / Etapas 1–5
 
 Etapa 1:
 
@@ -208,7 +210,7 @@ Etapa 2 — PDF de Procedimentos:
 - fontes necessárias são empacotadas e incorporadas/subsetadas, sem depender das fontes instaladas no Windows;
 - texto permanece selecionável/pesquisável/copiável; comandos/código permanecem texto e preservam whitespace relevante;
 - todos os blocos semânticos conhecidos devem ser representados sem descarte silencioso;
-- fluxo multipágina e quebra automática são obrigatórios, sem antecipar margens, A4, tipografia, cabeçalho/rodapé ou paginação visual da Etapa 5;
+- fluxo multipágina e quebra automática são obrigatórios; formato físico, margens, tipografia, cabeçalho/rodapé e paginação visual seguem a Etapa 5;
 - PNG/JPEG e SVG controlado são suportados somente a partir de assets já aceitos e resolvidos pelo Host;
 - conteúdo visual não pode depender implicitamente de relógio/ambiente da máquina central; data/hora exibida vem de dados explícitos do modelo;
 - falha de renderer não produz artefato parcial tratado como sucesso;
@@ -227,8 +229,8 @@ Etapa 3 — DOCX de Procedimentos:
 - passos/subpassos usam numeração/lista Word real quando aplicável; checklist permanece documental, não formulário interativo;
 - comandos/código permanecem texto e preservam whitespace relevante;
 - PNG/JPEG são baseline de imagem; SVG não é requisito direto do DOCX v1 e não pode ser omitido silenciosamente;
-- DOCX é refluível e não promete paginação idêntica ao PDF; layout físico final permanece reservado à Etapa 5;
-- política tipográfica/embedding de fontes do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/gate técnico;
+- DOCX é refluível e não promete paginação idêntica ao PDF; formato/hierarquia física seguem a Etapa 5;
+- DOCX v1 referencia Arial para texto e Consolas para comando/código, sem embedding dessas fontes pelo StepFlow; matriz real de compatibilidade continua no gate técnico;
 - relationships externos, macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
 - artefato incompleto/corrompido nunca é devolvido como sucesso;
 - versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
@@ -249,9 +251,28 @@ Etapa 4 — Impressão Windows de Procedimentos:
 - duplicidade concorrente da mesma ação é controlada localmente sem criar fila/job persistente;
 - gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, impressoras locais/de rede e operação offline;
 - versão mínima concreta do WebView2 fica para matriz corporativa/gate técnico;
-- layout físico do Procedimento permanece integralmente reservado para a Etapa 5.
+- impressão usa o template físico consolidado na Etapa 5 sem criar layout alternativo.
 
-Templates físicos, limites, preview da ficha, MACs, temporários concretos e QR/barcode continuam nas Etapas 5–12.
+Etapa 5 — Template físico de Procedimentos:
+
+- Reader diário e documento físico são superfícies independentes; nenhuma geometria A4 é aplicada à navegação do app;
+- Procedimento exportado usa **A4 retrato multipágina**, com margens-base de **18 mm** em todos os lados;
+- não há capa exclusiva; identificação e conteúdo útil começam na primeira página;
+- v1 não exige sumário documental físico por padrão;
+- títulos de Etapa são compactos, por exemplo `01 · Preparação`, sem repetir `ETAPA` quando a hierarquia já for clara;
+- uma Etapa não força nova folha automaticamente; título deve permanecer com o primeiro conteúdo quando possível;
+- sem cabeçalho repetitivo nas páginas internas; rodapé compacto identifica código/revisão e paginação;
+- blocos físicos usam hierarquia/forma/símbolo com baixa densidade visual, evitando cards/bordas sem função;
+- parágrafo é texto normal; passos usam numeração/indentação; checklist usa `□`; nota/alerta usam distinção semântica legível também sem depender só de cor; comando/código permanecem texto monoespaçado real;
+- paginação é automática; evitar títulos/linhas órfãs; blocos excepcionalmente longos podem quebrar entre páginas, nunca truncar ou reduzir fonte silenciosamente;
+- imagens preservam proporção, sem crop automático;
+- PDF é a referência física de impressão e usa **Noto Sans + Noto Sans Mono** empacotadas/incorporadas/subsetadas conforme licença OFL 1.1;
+- DOCX usa **Arial + Consolas** referenciadas, sem embedding/redistribuição dessas fontes pelo StepFlow v1;
+- baseline tipográfico: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt e rodapé 8 pt;
+- PDF e DOCX compartilham formato-base, ordem, hierarquia e semântica, mas DOCX permanece refluível e não promete quebras de página idênticas ao PDF;
+- limite rígido de **uma A4** não pertence ao Procedimento completo: ele é requisito da Ficha compacta de Atendimento nas etapas próprias.
+
+Preview/template/limites da Ficha compacta, múltiplos MACs, temporários concretos e QR/barcode continuam nas Etapas 6–12.
 
 ## Regras operacionais consolidadas do Bloco 9
 
@@ -324,8 +345,7 @@ Cancelado
 
 Não inventar por suposição:
 
-- template físico final de Procedimentos e da ficha;
-- margens/tipografia/densidade;
+- template físico final da Ficha compacta e seus limites/densidade;
 - versão mínima concreta do WebView2 para impressão e detalhes de integração sujeitos ao gate técnico;
 - nomes/paths/limpeza concretos do recurso temporário de impressão;
 - limites numéricos finais dos textos destinados à ficha;
