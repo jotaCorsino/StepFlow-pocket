@@ -847,7 +847,21 @@ Contrato herdado já consolidado para a Ficha:
 
 A Etapa 6 ainda não decide nada além disso até ser explicitamente aberta após o fechamento operacional da Etapa 5.
 
-## 43. Etapas 7–12 ainda pendentes
+## 43. Gate operacional antes da Etapa 6
+
+A Etapa 5 só é encerrada operacionalmente após:
+
+```text
+consolidação documental
+→ squash merge do PR
+→ remoção da branch remota
+→ verificação de remoto somente com main
+→ zero PRs abertos
+```
+
+Antes desse gate, não iniciar pesquisa, proposta, branch ou análise da Etapa 6.
+
+## 44. Etapas 7–12 ainda pendentes
 
 - **Etapa 7:** Template físico A4 da Ficha;
 - **Etapa 8:** Limites textuais e densidade da Ficha;
@@ -858,7 +872,7 @@ A Etapa 6 ainda não decide nada além disso até ser explicitamente aberta apó
 
 Nenhuma dessas etapas deve ser antecipada por inferência.
 
-## 44. Pendências que permanecem fora deste fechamento
+## 45. Pendências que permanecem fora deste fechamento
 
 - versão mínima concreta do WebView2;
 - versões exatas de crates/dependencies;
