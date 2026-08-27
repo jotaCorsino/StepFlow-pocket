@@ -2,7 +2,7 @@
 
 **Status:** EM ANDAMENTO  
 **Início:** 2026-08-19  
-**Atualização:** 2026-08-26
+**Atualização:** 2026-08-27
 
 ## Objetivo
 
@@ -24,7 +24,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos + checklist | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–4 CONSOLIDADAS / ETAPA 5 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–5 CONSOLIDADAS / ETAPA 6 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -46,7 +46,8 @@ Fazem parte da Fase 1:
 - lifecycle operacional de Atendimentos;
 - checklist persistente em contexto de execução;
 - matriz operacional de capacidades;
-- códigos `AT-000001` / `EQP-000001`.
+- códigos `AT-000001` / `EQP-000001`;
+- princípio visual de clareza com baixa densidade textual permanente, usando cor/forma/símbolo/posição quando apropriado sem sacrificar acessibilidade.
 
 ## Bloco 8 — UI/UX — concluído
 
@@ -69,6 +70,8 @@ Telas 01–15 estão consolidadas/aprovadas:
 15. Estados transversais.
 
 Nenhuma UI de produção foi criada.
+
+Correção consolidada do Reader: `Visão geral` é a primeira página lógica; cada Etapa mantém página própria; a navegação inclui stepper horizontal compacto de círculos/linhas com estados anteriores/atual/seguintes e ação direta por marcador. Esse estado é apenas navegação e não conclusão operacional de checklist/Atendimento.
 
 ## Bloco 9 — Execução operacional / Atendimentos + checklist — concluído
 
@@ -138,7 +141,7 @@ Host-only, seis dígitos, gaps permitidos.
 
 ## Bloco 10 — Exportação e impressão
 
-**Status: EM ANDAMENTO — Etapas 1–4 consolidadas; Etapa 5 próxima, ainda não aberta.**
+**Status: EM ANDAMENTO — Etapas 1–5 consolidadas; Etapa 6 próxima, ainda não aberta.**
 
 Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 
@@ -152,8 +155,8 @@ A UX já foi consolidada no Bloco 8. O fechamento técnico do Bloco 10 segue uma
 | 2 | PDF de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 3 | DOCX de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 4 | Impressão Windows de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
-| 5 | Template físico de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 6 | PDF + preview da Ficha compacta | PENDENTE |
+| 5 | Template físico de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
+| 6 | PDF + preview da Ficha compacta | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 7 | Template físico A4 da Ficha | PENDENTE |
 | 8 | Limites textuais e densidade da Ficha | PENDENTE |
 | 9 | Múltiplos MACs / Procedimentos na Ficha | PENDENTE |
@@ -161,7 +164,7 @@ A UX já foi consolidada no Bloco 8. O fechamento técnico do Bloco 10 segue uma
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
 
-### Etapa 1 — consolidado
+### Etapa 1 — consolidada
 
 Contrato aprovado:
 
@@ -187,7 +190,7 @@ Contrato aprovado:
 - renderer PDF de Procedimentos baseado em **Typst embutido como biblioteca Rust no Host**, usando crates oficiais com adaptador interno StepFlow;
 - nenhum `typst.exe`/CLI, browser ou processo conversor externo;
 - template Typst interno, confiável e versionado com o produto;
-- conteúdo originado do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst, mesmo após escaping;
+- conteúdo originado do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst;
 - nenhum pacote/recurso remoto é resolvido durante geração; filesystem/imports ficam restritos ao mundo virtual, templates, fontes e assets controlados pelo Host;
 - PDF 1.7 é solicitado explicitamente ao exporter;
 - Tagged PDF permanece explicitamente habilitado como baseline, sem prometer conformidade formal PDF/UA/PDF-A;
@@ -195,7 +198,7 @@ Contrato aprovado:
 - fontes necessárias são empacotadas e incorporadas/subsetadas, sem depender das fontes instaladas no Windows;
 - todos os blocos semânticos do Procedimento devem ser representados sem descarte silencioso; incompatibilidade deve falhar explicitamente;
 - comandos/código permanecem texto e preservam whitespace relevante;
-- engine suporta fluxo multipágina e quebra automática, sem definir ainda margens, A4, tipografia, cabeçalho, rodapé ou paginação visual;
+- engine suporta fluxo multipágina e quebra automática; formato/layout físico seguem a Etapa 5 consolidada;
 - PNG/JPEG e SVG controlado são suportados somente a partir de assets previamente aceitos/resolvidos pelo Host;
 - conteúdo visual não depende implicitamente do relógio/ambiente da máquina central; data/hora visível vem de dados explícitos do `DocumentModel`/`generation_metadata`;
 - estabilidade visual/semântica é exigida sob mesma versão do Host/template/fontes/assets/modelo, sem exigir bytes idênticos quando metadados técnicos variarem;
@@ -220,7 +223,7 @@ Contrato aprovado:
 - comandos/código permanecem texto e preservam whitespace relevante;
 - PNG/JPEG são baseline de imagem; SVG não é requisito direto do DOCX v1 e exige representação interna compatível ou falha explícita, nunca omissão silenciosa;
 - DOCX é refluível: não há promessa de paginação idêntica ao PDF ou entre versões/consumidores Word;
-- política de fontes/embedding do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/gate técnico;
+- DOCX v1 referencia **Arial** para texto e **Consolas** para comando/código, sem embedding/redistribuição dessas fontes pelo StepFlow;
 - macros/VBA/`.docm`, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura digital, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
 - geração só é sucesso com pacote OPC/ZIP e OOXML coerentes; artefato incompleto/corrompido não é devolvido como sucesso;
 - versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
@@ -244,9 +247,30 @@ Contrato aprovado:
 - duplicidade concorrente acidental da mesma ação é impedida localmente sem criar fila/job persistente;
 - gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, Unicode/logo, impressoras locais/de rede, opções do diálogo e operação offline;
 - versão mínima concreta do WebView2 fica para matriz corporativa/gate de implementação;
-- layout físico final do Procedimento continua integralmente reservado para a Etapa 5.
+- impressão usa o template físico consolidado na Etapa 5.
 
-A **Etapa 5 — Template físico de Procedimentos** é apenas a próxima. Ela ainda não está em análise. Etapas 6–12 continuam pendentes.
+### Etapa 5 — consolidada
+
+Contrato aprovado:
+
+- Reader diário e Procedimento exportado são superfícies separadas; página lógica do app não possui geometria A4;
+- `Visão geral` é a primeira página lógica e cada `process_stage` mantém página própria;
+- stepper horizontal compacto de círculos/linhas navega entre Etapas, com estados anteriores/atual/seguintes e sem rótulos permanentes repetitivos;
+- estado anterior no stepper representa percurso de navegação, nunca conclusão operacional/checklist;
+- Procedimento completo usa **A4 retrato multipágina** com margens-base de **18 mm**;
+- sem capa exclusiva; identificação e conteúdo útil começam na primeira página;
+- v1 não exige sumário físico por padrão;
+- título de Etapa pode usar forma curta como `01 · Preparação` e não força nova folha automaticamente;
+- sem cabeçalho repetitivo; rodapé compacto identifica código/revisão e paginação;
+- paginação automática evita títulos/linhas órfãs e nunca trunca/reduz fonte silenciosamente para caber;
+- blocos físicos usam hierarquia/forma/símbolo com baixa densidade, sem cards/bordas desnecessários;
+- PDF usa **Noto Sans + Noto Sans Mono** empacotadas/incorporadas/subsetadas conforme OFL 1.1;
+- DOCX usa **Arial + Consolas** referenciadas, sem embedding/redistribuição dessas fontes pelo StepFlow v1;
+- baseline tipográfico: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt, rodapé 8 pt;
+- PDF é referência física de impressão; DOCX compartilha hierarquia/semântica, mas permanece refluível;
+- limite rígido de **uma A4** pertence à Ficha compacta de Atendimento, não ao Procedimento completo.
+
+A **Etapa 6 — PDF + preview da Ficha compacta** é apenas a próxima. Ela ainda não está em análise. Etapas 7–12 continuam pendentes.
 
 ## Bloco 11 — Backup e restauração
 
@@ -328,6 +352,7 @@ Antes da implementação correspondente:
 - [x] renderer PDF de Procedimentos decidido;
 - [x] renderer DOCX de Procedimentos decidido;
 - [x] impressão Windows de Procedimentos decidida;
+- [x] template físico de Procedimentos decidido;
 - [ ] exportação/impressão + ficha tecnicamente definidas por completo;
 - [ ] backup/restore técnico definido;
 - [ ] regra editorial de categoria arquivada fechada;
