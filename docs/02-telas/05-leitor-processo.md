@@ -3,7 +3,7 @@
 **Status:** CONSOLIDADO / APROVADO PELO PO  
 **Bloco original:** Fase 1 — Bloco 8 (UI/UX)  
 **Atualização operacional:** Bloco 9  
-**Última consolidação:** 2026-08-25
+**Última consolidação:** 2026-08-27
 
 ## 1. Objetivo
 
@@ -27,7 +27,9 @@ PR-014 · Configuração de VLAN
 Versão 2.0 · revisão r18 · Publicada
 [ categorias ] · Infraestrutura
 
-[ Sumário ]                           [ ações contextuais ]
+Etapa 3 de 7                         [ Sumário ] [ ações contextuais ]
+
+●━━━━●━━━━◉────○────○────○────○
 ```
 
 Quando em execução:
@@ -38,6 +40,8 @@ PR-014 · Versão 2.0 · revisão r18
 ```
 
 O contexto de Atendimento precisa ficar claro sem transformar o Reader em outra aplicação.
+
+A UI segue o princípio transversal de **clareza com baixa densidade permanente**: informação essencial permanece visível; estados simples e ações recorrentes podem usar forma, cor, símbolo, posição e ícones reconhecíveis quando isso reduzir texto sem criar ambiguidade. Detalhes secundários podem aparecer sob demanda. Cor nunca é o único meio de comunicar um estado importante.
 
 ## 3. Páginas do manual
 
@@ -64,17 +68,45 @@ Visão geral
 
 Ao mudar de página, o conteúdo começa no topo.
 
+Se uma Etapa possuir conteúdo maior do que a área visível, o conteúdo não é truncado e a próxima Etapa não é fundida na mesma página lógica. Overflow/rolagem deve preservar uma Etapa por página lógica.
+
 ## 4. Navegação
+
+A navegação do Reader oferece caminhos equivalentes para o mesmo conjunto de páginas:
 
 - `Anterior`;
 - `Próxima`;
 - `Sumário` em painel temporário;
-- indicador `Etapa X de Y`;
-- barra linear discreta de posição.
+- indicador textual compacto `Etapa X de Y`;
+- **stepper horizontal compacto e navegável** entre as Etapas.
 
-`Etapa X de Y` e a barra representam **posição de navegação**, nunca conclusão operacional.
+O stepper é composto prioritariamente por círculos conectados por linha, usando preenchimento, contraste, forma/símbolo e cor para diferenciar:
 
-A primeira etapa volta para `Visão geral`; a última não oferece avanço inválido.
+- Etapas anteriores à atual → estado visual de percorridas/concluídas na navegação;
+- Etapa atual → destaque inequívoco;
+- Etapas seguintes → estado neutro/futuro.
+
+Exemplo conceitual:
+
+```text
+●━━━━●━━━━◉────○────○────○────○
+```
+
+Regras do stepper:
+
+- cada marcador representa uma Etapa;
+- cada marcador é acionável por clique e teclado e abre diretamente aquela Etapa no topo;
+- não repetir permanentemente nomes como `Etapa 1`, `Etapa 2`, etc. junto a todos os marcadores;
+- o nome completo continua no título da página e no Sumário;
+- tooltip/nome acessível pode apoiar identificação sem aumentar densidade visual permanente;
+- o componente deve se adaptar horizontalmente à largura disponível da página;
+- não transformar o stepper em uma faixa alta ou carregada de metadados.
+
+`Visão geral` continua sendo a primeira página lógica do Sumário, mas não precisa ser representada como `Etapa 0` no stepper. A primeira Etapa pode voltar para `Visão geral` por `Anterior` ou pelo Sumário.
+
+`Etapa X de Y`, stepper e páginas visitadas representam **posição/percurso de navegação**, nunca conclusão operacional do Atendimento. O estado visual de uma Etapa anterior no stepper não grava `completed=true`, não altera checklist e não confirma que o técnico executou aquela Etapa.
+
+A última Etapa não oferece avanço inválido.
 
 ## 5. Blocos tipados
 
@@ -169,7 +201,7 @@ Somente no contexto de Atendimento, o Reader pode mostrar contagem derivada dos 
 Regras:
 
 - não usar páginas visitadas;
-- não usar `Etapa X de Y` como percentual;
+- não usar `Etapa X de Y` ou o stepper como percentual operacional;
 - revisão sem checklist não mostra `0%` artificial;
 - 100% de checklist não conclui Atendimento automaticamente;
 - conclusão continua ação explícita da Tela 09.
@@ -239,6 +271,8 @@ Conforme capacidade:
 
 Ações não aplicáveis não ocupam a UI por padrão.
 
+Ações recorrentes podem privilegiar ícones reconhecíveis quando o significado permanecer claro e houver nome acessível/tooltip adequado.
+
 Exportação/impressão usa exatamente a revisão aberta, conforme Tela 14/Bloco 10.
 
 ## 13. Estados
@@ -304,8 +338,9 @@ Eventos são sinais de mudança.
 - headings semânticos;
 - foco visível;
 - botões icon-only com nome acessível;
+- marcadores do stepper com nome/estado acessível e acionamento por teclado;
 - feedback de cópia anunciável;
-- estados de checklist não dependem só de cor;
+- estados de stepper e checklist não dependem só de cor;
 - avisos de revisão/lifecycle acessíveis.
 
 ## 17. Janelas suportadas
@@ -315,6 +350,7 @@ Alvo desktop Windows.
 Em janelas menores suportadas:
 
 - conteúdo pode reduzir colunas/empilhar metadados;
+- stepper redistribui o espaço horizontal sem exigir rótulos permanentes por Etapa;
 - controles permanecem acessíveis;
 - sem transformação mobile/hamburger inicial;
 - evitar scroll horizontal no conteúdo técnico sempre que possível.
@@ -323,8 +359,11 @@ Em janelas menores suportadas:
 
 - manual/livro é a experiência principal;
 - `Visão geral` precede Etapa 1;
-- uma Etapa = uma página;
+- uma Etapa = uma página lógica;
 - Sumário é temporário;
+- stepper compacto de círculos/linhas é navegável entre Etapas;
+- estados anterior/atual/seguinte do stepper são visuais de navegação, não conclusão operacional;
+- baixa densidade textual e uso responsável de cor/forma/símbolo orientam a apresentação;
 - blocos são tipados;
 - copiar é icon-only com feedback breve;
 - revisão aberta permanece estável;

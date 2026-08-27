@@ -1,18 +1,29 @@
 # Bloco 10 — Exportação / Impressão + Ficha Compacta
 
-**Status:** EM ANDAMENTO — ETAPAS 1–4 CONSOLIDADAS / ETAPA 5 PRÓXIMA  
+**Status:** EM ANDAMENTO — ETAPAS 1–5 CONSOLIDADAS / ETAPA 6 PRÓXIMA  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-25  
 **Etapa 1 consolidada:** 2026-08-25  
 **Etapa 2 consolidada:** 2026-08-26  
 **Etapa 3 consolidada:** 2026-08-26  
-**Etapa 4 consolidada:** 2026-08-26
+**Etapa 4 consolidada:** 2026-08-26  
+**Etapa 5 consolidada:** 2026-08-27
 
 ## 1. Objetivo do bloco
 
-Fechar, uma etapa por vez, o contrato técnico de geração documental do StepFlow, preservando o caráter Pocket e a UX já aprovada no Bloco 8.
+Fechar, uma etapa por vez, o contrato técnico de geração documental, exportação, impressão e Ficha compacta do StepFlow, preservando o caráter Pocket e a UX aprovada.
 
-Este documento é o mapa técnico do Bloco 10. Uma etapa futura só entra em análise quando for explicitamente aberta. Não pertence a este bloco implementar código de produção, fechar Backup/Restore técnico ou abrir o Bloco 11.
+Este arquivo funciona como **mapa técnico consolidado do Bloco 10**. Detalhes transversais que já possuem fonte canônica própria permanecem em:
+
+- `../../AGENTS.md` — regras operacionais superiores;
+- `../03-arquitetura/arquitetura-vigente.md` — arquitetura técnica vigente;
+- `../05-progresso/registro-de-decisoes.md` — decisões vigentes e pendências;
+- `../02-telas/05-leitor-processo.md` — contrato do Reader;
+- `../02-telas/14-exportacao-impressao-ficha.md` — UX de exportação/impressão/ficha.
+
+O objetivo deste documento não é duplicar integralmente essas fontes, mas registrar os contratos específicos do Bloco 10 e a relação entre suas etapas.
+
+Não pertence a este bloco implementar código de produção, fechar Backup/Restore técnico ou abrir o Bloco 11.
 
 ## 2. Etapas do Bloco 10
 
@@ -22,8 +33,8 @@ Este documento é o mapa técnico do Bloco 10. Uma etapa futura só entra em an�
 | 2 | PDF de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 3 | DOCX de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 4 | Impressão Windows de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
-| 5 | Template físico de Procedimentos | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 6 | PDF + preview da Ficha compacta | PENDENTE |
+| 5 | Template físico de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
+| 6 | PDF + preview da Ficha compacta | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 7 | Template físico A4 da Ficha | PENDENTE |
 | 8 | Limites textuais e densidade da Ficha | PENDENTE |
 | 9 | Múltiplos MACs / Procedimentos na Ficha | PENDENTE |
@@ -31,7 +42,7 @@ Este documento é o mapa técnico do Bloco 10. Uma etapa futura só entra em an�
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
 
-As Etapas 5–12 permanecem fora de análise neste checkpoint. A Etapa 5 está apenas marcada como próxima.
+As Etapas 6–12 permanecem fora de análise neste checkpoint. A Etapa 6 está apenas marcada como próxima.
 
 ---
 
@@ -39,145 +50,57 @@ As Etapas 5–12 permanecem fora de análise neste checkpoint. A Etapa 5 está a
 
 **Status:** CONSOLIDADO / APROVADO PELO PO
 
-## 3. Objetivo
+## 3. Fronteira arquitetural
 
-Definir somente as fronteiras arquiteturais da geração documental:
-
-- onde a geração acontece;
-- como o Client solicita um documento;
-- como o Host escolhe e congela a fonte da geração;
-- como autorização e consistência são garantidas;
-- como renderers futuros compartilham regras de negócio sem compartilhar HTML de tela;
-- como o artefato volta ao Client;
-- como concorrência e consumo de recursos são limitados;
-- o que não vira persistência, fila ou serviço novo.
-
-A Etapa 1 não escolhe biblioteca PDF, biblioteca DOCX, margens, fontes, preview, impressão Windows, limites de texto, quantidade de MACs ou QR/barcode.
-
-## 4. Contratos herdados
-
-Permanecem vigentes:
-
-- PDF, DOCX e impressão são obrigatórios para Procedimentos;
-- exportação usa documento próprio, nunca screenshot;
-- a fonte de Procedimento é a revisão exata selecionada/autorizada;
-- revisão nova não substitui silenciosamente a revisão escolhida;
-- ficha pertence ao Atendimento e pode existir com ou sem Equipamento;
-- ficha usa somente estado confirmado pelo Host;
-- `Em andamento` pode gerar ficha de acompanhamento;
-- `Concluído` reimprime estado histórico aplicável;
-- `Cancelado` precisa ser identificado inequivocamente;
-- ficha ocupa no máximo uma página A4;
-- DOCX específico da ficha não é requisito inicial;
-- autorização real permanece Host-side;
-- Client nunca abre SQLite diretamente;
-- evento WebSocket é sinal de mudança, não fonte oficial de estado.
-
-## 5. Fronteira arquitetural consolidada
-
-A geração documental pertence ao **Host**. O Client continua responsável pela experiência local do usuário.
+A geração documental pertence ao **Host**. O Client permanece responsável pela experiência local e pelo destino do artefato.
 
 ```text
 Client
-  ↓ solicita geração com identidade da fonte
+  ↓ solicita por identidade da fonte + revisão esperada
 Host
-  ↓ autentica e autoriza
-  ↓ valida versão/revisão esperada
-  ↓ captura snapshot consistente da fonte
+  ↓ autentica/autoriza
+  ↓ valida revisão/versão esperada
+  ↓ captura snapshot consistente
   ↓ materializa DocumentModel semântico
   ↓ encerra leitura/transação SQLite
-  ↓ renderiza o formato solicitado
-  ↓ devolve o artefato pela conexão autenticada
+  ↓ renderiza fora da fila de mutações
+  ↓ devolve artefato pela API autenticada
 Client
-  ↓ recebe o artefato
+  ↓ recebe
   ├─→ salvar localmente
-  └─→ preview/impressão quando as etapas correspondentes definirem
+  └─→ preview/impressão conforme contrato específico
 ```
 
 Consequências:
 
-- Client não gera documento a partir do DOM/HTML da tela;
-- Client não replica regras de negócio documentais;
-- Host não recebe caminho arbitrário do computador remoto;
-- Host não precisa acessar filesystem do usuário;
-- não existe compartilhamento SMB obrigatório para exportar;
-- geração usa somente dados que o Host pode autorizar e confirmar;
-- engines futuras recebem um modelo semântico comum, não conteúdo de UI.
+- Client não envia documento montado;
+- DOM/HTML/CSS da UI não são fonte documental;
+- Host não grava em path arbitrário da workstation;
+- renderers não reconsultam SQLite nem reconstroem regras de negócio;
+- fonte mutável usa revisão esperada para impedir substituição silenciosa por estado mais novo;
+- artefato é derivado e não cria mutação funcional.
 
-## 6. Requisição por identidade da fonte
-
-O Client não envia o texto completo do documento para o Host gerar.
-
-A solicitação contém conceitualmente:
-
-```text
-- tipo de documento;
-- formato solicitado;
-- identificador estável da fonte;
-- revisão/versão esperada quando aplicável;
-- contexto mínimo necessário à operação.
-```
-
-Para Procedimento, a revisão específica imutável identifica o snapshot documental. Para Atendimento mutável, a requisição preserva a revisão confirmada que o Client está usando.
-
-Exemplo:
-
-```text
-Client mostra Atendimento revisão 42
-→ solicita ficha para revisão esperada 42
-→ Host já está na revisão 43
-→ NÃO gerar silenciosamente a 43
-→ informar estado obsoleto/conflito
-→ Client reconsulta antes de nova tentativa
-```
-
-A forma exata de endpoint/payload fica para implementação da API; a semântica de **fonte esperada** está consolidada.
-
-## 7. Captura consistente antes da renderização
+## 4. Captura consistente
 
 A geração possui duas fases:
 
 ```text
-FASE A — captura
-Host abre leitura consistente
-→ valida fonte/autorização
-→ lê dados necessários
-→ resolve snapshots/revisões
-→ captura identidade corporativa necessária
-→ materializa DocumentModel em memória
+captura consistente
+→ autorização + leitura da fonte
+→ snapshots/revisões/identidade corporativa
+→ DocumentModel imutável em memória
 → encerra leitura/transação
 
-FASE B — renderização
-DocumentModel já materializado
-→ renderer produz artefato
-→ nenhuma transação SQLite permanece aberta
+renderização
+→ usa apenas DocumentModel + assets controlados
+→ produz o artefato
 ```
 
-A renderização não mantém uma transação de banco aberta por todo o tempo de geração. Isso evita segurar snapshot SQLite desnecessariamente, ampliar contenção com o writer e misturar dados de momentos diferentes.
+Nenhuma transação SQLite permanece aberta durante o trabalho pesado de renderização.
 
-## 8. Fonte por domínio
+## 5. DocumentModel
 
-### Procedimento
-
-A fonte documental é a revisão exata solicitada, já imutável. A identidade corporativa aplicável é capturada no início da geração.
-
-### Atendimento em andamento
-
-A fonte é um snapshot consistente do estado confirmado na revisão esperada, incluindo vínculos necessários ao documento.
-
-### Atendimento concluído
-
-A fonte usa o estado histórico consolidado aplicável, incluindo projeção congelada do Equipamento e revisões exatas dos Procedimentos utilizados.
-
-### Atendimento cancelado
-
-Usa o estado oficial aplicável e preserva identificação inequívoca do cancelamento.
-
-## 9. DocumentModel semântico
-
-Depois da captura, o Host cria uma representação intermediária tipada e imutável para aquela geração.
-
-Conceitualmente:
+Fronteira conceitual:
 
 ```text
 DocumentModel
@@ -191,185 +114,49 @@ DocumentModel
 └── generation_metadata
 ```
 
-O modelo é semântico, não layout PDF nem estrutura DOCX específica. Ele pode representar título, metadados, seções, parágrafos, passos/subpassos, checklist documental, notas/alertas, comandos/código e campos estruturados da ficha.
+Não contém:
 
-O `DocumentModel` não contém:
-
-- HTML arbitrário;
-- JavaScript;
+- HTML/JavaScript arbitrário;
+- DOM/classes CSS da aplicação;
 - comandos executáveis;
-- DOM da interface;
-- classes CSS da aplicação;
 - token de sessão;
-- caminho escolhido pelo usuário;
+- path escolhido pelo usuário;
 - estado transitório do Client.
 
-## 10. Um modelo de conteúdo, renderers separados
+## 6. Concorrência e persistência
 
-```text
-fonte oficial
-      ↓
-DocumentModel semântico
-      ├─→ renderer PDF        [Etapa 2]
-      └─→ renderer DOCX       [Etapa 3]
-```
+Geração é leitura derivada:
 
-Regras de negócio como revisão utilizada, equipamento histórico aplicável e existência de campos são resolvidas antes dos renderers. Os renderers não reconsultam o banco nem reconstruem o domínio.
-
-## 11. Geração é leitura derivada
-
-Gerar documento não deve:
-
-- entrar na fila de mutações do writer;
-- criar revisão de Procedimento;
-- alterar Atendimento;
-- marcar checklist;
-- alterar `updated_at` funcional;
-- emitir evento de domínio apenas porque um arquivo foi gerado;
-- criar registro permanente de exportação por padrão.
-
-## 12. Concorrência de renderização
-
-Renderização pode consumir CPU e memória, portanto usa limite próprio de concorrência, separado da fila de mutações.
-
-```text
-requisições de geração
-        ↓
-limite bounded de renderização
-        ├─ vaga disponível → gerar
-        └─ saturado → backpressure / SERVER_BUSY
-```
-
-Regras consolidadas:
-
-- não bloquear o writer esperando renderer;
-- não criar fila persistente de exportações;
-- não gravar jobs aceitos para executar depois;
-- evitar renderização pesada no executor assíncrono principal quando isso puder bloquear o Host;
-- quantidade exata de renderizações simultâneas será definida por implementação/medição.
-
-## 13. Sem job persistente na primeira versão
-
-Não criar inicialmente:
-
-- tabela `export_jobs`;
-- scheduler documental;
-- estado persistente `queued/running/completed`;
-- retenção de artefatos no servidor;
-- recuperação de exportação após restart;
-- histórico de downloads;
-- fila offline de geração.
+- fica fora da fila de mutações do writer;
+- usa limite próprio bounded de concorrência/backpressure;
+- não cria `export_jobs` persistentes na primeira versão;
+- não cria scheduler documental;
+- não mantém fila offline;
+- não altera revisão, Atendimento, checklist ou `updated_at` funcional;
+- não cria histórico de exportações por padrão;
+- artefato não entra automaticamente em backup.
 
 Fluxo inicial:
 
 ```text
 request autenticado
-→ captura consistente
+→ captura
 → renderização
-→ resposta com artefato
+→ resposta
 ```
 
-Arquitetura assíncrona só será proposta futuramente se testes reais demonstrarem necessidade.
+## 7. Runtime documental
 
-## 14. Transporte do artefato
+O runtime normal não depende operacionalmente de:
 
-O artefato retorna pela API autenticada, como bytes/stream adequado ao formato. O Client decide o destino local conforme as etapas futuras.
-
-O Host não recebe path do computador remoto para escrever diretamente nele.
-
-Se um renderer precisar de arquivo temporário interno durante a requisição, esse detalhe fica em área privada controlada pelo Host, inacessível por path fornecido pelo Client, limitado à vida da operação, removido após uso/falha e fora de backup/histórico funcional.
-
-## 15. Runtime Pocket/autocontido
-
-A geração documental não depende operacionalmente de:
-
-- Microsoft Office instalado;
-- automação COM do Office;
+- Microsoft Office/COM;
 - LibreOffice;
 - Adobe Reader;
 - Chrome/Chromium externo headless;
-- `wkhtmltopdf` ou conversor executável separado;
-- serviço web/cloud de conversão.
+- `wkhtmltopdf`;
+- serviço cloud de conversão.
 
-Bibliotecas compiladas com o Host podem ser usadas. Crates/versões específicas ficam para as etapas/implementação correspondentes.
-
-## 16. Responsabilidade do Client
-
-O Client:
-
-- inicia a ação a partir da UX aprovada;
-- mantém a sessão autenticada;
-- informa fonte/revisão esperada;
-- apresenta preparação/erro/cancelamento;
-- recebe o artefato;
-- abre fluxos locais de salvar/preview/imprimir quando definidos.
-
-O Client não reconstitui autorização, não consulta SQLite, não monta documento final pelo HTML da tela e não escolhe silenciosamente outra revisão.
-
-## 17. Autorização e sessão
-
-A autorização é validada no Host no momento da solicitação.
-
-Procedimento exige conceitualmente capacidade de ler a revisão solicitada + capacidade de exportar/imprimir. Ficha exige capacidade operacional aplicável ao Atendimento acessível.
-
-Na arquitetura síncrona inicial, a requisição é aceita somente com sessão válida e o artefato retorna pela mesma operação autenticada. Não existe URL pública permanente de download.
-
-## 18. Cancelamento, desconexão e falhas
-
-Como geração não altera domínio:
-
-- fechar/cancelar o Client pode abandonar a resposta;
-- o Host pode interromper trabalho quando tecnicamente seguro;
-- conexão perdida não cria mutação de negócio para reconciliar;
-- nova tentativa reconsulta a fonte oficial e usa a revisão atual confirmada.
-
-Classes mínimas de falha:
-
-- não autenticado;
-- sem permissão;
-- fonte inexistente/indisponível;
-- revisão esperada obsoleta;
-- fonte inválida para o documento;
-- renderer indisponível/falhou;
-- limite de recursos excedido;
-- Host ocupado/backpressure;
-- conexão interrompida.
-
-## 19. Logs, persistência e backup
-
-Log operacional mínimo pode registrar tipo do documento, formato, identificador técnico da fonte, duração e resultado/classe de erro.
-
-Não registrar por padrão conteúdo integral, senha/token, bytes do artefato ou paths locais escolhidos pelo usuário.
-
-Artefatos gerados não fazem parte do estado oficial apenas por terem sido produzidos. Por padrão:
-
-- não entram no SQLite como histórico documental;
-- não entram no backup;
-- não precisam sobreviver a restart do Host;
-- a cópia persistente é responsabilidade do usuário quando ele escolher salvar localmente.
-
-Auditoria funcional permanente de cada exportação não é requisito consolidado nesta etapa.
-
-## 20. Compatibilidade de API
-
-A geração fica sob a API versionada do Host e respeita o handshake Client↔Host existente. Nomes finais de endpoints/payloads não são fechados nesta etapa.
-
-## 21. Decisões consolidadas da Etapa 1
-
-1. geração documental é responsabilidade do Host;
-2. Client solicita por IDs/revisão esperada, nunca enviando documento montado;
-3. Host captura snapshot consistente e encerra leitura antes de renderizar;
-4. Atendimento mutável usa revisão esperada para impedir geração silenciosa de estado diferente;
-5. `DocumentModel` semântico é a fronteira comum entre domínio e renderers;
-6. renderers não reconsultam banco nem recebem HTML da UI;
-7. geração é leitura derivada e não passa pela fila de mutações;
-8. renderização tem limite próprio de concorrência/backpressure, sem fila persistente;
-9. fluxo inicial é request → render → resposta, sem `export_jobs` persistentes;
-10. artefato retorna pela API autenticada; Host não escreve em path arbitrário do Client;
-11. runtime não depende de Office/LibreOffice/Adobe/Chrome externo/cloud/conversor auxiliar obrigatório;
-12. artefatos gerados não viram histórico/backup por padrão;
-13. Client permanece responsável apenas pela UX e pelo destino local do artefato;
-14. detalhes de PDF, DOCX, impressão, templates, limites, MACs e QR permanecem nas respectivas etapas.
+Bibliotecas compiladas/empacotadas com o Host podem ser usadas.
 
 ---
 
@@ -377,95 +164,43 @@ A geração fica sob a API versionada do Host e respeita o handshake Client↔Ho
 
 **Status:** CONSOLIDADO / APROVADO PELO PO
 
-## 22. Objetivo da Etapa 2
+## 8. Renderer PDF
 
-Definir somente a base técnica do renderer PDF de Procedimentos e as capacidades mínimas que o PDF precisa preservar.
+O PDF de Procedimentos usa **Typst embutido como biblioteca Rust no Host**, por crates oficiais do ecossistema Typst e adaptador interno StepFlow.
 
-Esta etapa **não define** margens, tamanhos de fonte, cabeçalho/rodapé, paginação visual, densidade, layout final ou impressão Windows. Esses pontos permanecem nas Etapas 4 e 5.
+Não executar:
 
-## 23. Engine PDF consolidada
+- `typst.exe`/CLI;
+- browser;
+- processo conversor externo.
 
-O StepFlow usa **Typst embutido como biblioteca Rust no Host**, sem executar `typst.exe`/CLI, browser ou processo conversor externo e sem depender de instalação externa.
+A versão exata das crates será fixada no gate de implementação/Cargo.lock, não por suposição durante a Fase 1.
 
-A integração usa crates Rust oficiais do ecossistema Typst, encapsuladas por um **adaptador interno StepFlow ↔ Typst**. A arquitetura não depende da existência de um wrapper ou “camada oficial de embedding” específica.
+## 9. Template e segurança
 
-Não se consolida versão exata de crate durante a Fase 1. Na implementação, versões serão fixadas em `Cargo.lock` e validadas pelo gate técnico correspondente.
+- template Typst é interno, confiável e versionado;
+- conteúdo do domínio entra apenas como dados/valores estruturados;
+- conteúdo do usuário nunca participa da construção textual do source Typst;
+- nenhum pacote/recurso remoto é resolvido em runtime;
+- `World`/filesystem/imports ficam restritos a templates, fontes e assets controlados;
+- nenhum path/URL arbitrário originado do Procedimento é fornecido ao renderer.
 
-### Por que essa direção
+## 10. Contrato do PDF
 
-O StepFlow precisa de documento multipágina com fluxo de texto, quebras automáticas, Unicode, imagens, estrutura semântica e PDF final reproduzível sem navegador/conversor externo.
+Baseline:
 
-A engine escolhida entrega layout documental de alto nível. Não será construído no Host um motor próprio de paginação, medição de parágrafos e quebras apenas para escrever primitivas PDF.
-
-## 24. Template interno confiável e fronteira de dados
-
-O renderer PDF usa **template Typst interno, confiável e versionado com o Host**.
-
-Conteúdo originado do domínio **nunca participa da construção textual do source Typst**, inclusive após escaping.
-
-Fluxo conceitual:
-
-```text
-DocumentModel
-→ valores/dados estruturados controlados
-→ adaptador interno StepFlow
-→ template Typst interno confiável
-→ engine Typst embutida
-→ PDF bytes
-```
-
-Regras de segurança:
-
-- texto vindo do usuário é dado, nunca fonte Typst executável;
-- não concatenar conteúdo do domínio para construir source Typst;
-- não permitir `#eval`, imports, paths ou código arbitrário originado do conteúdo do Procedimento;
-- não resolver pacotes Typst pela Internet em runtime;
-- não permitir template escolhido pelo usuário na primeira versão;
-- assets, templates e fontes necessários ficam empacotados/versionados ou resolvidos pelo Host;
-- acesso a filesystem/imports do renderer fica restrito ao mundo/projeto virtual controlado pelo Host;
-- o renderer não recebe path arbitrário, URL remota ou filesystem genérico originados do conteúdo;
-- nenhuma URL remota é buscada durante a geração.
-
-A ponte concreta pode usar inputs/valores tipados, JSON ou estrutura virtual equivalente, desde que preserve a separação entre **dados** e **source Typst**.
-
-## 25. Contrato do PDF gerado
-
-O renderer deve produzir PDF válido e autocontido com MIME `application/pdf`.
-
-Baseline consolidado:
-
-- **PDF 1.7 solicitado explicitamente ao exporter**;
-- **Tagged PDF explicitamente habilitado** como baseline de acessibilidade;
-- texto real, selecionável, pesquisável e copiável quando a origem é textual;
-- fontes necessárias incorporadas/subsetadas no PDF;
-- Unicode adequado para português e caracteres técnicos usados pelos Procedimentos;
-- imagens/logo controlados podem ser incorporados sem dependência externa;
+- MIME `application/pdf`;
+- PDF 1.7 solicitado explicitamente;
+- Tagged PDF habilitado como baseline;
+- Tagged PDF não implica promessa formal PDF/UA ou PDF/A;
+- texto real selecionável/pesquisável/copiável;
+- Unicode adequado para português e caracteres técnicos;
+- fontes incorporadas/subsetadas;
 - documento multipágina com quebra automática;
-- metadados básicos do documento podem ser gravados no PDF.
+- imagens/logo controlados incorporáveis;
+- falha do renderer nunca retorna artefato parcial como sucesso.
 
-A primeira versão **não promete conformidade formal PDF/UA ou PDF/A** sem validação específica. Tagged PDF é baseline estrutural, não certificação.
-
-Uma versão de engine que não consiga preservar PDF 1.7 e Tagged PDF conforme este contrato não atende ao renderer consolidado da Etapa 2.
-
-## 26. Fontes
-
-O PDF não deve depender de fontes instaladas no Windows da máquina central.
-
-O pacote StepFlow deve carregar fontes licenciadas para redistribuição e suficientes para:
-
-- texto normal em português;
-- títulos/ênfases;
-- caracteres técnicos comuns;
-- símbolos usados por checklist/avisos;
-- fonte monoespaçada para comandos/código.
-
-A família visual exata, pesos e tamanhos ficam para a **Etapa 5 — Template físico de Procedimentos**.
-
-Ausência de uma fonte do sistema não pode mudar silenciosamente paginação ou aparência do documento.
-
-## 27. Blocos semânticos obrigatórios
-
-O renderer PDF precisa representar todos os blocos documentais já suportados pelo `DocumentModel`:
+Blocos semânticos obrigatórios:
 
 - parágrafo;
 - passos/subpassos numerados;
@@ -473,130 +208,41 @@ O renderer PDF precisa representar todos os blocos documentais já suportados pe
 - nota;
 - alerta;
 - comando;
-- bloco de código.
+- código.
 
-Regras:
+Tipo conhecido incompatível/desconhecido para o renderer falha explicitamente; não há descarte silencioso.
 
-- nenhum bloco conhecido pode ser descartado silenciosamente;
-- comandos/código preservam whitespace relevante;
-- código/comando é texto, não imagem rasterizada;
-- conteúdo textual continua copiável;
-- renderer desconhecendo um tipo de bloco deve falhar de forma explícita por incompatibilidade, não gerar PDF incompleto como se estivesse correto.
+Comando/código permanece texto e preserva whitespace relevante.
 
-## 28. Imagens e identidade corporativa
+## 11. Assets e determinismo
 
-A engine deve suportar a identidade corporativa capturada no `DocumentModel`, inclusive logo controlado pelo Host.
+PDF suporta assets controlados PNG/JPEG/SVG quando autorizados pela política do produto.
 
-Capacidade mínima do renderer:
+Conteúdo visual não depende implicitamente de:
 
-- PNG;
-- JPEG;
-- SVG vetorial controlado quando o formato estiver autorizado pela política de upload da empresa.
+- relógio da máquina;
+- locale ambiental;
+- fonte do sistema;
+- recurso remoto.
 
-Esta etapa não altera a política de upload da Tela 12 nem decide seus limites de bytes/dimensões. O renderer recebe somente assets já aceitos e resolvidos pelo domínio/Host, nunca paths ou URLs arbitrários vindos do documento.
+Data/hora visível deve vir de `DocumentModel`/`generation_metadata` explícito.
 
-Não há necessidade inicial de incorporar PDF como imagem, anexos ou conteúdo remoto.
+Sob mesma versão do Host/template/fontes/assets/modelo, exige-se estabilidade visual/semântica; não é necessário byte-a-byte idêntico quando metadados técnicos legítimos variarem.
 
-## 29. Paginação e layout nesta etapa
-
-A Etapa 2 consolida somente que o motor deve suportar **fluxo multipágina e quebra automática**.
-
-Não são definidos aqui:
-
-- margens finais;
-- tamanho A4 final do Procedimento;
-- regras de widow/orphan;
-- manter bloco inteiro na página;
-- cabeçalho/rodapé;
-- número de página;
-- sumário;
-- espaçamentos;
-- tamanho mínimo/máximo de fonte.
-
-Esses detalhes pertencem à Etapa 5.
-
-Mesmo assim, o renderer nunca pode resolver overflow por truncamento silencioso de conteúdo.
-
-## 30. Determinismo e versionamento
-
-Com a mesma versão do Host, mesmo template, mesmas fontes/assets e mesmo `DocumentModel`, o layout do PDF deve ser estável.
-
-Conteúdo visual **não pode depender implicitamente do relógio, locale, fontes do sistema ou outro estado ambiental da máquina central**. Data/hora que apareçam no documento devem vir explicitamente do `DocumentModel`/`generation_metadata`.
-
-Não se exige identidade byte-a-byte se metadados técnicos, como timestamp de geração, forem diferentes. O requisito é estabilidade semântica/visual sob a mesma versão do renderer.
-
-Template e engine fazem parte da versão do Host. Não existe atualização de template pela Internet em runtime.
-
-## 31. Recursos e falhas
-
-A Etapa 1 já definiu limite próprio de concorrência/backpressure. Para PDF:
-
-- falha do renderer não devolve arquivo parcial como sucesso;
-- erro de fonte/asset/template incompatível é erro de geração;
-- conteúdo legítimo não pode ser truncado para contornar limite;
-- limites numéricos de memória, tamanho e tempo serão definidos por implementação/medição e validados na Etapa 12;
-- erro técnico deve gerar log diagnóstico sem registrar o conteúdo integral do Procedimento.
-
-## 32. Recursos PDF fora da primeira versão
+## 12. Recursos fora da v1
 
 Não são requisitos iniciais:
 
-- assinatura digital do PDF;
-- criptografia/senha do PDF;
-- formulários editáveis;
-- anexos embutidos;
-- JavaScript em PDF;
+- assinatura digital;
+- criptografia/senha;
+- formulários;
+- anexos;
+- JavaScript;
 - multimídia;
-- certificados;
-- comentários/anotações gerados pelo StepFlow;
 - PDF/A formal;
 - PDF/UA formal.
 
-Esses recursos não devem ser adicionados por inferência.
-
-## 33. Alternativas avaliadas
-
-### `printpdf`
-
-É uma biblioteca Rust capaz de escrever PDF, fontes, imagens, SVG e texto. Entretanto, a camada de layout automático é recente/evolutiva e a alternativa de posicionamento manual transferiria paginação e composição documental demais para código próprio do StepFlow.
-
-### `krilla`
-
-É uma biblioteca Rust de alto nível para primitivas PDF, fontes, imagens, tagging e padrões PDF. O próprio projeto deixa layout textual, tabelas, page breaking e cabeçalhos/rodapés fora de seu escopo; portanto exigiria outra camada completa de layout.
-
-### Typst embutido
-
-Fornece motor documental e exportação PDF no ecossistema Rust, com suporte a padrões PDF, texto, imagens, layout multipágina e tagging, sem exigir um executável externo quando integrado por biblioteca.
-
-Por isso é a direção consolidada para o renderer PDF de Procedimentos do StepFlow.
-
-## 34. Decisões consolidadas — Etapa 2
-
-1. renderer PDF de Procedimentos baseado em **Typst embutido como biblioteca Rust no Host**, com crates oficiais e adaptador interno StepFlow;
-2. nenhuma execução de `typst.exe`/CLI, browser ou processo conversor externo;
-3. template Typst interno, confiável, versionado e controlado pelo produto;
-4. conteúdo originado do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst, mesmo após escaping;
-5. sem acesso à Internet/pacotes/recursos remotos durante geração;
-6. filesystem/imports do renderer restritos ao mundo virtual, assets, fontes e templates controlados pelo Host;
-7. PDF 1.7 é solicitado explicitamente ao exporter;
-8. Tagged PDF é explicitamente habilitado como baseline, sem prometer PDF/UA/PDF-A formal;
-9. texto textual permanece selecionável/pesquisável/copiável;
-10. fontes necessárias são empacotadas/incorporadas, sem depender de fontes do Windows;
-11. renderer suporta os blocos semânticos do Procedimento sem descarte silencioso e falha explicitamente em incompatibilidade;
-12. comandos/código permanecem texto e preservam whitespace relevante;
-13. renderer suporta fluxo multipágina e quebra automática, sem definir ainda o template físico;
-14. capacidade para logo/imagens controladas PNG/JPEG e SVG quando autorizado, somente a partir de assets aceitos/resolvidos pelo Host;
-15. conteúdo visual não depende implicitamente do relógio/ambiente da máquina central; data/hora visível vem de dados explícitos;
-16. falha de renderer não produz artefato parcial tratado como sucesso;
-17. estabilidade visual/semântica sob mesma versão do Host/template/fontes/assets/modelo, sem exigir bytes idênticos quando metadados técnicos variarem;
-18. assinatura, senha, formulários, anexos, JavaScript, multimídia, PDF/A e PDF/UA formais ficam fora da primeira versão;
-19. versão exata das crates e limites numéricos de memória/tamanho/tempo ficam para implementação/medição e validação técnica posterior.
-
-## 35. Fechamento da Etapa 2
-
-A Etapa 2 está **CONSOLIDADA / APROVADA PELO PO**.
-
-Foram cumpridos os critérios de fechamento documental e a Etapa 3 foi posteriormente aberta, analisada e consolidada abaixo. O trabalho permaneceu documental, sem código funcional, migration ou scaffold.
+O layout físico final do PDF segue a Etapa 5 consolidada abaixo.
 
 ---
 
@@ -604,320 +250,88 @@ Foram cumpridos os critérios de fechamento documental e a Etapa 3 foi posterior
 
 **Status:** CONSOLIDADO / APROVADO PELO PO
 
-## 36. Objetivo da Etapa 3
+## 13. Formato e renderer
 
-Definir somente a base técnica do renderer **DOCX de Procedimentos** e as capacidades mínimas que o artefato editável precisa preservar.
+DOCX é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem converter PDF/Typst.
 
-Esta etapa não redefine a arquitetura documental das Etapas 1–2 e não define margens, tipografia final, cabeçalho/rodapé final, paginação visual, A4 ou densidade. Esses pontos permanecem reservados para a **Etapa 5 — Template físico de Procedimentos**.
+Baseline:
 
-Também não define a impressão Windows da Etapa 4.
+- `.docx` real em OOXML/WordprocessingML/OPC;
+- OOXML **Transitional** como compatibilidade inicial;
+- `docx-rs` como biblioteca Rust preferida sob adaptador interno StepFlow;
+- MIME oficial de WordprocessingML.
 
-## 37. Contratos herdados
+Não depende de:
 
-Permanecem vigentes:
-
-- geração documental pertence ao Host;
-- Client solicita por identidade da fonte/revisão esperada e não envia documento montado;
-- Host captura snapshot consistente e materializa `DocumentModel` antes da renderização;
-- renderer não consulta SQLite nem recebe DOM/HTML da UI;
-- geração é leitura derivada e fica fora da fila de mutações;
-- renderização usa limite próprio de concorrência/backpressure;
-- artefato retorna pela API autenticada;
-- Host não grava em path arbitrário do Client;
-- runtime documental não depende de Office, LibreOffice, browser ou serviço cloud;
-- PDF e DOCX são renderers independentes do mesmo `DocumentModel` — DOCX não é produzido por conversão do PDF.
-
-## 38. Formato DOCX consolidado
-
-O artefato é um **DOCX real baseado em Office Open XML / WordprocessingML**, empacotado segundo Open Packaging Conventions, com MIME:
-
-```text
-application/vnd.openxmlformats-officedocument.wordprocessingml.document
-```
-
-O baseline inicial de compatibilidade é **OOXML Transitional**. OOXML Strict não é baseline da primeira versão.
-
-O Host produz o pacote diretamente em Rust. Não executar:
-
-- Microsoft Word;
-- automação COM;
+- Word/COM;
 - LibreOffice;
-- conversor CLI externo;
 - browser/headless;
-- serviço web de conversão;
-- pipeline PDF → DOCX;
-- pipeline Typst → DOCX.
+- CLI conversor;
+- cloud;
+- pipeline PDF → DOCX.
 
-## 39. Biblioteca Rust consolidada
+## 14. Segurança e template DOCX
 
-A direção consolidada é usar **`docx-rs` embutido como biblioteca Rust no Host**, encapsulado por um adaptador interno StepFlow.
+- conteúdo do domínio entra somente como dados estruturados;
+- usuário não injeta XML/OOXML, relationships, partes OPC, paths ou URLs arbitrários;
+- estilos/template são internos e versionados pelo StepFlow;
+- nenhum `.docx`/`.dotx` fornecido pelo usuário é carregado como template de runtime v1;
+- nenhuma imagem/recurso remoto é baixado durante geração.
 
-Fluxo conceitual:
+## 15. Editabilidade
 
-```text
-DocumentModel
-→ DocxRenderer / adaptador StepFlow
-→ estruturas WordprocessingML/OOXML
-→ docx-rs
-→ pacote OPC/ZIP
-→ DOCX bytes
-```
-
-Motivos:
-
-- gera `.docx` diretamente em Rust;
-- não depende de Office instalado;
-- cobre estruturas necessárias como parágrafos, runs, estilos, numeração, tabelas, imagens, seções e headers/footers;
-- permite empacotamento direto do documento;
-- evita que o StepFlow implemente do zero toda a mecânica OPC, relações, content-types, numbering e WordprocessingML.
-
-Não se consolida versão exata da crate durante a Fase 1. A versão será fixada em `Cargo.lock` no gate de implementação e validada contra a matriz real de compatibilidade.
-
-A biblioteca é dependência de implementação; o contrato arquitetural pertence ao adaptador StepFlow. Se capacidade obrigatória não puder ser representada corretamente pela versão adotada, a geração deve falhar/ser corrigida — nunca descartar conteúdo silenciosamente.
-
-## 40. Fronteira de dados e segurança
-
-Conteúdo originado do domínio entra somente como **valores/dados estruturados**.
-
-Regras:
-
-- nenhum texto do usuário vira XML/OOXML por concatenação não controlada;
-- nenhum conteúdo do Procedimento pode injetar relationships, partes OPC, XML arbitrário ou instruções executáveis;
-- não aceitar `.docx`/`.dotx` de template fornecido pelo usuário na primeira versão;
-- não carregar remote template;
-- não criar relationships externas para imagens/objetos;
-- assets são resolvidos pelo Host antes do renderer;
-- renderer não recebe path arbitrário ou URL originados do conteúdo;
-- nenhum recurso é baixado da Internet durante geração.
-
-Se no futuro uma extensão OOXML interna for necessária por limitação da biblioteca, ela permanece **controlada pelo código StepFlow**, coberta por testes e sem aceitar XML arbitrário do domínio.
-
-## 41. Editabilidade como requisito central
-
-Diferentemente do PDF, o DOCX existe para continuar editável em um processador de texto compatível.
+DOCX existe como formato refluível/editável.
 
 Portanto:
 
-- texto textual permanece texto Word real;
-- títulos, parágrafos, passos e notas não podem ser rasterizados;
+- títulos/parágrafos/passos/notas permanecem texto Word real;
 - comandos/código permanecem texto;
-- conteúdo deve ser selecionável, pesquisável, copiável e editável;
-- imagens permanecem objetos de imagem incorporados;
-- nenhuma etapa conhecida pode ser convertida para screenshot como solução de layout.
+- conteúdo é selecionável, pesquisável, copiável e editável;
+- imagens permanecem objetos incorporados;
+- nenhuma Etapa é convertida em screenshot para imitar PDF;
+- edição externa do DOCX não altera a revisão oficial do StepFlow;
+- não há import/sync de DOCX editado na v1.
 
-A edição posterior feita pelo usuário fora do StepFlow não altera a revisão oficial do Procedimento. O DOCX exportado é artefato derivado, não fonte de importação/sincronização.
+## 16. Blocos e imagens
 
-## 42. Blocos semânticos obrigatórios
-
-O renderer DOCX representa todos os blocos já suportados pelo `DocumentModel`:
-
-- parágrafo;
-- passos/subpassos numerados;
-- checklist documental;
-- nota;
-- alerta;
-- comando;
-- bloco de código.
-
-Regras:
+Todos os blocos semânticos conhecidos devem ser representados sem descarte silencioso.
 
 - passos/subpassos usam numeração/lista Word real quando aplicável;
-- checklist documental usa representação visual estável de caixa + texto, sem virar formulário interativo;
-- nota e alerta mantêm distinção semântica por estilos/estrutura controlada;
-- comando/código usam texto com preservação de whitespace relevante;
-- tipo de bloco desconhecido/incompatível falha explicitamente em vez de produzir documento incompleto.
+- checklist é documental, não formulário interativo;
+- comando/código preserva espaços, tabs, quebras e indentação relevantes;
+- PNG/JPEG são baseline de imagem;
+- SVG não é requisito direto do DOCX v1 e exige representação interna compatível ou falha explícita — nunca omissão silenciosa.
 
-A aparência física final desses estilos pertence à Etapa 5.
+## 17. Reflow e fontes
 
-## 43. Imagens e identidade corporativa
+DOCX não promete paginação idêntica ao PDF nem entre diferentes consumidores Word.
 
-O renderer recebe somente assets já autorizados e resolvidos pelo Host.
+A Etapa 5 consolidou a política tipográfica v1:
 
-Baseline DOCX:
+```text
+texto:          Arial
+comando/código: Consolas
+embedding:      não
+```
 
-- PNG;
-- JPEG.
+O StepFlow referencia essas famílias no DOCX, sem redistribuir/embutir os arquivos de fonte na v1. Compatibilidade real é validada no gate técnico.
 
-SVG não é requisito direto do DOCX v1 porque a compatibilidade varia entre versões/consumidores. Se a fonte controlada existir apenas em SVG, o Host deve fornecer uma representação compatível por pipeline interno validado ou falhar explicitamente; nunca remover a imagem silenciosamente nem depender de conversor externo.
+## 18. Conteúdo ativo fora da v1
 
-A política de upload/armazenamento de logo não é alterada por esta etapa.
+Não são requisitos:
 
-## 44. Estilos e template interno
-
-O DOCX usa **estilos Word internos e versionados pelo StepFlow**, produzidos pelo renderer.
-
-A primeira versão não depende de arquivo `.docx`/`.dotx` externo usado como template em runtime.
-
-O renderer distingue conceitualmente estilos como:
-
-- título do documento;
-- metadados;
-- título de seção/etapa;
-- corpo;
-- passo numerado;
-- checklist;
-- nota;
-- alerta;
-- comando;
-- código.
-
-Cores, fontes, tamanhos, margens e composição visual final desses estilos permanecem na Etapa 5.
-
-## 45. Fontes e reflow
-
-DOCX é formato refluível. O StepFlow **não promete paginação idêntica ao PDF**.
-
-Mesmo com o mesmo conteúdo, a quebra de página pode variar por:
-
-- versão do Microsoft Word/consumidor;
-- fontes disponíveis;
-- métricas de fonte/substituição;
-- configurações de compatibilidade do processador de texto;
-- configuração de impressão do ambiente.
-
-A Etapa 3 consolida estabilidade **semântica e estrutural**, não identidade visual página a página com o PDF.
-
-A família tipográfica final e eventual política de incorporação de fontes no DOCX ficam para a Etapa 5/gate de implementação, considerando licenciamento e compatibilidade. A política de fontes empacotadas do PDF não é herdada automaticamente pelo DOCX.
-
-## 46. Whitespace de comandos e código
-
-Comando/código deve preservar:
-
-- espaços relevantes;
-- tabs quando representadas pelo modelo;
-- quebras de linha;
-- indentação.
-
-O renderer usa a semântica adequada de WordprocessingML para preservar espaço textual, sem substituir o bloco por imagem.
-
-Quebras extremamente longas/linhas extensas serão tratadas pelo template/estilo da Etapa 5; truncamento silencioso continua proibido.
-
-## 47. Relações externas e conteúdo ativo
-
-Ficam fora da primeira versão:
-
-- macros/VBA e `.docm`;
+- macros/VBA/`.docm`;
 - ActiveX;
-- OLE/objetos incorporados;
-- scripts;
-- links de imagem externos;
+- OLE;
 - remote templates;
-- `altChunk` com HTML externo;
-- anexos incorporados;
-- assinatura digital do documento;
-- proteção/senha/DRM;
-- formulários/content controls interativos como requisito de checklist;
-- importação de um DOCX editado de volta ao StepFlow.
+- external relationships de conteúdo;
+- anexos;
+- assinatura digital;
+- senha/DRM;
+- formulário/content control interativo;
+- importação de DOCX editado.
 
-URLs presentes no conteúdo podem permanecer como texto. Hyperlink ativo só existe se o domínio vier a consolidar esse tipo semântico; não deve ser inferido automaticamente a partir de texto.
-
-## 48. Metadados
-
-O pacote pode registrar metadados controlados, como:
-
-- título;
-- versão/revisão exibida;
-- identidade técnica do documento;
-- data de geração quando explicitamente fornecida por `generation_metadata`.
-
-Não incluir token, senha, path local, conteúdo de sessão ou dado técnico interno desnecessário.
-
-Metadados ambientais não podem alterar conteúdo visual semântico implicitamente.
-
-## 49. Determinismo possível no DOCX
-
-Com a mesma versão do Host, mesmo `DocumentModel`, mesmos assets e mesma definição de estilos, o **conteúdo e estrutura OOXML** devem permanecer estáveis.
-
-Não se exige identidade byte-a-byte do ZIP nem paginação idêntica entre diferentes consumidores Word.
-
-IDs/relationships gerados devem ser deterministicamente controlados quando razoável para facilitar testes e diagnóstico, mas diferenças técnicas sem efeito semântico não são falha por si só.
-
-## 50. Validação do artefato
-
-A geração só é sucesso quando o pacote DOCX estiver completo e fechável.
-
-Validações esperadas no gate técnico posterior:
-
-- ZIP/OPC íntegro;
-- partes obrigatórias e relationships coerentes;
-- XML bem formado;
-- reabertura/parse por biblioteca de validação quando aplicável;
-- abertura sem diálogo de reparo no Microsoft Word da matriz corporativa validada;
-- todos os blocos semânticos presentes;
-- imagens/numeração preservadas;
-- comandos/código com whitespace esperado.
-
-A matriz concreta de versões do Word/Office e demais consumidores pertence à validação técnica posterior e ao ambiente corporativo real.
-
-## 51. Recursos e concorrência
-
-Aplicam-se os limites consolidados na Etapa 1:
-
-- renderer DOCX usa o mesmo mecanismo geral de limite de concorrência documental;
-- não entra na fila de mutações;
-- não cria job persistente;
-- falha não produz artefato parcial tratado como sucesso;
-- limites numéricos de memória/tamanho/tempo ficam para medição/Etapa 12;
-- temporários concretos continuam reservados para a Etapa 10.
-
-A possibilidade de `docx-rs` empacotar diretamente o documento deve ser aproveitada quando adequada, evitando manter representações duplicadas grandes em memória sem necessidade.
-
-## 52. Alternativas consideradas
-
-### Construir OOXML manualmente
-
-É tecnicamente possível gerar ZIP/OPC + WordprocessingML diretamente com crates de XML/ZIP. Entretanto, isso transferiria para o StepFlow responsabilidade por relações OPC, content-types, numbering, estilos, imagens e muitos detalhes de compatibilidade. Não é a direção preferida enquanto uma biblioteca Rust madura cobrir o contrato necessário.
-
-### Automação do Microsoft Word/COM
-
-Rejeitada como arquitetura de geração: acopla o Host à instalação/configuração do Office, acrescenta dependência operacional e conflita com o runtime Pocket/autocontido já consolidado.
-
-### LibreOffice/conversores externos
-
-Rejeitados pelo mesmo contrato autocontido das Etapas 1–2.
-
-### Converter o PDF/Typst para DOCX
-
-Rejeitado. PDF e DOCX têm objetivos diferentes; a conversão perderia estrutura/editabilidade e criaria acoplamento indevido entre renderers.
-
-### `docx-rs`
-
-É a direção consolidada porque fornece uma camada Rust própria para WordprocessingML/OOXML e empacotamento DOCX sem exigir processo externo, preservando editabilidade e reduzindo código estrutural próprio.
-
-## 53. Decisões consolidadas — Etapa 3
-
-1. DOCX de Procedimentos é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem converter PDF/Typst;
-2. saída é `.docx` OOXML/WordprocessingML real com MIME oficial;
-3. **OOXML Transitional** é o baseline inicial de compatibilidade; Strict não é baseline da primeira versão;
-4. `docx-rs` é a biblioteca Rust preferida, encapsulada por adaptador interno StepFlow;
-5. nenhuma dependência de Word/COM, LibreOffice, browser, CLI ou cloud para gerar;
-6. conteúdo do domínio entra apenas como dados estruturados e nunca como XML/OOXML arbitrário;
-7. template/estilos são internos e versionados; nenhum `.docx`/`.dotx` externo fornecido pelo usuário na primeira versão;
-8. texto permanece real, selecionável, pesquisável, copiável e editável;
-9. todos os blocos semânticos conhecidos são representados sem descarte silencioso;
-10. passos usam numeração/lista real; checklist permanece documental e não vira formulário interativo;
-11. comando/código preserva whitespace e permanece texto;
-12. PNG/JPEG são baseline de imagem; SVG não é requisito direto do DOCX v1 e nunca pode ser omitido silenciosamente;
-13. DOCX é refluível e não promete paginação idêntica ao PDF; layout físico final continua na Etapa 5;
-14. política tipográfica/embedding de fontes do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/validação;
-15. macros, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
-16. artefato incompleto/corrompido nunca é devolvido como sucesso;
-17. versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
-
-## 54. Fechamento da Etapa 3
-
-A Etapa 3 está **CONSOLIDADA / APROVADA PELO PO**.
-
-Foram cumpridos os critérios de fechamento documental:
-
-- decisões aprovadas e refinadas com OOXML Transitional como baseline;
-- README raiz atualizado para `✅ Consolidado`;
-- `AGENTS.md`, arquitetura, registro de decisões, índice e plano oficial alinhados;
-- proposta temporária da Etapa 3 deixou de ser fonte ativa;
-- a Etapa 4 foi posteriormente aberta, analisada e consolidada abaixo;
-- trabalho permaneceu documental, sem código funcional, dependency, migration ou scaffold.
-
-A Etapa 4 foi posteriormente aberta, analisada e consolidada abaixo.
+Artefato incompleto/corrompido nunca é tratado como sucesso. Validação técnica posterior cobre ZIP/OPC, XML/relationships e abertura sem reparo na matriz corporativa.
 
 ---
 
@@ -925,243 +339,94 @@ A Etapa 4 foi posteriormente aberta, analisada e consolidada abaixo.
 
 **Status:** CONSOLIDADO / APROVADO PELO PO
 
-## 55. Objetivo da Etapa 4
-
-Definir somente o contrato técnico da **impressão Windows de Procedimentos**, preservando:
-
-- a revisão exata selecionada/autorizada;
-- o `DocumentModel` e o renderer PDF já consolidados;
-- a responsabilidade local do Client pela experiência de impressão;
-- o runtime Pocket/autocontido;
-- a UX consolidada na Tela 14.
-
-Esta etapa não define margens, tipografia, cabeçalho/rodapé, A4 final, regras de quebra ou composição física do Procedimento. Esses pontos permanecem na **Etapa 5 — Template físico de Procedimentos**.
-
-Também não define nomes concretos de temporários nem política final de arquivos temporários, reservados para a **Etapa 10**.
-
-## 56. Contratos herdados
-
-Permanecem vigentes:
-
-- impressão é obrigatória para Procedimentos;
-- impressão é leitura/derivação e não altera domínio;
-- fonte = revisão exata selecionada/autorizada;
-- Host captura snapshot consistente e materializa `DocumentModel` antes da renderização;
-- Client não imprime DOM/HTML da interface;
-- PDF e DOCX são artefatos derivados independentes do mesmo `DocumentModel`;
-- PDF de Procedimentos usa o renderer Typst consolidado na Etapa 2;
-- DOCX continua editável/refluível e não é baseline de impressão física;
-- artefato retorna pela API autenticada;
-- Host não escreve em path arbitrário do Client;
-- Client é responsável por destino local/preview/impressão;
-- runtime normal não depende de Office, LibreOffice, Adobe Reader, Chrome externo ou cloud.
-
-## 57. Onde a impressão acontece
+## 19. Local da impressão
 
 A impressão física acontece no **Client Windows da estação do usuário**, não no Host central.
 
-Motivos:
+Motivos funcionais:
 
-- impressoras pertencem ao contexto local da estação/usuário;
-- o diálogo deve refletir as impressoras e drivers instalados no Windows daquele usuário;
-- múltiplos Clients podem usar impressoras diferentes simultaneamente;
-- o Host não conhece, seleciona ou armazena impressoras das estações;
-- imprimir pelo Host central acoplaria o sistema a impressoras/filas da máquina central e produziria comportamento incorreto em cenário multiusuário.
+- impressoras pertencem ao contexto local do usuário/workstation;
+- Windows/driver local controla disponibilidade e opções;
+- múltiplos Clients podem imprimir em destinos diferentes;
+- Host não precisa conhecer inventário de impressoras.
 
-Fluxo consolidado:
+## 20. Artefato canônico
+
+A impressão usa **o mesmo PDF oficial da Etapa 2** para a revisão exata selecionada.
+
+Não existe:
+
+- terceiro renderer de impressão;
+- impressão de HTML do Reader;
+- impressão via DOCX/Word;
+- conversão local alternativa.
 
 ```text
-Leitor
+Reader
 → Imprimir
-→ Client solicita artefato da revisão esperada
+→ Client solicita revisão esperada
 → Host autentica/autoriza
-→ Host materializa DocumentModel
-→ PdfRenderer consolidado da Etapa 2
-→ PDF bytes
-→ Client recebe
-→ recurso local transitório de impressão
-→ WebView2 dedicado carrega o PDF
-→ diálogo nativo de impressão do Windows
-→ usuário escolhe impressora/configuração ou cancela
+→ PdfRenderer oficial
+→ bytes PDF
+→ Client
+→ recurso local transitório
+→ WebView2 dedicada
+→ diálogo Windows
 ```
 
-## 58. Artefato canônico de impressão
+## 21. WebView2 e diálogo Windows
 
-O baseline de impressão de Procedimentos é o **mesmo PDF dedicado gerado pelo renderer consolidado na Etapa 2**.
+O Client usa superfície WebView2 dedicada/transitória, separada da webview principal.
 
-Consequências:
-
-- não existe um terceiro renderer “de impressão”;
-- não imprimir HTML da Tela 05;
-- não imprimir o DOCX;
-- não converter DOCX para impressão;
-- não executar nova composição visual no Client;
-- `Exportar PDF` e `Imprimir` compartilham o mesmo contrato de conteúdo/layout PDF para a mesma revisão e mesma versão do Host/template/assets.
-
-A intenção da operação pode ser identificada separadamente para autorização/UX, mas os bytes documentais de impressão são os bytes de um PDF válido do renderer oficial.
-
-## 59. Por que PDF e não DOCX
-
-DOCX foi consolidado na Etapa 3 como formato editável/refluível e não promete paginação idêntica entre consumidores.
-
-PDF foi consolidado na Etapa 2 como documento paginado com estabilidade visual/semântica sob a mesma versão do renderer.
-
-Portanto:
-
-```text
-PDF  → baseline de impressão
-DOCX → baseline de edição/exportação
-```
-
-Isso evita depender de Microsoft Word/Office e evita divergência de paginação entre exportação PDF e impressão.
-
-## 60. Superfície transitória de impressão no Client
-
-O Client usa uma **WebView2 dedicada e transitória para impressão**, separada da webview principal da aplicação.
-
-Regras:
-
-- a webview principal não é navegada para o PDF;
-- estado da UI/Reader não é substituído pelo documento de impressão;
-- a superfície de impressão recebe somente o recurso local controlado pelo StepFlow;
-- não navega para Internet;
-- não recebe URL remota originada do Procedimento;
-- termina junto com a operação de impressão;
-- não vira janela funcional permanente nem item de navegação/sidebar.
-
-A forma exata da janela auxiliar (visibilidade, chrome, ownership e detalhes de lifecycle) fica para implementação, desde que o diálogo de impressão permaneça associado à experiência do Client e não prejudique a janela principal.
-
-## 61. Mecanismo Windows consolidado
-
-No Windows, Tauri usa **Microsoft Edge WebView2**, já parte da stack consolidada do Client.
-
-A direção consolidada é:
+Baseline:
 
 ```text
 Tauri WebviewWindow transitória
-→ acesso platform-specific via `with_webview`
-→ CoreWebView2 da WebView2
-→ `ShowPrintUI(System)`
+→ `with_webview`
+→ CoreWebView2
+→ ShowPrintUI(System)
 → diálogo de impressão do Windows
 ```
 
-O adaptador Windows de impressão fica isolado da UI/domínio.
+Regras:
 
-Não depender da API genérica `Webview::print()` do Tauri como contrato arquitetural, porque seu suporte nativo é platform-specific. O StepFlow acessa o WebView2 subjacente pelo mecanismo `with_webview` do Tauri e usa a API de impressão do WebView2.
+- webview principal/estado do Reader permanecem intactos;
+- a superfície recebe somente PDF local controlado;
+- não busca Internet;
+- não recebe token/senha em URL;
+- não recebe path arbitrário do conteúdo;
+- não vira janela funcional permanente;
+- diálogo padrão é o diálogo do Windows;
+- sem impressão silenciosa v1;
+- sem seletor próprio de impressoras v1;
+- StepFlow não enumera/persiste impressoras no Host;
+- drivers/spooler/disponibilidade física pertencem ao Windows/ambiente corporativo.
 
-A chamada exata/interface COM e versões de crates ficam para o gate de implementação. Tauri/WebView2 devem ser fixados de forma compatível quando esse adaptador for implementado.
+## 22. Alternativas rejeitadas como baseline
 
-## 62. Diálogo baseline
+Não usar silenciosamente:
 
-O baseline é **o diálogo de impressão do sistema Windows**, acionado por WebView2 `ShowPrintUI` com o tipo `System`.
+- `ShellExecute`/handler `.pdf`;
+- visualizador PDF externo;
+- Word/COM;
+- LibreOffice;
+- browser externo;
+- spool direto de PDF bruto;
+- engine adicional de rasterização apenas para imprimir.
 
-Objetivo:
+## 23. Recurso transitório
 
-- usar experiência familiar do Windows;
-- mostrar impressoras instaladas para o usuário;
-- deixar opções dependentes do driver/Windows no próprio diálogo;
-- não criar seletor de impressora próprio do StepFlow;
-- não armazenar “impressora padrão do StepFlow”;
-- não imprimir silenciosamente por padrão.
+O PDF recebido vira recurso local privado e transitório de impressão.
 
-A impressão silenciosa por `Print`/`PrintAsync` não é requisito inicial.
+Esta etapa não define mecanismo concreto, nome, diretório ou limpeza: isso permanece na **Etapa 10**.
 
-## 63. Recurso local usado pela WebView2
+O recurso não vira histórico, backup ou exportação persistente apenas por ser usado na impressão.
 
-O PDF recebido do Host é apresentado à webview de impressão como **recurso local transitório controlado pelo Client**.
+## 24. Verdade da UI
 
-Esta etapa consolida apenas:
+`ShowPrintUI(System)` abre/entrega o fluxo ao Windows, mas não fornece confirmação confiável de papel impresso versus cancelamento no diálogo.
 
-- bytes são os mesmos produzidos pelo renderer PDF oficial;
-- nenhum path fornecido pelo usuário é necessário;
-- nenhum recurso remoto é buscado;
-- o recurso não vira histórico/backup/exportação persistente apenas por imprimir;
-- a vida do recurso é limitada à operação.
-
-A materialização concreta pode ser por recurso interno em memória/protocolo local ou arquivo temporário privado. Nomes, diretórios, estratégia de temporários e limpeza concreta ficam para a **Etapa 10**.
-
-## 64. Permissão e revisão exata
-
-Ao clicar `Imprimir`, o Client solicita a operação usando a identidade/revisão esperada.
-
-O Host valida:
-
-```text
-capacidade de ler a revisão selecionada
-+
-capacidade de exportar/imprimir
-```
-
-Se a revisão esperada estiver indisponível/sem autorização, a impressão não começa.
-
-Uma nova revisão publicada durante a operação não substitui silenciosamente a revisão já selecionada.
-
-## 65. Impressoras e drivers
-
-StepFlow não gerencia infraestrutura de impressora.
-
-Ficam sob responsabilidade do Windows/ambiente corporativo:
-
-- instalação de impressoras;
-- drivers;
-- descoberta de impressoras locais/de rede;
-- spooler do Windows;
-- preferências específicas do driver;
-- disponibilidade física da impressora.
-
-O Host central não enumera impressoras das estações.
-
-O Client não persiste inventário próprio de impressoras na primeira versão.
-
-## 66. Sem `ShellExecute`/visualizador PDF externo
-
-Não usar como baseline:
-
-```text
-ShellExecute/ShellExecuteEx + verbo `print`
-→ aplicativo associado a .pdf
-→ impressão
-```
-
-Esse mecanismo depende do handler registrado para `.pdf`, podendo variar conforme a estação e iniciar software externo.
-
-O StepFlow usa o WebView2 já requerido pelo próprio Client, evitando depender de Adobe Reader, Edge externo, outro visualizador PDF padrão ou associação de arquivo do Windows.
-
-## 67. Sem spool direto de PDF
-
-Não enviar PDF bruto diretamente ao spooler/impressora como contrato inicial.
-
-Motivos:
-
-- suporte nativo a PDF varia conforme driver/impressora;
-- exigiria negociação de capacidade ou renderer/rasterização adicional;
-- duplicaria responsabilidade já atendida pela pilha WebView2/Windows;
-- ampliaria superfície técnica sem necessidade de produto.
-
-Também não adicionar PDFium/MuPDF/engine de rasterização apenas para imprimir enquanto WebView2 atender ao contrato.
-
-## 68. Resultado, cancelamento e verdade da UI
-
-Abrir o diálogo nativo com `ShowPrintUI` **não fornece ao StepFlow uma confirmação confiável de “impresso” versus “usuário cancelou”**.
-
-Portanto a primeira versão não inventa sucesso físico.
-
-Contrato consolidado:
-
-- falha ao gerar PDF = falha de geração;
-- falha ao preparar recurso local/WebView2 = falha de preparação de impressão;
-- falha ao abrir o diálogo = falha de impressão/compatibilidade;
-- diálogo aberto com sucesso = fluxo de impressão entregue ao Windows;
-- cancelar antes de abrir o diálogo, quando detectável pelo StepFlow, é cancelamento voluntário;
-- depois que o diálogo do Windows está aberto, o StepFlow não afirma `Impresso com sucesso` apenas porque o diálogo fechou;
-- fechamento/cancelamento do diálogo não vira erro funcional;
-- não existe auditoria persistente `printed=true` na primeira versão.
-
-Se no futuro for necessário confirmar status de submissão a uma impressora, isso exigirá outro contrato usando APIs que exponham status (`Print`/`PrintAsync`) e possivelmente uma experiência de seleção própria; não inferir agora.
-
-## 69. Estados UX técnicos da impressão
-
-Mapeamento mínimo:
+Estados técnicos mínimos:
 
 ```text
 preparando PDF
@@ -1170,139 +435,452 @@ preparando PDF
 → fluxo entregue ao Windows
 ```
 
-Erros distintos:
+Regras:
 
-- Host indisponível;
-- sem permissão;
-- revisão indisponível/obsoleta;
-- falha do renderer PDF;
-- recurso local não pôde ser preparado;
-- WebView2 incompatível/indisponível;
-- diálogo de impressão não pôde ser aberto.
+- não mostrar `Impresso com sucesso` apenas porque o diálogo fechou;
+- não persistir `printed=true` por inferência;
+- cancelamento/fechamento do diálogo não é erro funcional;
+- geração PDF, preparação local, compatibilidade WebView2 e abertura do diálogo são classes distintas de falha;
+- duplicidade acidental da mesma ação é impedida localmente sem job/fila persistente.
 
-Não mostrar percentual sem métrica real.
+## 25. Gate técnico posterior
 
-Não mostrar confirmação física falsa de impressão concluída.
+Validar em Windows 10/11 x64 representativos:
 
-## 70. Concorrência e duplicidade local
-
-A geração do PDF continua sujeita ao limite de renderização documental do Host.
-
-A etapa não cria fila persistente nem job de impressão.
-
-No Client, a implementação impede múltiplas invocações acidentais concorrentes da mesma ação enquanto o fluxo correspondente está sendo preparado/aberto.
-
-Esse controle é local e transitório; não vira lock global de Procedimento nem estado persistente.
-
-## 71. Compatibilidade WebView2
-
-A impressão exige que o WebView2 disponível na estação suporte o mecanismo consolidado.
-
-O gate técnico deve validar, em Windows 10/11 x64 representativos:
-
-- carregamento do PDF local na WebView2;
+- WebView2 compatível;
 - PDF multipágina;
 - Unicode/acentos;
-- imagens/logo;
-- abertura do `ShowPrintUI(System)`;
-- impressoras locais e de rede instaladas no Windows;
-- seleção de página/quantidade/orientação conforme o diálogo/driver;
-- cancelamento sem erro funcional;
-- ausência de dependência de Internet;
-- retorno à janela principal sem perder estado;
-- nenhuma exigência de visualizador PDF externo.
+- logo/imagens;
+- `ShowPrintUI(System)`;
+- impressoras locais/rede instaladas no Windows;
+- opções do diálogo/driver;
+- cancelamento;
+- operação offline;
+- retorno ao Reader sem perda de estado;
+- ausência de dependência de visualizador externo.
 
-Se a interface de impressão necessária não estiver disponível no runtime WebView2 suportado, o Client reporta incompatibilidade explicitamente. Não usar fallback silencioso para `ShellExecute`/Office/visualizador externo.
+Versão mínima concreta de WebView2 permanece para matriz corporativa/gate de implementação.
 
-A versão mínima concreta de WebView2 continua dependente da matriz corporativa e do gate de implementação.
+A impressão usa o template físico consolidado na Etapa 5 abaixo.
 
-## 72. Segurança
+---
 
-A webview transitória de impressão:
+# Etapa 5 — Template físico de Procedimentos
 
-- só carrega o PDF controlado pelo StepFlow;
-- não recebe HTML arbitrário do Procedimento;
-- não busca Internet;
-- não recebe token/senha em URL;
-- não abre path fornecido pelo conteúdo;
-- não expõe API de seleção de arquivo/pasta ao Procedimento;
-- é descartada após o fluxo;
-- não altera a revisão oficial nem estado operacional.
+**Status:** CONSOLIDADO / APROVADO PELO PO
 
-Links textuais presentes no PDF não autorizam navegação externa automática durante a impressão.
+## 26. Correção de escopo
 
-## 73. Alternativas consideradas
+A Etapa 5 define **somente o template físico do Procedimento exportado em PDF/DOCX**.
 
-### Imprimir HTML da interface
+Ela não transforma o Reader em folha ou preview A4.
 
-Rejeitado. Duplicaria regras de layout, quebraria a separação `DocumentModel`/renderer e poderia divergir do PDF oficial.
+Três superfícies permanecem separadas:
 
-### Imprimir DOCX pelo Word
+```text
+Reader do app
+→ uso diário
+→ páginas lógicas do manual
+→ sem geometria A4
 
-Rejeitado. DOCX é refluível e exigiria Microsoft Word/Office ou outro processador externo.
+Procedimento exportado
+→ PDF / DOCX / impressão
+→ documento completo
+→ multipágina
 
-### `ShellExecuteEx("print")` no PDF
+Ficha compacta de Atendimento
+→ resumo do trabalho realizado
+→ máximo 1 página A4
+```
 
-Rejeitado como baseline. Depende do verbo/handler registrado para `.pdf` e inicia aplicativo associado externo.
+O limite rígido de uma A4 pertence à Ficha compacta, não ao Reader e não ao Procedimento completo.
 
-### Spool direto do PDF / GDI próprio
+## 27. Reader preservado
 
-Rejeitado inicialmente. Nem todo driver aceita PDF bruto e a alternativa exigiria renderer/rasterização adicional e lógica de impressão de baixo nível.
+O Reader segue `../02-telas/05-leitor-processo.md`:
 
-### WebView2 + PDF oficial + `ShowPrintUI(System)`
+- `Visão geral` é a primeira página lógica, não uma Etapa numerada;
+- cada `process_stage` corresponde a uma página lógica própria;
+- Etapas não são fundidas para reduzir cliques;
+- ao mudar de página, conteúdo começa no topo;
+- conteúdo maior que viewport não é truncado nem mistura a próxima Etapa;
+- `Anterior`, `Próxima`, Sumário e stepper navegam pelo mesmo conjunto de páginas.
 
-Direção consolidada porque reutiliza dois componentes já exigidos pelo produto:
+### Stepper compacto
 
-- renderer PDF oficial do Host;
-- WebView2 do Client Tauri.
+O stepper superior é horizontal, compacto e navegável.
 
-Mantém impressão local, usa o diálogo Windows e não adiciona visualizador/conversor externo.
+Exemplo conceitual:
 
-## 74. Decisões consolidadas — Etapa 4
+```text
+●━━━━●━━━━◉────○────○────○────○
+```
 
-1. impressão física de Procedimentos acontece no **Client Windows**, não no Host;
-2. o artefato canônico de impressão é o **PDF produzido pelo renderer da Etapa 2** para a revisão exata;
-3. não existe renderer separado de impressão nem impressão de HTML/DOCX;
-4. o Client usa uma WebView2 transitória/dedicada, sem navegar a webview principal para o PDF;
-5. a WebView2 recebe recurso PDF local controlado, sem Internet/path de usuário;
-6. mecanismo baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
-7. diálogo padrão é o **diálogo de impressão do Windows**; sem impressão silenciosa inicial e sem seletor próprio de impressoras;
-8. StepFlow não enumera/persiste impressoras no Host e não gerencia drivers/spooler corporativo;
-9. `ShellExecute`/handler PDF externo, Word/COM, LibreOffice, browser externo e spool PDF bruto não são baseline;
-10. recurso local de impressão é transitório; mecanismo/nome/path concreto fica para Etapa 10;
-11. `ShowPrintUI` não autoriza declarar impressão física concluída; fluxo entregue ao Windows é sucesso da integração, não confirmação de papel impresso;
-12. cancelar/fechar o diálogo não é erro funcional e não gera auditoria `printed=true`;
-13. falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo são distintas;
-14. a implementação evita duplicidade concorrente local sem criar fila/job persistente;
-15. gate técnico valida Windows 10/11 x64, WebView2, PDF multipágina, impressoras reais/de rede e operação offline;
-16. versão mínima concreta de WebView2 e detalhes do recurso temporário ficam para validação/Etapas 10 e 12;
-17. layout físico do Procedimento permanece integralmente na Etapa 5.
+Usa prioritariamente:
 
-## 75. Referências técnicas da Etapa 4
+- círculos;
+- linhas;
+- preenchimento;
+- contraste/forma/símbolo;
+- cor;
+- interação por clique/teclado.
 
-- Microsoft Learn — Printing from WebView2 apps;
-- Microsoft Learn — Using local content in WebView2 apps;
-- Microsoft Learn — `CoreWebView2.ShowPrintUI`, `CoreWebView2.PrintAsync` e `CoreWebView2PrintStatus`;
-- Microsoft Learn — Shell printing / `ShellExecuteEx` print verb;
-- Tauri 2 — `Webview::with_webview` e acesso platform-specific ao WebView2;
-- Tauri 2 — compatibilidade/runtime WebView2 no Windows.
+Estados:
 
-As referências servem como evidência técnica da decisão. A versão exata de runtime/crates continua sujeita ao gate técnico e à matriz corporativa real.
+- anteriores → visual de percorridas/concluídas na navegação;
+- atual → destaque inequívoco;
+- seguintes → estado neutro/futuro.
 
-## 76. Fechamento da Etapa 4
+Regras:
 
-A Etapa 4 está **CONSOLIDADA / APROVADA PELO PO**.
+- não repetir permanentemente nomes/rótulos por Etapa no stepper;
+- nome completo permanece no título da página e no Sumário;
+- tooltip/nome acessível pode complementar o marcador;
+- stepper se adapta à largura disponível;
+- estado anterior significa **percurso de navegação**, nunca conclusão operacional/checklist;
+- `Etapa X de Y` permanece indicador textual compacto de posição.
 
-Foram cumpridos os critérios de fechamento documental:
+## 28. Princípio transversal de baixa densidade
 
-- impressão local no Client Windows definida sem acoplar o Host a impressoras das workstations;
-- PDF oficial da Etapa 2 definido como artefato canônico de impressão;
-- WebView2 + `ShowPrintUI(System)` definidos como baseline, sob adaptador Windows isolado;
-- verdade da UI preservada sem falsa confirmação de impressão física;
-- responsabilidades de drivers/spooler e validações corporativas explicitadas;
-- detalhes de temporários mantidos na Etapa 10 e layout físico mantido na Etapa 5;
-- fontes canônicas alinhadas no mesmo checkpoint;
-- proposta temporária da Etapa 4 deixa de ser fonte ativa após sua remoção desta branch;
-- trabalho permanece documental, sem código funcional, dependency, migration ou scaffold.
+Direção aprovada para grande parte do Pocket:
 
-**Etapa 5 — Template físico de Procedimentos** é a próxima etapa do Bloco 10, mas **ainda não está em análise**.
+```text
+mostrar sempre
+→ somente o necessário para entender e agir agora
+
+mostrar visualmente
+→ posição, progresso, estado e ações recorrentes
+
+mostrar sob demanda
+→ contexto secundário e detalhes
+
+usar texto
+→ quando forma, símbolo, cor ou posição não forem suficientes
+```
+
+Aplicação:
+
+- preferir cor + forma + símbolo para estados simples;
+- preferir ícones reconhecíveis para ações recorrentes quando claros;
+- usar tooltip/popover/expansão para contexto secundário;
+- evitar repetir em texto informação já comunicada claramente pelo componente;
+- evitar chips/badges/labels/cards sem função real;
+- preservar espaço para o conteúdo de trabalho.
+
+Limites:
+
+- minimalismo não pode criar ambiguidade;
+- quando texto for necessário, ele permanece;
+- cor nunca é o único meio de comunicar estado importante;
+- acessibilidade e nome semântico continuam obrigatórios.
+
+## 29. Formato físico do Procedimento
+
+Baseline:
+
+```text
+papel:       A4
+orientação:  retrato
+páginas:     conforme necessário
+margens:     18 mm em todos os lados
+```
+
+A4 aqui é o formato do **arquivo físico exportado**, sem relação com a geometria do Reader.
+
+PDF e DOCX compartilham esse formato-base.
+
+## 30. Primeira página
+
+Não há capa exclusiva.
+
+A primeira página começa diretamente com identificação e conteúdo útil, por exemplo:
+
+```text
+[logo] Empresa
+
+PR-014
+Configuração de VLAN
+versão/revisão · estado editorial
+
+Área/Departamento · Responsável
+
+VISÃO GERAL
+Objetivo...
+Pré-requisitos...
+Observações...
+
+01 · Preparação
+...
+```
+
+Direção:
+
+- identidade compacta;
+- código/título como hierarquia principal;
+- somente metadados necessários;
+- campos vazios não reservam espaço;
+- sem tabela pesada apenas para metadados;
+- conteúdo começa na mesma página.
+
+## 31. Sumário físico
+
+A v1 **não exige sumário documental físico por padrão**.
+
+Razões:
+
+- reduz densidade e páginas consumidas;
+- evita repetir títulos desnecessariamente;
+- sequência de Etapas já fornece hierarquia clara;
+- evita depender de paginação rígida do DOCX.
+
+Pode ser reavaliado futuramente se procedimentos extensos demonstrarem necessidade real.
+
+## 32. Etapas no documento físico
+
+Título recomendado de forma curta:
+
+```text
+01 · Preparação
+02 · Configuração
+03 · Validação
+```
+
+Não é necessário repetir `ETAPA` antes de cada título quando a hierarquia visual já for clara.
+
+Regras:
+
+- uma Etapa não força automaticamente nova folha;
+- título permanece junto do primeiro bloco sempre que possível;
+- sem espaço útil suficiente para título + início de conteúdo, ambos seguem para a próxima página;
+- etapas curtas podem compartilhar a mesma folha física;
+- separação usa espaço/hierarquia/forma discreta, não cards pesados.
+
+## 33. Cabeçalho e rodapé
+
+Baseline:
+
+- **sem cabeçalho repetitivo** nas páginas internas;
+- rodapé compacto com código/revisão e paginação.
+
+Exemplo conceitual:
+
+```text
+PR-014 · r18                              3 / 8
+```
+
+Não mostrar no rodapé:
+
+- token/sessão;
+- hostname;
+- path local;
+- usuário técnico;
+- timestamp ambiental desnecessário.
+
+Informação essencial de identificação também aparece no corpo da primeira página, nunca apenas no rodapé.
+
+## 34. Blocos físicos
+
+A representação segue baixa densidade visual:
+
+- `paragraph` → texto normal, sem card;
+- `numbered_steps` → numeração + indentação;
+- `checklist` → `□` + texto;
+- `note` → forma/símbolo discreto + conteúdo;
+- `warning` → símbolo/contraste mais forte e texto quando necessário para não depender só de cor;
+- `command` → bloco monoespaçado compacto;
+- `code` → bloco monoespaçado compacto;
+- imagem → proporção preservada, sem crop automático.
+
+Não envolver cada passo em borda/card.
+
+Comando/código permanece texto real, selecionável/pesquisável e preserva whitespace relevante.
+
+## 35. Paginação física
+
+- paginação automática é o padrão;
+- evitar widow/orphan em texto normal;
+- título de Etapa não fica isolado no fim da página;
+- subtítulo/label permanece com primeiro conteúdo relacionado quando possível;
+- pequenos blocos de nota/alerta/comando/checklist ficam inteiros quando razoável;
+- bloco excepcionalmente longo pode quebrar entre páginas;
+- nunca truncar conteúdo;
+- nunca reduzir fonte dinamicamente só para fazer conteúdo caber;
+- nenhuma Etapa/bloco é omitida silenciosamente.
+
+## 36. Tipografia do PDF
+
+Famílias:
+
+```text
+texto:          Noto Sans
+comando/código: Noto Sans Mono
+```
+
+Regras:
+
+- fontes empacotadas com o Host;
+- disponíveis somente pelo mundo controlado do renderer;
+- incorporadas/subsetadas no PDF;
+- sem dependência de fontes instaladas no Windows;
+- arquivos/licença distribuídos conforme OFL 1.1.
+
+## 37. Tipografia do DOCX
+
+Famílias declaradas:
+
+```text
+texto:          Arial
+comando/código: Consolas
+```
+
+Regras:
+
+- não incorporar essas fontes no DOCX v1;
+- não empacotar/redistribuir arquivos Arial/Consolas com StepFlow;
+- DOCX apenas referencia as famílias;
+- matriz Windows/Word real é validada posteriormente;
+- substituição de fonte pelo consumidor, se ocorrer, não altera o conteúdo semântico.
+
+A diferença de família entre PDF e DOCX é deliberada: PDF prioriza runtime autocontido/licença de redistribuição; DOCX prioriza compatibilidade Windows/Office sem exigir instalação extra.
+
+## 38. Escala tipográfica
+
+Baseline:
+
+| Uso | Tamanho |
+|---|---:|
+| título do documento | 18 pt |
+| título de Etapa | 14 pt |
+| corpo | 10,5 pt |
+| comando/código | 9 pt |
+| rodapé | 8 pt |
+
+Direção:
+
+- espaçamento compacto, mas legível;
+- hierarquia por peso/tamanho antes de caixas decorativas;
+- sem redução dinâmica de fonte para acomodar conteúdo excessivo.
+
+Pesos/pequenos refinamentos podem ser calibrados no gate visual de implementação sem alterar essa escala-base ou a hierarquia consolidada.
+
+## 39. PDF × DOCX
+
+Compartilham:
+
+- A4 retrato;
+- margens-base;
+- ordem do conteúdo;
+- identidade;
+- hierarquia;
+- semântica dos blocos.
+
+Não compartilham promessa de paginação idêntica.
+
+```text
+PDF  → referência física de impressão
+DOCX → artefato editável/refluível
+```
+
+Não forçar quebras artificiais no DOCX apenas para imitar o PDF.
+
+## 40. Decisões consolidadas — Etapa 5
+
+1. Reader diário e documento físico são superfícies distintas; Reader não possui geometria A4;
+2. `Visão geral` é a primeira página lógica do Reader;
+3. uma Etapa permanece uma página lógica própria do Reader;
+4. stepper compacto de círculos/linhas é navegável e representa anterior/atual/seguinte;
+5. estado anterior no stepper é navegação, não conclusão operacional;
+6. baixa densidade textual/visual é princípio transversal do Pocket, sem sacrificar clareza/acessibilidade;
+7. Procedimento exportado usa A4 retrato multipágina;
+8. margens-base são 18 mm em todos os lados;
+9. não há capa exclusiva;
+10. v1 não exige sumário físico por padrão;
+11. título físico de Etapa é enxuto e não força nova folha automaticamente;
+12. sem cabeçalho repetitivo; rodapé compacto identifica documento/página;
+13. blocos físicos evitam cards/bordas desnecessários e preservam semântica;
+14. paginação evita títulos/linhas órfãs e nunca trunca/reduz fonte silenciosamente;
+15. imagens preservam proporção, sem crop automático;
+16. PDF usa Noto Sans + Noto Sans Mono empacotadas/incorporadas conforme OFL 1.1;
+17. DOCX usa Arial + Consolas referenciadas, sem embedding/redistribuição v1;
+18. escala-base: 18 pt título, 14 pt Etapa, 10,5 pt corpo, 9 pt código/comando, 8 pt rodapé;
+19. PDF é referência física de impressão; DOCX permanece refluível sem paginação idêntica;
+20. limite rígido de uma A4 pertence somente à Ficha compacta de Atendimento.
+
+## 41. Fechamento da Etapa 5
+
+A Etapa 5 está **CONSOLIDADA / APROVADA PELO PO**.
+
+Foram fechados:
+
+- separação inequívoca entre Reader, Procedimento exportado e Ficha compacta;
+- correção do stepper do Reader e princípio transversal de baixa densidade visual;
+- A4 retrato multipágina e margens do Procedimento;
+- primeira página, ausência de capa/sumário obrigatório e composição enxuta;
+- política de Etapas, header/footer e paginação;
+- representação física dos blocos;
+- tipografia PDF/DOCX e escala-base;
+- relação PDF × DOCX.
+
+O trabalho permaneceu documental, sem código funcional, dependency, migration ou scaffold.
+
+---
+
+# Próximas etapas
+
+## 42. Etapa 6 — PDF + preview da Ficha compacta
+
+**Status:** PRÓXIMA — AINDA NÃO EM ANÁLISE
+
+Contrato herdado já consolidado para a Ficha:
+
+- pertence ao Atendimento;
+- usa estado confirmado pelo Host;
+- pode existir com ou sem Equipamento;
+- `Em andamento` pode gerar para acompanhamento;
+- `Concluído` reimprime estado histórico aplicável;
+- `Cancelado` deve aparecer inequivocamente;
+- capacidade depende do Atendimento acessível/preset autorizado;
+- máximo **uma página A4**;
+- conteúdo excessivo não gera segunda página normal nem truncamento silencioso;
+- impressão é requisito;
+- DOCX específico não é requisito inicial.
+
+A Etapa 6 ainda não decide nada além disso até ser explicitamente aberta após o fechamento operacional da Etapa 5.
+
+## 43. Gate operacional antes da Etapa 6
+
+A Etapa 5 só é encerrada operacionalmente após:
+
+```text
+consolidação documental
+→ squash merge do PR
+→ remoção da branch remota
+→ verificação de remoto somente com main
+→ zero PRs abertos
+```
+
+Antes desse gate, não iniciar pesquisa, proposta, branch ou análise da Etapa 6.
+
+## 44. Etapas 7–12 ainda pendentes
+
+- **Etapa 7:** Template físico A4 da Ficha;
+- **Etapa 8:** Limites textuais e densidade da Ficha;
+- **Etapa 9:** Múltiplos MACs / Procedimentos na Ficha;
+- **Etapa 10:** Nomes de arquivo + artefatos temporários, incluindo materialização/limpeza concreta do recurso de impressão;
+- **Etapa 11:** QR / barcode;
+- **Etapa 12:** Validação técnica final do Bloco 10, incluindo matriz real de Windows/WebView2/Office/impressoras e limites medidos.
+
+Nenhuma dessas etapas deve ser antecipada por inferência.
+
+## 45. Pendências que permanecem fora deste fechamento
+
+- versão mínima concreta do WebView2;
+- versões exatas de crates/dependencies;
+- limites numéricos de memória/tempo/tamanho/concorrência;
+- paths/names/lifecycle concretos de temporários;
+- detalhes finais da Ficha compacta das Etapas 6–9;
+- QR/barcode;
+- Backup/Restore técnico do Bloco 11;
+- parâmetros reais do ambiente corporativo.
+
+**Etapa 6 — PDF + preview da Ficha compacta é a próxima etapa do Bloco 10, mas ainda não está em análise.**

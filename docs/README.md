@@ -54,7 +54,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `02-shell-sidebar.md` — Shell;
 - `03-dashboard.md` — Dashboard;
 - `04-lista-pesquisa-processos.md` — Lista/Pesquisa de Processos;
-- `05-leitor-processo.md` — Reader, incluindo contexto operacional de Atendimento;
+- `05-leitor-processo.md` — Reader, incluindo stepper compacto navegável, baixa densidade visual e contexto operacional de Atendimento;
 - `06-editor-processo.md` — Editor de Processo + categorias;
 - `07-historico-revisoes.md` — Histórico/Revisões;
 - `08-lista-pesquisa-atendimentos.md` — Lista/Pesquisa de Atendimentos com Status/Período do Bloco 9;
@@ -68,7 +68,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–4;
+- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–5;
 - `implantacao-pocket.md` — implantação/ciclo de vida central;
 - `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
@@ -83,7 +83,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1–4 consolidadas, Etapa 5 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–5 consolidadas, Etapa 6 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -101,7 +101,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos, 3 — DOCX de Procedimentos e 4 — Impressão Windows de Procedimentos consolidadas. Etapa 5 — Template físico de Procedimentos é a próxima, ainda não aberta.**
+**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos, 3 — DOCX de Procedimentos, 4 — Impressão Windows de Procedimentos e 5 — Template físico de Procedimentos consolidadas. Etapa 6 — PDF + preview da Ficha compacta é a próxima, ainda não aberta.**
 
 Consolidado no Bloco 9:
 
@@ -118,84 +118,81 @@ Consolidado no Bloco 9:
 - Gerência gere categorias por preset;
 - lifecycle/capacidade da ficha.
 
-### Bloco 10 — Etapa 1 consolidada
+Direção visual transversal consolidada:
 
-Contrato vigente:
+- clareza com baixa densidade textual permanente;
+- cor, forma, símbolo, posição e ícones reconhecíveis podem substituir texto repetitivo quando claros;
+- detalhes secundários podem aparecer sob demanda;
+- cor nunca é o único meio para estado importante;
+- Reader mantém `Visão geral` + uma página lógica por Etapa;
+- stepper compacto de círculos/linhas é navegável e permanece separado do progresso operacional de checklist.
 
-- geração sob responsabilidade do Host;
-- solicitação por identidade/revisão esperada;
-- snapshot consistente antes da renderização;
-- `DocumentModel` semântico entre domínio e renderers;
-- leitura/transação SQLite encerrada antes da renderização;
-- geração como leitura derivada, fora da fila de mutações;
-- limite próprio de concorrência/backpressure;
-- fluxo request → artefato sem job persistente inicial;
-- transporte autenticado Host → Client;
-- Host não grava em path arbitrário do Client;
-- runtime autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
-- ausência de persistência/histórico/backup de exportações por padrão.
+### Bloco 10 — Etapas 1–5
 
-### Bloco 10 — Etapa 2 consolidada
+Fonte técnica detalhada: `04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
-Contrato vigente:
+Consolidado:
 
-- PDF de Procedimentos usa Typst embutido no Host Rust, com crates oficiais e adaptador interno StepFlow;
-- sem `typst.exe`/CLI, browser ou conversor externo;
-- template interno confiável/versionado;
-- dados do domínio nunca são concatenados ao source Typst;
-- renderer opera em mundo virtual controlado, sem pacotes/recursos remotos em runtime;
-- PDF 1.7 e Tagged PDF são configurados explicitamente;
-- Tagged PDF não implica conformidade formal PDF/UA/PDF-A;
-- texto permanece selecionável/pesquisável/copiável;
-- fontes são empacotadas/incorporadas sem depender das fontes do Windows;
-- blocos semânticos conhecidos não são descartados silenciosamente;
-- comandos/código permanecem texto e preservam whitespace;
-- multipágina e quebra automática são obrigatórias;
-- layout físico final continua reservado para a Etapa 5;
-- conteúdo visual não depende implicitamente do relógio/ambiente da máquina central;
-- falha do renderer não gera artefato parcial tratado como sucesso;
-- recursos avançados e conformidades formais ficam fora da primeira versão.
+- geração documental no Host a partir de `DocumentModel` semântico e snapshot consistente;
+- PDF com Typst embutido e runtime autocontido;
+- DOCX OOXML Transitional via adaptador `docx-rs`, editável/refluível;
+- impressão Windows local do PDF oficial por WebView2 `ShowPrintUI(System)`;
+- Reader separado da geometria física e com stepper compacto navegável;
+- Procedimento físico A4 retrato multipágina, margens-base 18 mm;
+- sem capa exclusiva e sem sumário físico obrigatório v1;
+- sem cabeçalho repetitivo, rodapé compacto;
+- paginação automática sem truncamento/redução silenciosa;
+- PDF com Noto Sans/Noto Sans Mono incorporadas;
+- DOCX com Arial/Consolas referenciadas, sem embedding v1;
+- escala-base 18 / 14 / 10,5 / 9 / 8 pt conforme papel semântico;
+- limite rígido de uma A4 pertence à Ficha compacta, não ao Procedimento completo.
 
-### Bloco 10 — Etapa 3 consolidada
+### Gate antes da Etapa 6
 
-Contrato vigente:
+A Etapa 6 não pode ser aberta antes de:
 
-- DOCX é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem conversão de PDF/Typst;
-- saída é `.docx` OOXML/WordprocessingML real, com OOXML Transitional como baseline de compatibilidade;
-- `docx-rs` é a biblioteca preferida sob adaptador interno StepFlow;
-- sem Word/COM, LibreOffice, browser/headless, CLI conversor ou cloud;
-- dados do domínio não viram XML/OOXML arbitrário;
-- estilos/template são internos e versionados, sem `.docx`/`.dotx` fornecido pelo usuário em runtime;
-- texto permanece selecionável, pesquisável, copiável e editável;
-- blocos semânticos conhecidos não são descartados silenciosamente;
-- passos/subpassos usam numeração/listas Word reais; checklist permanece documental;
-- comandos/código preservam whitespace e permanecem texto;
-- PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e não pode ser omitido silenciosamente;
-- DOCX é refluível e não promete paginação idêntica ao PDF;
-- política tipográfica/embedding de fontes do DOCX permanece para Etapa 5/gate técnico e não é herdada automaticamente do PDF;
-- macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
-- artefato incompleto/corrompido nunca é tratado como sucesso.
+```text
+squash merge da Etapa 5
+→ remoção da branch remota da Etapa 5
+→ remoto somente com main
+→ zero PRs abertos
+```
 
-### Bloco 10 — Etapa 4 consolidada
+### Extensão de produto consolidada
 
-Contrato vigente:
+O StepFlow deve acomodar manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias e outros procedimentos internos.
 
-- impressão física de Procedimentos acontece no Client Windows, não no Host central;
-- o artefato canônico de impressão é o mesmo PDF produzido pelo renderer da Etapa 2 para a revisão exata selecionada;
-- não existe renderer separado de impressão e não se imprime HTML da UI nem DOCX;
-- o Client usa WebView2 transitória/dedicada para carregar somente o recurso PDF local controlado;
-- baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
-- o diálogo padrão é o diálogo de impressão do Windows, sem impressão silenciosa ou seletor próprio de impressoras na primeira versão;
-- StepFlow não enumera/persiste impressoras no Host nem gerencia drivers/spooler corporativo;
-- `ShellExecute`, visualizador PDF externo, Word/COM, LibreOffice, browser externo e spool PDF bruto não são baseline;
-- recurso local de impressão é transitório; mecanismo/nome/path concreto permanece para a Etapa 10;
-- abrir o diálogo não equivale a confirmação física de impressão: a UI não exibe falso `Impresso com sucesso` nem grava `printed=true` por inferência;
-- falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo permanecem distinguíveis;
-- gate técnico posterior valida Windows 10/11 x64, WebView2, PDFs multipágina, impressoras locais/de rede e operação offline;
-- layout físico do Procedimento continua integralmente reservado para a Etapa 5.
+Permanecem consolidados:
 
-Etapas 5–12 permanecem pendentes. A Etapa 5 está somente marcada como próxima e ainda não foi aberta para análise.
+- categorias configuráveis e múltiplas;
+- separação `Procedimento × Atendimento/Execução × Equipamento`;
+- Atendimentos como área operacional própria;
+- Equipamento opcional/reutilizável;
+- múltiplos Procedimentos por Atendimento;
+- revisão exata utilizada preservada;
+- ficha compacta com ou sem Equipamento;
+- tipos mínimos `Servidor`, `Desktop`, `Notebook`;
+- bateria contextual para Notebook;
+- identidade central da empresa;
+- Backup/Restauração em Configurações;
+- safety backup antes de Restore normal;
+- PDF/DOCX/impressão de Procedimentos pela revisão selecionada;
+- baixa densidade visual como princípio transversal, com uso responsável de cor/forma/símbolo e detalhes secundários sob demanda;
+- estados transversais comuns.
 
-Bloco 11 continua não iniciado. Bloco 12 fecha parâmetros finais, regra editorial de categoria arquivada, estrutura oficial e plano da Fase 2.
+### Pendências ainda vigentes
 
-Não há código funcional oficial.
+- custo final Argon2id;
+- senha mínima final;
+- duração de sessão;
+- entropia/tamanho final de token;
+- Gerência × configuração da empresa;
+- Gerência × Backup;
+- regra editorial de nova revisão ainda referenciando categoria arquivada;
+- Etapas 6–12 do Bloco 10;
+- mecanismo técnico do Bloco 11;
+- validações reais do ambiente corporativo.
+
+### Regra de atualização deste painel
+
+Todo avanço consolidado de **fase, bloco, tela ou etapa do bloco atual** deve atualizar este README **no mesmo checkpoint documental**. Um avanço não está documentalmente encerrado se este painel ficar atrasado.
