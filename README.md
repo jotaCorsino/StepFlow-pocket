@@ -265,6 +265,17 @@ Permanecem consolidados:
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo.
 
+### Gate antes da Etapa 6
+
+A Etapa 6 não pode ser aberta antes de:
+
+```text
+squash merge da Etapa 5
+→ remoção da branch remota da Etapa 5
+→ remoto somente com main
+→ zero PRs abertos
+```
+
 ### Regra de atualização deste painel
 
 Todo avanço consolidado de **fase, bloco, tela ou etapa do bloco atual** deve atualizar este README **no mesmo checkpoint documental**. Um avanço não está documentalmente encerrado se este painel ficar atrasado.
