@@ -54,7 +54,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `02-shell-sidebar.md` — Shell;
 - `03-dashboard.md` — Dashboard;
 - `04-lista-pesquisa-processos.md` — Lista/Pesquisa de Processos;
-- `05-leitor-processo.md` — Reader, incluindo contexto operacional de Atendimento;
+- `05-leitor-processo.md` — Reader, incluindo stepper compacto navegável, baixa densidade visual e contexto operacional de Atendimento;
 - `06-editor-processo.md` — Editor de Processo + categorias;
 - `07-historico-revisoes.md` — Histórico/Revisões;
 - `08-lista-pesquisa-atendimentos.md` — Lista/Pesquisa de Atendimentos com Status/Período do Bloco 9;
@@ -68,7 +68,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–4;
+- `arquitetura-vigente.md` — visão técnica consolidada, incluindo Bloco 9 e Bloco 10 / Etapas 1–5;
 - `implantacao-pocket.md` — implantação/ciclo de vida central;
 - `compatibilidade-windows-client.md` — Tauri/Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
@@ -83,7 +83,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1–4 consolidadas, Etapa 5 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1–5 consolidadas, Etapa 6 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -101,7 +101,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 
 ## Estado atual
 
-**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos, 3 — DOCX de Procedimentos e 4 — Impressão Windows de Procedimentos consolidadas. Etapa 5 — Template físico de Procedimentos é a próxima, ainda não aberta.**
+**Fase 1 em andamento; Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1 — Arquitetura de geração documental, 2 — PDF de Procedimentos, 3 — DOCX de Procedimentos, 4 — Impressão Windows de Procedimentos e 5 — Template físico de Procedimentos consolidadas. Etapa 6 — PDF + preview da Ficha compacta é a próxima, ainda não aberta.**
 
 Consolidado no Bloco 9:
 
@@ -117,6 +117,14 @@ Consolidado no Bloco 9:
 - códigos `AT-000001` e `EQP-000001`;
 - Gerência gere categorias por preset;
 - lifecycle/capacidade da ficha.
+
+Direção visual transversal consolidada:
+
+- clareza com baixa densidade textual permanente;
+- uso de cor, forma, símbolo, posição e ícones reconhecíveis quando isso simplificar sem gerar ambiguidade;
+- detalhes secundários sob demanda quando apropriado;
+- cor nunca como único meio para estado importante;
+- Reader usa stepper compacto de círculos/linhas para navegação entre Etapas, separado do progresso operacional de checklist.
 
 ### Bloco 10 — Etapa 1 consolidada
 
@@ -151,7 +159,7 @@ Contrato vigente:
 - blocos semânticos conhecidos não são descartados silenciosamente;
 - comandos/código permanecem texto e preservam whitespace;
 - multipágina e quebra automática são obrigatórias;
-- layout físico final continua reservado para a Etapa 5;
+- layout físico segue a Etapa 5 consolidada;
 - conteúdo visual não depende implicitamente do relógio/ambiente da máquina central;
 - falha do renderer não gera artefato parcial tratado como sucesso;
 - recursos avançados e conformidades formais ficam fora da primeira versão.
@@ -172,7 +180,7 @@ Contrato vigente:
 - comandos/código preservam whitespace e permanecem texto;
 - PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e não pode ser omitido silenciosamente;
 - DOCX é refluível e não promete paginação idêntica ao PDF;
-- política tipográfica/embedding de fontes do DOCX permanece para Etapa 5/gate técnico e não é herdada automaticamente do PDF;
+- DOCX v1 referencia Arial para texto e Consolas para comando/código, sem embedding dessas fontes;
 - macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
 - artefato incompleto/corrompido nunca é tratado como sucesso.
 
@@ -192,9 +200,29 @@ Contrato vigente:
 - abrir o diálogo não equivale a confirmação física de impressão: a UI não exibe falso `Impresso com sucesso` nem grava `printed=true` por inferência;
 - falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo permanecem distinguíveis;
 - gate técnico posterior valida Windows 10/11 x64, WebView2, PDFs multipágina, impressoras locais/de rede e operação offline;
-- layout físico do Procedimento continua integralmente reservado para a Etapa 5.
+- impressão usa o template físico consolidado na Etapa 5.
 
-Etapas 5–12 permanecem pendentes. A Etapa 5 está somente marcada como próxima e ainda não foi aberta para análise.
+### Bloco 10 — Etapa 5 consolidada
+
+Contrato vigente:
+
+- Reader diário não é uma folha A4 e permanece separado do documento exportado;
+- `Visão geral` é a primeira página lógica do Reader e cada Etapa mantém página lógica própria;
+- stepper horizontal compacto de círculos/linhas navega diretamente entre Etapas, com estados anteriores/atual/seguintes sem rótulos textuais permanentes repetitivos;
+- estado anterior no stepper representa percurso de navegação, nunca conclusão operacional;
+- Procedimento exportado usa A4 retrato multipágina com margens-base de 18 mm;
+- não há capa exclusiva; conteúdo útil começa na primeira página;
+- não há sumário físico obrigatório por padrão na v1;
+- Etapas não forçam nova folha automaticamente e títulos permanecem junto do primeiro conteúdo quando possível;
+- sem cabeçalho repetitivo; rodapé compacto identifica código/revisão e paginação;
+- blocos físicos seguem baixa densidade visual, preservando semântica sem cards/bordas desnecessários;
+- PDF usa Noto Sans + Noto Sans Mono empacotadas/incorporadas/subsetadas;
+- DOCX usa Arial + Consolas referenciadas, sem embedding na v1;
+- baseline tipográfico: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt e rodapé 8 pt;
+- PDF continua referência física de impressão; DOCX mantém hierarquia/semântica mas permanece refluível;
+- limite rígido de uma A4 pertence à Ficha compacta de Atendimento, não ao Procedimento completo.
+
+Etapas 6–12 permanecem pendentes. A Etapa 6 — PDF + preview da Ficha compacta é somente a próxima e ainda não foi aberta para análise.
 
 Bloco 11 continua não iniciado. Bloco 12 fecha parâmetros finais, regra editorial de categoria arquivada, estrutura oficial e plano da Fase 2.
 
