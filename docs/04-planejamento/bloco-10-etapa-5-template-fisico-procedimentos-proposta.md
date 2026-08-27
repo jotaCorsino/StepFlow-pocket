@@ -1,6 +1,6 @@
 # Bloco 10 — Etapa 5 — Template físico de Procedimentos — Proposta para análise
 
-**Status:** EM ANÁLISE / PROPOSTA PARA APROVAÇÃO DO PO  
+**Status:** PROPOSTA COMPLETA / AGUARDANDO APROVAÇÃO DO PO  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-27  
 **Base consolidada:** Bloco 10 / Etapas 1–4
@@ -411,19 +411,100 @@ Não compartilham uma promessa de quebra de página idêntica.
 
 O PDF continua sendo a referência física de impressão; o DOCX continua sendo editável e refluível.
 
-## 10. Tipografia — próxima decisão interna da Etapa 5
+## 10. Tipografia proposta
 
-Depois do baseline acima, falta fechar apenas a política tipográfica:
+### 10.1 PDF
 
-- família usada no PDF e seus arquivos empacotados;
-- família compatível usada no DOCX;
-- escala relativa de título / Etapa / corpo / código;
-- entrelinha e espaçamento;
-- política de negrito/ênfase.
+Famílias:
 
-A escolha deve preservar legibilidade e baixa densidade sem depender de fontes externas instaladas no Host.
+```text
+texto:          Noto Sans
+comando/código: Noto Sans Mono
+```
 
-## 11. Validação técnica do baseline
+Regras:
+
+- fontes empacotadas com o Host;
+- carregadas apenas pelo `World` controlado do renderer Typst;
+- incorporadas/subsetadas no PDF;
+- não dependem de fontes instaladas no Windows do Host;
+- arquivos de fonte e licença entram no pacote/runtime conforme requisitos de distribuição da OFL 1.1.
+
+Essa escolha preserva o caráter autocontido da Etapa 2 e evita dependência de fontes proprietárias no renderer PDF.
+
+### 10.2 DOCX
+
+Famílias declaradas:
+
+```text
+texto:          Arial
+comando/código: Consolas
+```
+
+Regras:
+
+- não incorporar fontes no DOCX v1;
+- não empacotar/redistribuir arquivos Arial/Consolas com StepFlow;
+- o DOCX apenas referencia essas famílias;
+- a matriz de compatibilidade deve validar Word/Office nos Windows corporativos suportados;
+- se a família não estiver disponível no consumidor, o Word pode aplicar substituição conforme seu ambiente; isso não altera o conteúdo semântico.
+
+Arial e Consolas são escolhas deliberadas por compatibilidade ampla no ambiente Windows/Office, não por equivalência métrica com Noto.
+
+### 10.3 Escala tipográfica
+
+Baseline compacto:
+
+| Uso | Tamanho |
+|---|---:|
+| Título do Procedimento | 18 pt |
+| Código / linha editorial | 9 pt |
+| Título de Etapa | 14 pt |
+| Subtítulo estrutural | 11 pt |
+| Corpo | 10.5 pt |
+| Metadados secundários | 9 pt |
+| Nota / alerta | 10 pt |
+| Comando / código | 9 pt |
+| Rodapé | 8 pt |
+
+Pesos:
+
+- regular para corpo;
+- semibold/bold apenas em títulos, números estruturais e labels realmente necessários;
+- evitar negrito em excesso.
+
+### 10.4 Espaçamento
+
+Direção:
+
+```text
+corpo:          entrelinha ~1.25
+código/comando: entrelinha ~1.15
+```
+
+Regras:
+
+- sem recuo de primeira linha;
+- texto normal alinhado à esquerda;
+- espaçamento entre blocos substitui bordas/cards desnecessários;
+- títulos usam espaço suficiente para criar hierarquia sem grandes áreas vazias;
+- não reduzir tamanho de fonte dinamicamente para fazer conteúdo caber;
+- não usar fonte condensada como workaround de densidade.
+
+### 10.5 Coerência visual
+
+PDF e DOCX não precisam usar a mesma família para serem percebidos como o mesmo documento.
+
+A coerência vem de:
+
+- escala tipográfica equivalente;
+- mesma ordem e hierarquia;
+- espaçamento semelhante;
+- mesmos símbolos e estrutura dos blocos;
+- mesma identidade institucional;
+- mesma lógica de numeração de Etapas.
+
+## 11. Validação técnica
 
 O baseline é compatível com os renderers já escolhidos:
 
@@ -433,11 +514,34 @@ O baseline é compatível com os renderers já escolhidos:
 
 Portanto, nenhuma decisão visual acima exige um terceiro renderer nem dependência externa de Office/browser/conversor.
 
-## 12. Critério de fechamento
+## 12. Decisões propostas para consolidação
 
-Esta proposta permanece **EM ANÁLISE**.
+Se aprovadas pelo PO, a Etapa 5 consolida:
 
-Até aprovação explícita do PO:
+1. Reader diário e documento físico são superfícies independentes;
+2. princípio transversal de baixa densidade visual no Pocket;
+3. stepper compacto do Reader com círculos/linhas/estados e navegação direta;
+4. `Visão geral` como primeira página lógica do Reader;
+5. Procedimento físico A4 retrato e multipágina;
+6. margens de 18 mm;
+7. sem capa exclusiva;
+8. sem sumário físico por padrão na v1;
+9. Etapas físicas em fluxo normal, sem nova folha obrigatória;
+10. título físico de Etapa enxuto (`01 · Título`);
+11. sem header repetitivo;
+12. rodapé curto com identidade técnica e paginação;
+13. blocos semânticos visualmente leves;
+14. paginação automática com proteção contra títulos/linhas órfãs;
+15. PDF com Noto Sans / Noto Sans Mono empacotadas e incorporadas;
+16. DOCX referenciando Arial / Consolas sem embedding v1;
+17. escala tipográfica compacta definida nesta proposta;
+18. PDF como referência física de impressão e DOCX refluível sem promessa de paginação idêntica.
+
+## 13. Critério de fechamento
+
+Esta proposta está **completa para análise do PO**, mas ainda não está consolidada.
+
+Até aprovação explícita:
 
 - Etapas 1–4 continuam consolidadas;
 - Etapa 5 não é promovida às fontes canônicas;
