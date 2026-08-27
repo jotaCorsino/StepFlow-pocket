@@ -83,7 +83,7 @@ Regras obrigatórias de execução ficam em `../AGENTS.md`.
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa do Bloco 10; **Etapas 1–5 consolidadas, Etapa 6 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–5 consolidadas, Etapa 6 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -121,10 +121,11 @@ Consolidado no Bloco 9:
 Direção visual transversal consolidada:
 
 - clareza com baixa densidade textual permanente;
-- uso de cor, forma, símbolo, posição e ícones reconhecíveis quando isso simplificar sem gerar ambiguidade;
-- detalhes secundários sob demanda quando apropriado;
-- cor nunca como único meio para estado importante;
-- Reader usa stepper compacto de círculos/linhas para navegação entre Etapas, separado do progresso operacional de checklist.
+- cor, forma, símbolo, posição e ícones reconhecíveis podem substituir texto repetitivo quando claros;
+- detalhes secundários podem aparecer sob demanda;
+- cor nunca é o único meio para estado importante;
+- Reader mantém `Visão geral` + uma página lógica por Etapa;
+- stepper compacto de círculos/linhas é navegável e permanece separado do progresso operacional de checklist.
 
 ### Bloco 10 — Etapa 1 consolidada
 
