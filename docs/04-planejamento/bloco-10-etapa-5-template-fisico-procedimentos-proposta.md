@@ -250,60 +250,188 @@ O detalhamento permanece nas etapas próprias:
 
 A Etapa 5 não antecipa essas decisões.
 
-## 9. Escopo físico correto da Etapa 5
+## 9. Baseline físico proposto para o Procedimento completo
 
-Depois das correções acima, esta Etapa deve decidir apenas para o **Procedimento exportado em PDF/DOCX**:
+### 9.1 Papel e orientação
 
-1. formato físico e orientação;
-2. margens;
-3. tipografia documental;
-4. hierarquia de título, metadados, Etapas e blocos;
-5. identidade da empresa;
-6. cabeçalho/rodapé, se necessários;
-7. paginação física, se necessária;
-8. representação de parágrafo, passos, checklist, nota, alerta, comando e código;
-9. imagens/logo;
-10. quebra física entre Etapas e blocos;
-11. eventual sumário documental;
-12. coerência visual PDF × DOCX sem exigir paginação idêntica.
+Proposta:
 
-## 10. Direção física proposta para análise
+```text
+papel: A4
+orientação: retrato
+quantidade de páginas: conforme necessário
+```
 
-A mesma filosofia de baixa densidade deve orientar o documento físico.
+A4 aqui é **formato do documento físico exportado**, não geometria do Reader.
 
-Direção inicial:
+O limite de `1 A4` continua exclusivo da Ficha compacta.
 
-- documento técnico limpo e compacto;
-- sem capa exclusiva apenas para título/logo;
-- identidade e metadados essenciais apresentados de forma curta;
-- conteúdo começa cedo e ocupa a maior parte da página;
-- cada Etapa possui separação visual clara, sem card pesado para cada bloco;
-- notas, alertas, checklists e código usam forma/símbolo/hierarquia antes de excesso de labels;
-- comandos e código permanecem texto real, sem screenshot;
-- imagens preservam proporção;
-- não reduzir fonte dinamicamente para forçar conteúdo a caber;
-- não truncar conteúdo;
-- não forçar uma folha física nova para cada Etapa sem necessidade;
-- DOCX preserva semântica e hierarquia, mas continua refluível;
-- PDF permanece a referência física de impressão.
+PDF e DOCX usam o mesmo tamanho físico base para manter impressão previsível.
 
-## 11. Decisões físicas ainda abertas
+### 9.2 Margens
 
-Os seguintes pontos **não estão consolidados** nesta proposta:
+Proposta simples:
 
-- tamanho de papel do Procedimento completo;
-- orientação;
-- margens exatas;
-- família de fontes;
-- tamanhos tipográficos;
-- cores exatas;
-- composição fechada da primeira página;
-- header/footer;
-- `Página X de N`;
-- sumário documental;
-- política exata de page break entre Etapas.
+```text
+18 mm em todos os lados
+```
 
-Esses itens precisam ser fechados no contexto do documento exportado, sem derivá-los da UI do Reader nem do limite de uma A4 da Ficha compacta.
+Um único valor reduz regras especiais, mantém área útil ampla e ainda reserva espaço seguro para impressão corporativa comum.
+
+Header/footer, quando existirem, ocupam essa própria zona de margem e não criam uma segunda moldura visual.
+
+### 9.3 Primeira página
+
+Não há capa exclusiva.
+
+A página começa diretamente com informação útil:
+
+```text
+[logo] Empresa
+
+PR-014
+Configuração de VLAN
+versão/revisão · estado editorial
+
+Área/Departamento · Responsável
+
+VISÃO GERAL
+Objetivo...
+Pré-requisitos...
+Observações...
+
+01 · Preparação
+...
+```
+
+Direção:
+
+- identidade compacta;
+- código + título com hierarquia principal;
+- somente metadados necessários para identificar o documento;
+- conteúdo começa na mesma página;
+- campos vazios não reservam espaço;
+- sem tabela pesada apenas para metadados.
+
+### 9.4 Sumário documental
+
+Proposta v1: **não mostrar sumário físico por padrão**.
+
+Razões:
+
+- reduz densidade e páginas consumidas;
+- evita duplicação dos títulos de Etapas;
+- o documento já possui hierarquia sequencial clara;
+- evita depender de paginação estável do DOCX para manter referências numéricas coerentes.
+
+Um sumário documental pode ser reintroduzido futuramente se procedimentos muito extensos demonstrarem necessidade real.
+
+### 9.5 Etapas
+
+O título físico evita repetir texto desnecessário:
+
+```text
+01 · Preparação
+02 · Configuração
+03 · Validação
+```
+
+Não é necessário escrever `ETAPA` antes de todos os títulos quando a hierarquia visual já deixa a estrutura clara.
+
+Regras:
+
+- uma Etapa não força automaticamente nova folha;
+- o título permanece junto do primeiro bloco sempre que possível;
+- se não houver espaço útil suficiente para título + início de conteúdo, ambos seguem para a próxima página;
+- etapas curtas podem compartilhar a mesma folha física;
+- a separação permanece clara por espaço, hierarquia e linha/forma discreta, não por cards pesados.
+
+### 9.6 Cabeçalho e rodapé
+
+Proposta: **sem cabeçalho repetitivo** nas páginas internas.
+
+Isso libera espaço e reduz poluição.
+
+Rodapé compacto:
+
+```text
+PR-014 · r18                              3 / 8
+```
+
+ou equivalente.
+
+Regras:
+
+- código/revisão identificam folhas separadas do conjunto;
+- paginação usa formato curto;
+- informações essenciais também aparecem no corpo da primeira página, nunca apenas no rodapé;
+- sem timestamp, hostname, usuário, caminho local ou dados técnicos internos visíveis.
+
+### 9.7 Blocos semânticos
+
+A representação física segue o princípio de baixa densidade:
+
+- parágrafo → texto normal, sem card;
+- passos → numeração e indentação;
+- checklist → `□` + texto;
+- nota → forma/símbolo discreto + conteúdo;
+- alerta → símbolo + contraste mais forte; texto `Atenção` quando necessário para não depender apenas de cor;
+- comando → bloco monoespaçado compacto;
+- código → bloco monoespaçado compacto;
+- imagens → proporção preservada, sem crop automático.
+
+Não envolver cada passo em card/borda.
+
+Comandos/código permanecem texto real, selecionável e pesquisável.
+
+### 9.8 Quebras físicas
+
+Regras propostas:
+
+- paginação automática é o padrão;
+- evitar widow/orphan em texto normal;
+- título de Etapa não fica isolado no fim da página;
+- subtítulo/label permanece com o primeiro conteúdo relacionado;
+- pequenos blocos de nota/alerta/comando/checklist ficam inteiros quando razoável;
+- blocos excepcionalmente longos podem quebrar entre páginas em vez de truncar ou reduzir fonte;
+- nenhuma Etapa é silenciosamente omitida para fazer o documento caber.
+
+### 9.9 PDF × DOCX
+
+Os dois formatos compartilham:
+
+- A4 retrato;
+- margens-base;
+- hierarquia;
+- ordem do conteúdo;
+- identidade;
+- representação semântica dos blocos.
+
+Não compartilham uma promessa de quebra de página idêntica.
+
+O PDF continua sendo a referência física de impressão; o DOCX continua sendo editável e refluível.
+
+## 10. Tipografia — próxima decisão interna da Etapa 5
+
+Depois do baseline acima, falta fechar apenas a política tipográfica:
+
+- família usada no PDF e seus arquivos empacotados;
+- família compatível usada no DOCX;
+- escala relativa de título / Etapa / corpo / código;
+- entrelinha e espaçamento;
+- política de negrito/ênfase.
+
+A escolha deve preservar legibilidade e baixa densidade sem depender de fontes externas instaladas no Host.
+
+## 11. Validação técnica do baseline
+
+O baseline é compatível com os renderers já escolhidos:
+
+- Typst suporta tamanho de papel, margens, header/footer, numeração e paginação automática;
+- Typst possui tratamento de widow/orphan e page breaks;
+- `docx-rs` atual expõe page size, page margins, headers/footers e controles como `keep_next`, `keep_lines`, `page_break_before` e `widow_control`.
+
+Portanto, nenhuma decisão visual acima exige um terceiro renderer nem dependência externa de Office/browser/conversor.
 
 ## 12. Critério de fechamento
 
