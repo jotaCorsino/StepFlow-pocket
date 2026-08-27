@@ -1,7 +1,7 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–4  
-**Atualização:** 2026-08-26
+**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–5  
+**Atualização:** 2026-08-27
 
 ## Visão geral
 
@@ -32,6 +32,8 @@ Responsabilidades:
 - iniciar geração documental e receber artefatos produzidos pelo Host;
 - encaminhar artefatos para fluxos locais de salvar/preview/impressão conforme os contratos específicos;
 - realizar impressão física de Procedimentos no contexto local da estação Windows usando o PDF oficial recebido do Host.
+
+Direção visual transversal: privilegiar clareza com baixa densidade textual permanente, usando cor, forma, símbolo, posição e ícones reconhecíveis quando isso simplificar sem gerar ambiguidade; detalhes secundários podem aparecer sob demanda e cor nunca é o único meio para estado importante. O Reader usa stepper compacto navegável de círculos/linhas, separado do progresso operacional de checklist.
 
 Baseline inicial: Windows 10/11 x64 + WebView2. Validação corporativa ainda pendente.
 
@@ -293,7 +295,7 @@ Consolidado:
 - fontes necessárias são empacotadas e incorporadas/subsetadas, sem depender das fontes instaladas no Windows;
 - todos os blocos semânticos conhecidos devem ser representados; tipo desconhecido/incompatível falha explicitamente em vez de ser descartado;
 - comandos e código permanecem texto e preservam whitespace relevante;
-- engine suporta fluxo multipágina e quebra automática, sem definir margens, A4, tipografia, cabeçalho, rodapé ou paginação visual;
+- engine suporta fluxo multipágina e quebra automática; formato físico, margens, tipografia, cabeçalho/rodapé e paginação visual seguem a Etapa 5;
 - PNG/JPEG e SVG controlado podem ser incorporados somente a partir de assets previamente aceitos/resolvidos pelo Host;
 - conteúdo visual não pode depender implicitamente de relógio/ambiente da máquina central; data/hora visível vem de dados explícitos do `DocumentModel`/`generation_metadata`;
 - mesma versão do Host/template/fontes/assets/modelo deve manter estabilidade visual/semântica, sem exigir identidade byte-a-byte quando metadados técnicos variarem;
@@ -319,12 +321,12 @@ Consolidado:
 - comandos e código permanecem texto e preservam espaços, tabs, quebras e indentação relevantes;
 - PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e precisa de representação interna compatível ou falha explícita, nunca omissão silenciosa;
 - DOCX é formato refluível: estabilidade exigida é semântica/estrutural, não paginação idêntica ao PDF ou entre consumidores Word;
-- política de fontes/embedding do DOCX não é herdada automaticamente da Etapa 2 e fica para Etapa 5/gate técnico, considerando compatibilidade e licenciamento;
+- DOCX v1 referencia **Arial** para texto e **Consolas** para comando/código, sem embedding/redistribuição dessas fontes pelo StepFlow;
 - relationships externos, macros/VBA/`.docm`, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura digital, senha/DRM e importação de DOCX editado não são requisitos da primeira versão;
 - mesmo modelo/assets/estilos/versão do Host devem manter conteúdo e estrutura OOXML estáveis quando razoável, sem exigir ZIP byte-a-byte idêntico;
 - geração só é sucesso com pacote DOCX completo e coerente; validação posterior deve incluir OPC/ZIP, XML/relationships e abertura sem reparo na matriz corporativa real.
 
-Versão exata da crate, limites numéricos e matriz de compatibilidade real permanecem para implementação/Etapa 12. Layout físico final permanece na Etapa 5.
+Versão exata da crate, limites numéricos e matriz de compatibilidade real permanecem para implementação/Etapa 12. Layout físico segue a Etapa 5 consolidada.
 
 ### Impressão Windows de Procedimentos — Bloco 10 / Etapa 4
 
@@ -360,7 +362,44 @@ Regras:
 - gate técnico posterior valida Windows 10/11 x64, runtime WebView2, PDF multipágina, Unicode/logo, impressoras locais/de rede, opções do diálogo e operação offline;
 - incompatibilidade de WebView2 deve ser explícita, sem fallback silencioso para software externo;
 - versão mínima concreta de WebView2 fica para matriz corporativa/gate de implementação;
-- layout físico final do Procedimento permanece integralmente reservado à Etapa 5.
+- impressão usa o template físico consolidado na Etapa 5, sem criar layout alternativo.
+
+### Template físico de Procedimentos — Bloco 10 / Etapa 5
+
+Consolidado:
+
+#### Separação Reader × documento físico
+
+- a página lógica do Reader não possui geometria A4 e não é preview do documento exportado;
+- `Visão geral` permanece a primeira página lógica do Reader;
+- cada `process_stage` permanece uma página lógica própria;
+- o stepper do Reader é horizontal, compacto e navegável, composto prioritariamente por círculos/linhas;
+- estados anteriores/atual/seguintes usam preenchimento, contraste, forma/símbolo e cor sem depender apenas de cor;
+- nomes das Etapas não precisam ser repetidos permanentemente no stepper;
+- estado anterior no stepper representa percurso de navegação, nunca conclusão operacional/checklist.
+
+#### Documento físico
+
+- Procedimento completo usa **A4 retrato multipágina**;
+- margens-base de **18 mm** em todos os lados;
+- não há capa exclusiva: identificação e conteúdo útil começam na primeira página;
+- v1 não exige sumário documental físico por padrão;
+- títulos de Etapa são compactos, por exemplo `01 · Preparação`;
+- uma Etapa não força automaticamente nova folha; título fica com o primeiro conteúdo quando possível;
+- não há cabeçalho repetitivo nas páginas internas;
+- rodapé curto identifica código/revisão e paginação;
+- parágrafos não viram cards; passos usam numeração/indentação; checklist usa `□`; notas/alertas usam distinção semântica discreta; comando/código usam bloco monoespaçado compacto;
+- imagens preservam proporção, sem crop automático;
+- paginação é automática, evitando widow/orphan e títulos isolados; bloco longo pode quebrar, mas conteúdo nunca é truncado ou reduzido silenciosamente para caber.
+
+#### Tipografia
+
+- PDF usa **Noto Sans + Noto Sans Mono** empacotadas com o Host e incorporadas/subsetadas pelo renderer controlado, respeitando OFL 1.1;
+- DOCX usa **Arial + Consolas** referenciadas, sem embedding ou redistribuição dessas fontes pelo StepFlow v1;
+- baseline: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt e rodapé 8 pt;
+- PDF é a referência física de impressão; DOCX compartilha hierarquia/ordem/semântica, mas permanece refluível e não promete paginação idêntica.
+
+O limite rígido de **uma página A4** pertence à Ficha compacta de Atendimento, não ao Procedimento completo.
 
 ### Procedimentos
 
@@ -369,7 +408,8 @@ Regras:
 - revisão nova não substitui geração em andamento;
 - documento próprio, não screenshot;
 - histórico/draft autorizado recebe identificação inequívoca;
-- identidade central da empresa.
+- identidade central da empresa;
+- template físico segue Etapa 5.
 
 ### Ficha de Atendimento
 
@@ -383,7 +423,7 @@ Regras:
 - impressão é requisito;
 - DOCX específico não é requisito inicial.
 
-Bloco 10 ainda fecha, uma etapa por vez, templates, limites, preview, PDF específico da ficha, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários e QR/barcode. **Etapa 5 — Template físico de Procedimentos é a próxima e ainda não está aberta para análise.**
+Bloco 10 ainda fecha, uma etapa por vez, PDF/preview e template da Ficha compacta, limites/densidade, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários, QR/barcode e validação técnica final. **Etapa 6 — PDF + preview da Ficha compacta é a próxima e ainda não está aberta para análise.**
 
 ## Backup / Restore
 
@@ -407,7 +447,9 @@ Bloco 11 ainda fecha pacote, atomicidade, checksums, retenção, restart/reconex
 - perda de permissão limpa conteúdo protegido;
 - conflito preserva edição local;
 - incompatibilidade Client↔Host bloqueia uso;
-- sem offline queue/autosave/draft persistente.
+- sem offline queue/autosave/draft persistente;
+- reduzir densidade textual permanente quando forma, símbolo, posição ou ícone comunicarem com clareza;
+- não sacrificar acessibilidade/entendimento por minimalismo e não usar cor isoladamente como semântica crítica.
 
 ## Ambiente corporativo pendente
 
@@ -428,7 +470,7 @@ Exemplos históricos não podem virar hardcode.
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído documentalmente;
-- **Bloco 10: em andamento — Etapas 1–4 consolidadas; Etapa 5 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–5 consolidadas; Etapa 6 próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 Nenhum runtime/código funcional oficial foi criado durante esse fechamento documental.
