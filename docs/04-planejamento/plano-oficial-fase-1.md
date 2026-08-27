@@ -200,32 +200,31 @@ Contrato aprovado:
 - comandos/código permanecem texto e preservam whitespace relevante;
 - engine suporta fluxo multipágina e quebra automática; formato/layout físico seguem a Etapa 5 consolidada;
 - PNG/JPEG e SVG controlado são suportados somente a partir de assets previamente aceitos/resolvidos pelo Host;
-- conteúdo visual não depende implicitamente do relógio/ambiente da máquina central; data/hora visível vem de dados explícitos do `DocumentModel`/`generation_metadata`;
-- estabilidade visual/semântica é exigida sob mesma versão do Host/template/fontes/assets/modelo, sem exigir bytes idênticos quando metadados técnicos variarem;
+- conteúdo visual não depende implicitamente do relógio/ambiente da máquina central;
 - falha do renderer não produz artefato parcial tratado como sucesso;
-- assinatura digital, senha, formulários, anexos, JavaScript, multimídia, PDF/A formal e PDF/UA formal ficam fora da primeira versão;
-- versão exata das crates e limites numéricos de memória/tamanho/tempo não são congelados na Fase 1; ficam para implementação/medição e validação técnica posterior.
+- recursos avançados e conformidades formais ficam fora da primeira versão;
+- versões exatas de crates e limites numéricos permanecem para implementação/medição.
 
 ### Etapa 3 — consolidada
 
 Contrato aprovado:
 
 - DOCX de Procedimentos é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem converter PDF/Typst;
-- saída é `.docx` real em OOXML/WordprocessingML e **OOXML Transitional** é o baseline inicial de compatibilidade; Strict não é baseline da primeira versão;
+- saída é `.docx` real em OOXML/WordprocessingML e **OOXML Transitional** é o baseline inicial de compatibilidade;
 - `docx-rs` é a biblioteca preferida, encapsulada por adaptador interno StepFlow;
 - não depende de Microsoft Word/COM, LibreOffice, browser/headless, CLI conversor ou serviço cloud;
 - conteúdo do domínio entra apenas como dados estruturados e não pode injetar XML/OOXML, relationships, partes OPC, paths ou URLs arbitrários;
-- estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário é carregado como template em runtime na primeira versão;
+- estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário é carregado como template em runtime;
 - texto textual permanece texto Word real, selecionável, pesquisável, copiável e editável;
-- todos os blocos semânticos conhecidos são representados sem descarte silencioso; incompatibilidade falha explicitamente;
+- todos os blocos semânticos conhecidos são representados sem descarte silencioso;
 - passos/subpassos usam numeração/lista Word real quando aplicável;
 - checklist exportado é documental e não vira formulário/content control interativo;
 - comandos/código permanecem texto e preservam whitespace relevante;
-- PNG/JPEG são baseline de imagem; SVG não é requisito direto do DOCX v1 e exige representação interna compatível ou falha explícita, nunca omissão silenciosa;
-- DOCX é refluível: não há promessa de paginação idêntica ao PDF ou entre versões/consumidores Word;
-- DOCX v1 referencia **Arial** para texto e **Consolas** para comando/código, sem embedding/redistribuição dessas fontes pelo StepFlow;
-- macros/VBA/`.docm`, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura digital, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
-- geração só é sucesso com pacote OPC/ZIP e OOXML coerentes; artefato incompleto/corrompido não é devolvido como sucesso;
+- PNG/JPEG são baseline de imagem; SVG não é requisito direto do DOCX v1 e exige representação interna compatível ou falha explícita;
+- DOCX é refluível e não promete paginação idêntica ao PDF;
+- DOCX v1 referencia **Arial** para texto e **Consolas** para comando/código, sem embedding/redistribuição dessas fontes;
+- conteúdo ativo/externo e importação de DOCX editado ficam fora da primeira versão;
+- pacote incompleto/corrompido nunca é tratado como sucesso;
 - versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
 
 ### Etapa 4 — consolidada
@@ -242,11 +241,10 @@ Contrato aprovado:
 - StepFlow não enumera/persiste impressoras no Host e não gerencia drivers/spooler corporativo;
 - `ShellExecute`/handler PDF externo, Word/COM, LibreOffice, browser/visualizador externo e spool PDF bruto não são baseline/fallback silencioso;
 - recurso local de impressão é transitório; estratégia concreta, nomes, paths e limpeza ficam para a Etapa 10;
-- `ShowPrintUI` não confirma impressão física: sucesso da integração significa fluxo entregue ao Windows, sem falso `Impresso com sucesso` ou auditoria `printed=true`;
-- fechamento/cancelamento do diálogo não é erro funcional; falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo são distintas;
-- duplicidade concorrente acidental da mesma ação é impedida localmente sem criar fila/job persistente;
-- gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, Unicode/logo, impressoras locais/de rede, opções do diálogo e operação offline;
-- versão mínima concreta do WebView2 fica para matriz corporativa/gate de implementação;
+- `ShowPrintUI` não confirma impressão física: sucesso significa fluxo entregue ao Windows, sem falso `Impresso com sucesso` ou auditoria `printed=true`;
+- fechamento/cancelamento do diálogo não é erro funcional;
+- falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo são distintas;
+- gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, impressoras locais/de rede e operação offline;
 - impressão usa o template físico consolidado na Etapa 5.
 
 ### Etapa 5 — consolidada
@@ -266,7 +264,7 @@ Contrato aprovado:
 - blocos físicos usam hierarquia/forma/símbolo com baixa densidade, sem cards/bordas desnecessários;
 - PDF usa **Noto Sans + Noto Sans Mono** empacotadas/incorporadas/subsetadas conforme OFL 1.1;
 - DOCX usa **Arial + Consolas** referenciadas, sem embedding/redistribuição dessas fontes pelo StepFlow v1;
-- baseline tipográfico: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt, rodapé 8 pt;
+- baseline tipográfico: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt e rodapé 8 pt;
 - PDF é referência física de impressão; DOCX compartilha hierarquia/semântica, mas permanece refluível;
 - limite rígido de **uma A4** pertence à Ficha compacta de Atendimento, não ao Procedimento completo.
 
@@ -359,6 +357,21 @@ Antes da implementação correspondente:
 - [ ] estrutura oficial definida;
 - [x] pendências não bloqueantes registradas;
 - [ ] plano da Fase 2 aprovado.
+
+## Gate entre Etapa 5 e Etapa 6
+
+A Etapa 6 somente pode ser aberta após:
+
+```text
+consolidação documental da Etapa 5
+→ squash merge do PR
+→ remoção da branch remota da Etapa 5
+→ verificação de remoto somente com main
+→ zero PRs abertos
+→ abertura explícita da Etapa 6
+```
+
+Até esse gate ser satisfeito, não iniciar pesquisa, proposta ou branch da Etapa 6.
 
 ## Regra de execução
 
