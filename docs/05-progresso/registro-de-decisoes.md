@@ -1,6 +1,6 @@
 # Registro de Decisões — StepFlow Pocket
 
-**Atualização:** 2026-08-26
+**Atualização:** 2026-08-27
 
 Este arquivo registra decisões vigentes e pendências atuais. Propostas não aprovadas não podem ser tratadas como contrato.
 
@@ -101,23 +101,29 @@ Pendente:
 ## 7. Reader / manual
 
 - experiência principal em formato livro/manual;
-- `Visão geral` antes da Etapa 1;
-- uma Etapa = uma página;
+- `Visão geral` antes da Etapa 1, como primeira página lógica não numerada;
+- uma Etapa = uma página lógica;
 - `Sumário` temporário;
 - `Anterior`/`Próxima`;
-- `Etapa X de Y` representa posição, não conclusão;
+- indicador textual compacto `Etapa X de Y`;
+- stepper horizontal compacto de círculos/linhas, navegável diretamente entre Etapas;
+- stepper diferencia Etapas anteriores/atual/seguintes por preenchimento, contraste, forma/símbolo e cor, sem depender apenas de cor;
+- nomes das Etapas não precisam ser repetidos permanentemente junto a todos os marcadores; permanecem no título da página e no Sumário;
+- cada marcador possui acionamento por clique/teclado e nome acessível/tooltip quando necessário;
+- estado anterior no stepper significa percurso de navegação, nunca conclusão operacional do Atendimento;
 - blocos tipados: paragraph, numbered_steps, checklist, note, warning, command, code;
 - sem HTML arbitrário;
 - comando/código preserva whitespace e nunca é executado;
 - copiar usa botão icon-only acessível + feedback curto;
 - revisão aberta permanece estável quando nova revisão aparece;
-- revisão histórica recebe identificação persistente.
+- revisão histórica recebe identificação persistente;
+- UI busca clareza com baixa densidade textual permanente: cor, forma, símbolo, posição e ícones podem substituir texto repetitivo quando o significado continuar claro; detalhes secundários podem aparecer sob demanda.
 
 ### Reader standalone
 
 - checklist é documental;
 - marcação não persiste execução;
-- navegação não grava progresso.
+- navegação/stepper não grava progresso operacional.
 
 ### Reader em Atendimento
 
@@ -125,7 +131,8 @@ Pendente:
 - revisão fica presa ao vínculo;
 - checklist é persistente;
 - voltar retorna ao Atendimento;
-- lifecycle do Atendimento controla editabilidade do checklist.
+- lifecycle do Atendimento controla editabilidade do checklist;
+- stepper permanece navegação documental e não substitui a contagem operacional de checklist.
 
 ## 8. Editor e revisões de Procedimento
 
@@ -295,7 +302,7 @@ Atendimento   6 de 8
 ```
 
 - etapas visitadas não contam;
-- `Etapa X de Y` não é percentual;
+- `Etapa X de Y` e stepper não são percentual operacional;
 - revisão sem checklist não mostra `0%` artificial.
 
 ## 18. Equipamento
@@ -426,7 +433,7 @@ Pendentes:
 - geração documental é leitura derivada, fora da fila de mutações;
 - renderização documental usa limite próprio de concorrência/backpressure.
 
-## 25. Estados transversais
+## 25. Estados transversais e densidade visual
 
 - menor superfície: campo → seção → página → Shell;
 - sem indicador permanente de conexão saudável;
@@ -436,9 +443,17 @@ Pendentes:
 - perda de permissão limpa conteúdo protegido;
 - conflito preserva edição local;
 - incompatibilidade Client↔Host bloqueia uso;
-- sem offline queue/autosave/draft persistente.
+- sem offline queue/autosave/draft persistente;
+- mostrar permanentemente somente o necessário para entender e agir;
+- usar forma, cor, símbolo, posição e ícones reconhecíveis para estados/ações simples quando isso reduzir texto sem perder clareza;
+- detalhes secundários podem aparecer sob demanda em tooltip/popover/expansão;
+- evitar chips, badges, labels e caixas quando não acrescentarem leitura útil;
+- cor nunca é o único meio para estado importante;
+- quando remover texto criar ambiguidade, o texto permanece.
 
-## 26. Ficha compacta
+## 26. Ficha compacta e geração documental
+
+### Ficha compacta
 
 - pertence ao Atendimento;
 - com ou sem Equipamento;
@@ -480,7 +495,7 @@ Consolidado / aprovado pelo PO:
 1. renderer PDF baseado em Typst embutido como biblioteca Rust no Host, com crates oficiais e adaptador interno StepFlow;
 2. nenhuma execução de `typst.exe`/CLI, browser ou processo conversor externo;
 3. template Typst interno, confiável e versionado com o produto;
-4. conteúdo do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst, mesmo após escaping;
+4. conteúdo do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst;
 5. nenhum pacote/recurso remoto é resolvido durante geração; filesystem/imports ficam restritos ao mundo virtual, templates, fontes e assets controlados pelo Host;
 6. PDF 1.7 é solicitado explicitamente ao exporter;
 7. Tagged PDF permanece explicitamente habilitado como baseline, sem promessa de conformidade formal PDF/UA/PDF-A;
@@ -488,7 +503,7 @@ Consolidado / aprovado pelo PO:
 9. fontes necessárias são empacotadas e incorporadas/subsetadas, sem depender das fontes instaladas no Windows;
 10. todos os blocos semânticos conhecidos são representados; incompatibilidade/tipo desconhecido falha explicitamente em vez de ser descartado;
 11. comandos e código permanecem texto e preservam whitespace relevante;
-12. fluxo multipágina e quebra automática são obrigatórios, sem antecipar margens, A4, tipografia, cabeçalho/rodapé ou paginação visual da Etapa 5;
+12. fluxo multipágina e quebra automática são obrigatórios; formato/layout físico seguem a Etapa 5 consolidada;
 13. PNG/JPEG e SVG controlado são suportados somente a partir de assets previamente aceitos/resolvidos pelo Host;
 14. conteúdo visual não depende implicitamente de relógio/ambiente da máquina central; data/hora visível vem de dados explícitos do `DocumentModel`/`generation_metadata`;
 15. estabilidade visual/semântica é exigida sob mesma versão do Host/template/fontes/assets/modelo, sem exigir identidade byte-a-byte quando metadados técnicos variarem;
@@ -512,7 +527,7 @@ Consolidado / aprovado pelo PO:
 10. comandos/código permanecem texto e preservam whitespace relevante;
 11. PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e precisa de representação interna compatível ou falha explícita, nunca omissão silenciosa;
 12. DOCX é formato refluível e não promete paginação idêntica ao PDF nem entre consumidores Word;
-13. política tipográfica/embedding de fontes do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/gate técnico;
+13. DOCX v1 referencia **Arial** para texto e **Consolas** para comando/código, sem embedding/redistribuição dessas fontes pelo StepFlow;
 14. relationships externos, macros/VBA/`.docm`, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
 15. pacote incompleto/corrompido nunca é tratado como sucesso; validação posterior cobre OPC/ZIP, XML/relationships e abertura sem reparo na matriz corporativa;
 16. mesma versão do Host/modelo/assets/estilos deve manter estrutura e conteúdo semânticos estáveis quando razoável, sem exigir ZIP byte-a-byte idêntico;
@@ -538,9 +553,32 @@ Consolidado / aprovado pelo PO:
 14. duplicidade concorrente acidental da mesma ação é impedida localmente sem criar fila/job persistente;
 15. gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, Unicode/logo, impressoras locais/de rede, opções do diálogo, cancelamento e operação offline;
 16. incompatibilidade de WebView2 deve ser explícita; versão mínima concreta fica para matriz corporativa/gate de implementação;
-17. layout físico final do Procedimento permanece integralmente na Etapa 5.
+17. impressão usa o template físico consolidado na Etapa 5.
 
-A Etapa 5 — Template físico de Procedimentos é a próxima, mas ainda não está em análise.
+### Template físico de Procedimentos — Bloco 10 / Etapa 5
+
+Consolidado / aprovado pelo PO:
+
+1. Reader diário e documento exportado são superfícies distintas; página lógica do app não possui geometria A4;
+2. `Visão geral` é a primeira página lógica do Reader e cada Etapa mantém página lógica própria;
+3. stepper horizontal compacto de círculos/linhas navega diretamente entre Etapas, com estados anteriores/atual/seguintes e sem rótulos permanentes repetitivos;
+4. estado anterior no stepper representa percurso de navegação, nunca conclusão operacional/checklist;
+5. Procedimento exportado usa **A4 retrato multipágina** com margens-base de **18 mm** em todos os lados;
+6. não há capa exclusiva; identificação e conteúdo útil começam na primeira página;
+7. v1 não exige sumário documental físico por padrão;
+8. títulos de Etapa podem usar forma curta como `01 · Preparação`; uma Etapa não força nova folha automaticamente;
+9. não há cabeçalho repetitivo nas páginas internas; rodapé compacto identifica código/revisão e paginação;
+10. blocos físicos usam baixa densidade visual e hierarquia semântica, evitando cards/bordas desnecessários;
+11. parágrafo = texto normal; passos = numeração/indentação; checklist = `□`; nota/alerta = distinção semântica que não depende apenas de cor; comando/código = texto monoespaçado real;
+12. imagens preservam proporção, sem crop automático;
+13. paginação automática evita títulos/linhas órfãs; blocos longos podem quebrar, mas conteúdo nunca é truncado ou tem fonte reduzida silenciosamente para caber;
+14. PDF usa **Noto Sans + Noto Sans Mono** empacotadas com o Host e incorporadas/subsetadas, respeitando OFL 1.1;
+15. DOCX usa **Arial + Consolas** referenciadas, sem embedding/redistribuição dessas fontes pelo StepFlow v1;
+16. baseline tipográfico: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt e rodapé 8 pt;
+17. PDF é a referência física de impressão; DOCX compartilha hierarquia/ordem/semântica, mas permanece refluível sem promessa de paginação idêntica;
+18. limite rígido de **uma A4** pertence à Ficha compacta de Atendimento, não ao Procedimento completo.
+
+A Etapa 6 — PDF + preview da Ficha compacta é a próxima, mas ainda não está em análise.
 
 ## 27. Backup/Restore
 
@@ -599,7 +637,7 @@ Comunicação:
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído;
-- **Bloco 10: em andamento — Etapas 1–4 consolidadas; Etapa 5 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–5 consolidadas; Etapa 6 próxima, ainda não aberta**;
 - Bloco 11: pendente;
 - Bloco 12: pendente.
 
@@ -607,7 +645,6 @@ Comunicação:
 
 ### Bloco 10
 
-- Etapa 5: template físico de Procedimentos;
 - Etapa 6: PDF + preview da ficha;
 - Etapa 7: template físico A4 da ficha;
 - Etapa 8: limites textuais/densidade;
