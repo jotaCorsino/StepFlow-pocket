@@ -653,6 +653,8 @@ Comunicação:
 - Etapa 11: QR/barcode;
 - Etapa 12: validação técnica final, incluindo matriz real Windows/WebView2/impressoras.
 
+A Etapa 6 não pode ser aberta antes do squash merge da Etapa 5, remoção da branch remota correspondente e verificação de remoto somente com `main` e zero PRs abertos.
+
 ### Bloco 11
 
 - mecanismo/pacote de Backup/Restore;
