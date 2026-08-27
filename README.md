@@ -4,9 +4,9 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 ## Painel de acompanhamento do projeto
 
-**Atualização:** 2026-08-26  
+**Atualização:** 2026-08-27  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 4 consolidada; Etapa 5 próxima  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapa 5 consolidada; Etapa 6 próxima  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md`, documentos específicos e `docs/04-planejamento/plano-oficial-fase-1.md`.
@@ -25,7 +25,7 @@ Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 4 consolidada |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapa 5 consolidada |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -50,6 +50,8 @@ Este painel é a visão rápida de andamento. Ele **não substitui** `AGENTS.md`
 | 15 | Estados transversais | ✅ Consolidado |
 
 O Bloco 8 está concluído documentalmente. Nenhuma UI de produção foi criada.
+
+Direção visual transversal consolidada: o Pocket busca **clareza com baixa densidade textual permanente**, usando cor, forma, símbolo, posição e ícones reconhecíveis quando isso simplificar sem gerar ambiguidade; detalhes secundários podem aparecer sob demanda e cor nunca é o único meio para comunicar estado importante. No Reader, o progresso entre Etapas usa stepper compacto de círculos/linhas e permanece separado do progresso operacional de checklist.
 
 ### Bloco 9 — decisões operacionais consolidadas
 
@@ -114,8 +116,8 @@ Também estão aprovados:
 | 2 | PDF de Procedimentos | ✅ Consolidado |
 | 3 | DOCX de Procedimentos | ✅ Consolidado |
 | 4 | Impressão Windows de Procedimentos | ✅ Consolidado |
-| 5 | Template físico de Procedimentos | 🟡 Próxima — ainda não em análise |
-| 6 | PDF + preview da Ficha compacta | ⏳ Pendente |
+| 5 | Template físico de Procedimentos | ✅ Consolidado |
+| 6 | PDF + preview da Ficha compacta | 🟡 Próxima — ainda não em análise |
 | 7 | Template físico A4 da Ficha | ⏳ Pendente |
 | 8 | Limites textuais e densidade da Ficha | ⏳ Pendente |
 | 9 | Múltiplos MACs / Procedimentos na Ficha | ⏳ Pendente |
@@ -154,7 +156,7 @@ Consolidado na Etapa 2:
 - fontes necessárias são empacotadas/incorporadas, sem depender das fontes instaladas no Windows;
 - todos os blocos semânticos do Procedimento são representados sem descarte silencioso;
 - comandos/código permanecem texto e preservam whitespace relevante;
-- fluxo multipágina e quebra automática são obrigatórios, sem antecipar o template físico da Etapa 5;
+- fluxo multipágina e quebra automática são obrigatórios; template físico segue a Etapa 5 consolidada;
 - PNG/JPEG e SVG controlado são capacidades do renderer, recebendo somente assets já aceitos pelo Host;
 - conteúdo visual não depende implicitamente do relógio/ambiente da máquina central; data/hora exibida vem de dados explícitos do modelo;
 - falha de renderer não produz artefato parcial tratado como sucesso;
@@ -174,7 +176,7 @@ Consolidado na Etapa 3:
 - comandos/código permanecem texto e preservam whitespace relevante;
 - PNG/JPEG são baseline; SVG não é requisito direto do DOCX v1 e não pode ser omitido silenciosamente;
 - DOCX é refluível e não promete paginação idêntica ao PDF;
-- política de fontes/embedding do DOCX não é herdada automaticamente do PDF e permanece para Etapa 5/gate técnico;
+- DOCX v1 referencia Arial para texto e Consolas para comando/código, sem embedding/redistribuição dessas fontes pelo StepFlow;
 - macros/VBA, ActiveX, OLE, remote templates, conteúdo externo, anexos, assinatura, senha/DRM e importação de DOCX editado ficam fora da primeira versão;
 - artefato incompleto/corrompido nunca é devolvido como sucesso.
 
@@ -193,9 +195,28 @@ Consolidado na Etapa 4:
 - cancelamento/fechamento do diálogo não é erro funcional;
 - falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo permanecem distinguíveis;
 - gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, impressoras locais/de rede e operação offline;
-- layout físico do Procedimento continua integralmente reservado para a Etapa 5.
+- impressão usa o template físico consolidado da Etapa 5 e não cria layout alternativo.
 
-A Etapa 5 — Template físico de Procedimentos é apenas a próxima. Ela ainda não está em análise. Etapas 6–12 permanecem pendentes.
+Consolidado na Etapa 5:
+
+- Reader diário e documento físico são superfícies distintas; A4 não participa da geometria/navegação do app;
+- o Reader mantém `Visão geral` como primeira página lógica e uma página lógica por Etapa;
+- stepper superior é compacto, horizontal e navegável por círculos/linhas, com estados anteriores/atual/seguintes sem rótulos permanentes repetitivos;
+- estado anterior no stepper representa percurso de navegação, nunca conclusão operacional ou checklist persistido;
+- Procedimento exportado usa **A4 retrato multipágina**, com margens-base de **18 mm**;
+- não há capa exclusiva e o conteúdo útil começa na primeira página;
+- v1 não exige sumário físico por padrão;
+- títulos de Etapa são enxutos, como `01 · Preparação`, e não forçam nova folha automaticamente;
+- sem header repetitivo; rodapé compacto identifica código/revisão e paginação;
+- paginação é automática, evitando títulos/linhas órfãs e sem truncar ou reduzir fonte silenciosamente;
+- blocos físicos seguem baixa densidade visual e preservam significado sem depender apenas de cor;
+- PDF usa **Noto Sans + Noto Sans Mono** empacotadas/incorporadas/subsetadas;
+- DOCX usa **Arial + Consolas** referenciadas, sem embedding na v1;
+- baseline tipográfico: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt e rodapé 8 pt;
+- PDF continua referência física de impressão; DOCX mantém hierarquia/semântica mas permanece refluível;
+- o limite rígido de **uma A4** pertence somente à Ficha compacta de Atendimento.
+
+A Etapa 6 — PDF + preview da Ficha compacta é a próxima e ainda não está em análise. Etapas 7–12 permanecem pendentes.
 
 A fonte técnica é `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
@@ -220,6 +241,7 @@ Permanecem consolidados:
 - Backup/Restauração em Configurações;
 - safety backup antes de Restore normal;
 - PDF/DOCX/impressão de Procedimentos pela revisão selecionada;
+- baixa densidade visual como princípio transversal, com uso responsável de cor/forma/símbolo e detalhes secundários sob demanda;
 - estados transversais comuns.
 
 ### Pendências ainda vigentes
@@ -231,103 +253,10 @@ Permanecem consolidados:
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de nova revisão ainda referenciando categoria arquivada;
-- Etapas 5–12 do Bloco 10;
+- Etapas 6–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo.
 
 ### Regra de atualização deste painel
 
 Todo avanço consolidado de **fase, bloco, tela ou etapa do bloco atual** deve atualizar este README **no mesmo checkpoint documental**. Um avanço não está documentalmente encerrado se este painel ficar atrasado.
-
-## Papéis no desenvolvimento
-
-| Papel | Responsabilidade |
-|---|---|
-| **PO** | requisitos, prioridades, regras de negócio e aprovação UX/visual |
-| **Assistente** | análise, arquitetura, coerência documental, fases/gates e tarefas fechadas |
-| **Codex** | implementação de tarefa pequena/aprovada, sem inventar produto ou ampliar escopo |
-
-Fluxo esperado:
-
-```text
-PO aprova requisito/decisão
-        ↓
-Assistente consolida especificação
-        ↓
-pré-flight de capacidade Codex
-        ↓
-uma tarefa fechada e verificável
-        ↓
-Codex executa dentro do escopo
-        ↓
-validação + evidências
-        ↓
-aceite / correção
-```
-
-Durante a Fase 1, não criar scaffold/runtime oficial nem implementação funcional, salvo PoC explicitamente descartável.
-
-## Arquitetura vigente
-
-```text
-ponto de entrada interno
-        ↓
-launcher transitório
-        ↓
-Client Tauri local em %LOCALAPPDATA%
-        ↓ HTTP/JSON + WebSocket
-Host Pocket Rust sob demanda
-        ↓
-SQLite local + arquivos persistentes
-```
-
-Princípios:
-
-- Client: Tauri 2 + HTML/CSS/JavaScript modular;
-- Host: Rust + Tokio/Axum + SQLite bundled;
-- múltiplos Clients simultâneos;
-- Clients nunca abrem SQLite diretamente;
-- revisão otimista + writer coordenado;
-- launcher e Host não permanecem residentes sem necessidade;
-- máquina central recebe pasta pronta, sem toolchain de desenvolvimento em runtime;
-- encerrado o ciclo central, não resta processo StepFlow.
-
-## Documentação principal
-
-Comece por:
-
-1. `AGENTS.md`;
-2. `docs/README.md`;
-3. `docs/05-progresso/registro-de-decisoes.md`;
-4. `docs/04-planejamento/plano-oficial-fase-1.md`;
-5. `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`;
-6. `docs/04-planejamento/bloco-9-atendimentos-execucao-checklist.md`;
-7. `docs/01-produto/visao-geral.md`;
-8. `docs/03-arquitetura/arquitetura-vigente.md`;
-9. `docs/02-telas/README.md`.
-
-## Disciplina de Git
-
-```text
-1 trabalho lógico
-→ 1 branch ativa
-→ 1 PR
-→ revisão/aprovação
-→ squash/merge em main
-→ apagar branch encerrada
-→ verificar remoto limpo
-→ iniciar o próximo trabalho documental
-```
-
-Durante o fechamento documental restante da Fase 1, o GitHub remoto é a fonte operacional. A sincronização do checkout local `C:\dev\StepFlow` continua adiada e deve ocorrer explicitamente **antes do primeiro trabalho de implementação com Codex**.
-
-Uma branch mergeada **não é considerada encerrada operacionalmente até ser removida do remoto e a limpeza ser verificada**. Alterações locais preexistentes do PO não podem ser resetadas, stashed, descartadas ou incorporadas sem autorização explícita.
-
-## Ambiente de desenvolvimento
-
-- repositório oficial: `jotaCorsino/StepFlow-pocket`;
-- branch principal: `main`;
-- checkout local previsto: `C:\dev\StepFlow`;
-- desenvolvimento atual fora da LAN corporativa.
-
-Hostname/IP/paths SMB reais da empresa ainda não estão consolidados. Exemplos históricos não podem ser tratados como configuração oficial.
