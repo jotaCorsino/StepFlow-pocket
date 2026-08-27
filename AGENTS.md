@@ -116,6 +116,8 @@ Durante o fechamento documental restante da Fase 1:
 
 Uma branch mergeada não é considerada encerrada operacionalmente enquanto permanecer no remoto. O remoto é a fonte operacional. A sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex.
 
+**Gate obrigatório:** nenhuma pesquisa, branch, proposta ou análise da Etapa 6 pode começar antes de a Etapa 5 estar squash-mergeada, a branch da Etapa 5 removida do remoto e o remoto verificado com apenas `main` e zero PRs abertos.
+
 ## Regras operacionais
 
 - uma tarefa por vez;
