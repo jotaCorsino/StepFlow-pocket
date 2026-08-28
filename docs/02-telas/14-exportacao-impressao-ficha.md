@@ -4,38 +4,30 @@
 
 - código/nome da tela: Tela 14 — Exportação / Impressão + Ficha Compacta — UX;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
-- bloco: Fase 1 — Bloco 8 (UI/UX);
-- última consolidação: 2026-08-25.
+- bloco original: Fase 1 — Bloco 8 (UI/UX);
+- atualização técnica/funcional: Bloco 10 / Etapas 1–6;
+- última consolidação: 2026-08-28.
 
 ## 2. Objetivo
 
-Definir a experiência de geração de documentos do StepFlow sem transformar telas em documentos e sem antecipar a implementação técnica do Bloco 10.
+Definir duas famílias distintas de saída sem transformar telas em documentos:
 
-A Tela 14 consolida duas famílias distintas de saída:
+1. **Procedimento** — exportar/imprimir uma revisão específica como documento técnico completo;
+2. **Ficha compacta de Atendimento** — prestação de contas resumida ao cliente, com no máximo uma folha A4.
 
-1. **Procedimento** — exportar/imprimir uma revisão específica como documento próprio;
-2. **Ficha compacta de Atendimento** — gerar uma saída operacional curta, com ou sem equipamento vinculado, respeitando o limite máximo de uma folha A4.
-
-Engine de PDF/DOCX, impressão nativa, margens, tipografia, paginação, nomes finais de arquivo e demais decisões técnicas permanecem para o **Bloco 10 — Exportação/Impressão + Ficha Compacta**.
+As duas superfícies compartilham a arquitetura documental do Host, mas possuem templates e objetivos diferentes.
 
 ## 3. Princípios consolidados
 
-- PDF é obrigatório para procedimentos;
-- DOCX é obrigatório para procedimentos;
-- impressão é obrigatória para procedimentos;
-- exportação usa documento próprio, nunca screenshot da interface;
-- a identidade da empresa vem da configuração central do Host;
-- o conteúdo de procedimento exportado é a revisão efetivamente selecionada/autorizada;
-- exportar ou imprimir não publica, não edita e não altera o procedimento;
-- revisão histórica não é substituída silenciosamente pela atual;
-- a ficha compacta é documento próprio e não captura da Tela 09;
-- a ficha usa somente estado confirmado pelo Host;
-- a ficha pode existir com ou sem equipamento vinculado;
-- a ficha ocupa **no máximo uma página A4**;
-- a ficha prioriza conteúdo essencial e legibilidade;
+- documento nunca é screenshot da interface;
+- geração pertence ao Host e usa estado/revisão autorizados;
+- identidade da empresa vem da configuração central vigente;
+- exportar/imprimir não altera dados funcionais;
+- revisão/estado selecionado não é substituído silenciosamente por versão mais nova;
 - campos vazios ou não aplicáveis são omitidos;
-- `Saúde da bateria` aparece somente quando aplicável e informada;
-- autorização real permanece no Host.
+- Client mantém a experiência local de salvar/preview/imprimir;
+- autorização real permanece no Host;
+- baixa densidade textual também orienta preview e documento quando compatível com clareza.
 
 ## 4. Dois fluxos separados
 
@@ -49,35 +41,32 @@ Leitor de Processo
 ```text
 Atendimento
 → Ficha / Imprimir
-→ ficha compacta do estado confirmado
-→ impressão e demais saídas aprovadas para a ficha
+→ PDF + preview da prestação de contas
+→ Salvar PDF | Imprimir
 ```
 
 Não criar item global `Exportações` na sidebar.
 
-## 5. Permissões
+---
 
-### Procedimentos
+# Procedimentos
 
-A matriz vigente define `Exportar/imprimir` por padrão para ADM, Gerência e Funcionário.
+## 5. Permissão e fonte
 
-Para gerar o documento, a sessão precisa possuir simultaneamente:
+A matriz vigente permite `Exportar/imprimir` por padrão para ADM, Gerência e Funcionário, desde que a sessão também possa ler a revisão selecionada.
+
+A revisão aberta é a fonte exata:
 
 ```text
-capacidade de ler a revisão selecionada
-+
-capacidade de exportar/imprimir
+r17 aberta
+→ solicitar exportação de r17
+→ r18 surge/publica
+→ documento continua sendo r17
 ```
 
-### Ficha de Atendimento
+Se a revisão deixar de estar autorizada antes da geração ser aceita, o Host rejeita a operação.
 
-A regra exata de quem pode gerar/reimprimir ficha operacional permanece pendente do **Bloco 9**, junto da matriz operacional de Atendimentos.
-
-A capacidade documental genérica não concede autorização operacional por suposição.
-
-## 6. Entrada — Procedimento
-
-Ponto principal:
+## 6. Entrada e painel
 
 ```text
 Leitor
@@ -85,96 +74,61 @@ Leitor
 → Exportar / Imprimir
 ```
 
-Uma revisão histórica aberta pelo Histórico pode usar o mesmo fluxo a partir do Leitor daquela revisão.
-
-## 7. Painel de exportação do Procedimento
-
 ```text
-Exportar / Imprimir procedimento
-
 PR-014 · Configuração de VLAN
-Versão 2.0 · revisão r18
-Publicada
+Versão 2.0 · revisão r18 · Publicada
 
-O documento será gerado a partir desta revisão.
-
-[ Exportar PDF ]  [ Exportar DOCX ]  [ Imprimir ]
-
-[ Cancelar ]
+[ Exportar PDF ] [ Exportar DOCX ] [ Imprimir ]
 ```
 
-Quando não for a publicação vigente, identificar claramente `Revisão histórica`, draft/não publicado ou contexto arquivado, conforme aplicável.
+Revisão histórica/draft autorizado deve ser identificada inequivocamente.
 
-## 8. Escopo inicial do documento de Procedimento
+## 7. Escopo do Procedimento exportado
 
-A primeira versão gera o **procedimento completo da revisão selecionada**, não somente a etapa atualmente aberta.
+A primeira versão exporta o **Procedimento completo** da revisão selecionada.
 
-Quando aplicável, o documento contém:
+Quando aplicável, contém:
 
 - identidade da empresa;
-- código e título;
+- código/título;
 - Área/Departamento;
 - responsável documental;
 - categorias;
-- versão editorial;
-- revisão técnica quando relevante;
-- estado editorial necessário para evitar ambiguidade;
+- versão/revisão e estado editorial necessário;
 - objetivo;
 - pré-requisitos;
 - observações gerais;
-- etapas em ordem;
+- Etapas em ordem;
 - parágrafos;
 - passos/subpassos;
 - checklist documental;
-- notas/observações;
-- alertas;
-- comandos;
-- blocos de código.
+- notas/alertas;
+- comandos/código.
 
-Não entram no documento elementos de UI como sidebar, botões, ícones de copiar, barra `Etapa X de Y`, painel interativo de Sumário, toasts ou estados transitórios do Client.
+Não entram sidebar, stepper, botões, toasts, ícones de copiar ou demais chrome da UI.
 
-Sumário documental estático, se desejável, será decidido no Bloco 10.
+## 8. Saídas e layout do Procedimento
 
-## 9. Revisão exata como fonte
+Baseline consolidado do Bloco 10:
 
-```text
-revisão r17 aberta
-→ solicitar exportação de r17
-→ nova r18 surge/publica
-→ documento continua sendo de r17
-```
+- PDF próprio via Typst embutido no Host;
+- DOCX real via pipeline Rust próprio, sem PDF → DOCX;
+- impressão usa o mesmo PDF oficial no Client Windows;
+- A4 retrato multipágina;
+- sem capa exclusiva por padrão;
+- sem sumário físico obrigatório por padrão;
+- margens-base 18 mm;
+- sem header repetitivo;
+- rodapé compacto de identificação/paginação;
+- PDF usa Noto Sans/Noto Sans Mono incorporadas;
+- DOCX referencia Arial/Consolas sem embedding v1;
+- PDF é a referência física de impressão; DOCX é refluível.
 
-Nunca substituir silenciosamente por revisão atual, publicada mais recente ou conteúdo recebido por evento depois da ação.
+Procedimentos podem ocupar várias páginas. O limite de uma A4 nunca se aplica ao Procedimento completo.
 
-Se a revisão deixar de estar autorizada antes da geração ser aceita, o Host rejeita a operação.
+## 9. Estados de geração documental
 
-## 10. Identidade da empresa
-
-Os documentos usam a identidade central vigente no momento da geração:
-
-- logo, quando configurado;
-- nome da empresa;
-- contato;
-- site;
-- e-mail.
-
-Campos opcionais vazios são omitidos. Não mostrar path técnico, placeholder quebrado ou imagem ausente.
-
-O conteúdo documental continua preso à revisão selecionada. Versionamento histórico da identidade corporativa não é requisito inicial.
-
-## 11. PDF, DOCX e impressão de Procedimento
-
-`Exportar PDF` e `Exportar DOCX` preparam documentos próprios e, conforme mecanismo do Bloco 10, oferecem destino local apropriado ao usuário.
-
-`Imprimir` prepara o mesmo conceito de documento dedicado e abre o fluxo de impressão do Windows/Client.
-
-Cancelar um `Salvar como…` ou diálogo de impressão é cancelamento voluntário do usuário, não erro funcional.
-
-Procedimentos podem ocupar várias páginas; o limite de uma A4 aplica-se somente à ficha compacta.
-
-## 12. Estados de geração documental
-
-A UX suporta pelo menos:
+A UX suporta:
 
 - preparando;
 - pronto para salvar/imprimir;
@@ -183,313 +137,315 @@ A UX suporta pelo menos:
 - falha de geração;
 - Host indisponível;
 - sem permissão;
-- revisão indisponível.
+- revisão indisponível/obsoleta.
 
-Não inventar percentual de progresso sem progresso real fornecido pelo mecanismo.
+Não inventar percentual sem progresso real.
 
-Mensagem de falha funcional:
+Exportação é leitura/derivação: não cria revisão, não publica, não altera checklist/progresso nem muda `updated_at` funcional apenas pela geração.
 
-`Não foi possível gerar o documento. Nenhum arquivo foi confirmado.`
+---
 
-## 13. Exportação não altera dados
+# Ficha compacta de Atendimento
 
-Exportar/imprimir é leitura/derivação e não deve:
+## 10. Finalidade
 
-- criar revisão;
-- publicar;
-- alterar `updated_at` funcional apenas pela exportação;
-- marcar checklist como concluído;
-- registrar progresso operacional;
-- substituir o snapshot selecionado.
+A Ficha é uma **prestação de contas resumida para o cliente**.
 
-Auditoria específica de exportação só entra mediante requisito futuro explícito.
-
-## 14. Entrada — Ficha compacta
-
-Ponto de entrada aprovado na Tela 09:
+Ela deve responder rapidamente:
 
 ```text
-Atendimento
+qual serviço foi realizado?
+em qual computador/dispositivo?
+quais características principais ele possui?
+qual foi o panorama geral do trabalho?
+houve alguma observação relevante durante o serviço?
+```
+
+Não é relatório técnico detalhado, checklist impresso, reprodução do Procedimento nem timeline operacional.
+
+## 11. Entrada, capacidade e lifecycle
+
+Ponto de entrada:
+
+```text
+Tela 09 — Atendimento
 → Ficha / Imprimir
 ```
 
-A ação aparece quando lifecycle/capacidade do Bloco 9 permitir.
+Preset consolidado:
 
-## 15. Estado confirmado antes da ficha
+- ADM: sim;
+- Gerência: sim;
+- Funcionário: sim para Atendimento acessível.
+
+Lifecycle:
+
+- `Em andamento`: pode gerar ficha de acompanhamento do estado confirmado;
+- `Concluído`: pode reimprimir o estado histórico aplicável;
+- `Cancelado`: pode gerar/reimprimir quando autorizado, identificando claramente `Cancelado`.
+
+Alterações locais não salvas ou conflito pendente bloqueiam a geração.
+
+## 12. Fonte confirmada
 
 A ficha nunca mistura rascunho local com estado oficial.
 
-Se houver alterações não salvas ou conflito pendente:
-
 ```text
 Ficha / Imprimir
-→ informar “Salve as alterações antes de gerar a ficha.”
-→ resolver salvamento/conflito
-→ somente depois gerar
+→ existem alterações não salvas/conflito?
+   → sim: salvar/reconciliar primeiro
+   → não: Host captura estado/revisão esperada
+→ gerar
 ```
 
-Não imprimir silenciosamente valores antigos enquanto a interface mostra valores locais ainda não confirmados.
+Uma prévia já aberta permanece ligada à `source_version` usada. Evento remoto não troca a folha silenciosamente; o usuário precisa regenerar para produzir uma nova saída atual.
 
-## 16. Direção funcional da ficha
+## 13. Conteúdo essencial da Ficha
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│ [ LOGO ]  Nome da Empresa                                  │
-│           Contato · site · e-mail                          │
-├─────────────────────────────────────────────────────────────┤
-│ ATENDIMENTO AT-00142                 OS/Ref.: OS-4587       │
-│ Cliente: João Silva                   Data: 25/08/2026      │
-│ Técnico: Maria Souza                                        │
-├─────────────────────────────────────────────────────────────┤
-│ EQUIPAMENTO                                                 │
-│ EQP-0031 · NOTE-15 · Notebook                              │
-│ CPU: i5-1135G7     RAM: 16 GB      SSD: NVMe 512 GB       │
-│ Sistema: Windows 11 Pro · 24H2                             │
-│ Serial: ABC123       Patrimônio: PAT-884                   │
-│ MAC: A0:B1:C2:D3:E4:F5                                    │
-│ Bateria: 82%                                                │
-│ Observações: texto curto...                                 │
-├─────────────────────────────────────────────────────────────┤
-│ PROCEDIMENTOS / TRABALHO                                    │
-│ PR-001 v1.3/r18 · Manutenção preventiva                    │
-│ PR-022 v2.0/r7  · Substituição de SSD                      │
-│ Resumo: limpeza, substituição do SSD e validação final...  │
-├─────────────────────────────────────────────────────────────┤
-│ Observações do atendimento: ...                             │
-└─────────────────────────────────────────────────────────────┘
-```
+### Serviço
 
-É hierarquia funcional; margens, fontes e densidade final pertencem ao Bloco 10.
+Quando aplicável:
 
-## 17. Cabeçalho da ficha
-
-Suporta:
-
-- logo à esquerda/início quando configurado;
-- nome da empresa;
-- forma(s) de contato;
-- site;
-- e-mail.
-
-Preservar proporção do logo. Ausência de logo ou campos institucionais não deve gerar espaços quebrados. O cabeçalho deve permanecer discreto para preservar área útil da única página.
-
-## 18. Conteúdo da ficha
-
-### Atendimento
-
-Quando disponível:
-
-- código;
+- código do Atendimento;
 - OS/referência externa;
 - cliente/solicitante;
 - técnico/responsável;
-- data aplicável conforme lifecycle do Bloco 9;
-- resumo do trabalho;
-- observações curtas quando couberem no contrato final.
+- data/status necessário para contexto;
+- `Resumo do trabalho`;
+- observações gerais relevantes.
 
-### Equipamento — quando houver
+### Equipamento/dispositivo — quando houver
 
-- código StepFlow;
-- nome;
-- tipo;
+O documento usa dados já cadastrados/snapshot aplicável; não exige redigitação para imprimir.
+
+Prioriza:
+
+- identificação/nome/tipo;
 - processador;
 - RAM;
-- armazenamento;
-- sistema operacional + versão;
-- serial;
-- patrimônio;
-- um ou mais MACs conforme regra de densidade futura;
-- saúde da bateria quando aplicável/informada;
-- observações curtas.
+- armazenamento HD/SSD;
+- sistema operacional quando útil;
+- serial/patrimônio quando úteis à identificação;
+- MAC somente conforme regra futura de densidade;
+- saúde da bateria quando aplicável e informada;
+- observações gerais/específicas do Equipamento.
 
-### Procedimentos utilizados
+Campos vazios/não aplicáveis são omitidos.
 
-- código snapshot;
-- título snapshot;
-- versão editorial utilizada;
-- revisão técnica efetivamente utilizada.
+### Observações de serviço por Etapa
 
-A ficha não reproduz etapas completas dos procedimentos.
+Durante a execução vinculada, cada Etapa pode receber `Observação do serviço` opcional no Reader.
 
-## 19. Atendimento sem equipamento — consolidado
+Quando houver conteúdo, essas observações entram na prestação de contas de forma resumida e legível.
 
-A mesma ação pode gerar uma **ficha de Atendimento mesmo sem equipamento vinculado**.
+```text
+Etapa: Validação do SSD
+Observação: unidade antiga apresentou setores defeituosos.
+```
+
+A ficha não precisa reproduzir o texto completo da Etapa para contextualizar a observação. A forma física exata de apresentação será fechada nas Etapas 7–8 do Bloco 10.
+
+## 14. O que não aparece por padrão na Ficha
+
+Para preservar uma folha limpa e útil ao cliente, não imprimir por padrão:
+
+- checklist completo;
+- percentual/progresso;
+- lista de passos/subpassos;
+- comandos/código;
+- timeline/auditoria;
+- IDs internos;
+- detalhes de concorrência;
+- lista detalhada de revisões técnicas utilizadas;
+- metadados editoriais que não ajudam o cliente a entender o serviço.
+
+Os vínculos/revisões continuam preservados internamente para histórico e consistência.
+
+## 15. Atendimento sem Equipamento
+
+A Ficha também pode existir sem Equipamento.
 
 Nesse cenário:
 
-- a seção `Equipamento` é omitida;
+- seção de Equipamento é omitida;
 - não se reserva grande área vazia;
-- dados do Atendimento e procedimentos utilizados permanecem válidos.
+- identificação do serviço, resumo e observações continuam válidos.
 
-Isso mantém a ficha útil em rede, infraestrutura, Help Desk e outras execuções sem ativo físico específico.
+Isso atende rede, infraestrutura, Help Desk e outras execuções sem ativo físico vinculado.
 
-## 20. Regra rígida de uma A4
+## 16. Regra rígida de uma A4
 
-- no máximo uma folha A4;
-- pode usar menos espaço;
-- não cria segunda página como comportamento normal;
-- não reduz tipografia a ponto de prejudicar legibilidade apenas para caber.
+A Ficha possui **uma única página A4**.
 
-Se conteúdo excepcional não couber:
+```text
+1 página → válida
+2+ páginas → overflow → geração bloqueada
+```
 
-- não criar segunda página automaticamente;
-- não truncar informação importante silenciosamente;
-- não reduzir fonte indefinidamente;
-- bloquear a saída e orientar revisão/resumo dos campos aplicáveis.
+Não:
 
-Mensagem funcional:
+- criar segunda folha;
+- retornar só a primeira página;
+- truncar silenciosamente informação importante;
+- reduzir fonte indefinidamente;
+- omitir conteúdo conhecido de forma silenciosa apenas para caber.
+
+Mensagem funcional base:
 
 `A ficha possui conteúdo demais para uma página A4. Revise os campos indicados antes de imprimir.`
 
-Regras finais de priorização, resumo, truncamento controlado e limites numéricos pertencem ao Bloco 10.
+Template físico final pertence à Etapa 7; limites/priorização textual à Etapa 8; múltiplos MACs/Procedimentos excepcionais à Etapa 9.
 
-## 21. Campos vazios e bateria
+## 17. PDF canônico da Ficha
 
-Campos vazios/não aplicáveis são omitidos. Não imprimir linhas como `Serial: —`, `Patrimônio: —` ou `Bateria: —` sem necessidade.
+A Ficha possui PDF próprio.
 
-`Saúde da bateria` aparece somente quando aplicável ao tipo de equipamento e houver valor informado.
-
-## 22. Revisões utilizadas
-
-Cada procedimento listado na ficha preserva a revisão efetivamente utilizada, por exemplo:
+Fluxo:
 
 ```text
-PR-001 · Manutenção preventiva · v1.3 · r18
-PR-022 · Substituição de SSD · v2.0 · r7
+Atendimento confirmado
+→ DocumentModel document_kind = service_sheet
+→ template Typst interno da Ficha
+→ PagedDocument de exatamente 1 página
+→ PDF canônico
 ```
 
-Uma revisão mais nova nunca substitui silenciosamente a revisão histórica do Atendimento.
+Baseline:
 
-## 23. Saídas da ficha
+- PDF 1.7;
+- Tagged PDF como baseline estrutural;
+- texto real selecionável/pesquisável;
+- assets/fontes controlados;
+- sem HTML → PDF;
+- sem screenshot/canvas;
+- sem renderer externo;
+- falha nunca retorna artefato parcial como sucesso.
 
-**Imprimir ficha** é requisito consolidado.
+DOCX específico da Ficha não é requisito inicial.
 
-A necessidade de **PDF específico da ficha** permanece pendente do Bloco 10.
+## 18. Preview da Ficha
 
-DOCX específico da ficha **não é requisito inicial** e não aparece automaticamente por herança do exportador de procedimentos.
+O preview representa **o mesmo layout que originou o PDF**.
 
-## 24. Preview, QR e barcode
+```text
+mesmo DocumentModel
+→ mesmo template Typst
+→ mesmo PagedDocument de 1 página
+   ├─→ PDF
+   └─→ SVG de preview
+```
 
-A necessidade/forma técnica de preview permanece para o Bloco 10. Se houver preview, deve usar o mesmo template/estado da saída final.
+O SVG é somente representação visual da mesma página diagramada; o PDF permanece artefato canônico.
 
-QR/barcode não aparece por padrão na primeira UX e só entra se houver benefício operacional aprovado.
+Superfície:
 
-## 25. Reimpressão e lifecycle
+```text
+Tela 09
+→ Ficha / Imprimir
+→ modal/overlay grande
+→ folha A4 centralizada
 
-Permanece para o Bloco 9 decidir:
+Ficha AT-000142                  [ salvar ] [ imprimir ] [ × ]
+```
 
-- quem gera/reimprime ficha;
-- se a ficha pode ser gerada durante execução ou somente em estados específicos;
-- comportamento após conclusão/reabertura;
-- snapshot operacional exato quando necessário;
-- data/status operacional usados na ficha.
+Regras:
 
-Quando autorizada, a ficha sempre usa estado oficial definido pelo contrato operacional.
+- sem nova sidebar;
+- sem toolbar extensa de navegador;
+- página escalada proporcionalmente;
+- controles compactos, com ícones quando inequívocos e nomes acessíveis;
+- PDF e preview pertencem à mesma `source_version`;
+- mudança remota não substitui a prévia silenciosamente;
+- preview desatualizado pede regeneração antes de nova saída atual.
 
-## 26. Estados e consistência
+## 19. Salvar PDF e imprimir
 
-- Host indisponível: impedir geração sem oferecer edição de IP/porta;
-- sem permissão: ocultar ação; acesso manipulado é rejeitado pelo Host;
-- fonte indisponível: não gerar silenciosamente de cache antigo;
-- impressão cancelada: cancelamento voluntário;
-- eventos novos não trocam a fonte de uma geração já iniciada;
-- ao concluir, informar qual revisão/Atendimento foi usado.
+`Salvar PDF` e `Imprimir` reutilizam os **mesmos bytes PDF** correspondentes à prévia aberta; não regeneram silenciosamente outro documento.
 
-## 27. Acessibilidade e janelas menores
+### Salvar
 
-- ações têm nomes textuais claros;
-- estados de preparação são anunciáveis;
-- diálogos operam por teclado;
-- revisão histórica é indicada em texto;
-- ações podem empilhar em janela menor;
-- dimensão física do documento independe do tamanho da janela do Client;
-- sem transformação mobile/hamburger inicial.
+- usuário escolhe destino local;
+- Host não recebe path arbitrário da workstation;
+- cancelar diálogo é ação voluntária, não erro;
+- naming final fica para Etapa 10.
 
-## 28. Fora do escopo desta tela
+### Imprimir
 
-- biblioteca/engine PDF;
-- biblioteca DOCX;
-- renderer de impressão;
-- spooler/API nativa;
-- margens/tipografia finais;
-- cabeçalho/rodapé técnico final;
-- numeração de páginas final;
-- nomes finais de arquivo;
+Reutiliza o fluxo Windows consolidado:
+
+```text
+PDF canônico
+→ recurso local transitório controlado
+→ WebView2 dedicada/transitória
+→ ShowPrintUI(System)
+→ diálogo Windows
+```
+
+O StepFlow informa entrega do fluxo ao Windows, não afirma que papel foi fisicamente impresso quando a API não fornece essa confirmação.
+
+## 20. Estados da Ficha
+
+Estados mínimos:
+
+- preparando ficha;
+- preparando prévia;
+- pronta;
+- desatualizada por mudança confirmada do Atendimento;
+- cancelada pelo usuário;
+- sem permissão;
+- fonte/revisão indisponível;
+- `SHEET_OVERFLOW`;
+- falha de renderer/preview;
+- Host indisponível/`SERVER_BUSY`.
+
+Não exibir percentual fictício.
+
+## 21. Acessibilidade e baixa densidade
+
+- ações operáveis por teclado;
+- icon-only apenas quando inequívoco, sempre com nome acessível;
+- foco gerenciado no modal;
+- status/cancelamento/desatualização não dependem apenas de cor;
+- folha permanece A4 independentemente da janela;
+- interface ao redor da folha mostra apenas o necessário para entender e agir.
+
+## 22. Pendências restantes do Bloco 10
+
+- Etapa 7 — template físico A4 final da Ficha;
+- Etapa 8 — limites textuais, priorização e densidade;
+- Etapa 9 — múltiplos MACs/Procedimentos e casos excepcionais;
+- Etapa 10 — nomes de arquivo + temporários;
+- Etapa 11 — QR/barcode somente se houver benefício aprovado;
+- Etapa 12 — validação técnica final/matriz/limites de recursos.
+
+## 23. Fora do escopo inicial
+
 - assinatura digital;
 - envio por e-mail;
 - nuvem/compartilhamento externo;
 - exportação em lote/ZIP;
-- editor visual de relatórios/templates;
+- editor visual de templates;
 - armazenamento permanente de toda exportação;
-- implementação funcional.
+- DOCX da Ficha;
+- QR/barcode sem aprovação;
+- implementação funcional nesta fase.
 
-## 29. Pendências preservadas para o Bloco 9
+## 24. Decisões consolidadas pelo PO
 
-- capacidade para gerar/reimprimir ficha;
-- lifecycle de disponibilidade da ação;
-- data/status operacional;
-- regras após conclusão/reabertura;
-- snapshot operacional exato.
-
-## 30. Pendências preservadas para o Bloco 10
-
-- engine/tecnologia PDF;
-- engine/tecnologia DOCX;
-- estratégia de impressão;
-- template final dos procedimentos;
-- template físico final da ficha;
-- margens, tipografia e densidade;
-- limites numéricos de observações/textos;
-- regras de resumo/truncamento controlado;
-- tratamento de muitos MACs/procedimentos na única A4;
-- pré-visualização;
-- necessidade ou não de PDF específico da ficha;
-- naming de arquivos;
-- QR/barcode somente se aprovado;
-- critérios técnicos em leitores/impressoras.
-
-## 31. Decisões consolidadas pelo PO
-
-1. exportação/impressão permanece contextual, sem item global novo;
-2. o Leitor identifica sempre a revisão utilizada;
-3. a primeira versão exporta/imprime o procedimento completo da revisão selecionada;
-4. PDF, DOCX e impressão usam documento próprio, nunca screenshot;
-5. revisão histórica/draft autorizada é identificada inequivocamente;
-6. exportar não publica nem altera dados;
-7. identidade da empresa vem da configuração central vigente;
-8. `Ficha / Imprimir` parte da Tela 09 e usa somente estado confirmado;
-9. alterações não salvas/conflitos precisam ser resolvidos antes da ficha;
-10. ficha suporta Atendimento sem equipamento;
-11. ficha omite campos vazios/não aplicáveis;
-12. procedimentos utilizados preservam versão/revisão efetivamente utilizada;
-13. ficha nunca ultrapassa uma página A4 como comportamento normal;
-14. conteúdo excessivo não cria segunda página nem é truncado silenciosamente;
-15. `Saúde da bateria` aparece somente quando aplicável/informada;
-16. impressão da ficha é garantida;
-17. PDF específico da ficha permanece pendente do Bloco 10;
-18. DOCX específico da ficha não é requisito inicial;
-19. preview e QR/barcode permanecem para decisão do Bloco 10;
-20. Tela 15 não foi antecipada.
-
-## 32. Critérios de aceite — atendidos
-
-- [x] separação entre documento de Procedimento e ficha operacional;
-- [x] exportação da revisão selecionada;
-- [x] procedimento completo como escopo inicial;
-- [x] PDF + DOCX + impressão contextual;
-- [x] documento próprio sem screenshot;
-- [x] identificação de revisão histórica/draft;
-- [x] identidade central nos documentos;
-- [x] ficha somente de estado confirmado;
-- [x] suporte de ficha sem equipamento;
-- [x] omissão de campos vazios/não aplicáveis;
-- [x] preservação das revisões utilizadas;
-- [x] regra rígida de uma A4;
-- [x] bloqueio claro se conteúdo excepcional não couber;
-- [x] PDF específico da ficha continua pendente do Bloco 10;
-- [x] DOCX da ficha não é requisito inicial;
-- [x] preview/QR permanecem pendentes do Bloco 10;
-- [x] pendências operacionais preservadas no Bloco 9;
-- [x] implementação técnica preservada no Bloco 10;
-- [x] Tela 15 não foi iniciada;
-- [x] nenhuma implementação funcional foi criada.
+1. exportação/impressão permanece contextual;
+2. Procedimento exportado usa revisão exata e documento completo;
+3. PDF, DOCX e impressão de Procedimento são documentos próprios;
+4. Ficha é prestação de contas resumida ao cliente;
+5. Ficha usa estado confirmado/histórico aplicável;
+6. Ficha pode existir sem Equipamento;
+7. dados do Equipamento vêm do cadastro/snapshot já existente;
+8. observações de serviço por Etapa são persistentes no Atendimento e podem entrar na Ficha;
+9. checklist/progresso/revisões detalhadas não poluem a Ficha por padrão;
+10. Ficha nunca ultrapassa uma A4;
+11. Ficha possui PDF canônico próprio;
+12. preview SVG e PDF derivam do mesmo PagedDocument;
+13. Salvar/Imprimir reutilizam o PDF correspondente à prévia;
+14. impressão usa o fluxo Windows já consolidado;
+15. PDF/preview não alteram dados funcionais;
+16. DOCX da Ficha não é requisito inicial;
+17. QR/barcode permanece pendente de benefício operacional explícito.
