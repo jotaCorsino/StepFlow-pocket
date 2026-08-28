@@ -1,6 +1,6 @@
 # Bloco 10 — Exportação / Impressão + Ficha Compacta
 
-**Status:** EM ANDAMENTO — ETAPAS 1–6 CONSOLIDADAS / ETAPA 7 PRÓXIMA  
+**Status:** EM ANDAMENTO — ETAPAS 1–7 CONSOLIDADAS / ETAPA 8 PRÓXIMA  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-25  
 **Etapa 1 consolidada:** 2026-08-25  
@@ -8,7 +8,8 @@
 **Etapa 3 consolidada:** 2026-08-26  
 **Etapa 4 consolidada:** 2026-08-26  
 **Etapa 5 consolidada:** 2026-08-27  
-**Etapa 6 consolidada:** 2026-08-28
+**Etapa 6 consolidada:** 2026-08-28  
+**Etapa 7 consolidada:** 2026-08-28
 
 ## 1. Objetivo
 
@@ -36,14 +37,12 @@ Não pertence a este bloco implementar código de produção, fechar Backup/Rest
 | 4 | Impressão Windows de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 5 | Template físico de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 6 | PDF + preview da Ficha compacta | **CONSOLIDADO / APROVADO PELO PO** |
-| 7 | Template físico A4 da Ficha | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 8 | Limites textuais e densidade da Ficha | PENDENTE |
+| 7 | Template físico A4 da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
+| 8 | Limites textuais e densidade da Ficha | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 9 | Múltiplos MACs / Procedimentos / dados excepcionais | PENDENTE |
 | 10 | Nomes de arquivo + artefatos temporários | PENDENTE |
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
-
-A Etapa 7 permanece fechada até o squash merge da Etapa 6, remoção da branch e verificação do remoto limpo.
 
 ---
 
@@ -204,31 +203,11 @@ Prioriza:
 - observações gerais relevantes;
 - observações de serviço registradas pelo técnico durante as Etapas.
 
-Características do Equipamento podem incluir, quando aplicáveis e úteis:
-
-- processador;
-- RAM;
-- armazenamento HD/SSD;
-- sistema operacional;
-- serial/patrimônio para identificação;
-- saúde da bateria;
-- observações do Equipamento.
-
 Dados vêm do cadastro/snapshot aplicável; não há redigitação para gerar a Ficha.
 
-Não imprimir por padrão:
-
-- checklist completo;
-- percentual/progresso;
-- passos/subpassos;
-- comandos/código;
-- timeline/auditoria;
-- IDs técnicos internos;
-- lista detalhada de revisões.
+Não imprimir por padrão checklist completo, progresso, passos, comandos/código, timeline/auditoria, IDs internos ou lista detalhada de revisões.
 
 ## 4. Observação do serviço por Etapa
-
-Correção transversal consolidada nesta etapa:
 
 ```text
 Atendimento
@@ -245,7 +224,7 @@ Atendimento
 - Concluído/Cancelado = somente leitura até reabertura;
 - concorrência por Etapa/equivalente;
 - observações preenchidas podem compor a Ficha;
-- estado final aplicável precisa ser historicamente reproduzível após reabertura;
+- estado final aplicável precisa ser historicamente reproduzível;
 - não introduzir autosave por inferência.
 
 ## 5. PDF canônico e preview
@@ -255,83 +234,161 @@ Atendimento confirmado + source_version esperada
 → DocumentModel document_kind = service_sheet
 → template Typst próprio da Ficha
 → PagedDocument
-→ validar quantidade de páginas
 
 1 página
-→ PDF canônico
-→ SVG de preview da mesma página
-
-0 páginas
-→ erro
+→ PDF canônico + SVG da mesma página
 
 2+ páginas
 → SHEET_OVERFLOW
 ```
 
-- Ficha reutiliza a infraestrutura Typst, com template próprio;
 - PDF 1.7 + Tagged PDF como baseline;
-- PDF e SVG derivam do **mesmo PagedDocument**, sem segundo layout em HTML;
-- não retornar apenas primeira página;
-- não cortar conteúdo;
-- não criar segunda folha;
-- não reduzir fonte silenciosamente para caber;
-- preview SVG é tratado como imagem/documento visual controlado, sem script/navegação externa.
+- PDF e SVG derivam do mesmo `PagedDocument`, sem segundo layout HTML;
+- sem corte, segunda folha ou redução silenciosa de fonte;
+- preview em modal/overlay simples com folha A4 centralizada;
+- `Salvar PDF` e `Imprimir` reutilizam os mesmos bytes da prévia;
+- impressão reutiliza WebView2 transitória + `ShowPrintUI(System)`;
+- resultado é transitório e preso à `source_version`.
 
-## 6. Superfície do preview
+---
+
+# Etapa 7 — Template físico A4 da Ficha
+
+**Status:** CONSOLIDADO / APROVADO PELO PO
+
+## 6. Princípio
+
+A folha comunica primeiro o que o cliente precisa entender:
 
 ```text
-Tela 09
-→ Ficha / Imprimir
-→ modal/overlay grande
-→ folha A4 centralizada
-
-Ficha AT-000142               [ salvar ] [ imprimir ] [ × ]
+identificar
+→ resumir o serviço
+→ registrar observações relevantes
 ```
 
-- sem nova sidebar;
-- sem toolbar textual extensa;
-- página A4 escalada proporcionalmente;
-- controles compactos/icon-only quando inequívocos, sempre acessíveis;
-- preview permanece preso à `source_version` usada na geração;
-- alteração remota não troca a folha silenciosamente;
-- prévia desatualizada exige regeneração antes de nova saída atual.
+Não deve parecer relatório técnico completo, checklist ou formulário administrativo carregado.
 
-## 7. Salvar e imprimir
+## 7. Geometria
 
-`Salvar PDF` e `Imprimir` reutilizam os **mesmos bytes PDF** correspondentes à prévia aberta.
+```text
+papel:       A4
+orientação:  retrato
+páginas:     exatamente 1
+margens:     15 mm em todos os lados
+bleed:       nenhum
+```
 
-- não regenerar silenciosamente ao clicar em uma ação;
-- destino de salvar é local e escolhido no Client;
-- Host não recebe path arbitrário da workstation;
-- impressão reutiliza WebView2 transitória + `ShowPrintUI(System)`;
-- resultado PDF + SVG é transitório, sem job/histórico/backup automático;
-- naming e materialização/limpeza concreta de temporários ficam para Etapa 10.
+- área útil aproximada `180 × 267 mm`;
+- nenhuma segunda página;
+- nenhuma redução dinâmica de fonte;
+- nenhum crop/truncamento silencioso;
+- excesso continua `SHEET_OVERFLOW`.
 
-## 8. Lifecycle/histórico
+## 8. Ordem da folha
 
-- `Em andamento`: usa estado confirmado atual;
-- `Concluído`: reimprime estado histórico aplicável;
-- `Cancelado`: identifica inequivocamente o status;
-- alterações locais não salvas/conflitos bloqueiam geração;
-- reabertura não pode reescrever silenciosamente a Ficha histórica anterior.
+```text
+1. Identidade da empresa + Atendimento
+2. Identificação curta do serviço
+3. Equipamento/dispositivo, quando houver
+4. Serviço realizado
+5. Observações, quando houver
+```
+
+Composição predominantemente vertical/uma coluna. Microagrupamentos horizontais são permitidos para dados curtos.
+
+## 9. Cabeçalho e status
+
+- logo opcional preservando proporção;
+- nome da empresa como elemento institucional principal;
+- contato/site/e-mail compactos quando configurados;
+- código/data do Atendimento facilmente localizáveis;
+- sem título gigante `FICHA DE ATENDIMENTO`;
+- sem footer obrigatório ou paginação;
+- `Em andamento`/acompanhamento é discreto;
+- `CANCELADO` é textual e inequívoco, sem depender de cor;
+- sem watermark grande.
+
+## 10. Identificação e Equipamento
+
+Identificação do serviço em linha curta, omitindo campos vazios, por exemplo:
+
+```text
+João Silva · OS-4587 · Técnico: Maria Souza
+```
+
+Equipamento usa **ficha técnica resumida sem grade/tabela pesada**:
+
+```text
+NOTE-15 · Notebook · EQP-0031
+CPU i5-1135G7 · RAM 16 GB · SSD NVMe 512 GB
+Windows 11 Pro 24H2 · Bateria 82%
+Serial ABC123 · Patrimônio PAT-884
+```
+
+- valores vêm do cadastro/snapshot aplicável;
+- armazenamento não assume sempre SSD;
+- campos não aplicáveis/vazios desaparecem;
+- sem Equipamento, a seção inteira colapsa;
+- MAC permanece para Etapa 9.
+
+## 11. Serviço realizado e Observações
+
+`SERVIÇO REALIZADO` contém o `Resumo do trabalho` como texto corrido legível, sem checklist/passos/revisões técnicas.
+
+`OBSERVAÇÕES` é uma única seção client-facing que pode reunir:
+
+- observação geral do Atendimento;
+- observação relevante do Equipamento;
+- observações do serviço por Etapa.
+
+Apresentação preferencial: lista simples, sem subcards. Nome curto da Etapa aparece apenas quando necessário para contexto.
+
+Se não houver observações, a seção desaparece completamente; não imprimir `Sem observações`.
+
+## 12. Tipografia e contraste
+
+PDF da Ficha usa **Noto Sans**.
+
+Baseline:
+
+```text
+identificação principal:   14 pt
+seção:                     10,5 pt semibold
+corpo/resumo:               10 pt
+ficha técnica:               9 pt
+metadados institucionais:  8,5 pt
+```
+
+- não reduzir abaixo do baseline para caber;
+- divisórias horizontais finas somente entre grandes grupos;
+- contraste neutro e legível em monocromático;
+- sem grandes fundos preenchidos;
+- sem paleta RGB/hex congelada nesta fase;
+- cor nunca é o único canal semântico.
+
+## 13. Espaçamento e exclusões
+
+- seções não têm altura fixa;
+- seções vazias colapsam;
+- não reservar caixas para escrita manual;
+- observações usam a maior área variável restante;
+- não adicionar assinatura, termos jurídicos, garantia, financeiro, peças/estoque, SLA, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional.
+
+Overflow continua falha explícita; a Etapa 8 define limites/priorização textual e a Etapa 9 trata dados multiplicativos/excepcionais.
 
 ---
 
 # Etapas seguintes
 
-## Etapa 7 — Template físico A4 da Ficha
+## Etapa 8 — Limites textuais e densidade
 
 **Status:** PRÓXIMA — AINDA NÃO EM ANÁLISE
 
-Fechará geometria física final, hierarquia, seções, espaçamentos, tipografia e apresentação da única A4, sem reabrir PDF/preview já consolidados.
-
-## Etapa 8 — Limites textuais e densidade
-
-Definirá limites/priorização para resumo, observações do Atendimento, Equipamento e Etapas, incluindo diagnóstico de overflow.
+Definirá limites/priorização para resumo, observações do Atendimento, Equipamento e Etapas, além do diagnóstico de overflow.
 
 ## Etapa 9 — Múltiplos dados excepcionais
 
-Definirá comportamento com muitos MACs, muitos Procedimentos/observações e outros casos que pressionem a única A4.
+Definirá comportamento com muitos MACs, muitas observações/Procedimentos e outros casos que pressionem a única A4.
 
 ## Etapa 10 — Nomes + temporários
 
@@ -345,12 +402,12 @@ Só entra se houver benefício operacional aprovado; não é requisito por padr�
 
 Fechará matriz real de Windows/WebView2/Office compatível, impressão, limites de recursos, casos de erro e critérios técnicos antes da implementação.
 
-## 9. Gate atual
+## 14. Gate atual
 
-A Etapa 6 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
+A Etapa 7 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
 
 ```text
-PR da Etapa 6
+PR da Etapa 7
 → validação
 → ready
 → squash merge em main
@@ -358,4 +415,4 @@ PR da Etapa 6
 → verificar somente main + zero PRs abertos
 ```
 
-Somente depois disso a Etapa 7 pode ser aberta.
+Somente depois disso a Etapa 8 pode ser aberta.
