@@ -1,7 +1,7 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–5  
-**Atualização:** 2026-08-27
+**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–6  
+**Atualização:** 2026-08-28
 
 ## Visão geral
 
@@ -31,7 +31,7 @@ Responsabilidades:
 - executar contexto operacional de Atendimento sem abrir SQLite diretamente;
 - iniciar geração documental e receber artefatos produzidos pelo Host;
 - encaminhar artefatos para fluxos locais de salvar/preview/impressão conforme os contratos específicos;
-- realizar impressão física de Procedimentos no contexto local da estação Windows usando o PDF oficial recebido do Host.
+- realizar impressão física no contexto local da estação Windows usando o PDF oficial recebido do Host.
 
 Direção visual transversal: privilegiar clareza com baixa densidade textual permanente, usando cor, forma, símbolo, posição e ícones reconhecíveis quando isso simplificar sem gerar ambiguidade; detalhes secundários podem aparecer sob demanda e cor nunca é o único meio para estado importante. O Reader usa stepper compacto navegável de círculos/linhas, separado do progresso operacional de checklist.
 
@@ -55,7 +55,7 @@ Sem updater residente.
 Tecnologia: Rust + Tokio/Axum + `rusqlite` bundled.
 
 - Controller: lifecycle central, paths/config, instância única, readiness/shutdown;
-- Host: autenticação, autorização, API, eventos, SQLite, writer/fila, revisões, Atendimentos, Equipamentos, checklist, auditoria, backup/restore e geração documental.
+- Host: autenticação, autorização, API, eventos, SQLite, writer/fila, revisões, Atendimentos, Equipamentos, checklist, observações de serviço por Etapa, auditoria, backup/restore e geração documental.
 
 Sem Windows Service, Task Scheduler, auto-start, watchdog ou daemon StepFlow como padrão.
 
@@ -81,10 +81,12 @@ Consolidado:
 - múltiplas revisões de Procedimento por Atendimento;
 - revisão exata usada preservada;
 - checklist persistente somente em contexto de Atendimento;
+- observação de serviço opcional por Etapa somente em contexto de Atendimento;
 - ficha compacta com ou sem Equipamento;
+- Ficha como prestação de contas resumida ao cliente;
 - identidade da empresa centralizada;
 - Backup/Restore administrativo;
-- exportação contextual pela revisão selecionada.
+- exportação contextual pela revisão/estado selecionado.
 
 ## Lifecycle operacional — Bloco 9
 
@@ -119,7 +121,8 @@ Regras:
 - cancelamento exige motivo curto;
 - Concluído/Cancelado não aceitam edição direta;
 - mudança posterior exige reabertura;
-- lifecycle é auditável/versionado.
+- lifecycle é auditável/versionado;
+- estado final necessário para reimpressão histórica não pode ser reescrito silenciosamente após reabertura.
 
 ## Equipamento operacional
 
@@ -139,11 +142,13 @@ EQP-000001
 
 Ao concluir Atendimento, o Host preserva uma projeção histórica relevante do Equipamento. Alteração futura do cadastro global não reescreve ficha/histórico concluído.
 
-## Checklist operacional
+## Checklist e observações de serviço
 
-A definição continua em `process_revision`/blocos imutáveis.
+A definição documental continua em `process_revision`/blocos imutáveis.
 
 Estado de execução é separado e ligado a `service_record_process`.
+
+### Checklist
 
 - somente contexto de Atendimento persiste marcações;
 - Reader standalone continua documental;
@@ -152,6 +157,18 @@ Estado de execução é separado e ligado a `service_record_process`.
 - 100% não conclui Atendimento automaticamente;
 - checklist concluído/cancelado é somente leitura até reabertura;
 - concorrência por item/equivalente evita conflito global desnecessário.
+
+### Observação do serviço por Etapa
+
+- cada Etapa da revisão vinculada pode receber texto opcional de execução;
+- pertence ao Atendimento + vínculo da revisão + Etapa, não ao Procedimento oficial;
+- Reader standalone não cria/persiste esse dado;
+- fica editável somente enquanto o Atendimento estiver editável e autorizado;
+- Concluído/Cancelado tornam a observação somente leitura até reabertura;
+- concorrência usa granularidade por Etapa/equivalente;
+- observações de Etapas independentes não devem conflitar globalmente;
+- conclusão precisa preservar estado histórico suficiente para reimpressão da Ficha aplicável;
+- não há autosave por inferência.
 
 ## Responsabilidade e permissões operacionais
 
@@ -196,7 +213,7 @@ Princípios:
 - `revision_no` separado de `display_version`;
 - auditoria append-only;
 - categorias/Equipamentos/Atendimentos no schema conceitual;
-- checklist operacional separado do snapshot documental;
+- checklist e observações de serviço operacionais separados do snapshot documental;
 - logo/avatar como arquivos controlados pelo Host;
 - dados/config não são substituídos com binários.
 
@@ -223,6 +240,7 @@ Princípios:
 - sem soft/hard lock inicial;
 - dois Hosts não usam o mesmo data dir;
 - checklist usa granularidade por item/equivalente;
+- observação de serviço usa granularidade por Etapa/equivalente;
 - Atendimento/Equipamento têm revisões separadas;
 - timeout após mutação exige reconciliação, não retry cego;
 - geração documental é leitura derivada e não passa pela fila de mutações;
@@ -271,7 +289,7 @@ Regras:
 - `DocumentModel` semântico separa domínio de renderers;
 - renderers não reconsultam SQLite nem reconstruem regras de negócio;
 - captura consistente termina antes do trabalho pesado de renderização;
-- geração não cria revisão, não altera Atendimento/checklist e não muda `updated_at` funcional;
+- geração não cria revisão, não altera Atendimento/checklist/observações de serviço e não muda `updated_at` funcional;
 - limite de renderização é separado do writer;
 - primeira versão não cria `export_jobs`, scheduler ou fila persistente documental;
 - artefato retorna pela API autenticada; Host não escreve em path arbitrário do Client;
@@ -401,29 +419,51 @@ Consolidado:
 
 O limite rígido de **uma página A4** pertence à Ficha compacta de Atendimento, não ao Procedimento completo.
 
-### Procedimentos
+### PDF + preview da Ficha compacta — Bloco 10 / Etapa 6
 
-- PDF, DOCX e impressão obrigatórios;
-- fonte = revisão selecionada;
-- revisão nova não substitui geração em andamento;
-- documento próprio, não screenshot;
-- histórico/draft autorizado recebe identificação inequívoca;
-- identidade central da empresa;
-- template físico segue Etapa 5.
+Consolidado:
 
-### Ficha de Atendimento
+#### Finalidade e conteúdo
 
-- estado confirmado do Host;
-- com ou sem Equipamento;
-- `Em andamento`: geração para acompanhamento;
-- `Concluído`: reimpressão do estado histórico aplicável;
-- `Cancelado`: identificação inequívoca do status;
-- máximo uma página A4;
-- conteúdo excessivo bloqueia saída em vez de segunda página/truncamento silencioso;
-- impressão é requisito;
-- DOCX específico não é requisito inicial.
+- Ficha é prestação de contas resumida ao cliente;
+- prioriza identificação do serviço, identificação/características do dispositivo, `Resumo do trabalho` e observações relevantes;
+- características podem incluir processador, RAM, armazenamento, SO quando útil, bateria quando aplicável e observações do Equipamento;
+- observações de serviço registradas nas Etapas entram quando preenchidas;
+- checklist, progresso, passos, comandos, timeline, IDs internos e lista detalhada de revisões não aparecem por padrão;
+- dados do Equipamento vêm do cadastro/snapshot histórico aplicável, sem redigitação para gerar a Ficha.
 
-Bloco 10 ainda fecha, uma etapa por vez, PDF/preview e template da Ficha compacta, limites/densidade, tratamento de muitos MACs/Procedimentos, nomes de arquivo/temporários, QR/barcode e validação técnica final. **Etapa 6 — PDF + preview da Ficha compacta é a próxima e ainda não está aberta para análise.**
+#### PDF e preview
+
+```text
+Atendimento confirmado + source_version esperada
+→ DocumentModel document_kind = service_sheet
+→ template Typst próprio da Ficha
+→ PagedDocument
+→ exigir exatamente 1 página
+   ├─→ typst-pdf → PDF canônico
+   └─→ typst-svg → preview vetorial
+```
+
+- mesma infraestrutura Typst embutida no Host, com template específico da Ficha;
+- PDF 1.7 + Tagged PDF como baseline estrutural, sem promessa formal PDF/A ou PDF/UA;
+- PDF e SVG derivam do mesmo `PagedDocument`, evitando segundo layout de preview;
+- `2+ páginas` resulta em `SHEET_OVERFLOW`; não cortar, não retornar só a primeira página e não reduzir fonte silenciosamente;
+- preview SVG é tratado como representação visual controlada, sem script/navegação externa;
+- preview abre em modal/overlay grande no Client, folha A4 centralizada, sem nova sidebar ou toolbar textual extensa;
+- `Salvar PDF` e `Imprimir` reutilizam os mesmos bytes PDF correspondentes à prévia;
+- impressão reutiliza WebView2 transitória + `ShowPrintUI(System)`;
+- resultado PDF + SVG é transitório; não cria job persistente nem histórico/backup automático;
+- prévia fica presa à `source_version`; atualização remota não troca a folha silenciosamente e exige regeneração antes de nova saída atual.
+
+#### Lifecycle histórico
+
+- `Em andamento`: Ficha usa estado confirmado atual;
+- `Concluído`: reimpressão usa estado histórico aplicável;
+- `Cancelado`: saída identifica claramente o status;
+- reabertura não pode reescrever silenciosamente Ficha histórica anterior;
+- snapshot/projeção de Equipamento e observações de serviço precisam participar da reprodução histórica aplicável.
+
+Etapas 7–12 continuam responsáveis por template A4 final da Ficha, limites/densidade, múltiplos MACs/Procedimentos, nomes/temporários, QR/barcode e validação técnica final. **Etapa 7 é a próxima e permanece fechada até o gate Git da Etapa 6.**
 
 ## Backup / Restore
 
@@ -470,7 +510,7 @@ Exemplos históricos não podem virar hardcode.
 - Bloco 7: núcleo concluído;
 - Bloco 8: concluído;
 - Bloco 9: concluído documentalmente;
-- **Bloco 10: em andamento — Etapas 1–5 consolidadas; Etapa 6 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–6 consolidadas; Etapa 7 próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 Nenhum runtime/código funcional oficial foi criado durante esse fechamento documental.

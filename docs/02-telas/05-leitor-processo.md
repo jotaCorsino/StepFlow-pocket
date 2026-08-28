@@ -2,15 +2,15 @@
 
 **Status:** CONSOLIDADO / APROVADO PELO PO  
 **Bloco original:** Fase 1 — Bloco 8 (UI/UX)  
-**Atualização operacional:** Bloco 9  
-**Última consolidação:** 2026-08-27
+**Atualização operacional:** Bloco 9 + Bloco 10 / Etapa 6  
+**Última consolidação:** 2026-08-28
 
 ## 1. Objetivo
 
 Ser a principal superfície de consumo de Procedimentos do StepFlow, com leitura em formato de manual/livro e duas modalidades coerentes:
 
 1. **consulta documental** — leitura de uma revisão sem estado operacional persistente;
-2. **execução vinculada a Atendimento** — leitura da revisão exata vinculada, com checklist persistente daquele Atendimento.
+2. **execução vinculada a Atendimento** — leitura da revisão exata vinculada, com checklist e observações de serviço persistentes daquele Atendimento.
 
 A identidade visual principal é a mesma nos dois contextos.
 
@@ -149,6 +149,7 @@ Nesse contexto:
 
 - checklist é definição documental;
 - marcar/desmarcar não persiste execução;
+- não existe `Observação do serviço` operacional;
 - navegação não grava progresso;
 - não existe estado operacional escondido;
 - nenhum Atendimento é criado apenas por ler.
@@ -171,10 +172,34 @@ Nesse contexto:
 - cabeçalho identifica o Atendimento;
 - revisão fica presa ao `service_record_process`;
 - itens de checklist usam estado persistente do Atendimento;
-- marcar/desmarcar depende de `Em andamento` + capacidade;
+- cada Etapa pode receber uma `Observação do serviço` opcional e persistente;
+- marcar/desmarcar checklist ou alterar observação depende de `Em andamento` + capacidade;
 - voltar retorna à Tela 09;
 - navegação entre páginas não marca item nem conclui Atendimento;
 - publicação de revisão nova não muda a revisão em execução.
+
+### Observação do serviço por Etapa
+
+Durante a execução, a página da Etapa pode oferecer um campo simples próximo ao final do conteúdo:
+
+```text
+Observação do serviço
+[ Ex.: unidade antiga apresentou setores defeituosos. ]
+```
+
+Contrato:
+
+- é opcional;
+- pertence ao **Atendimento + vínculo da revisão + Etapa**, nunca ao Procedimento oficial;
+- não altera `process_revision`, `process_stage` ou o texto documental;
+- é persistida pelo Host somente em contexto operacional;
+- fica disponível para o resumo/ficha do serviço quando preenchida;
+- campo vazio não cria ruído no material impresso;
+- após `Concluído` ou `Cancelado`, fica somente leitura até eventual reabertura;
+- publicação de nova revisão não move nem reatribui a observação para outra Etapa;
+- o mecanismo de salvamento segue o contrato operacional explícito; não introduzir autosave por inferência.
+
+A observação é uma nota de execução do técnico, não comentário social, chat, anotação colaborativa do Procedimento nem item de checklist.
 
 ## 8. Checklist em execução
 
@@ -301,13 +326,13 @@ Aviso discreto, sem troca automática.
 
 Quando Reader está no contexto desse Atendimento:
 
-- checklist somente leitura;
+- checklist e observações do serviço ficam somente leitura;
 - contexto/lifecycle visível;
 - revisão continua estável.
 
-### Conflito de checklist
+### Conflito operacional
 
-Reconsultar item/estado afetado e informar de forma proporcional; não transformar um checkbox em conflito global de toda a Tela 09 por conveniência.
+Checklist e `Observação do serviço` usam reconciliação proporcional ao recurso afetado. Não transformar um checkbox ou uma observação de Etapa em conflito global de toda a Tela 09 por conveniência.
 
 ## 14. Eventos em tempo real
 
@@ -321,6 +346,7 @@ Eventos são sinais de mudança.
 ### Reader operacional
 
 - checklist alterado → reconsultar estado relevante;
+- observação de serviço alterada → reconsultar apenas a observação/Etapa relevante;
 - status do Atendimento alterado → atualizar capacidade de edição;
 - reabertura/conclusão/cancelamento → refletir lifecycle;
 - evento não substitui conteúdo local de forma silenciosa.
@@ -329,6 +355,8 @@ Eventos são sinais de mudança.
 
 - Reader documental é leitura e não cria lock;
 - checklist operacional usa controle granular por item/equivalente;
+- observação de serviço usa controle granular por Etapa/equivalente;
+- usuários alterando recursos operacionais independentes não devem conflitar globalmente;
 - writer/fila do Host ordena mutações, mas não autoriza estado obsoleto;
 - resultado incerto após desconexão é reconciliado antes de retry não idempotente.
 
@@ -339,6 +367,7 @@ Eventos são sinais de mudança.
 - foco visível;
 - botões icon-only com nome acessível;
 - marcadores do stepper com nome/estado acessível e acionamento por teclado;
+- campo de observação com label acessível inequívoco;
 - feedback de cópia anunciável;
 - estados de stepper e checklist não dependem só de cor;
 - avisos de revisão/lifecycle acessíveis.
@@ -367,11 +396,12 @@ Em janelas menores suportadas:
 - blocos são tipados;
 - copiar é icon-only com feedback breve;
 - revisão aberta permanece estável;
-- Reader standalone não persiste checklist;
-- Reader em Atendimento persiste checklist;
+- Reader standalone não persiste checklist nem observação de serviço;
+- Reader em Atendimento persiste checklist e observação de serviço por Etapa;
+- observação operacional não altera o Procedimento;
 - progresso operacional deriva somente de checklist;
 - checklist não conclui Atendimento automaticamente;
-- nenhum lock/merge automático/offline editing é introduzido.
+- nenhum lock/merge automático/offline editing/autosave é introduzido.
 
 ## 19. Fora do escopo
 
@@ -379,7 +409,7 @@ Em janelas menores suportadas:
 - colaboração simultânea tipo editor compartilhado;
 - presença/soft lock;
 - conclusão automática por navegação;
-- persistência de checklist fora de Atendimento;
+- persistência de checklist/observação operacional fora de Atendimento;
 - fila offline/autosave;
 - UI mobile dedicada;
 - implementação funcional nesta fase.

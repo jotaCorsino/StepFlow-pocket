@@ -2,13 +2,13 @@
 
 **Status:** EM ANDAMENTO  
 **Início:** 2026-08-19  
-**Atualização:** 2026-08-27
+**Atualização:** 2026-08-28
 
 ## Objetivo
 
 Transformar requisitos e arquitetura conceitual em decisões implementáveis antes da fundação executável do StepFlow.
 
-A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis quando necessárias. Não autoriza scaffold/runtime oficial nem código de negócio definitivo antes do Bloco 12/Fase 2.
+A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis quando necessárias. Não autoriza scaffold/runtime oficial nem código de negócio definitivo antes do gate correspondente do Bloco 12/Fase 2.
 
 ## Estado dos blocos
 
@@ -23,8 +23,8 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 6 | Dados/schema/migrations | NÚCLEO + EXTENSÃO OPERACIONAL CONSOLIDADOS CONCEITUALMENTE | `03-arquitetura/modelo-dados-schema-fase-1.md` |
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
-| 9 | Execução operacional/Atendimentos + checklist | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–5 CONSOLIDADAS / ETAPA 6 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
+| 9 | Execução operacional/Atendimentos | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–6 CONSOLIDADAS / ETAPA 7 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -33,90 +33,86 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 Fazem parte da Fase 1:
 
 - categorias configuráveis/múltiplas;
-- `Procedimento × Atendimento/Execução × Equipamento`;
-- Atendimentos como área própria;
+- domínio `Procedimento × Atendimento/Execução × Equipamento`;
+- Atendimentos como área operacional própria;
 - Equipamento opcional/reutilizável;
 - múltiplos Procedimentos por Atendimento;
 - revisão exata utilizada preservada;
-- ficha compacta com ou sem Equipamento;
-- identidade central da empresa;
-- Backup/Restauração administrativo;
-- PDF/DOCX/impressão contextual de Procedimentos;
-- estados transversais;
-- lifecycle operacional de Atendimentos;
 - checklist persistente em contexto de execução;
+- `Observação do serviço` opcional por Etapa no Reader operacional;
+- estado final historicamente reproduzível após conclusão/reabertura;
+- Ficha compacta como prestação de contas resumida ao cliente, com ou sem Equipamento;
+- identidade central da empresa;
+- PDF/DOCX/impressão contextual de Procedimentos;
+- PDF próprio + preview da Ficha;
+- estados transversais;
 - matriz operacional de capacidades;
 - códigos `AT-000001` / `EQP-000001`;
 - princípio visual de clareza com baixa densidade textual permanente, usando cor/forma/símbolo/posição quando apropriado sem sacrificar acessibilidade.
 
 ## Bloco 8 — UI/UX — concluído
 
-Telas 01–15 estão consolidadas/aprovadas:
+Telas 01–15 estão consolidadas/aprovadas. Nenhuma UI de produção foi criada.
 
-1. Login;
-2. Shell/sidebar;
-3. Dashboard;
-4. Lista/Pesquisa de Processos;
-5. Reader em formato livro;
-6. Editor de Processo + categorias;
-7. Histórico/Revisões;
-8. Lista/Pesquisa de Atendimentos;
-9. Atendimento/Execução + Equipamento;
-10. Usuários/Permissões;
-11. Meu perfil;
-12. Configurações + Categorias;
-13. Backup/Restauração — UX;
-14. Exportação/Impressão + ficha — UX;
-15. Estados transversais.
+Direção transversal:
 
-Nenhuma UI de produção foi criada.
+- Reader em formato livro/manual;
+- `Visão geral` como primeira página lógica;
+- uma Etapa por página lógica;
+- stepper horizontal compacto de círculos/linhas, navegável diretamente;
+- stepper representa navegação, não conclusão operacional;
+- informação secundária sob demanda e baixa densidade textual quando possível.
 
-Correção consolidada do Reader: `Visão geral` é a primeira página lógica; cada Etapa mantém página própria; a navegação inclui stepper horizontal compacto de círculos/linhas com estados anteriores/atual/seguintes e ação direta por marcador. Esse estado é apenas navegação e não conclusão operacional de checklist/Atendimento.
+A Tela 05 foi posteriormente atualizada para incorporar `Observação do serviço` por Etapa somente no contexto operacional de Atendimento. A Tela 14 foi atualizada para refletir a Ficha como prestação de contas resumida e o preview consolidado no Bloco 10.
 
-## Bloco 9 — Execução operacional / Atendimentos + checklist — concluído
+## Bloco 9 — Execução operacional / Atendimentos — concluído
 
-Fonte canônica: `bloco-9-atendimentos-execucao-checklist.md`.
+Fonte: `bloco-9-atendimentos-execucao-checklist.md`.
 
 ### Lifecycle
 
 ```text
-Em andamento
-Concluído
-Cancelado
+rascunho local
+→ primeiro save aceito
+→ Em andamento
+   ├─→ Concluído
+   └─→ Cancelado
+
+Concluído/Cancelado
+→ Reabrir
+→ Em andamento
 ```
 
-- primeiro save cria o Atendimento;
 - `Resumo do trabalho` + responsável são obrigatórios para concluir;
-- checklist incompleto avisa, mas não bloqueia automaticamente;
+- checklist incompleto avisa, não bloqueia automaticamente;
 - cancelamento exige motivo;
 - concluído/cancelado são read-only até reabertura;
 - ADM/Gerência reabrem por preset.
 
-### Responsabilidade
+### Procedimentos, checklist e observações
 
-- Funcionário cria inicialmente para si;
-- Funcionário opera/conclui o Atendimento do qual é responsável;
-- ADM/Gerência podem atribuir/editar qualquer Atendimento acessível;
-- usuário desativado permanece no histórico.
-
-### Procedimentos e checklist
-
-- Funcionário seleciona revisão publicada;
+- Funcionário usa revisão publicada por padrão;
 - ADM/Gerência podem selecionar explicitamente outras revisões autorizadas;
-- Reader standalone = checklist documental;
-- Reader no Atendimento = checklist persistente;
-- progresso deriva de marcados/total;
-- 100% não conclui automaticamente;
-- concorrência granular por item/equivalente.
+- Reader standalone não persiste execução;
+- Reader operacional persiste checklist;
+- progresso deriva somente de itens marcados/total;
+- cada Etapa pode receber `Observação do serviço` opcional;
+- observação pertence ao Atendimento + revisão vinculada + Etapa e não altera o Procedimento;
+- checklist usa concorrência granular por item;
+- observação usa concorrência granular por Etapa/equivalente;
+- eventos remotos não sobrescrevem edição local silenciosamente;
+- não há autosave por inferência.
 
-### Equipamento
+### Equipamento e histórico
 
-- Funcionário cria/edita;
+- Funcionário cria/edita Equipamento;
 - ADM/Gerência arquivam/reativam;
 - não arquivar Equipamento ligado a Atendimento em andamento;
-- conclusão congela projeção histórica relevante do Equipamento.
+- conclusão congela projeção histórica relevante do Equipamento;
+- conclusão também preserva o estado final aplicável das observações de serviço;
+- reabertura + nova conclusão não reescreve silenciosamente a prestação de contas anterior.
 
-### Códigos
+### Códigos e Ficha
 
 ```text
 AT-000001
@@ -125,29 +121,19 @@ EQP-000001
 
 Host-only, seis dígitos, gaps permitidos.
 
-### Categorias
-
-- gerir categorias: ADM/Gerência por preset;
-- Funcionário não;
-- regra editorial de nova revisão ainda referenciando categoria arquivada permanece pendente antes da implementação editorial.
-
-### Ficha
+Ficha:
 
 - capacidade por preset para ADM/Gerência/Funcionário em Atendimento acessível;
-- Em andamento: geração para acompanhamento;
-- Concluído: reimpressão do estado histórico;
-- Cancelado: identificação inequívoca;
-- tecnologia física permanece no Bloco 10.
+- `Em andamento`: geração a partir do estado confirmado;
+- `Concluído`: reimpressão histórica aplicável;
+- `Cancelado`: identificação inequívoca;
+- finalidade: prestação de contas resumida ao cliente.
 
 ## Bloco 10 — Exportação e impressão
 
-**Status: EM ANDAMENTO — Etapas 1–5 consolidadas; Etapa 6 próxima, ainda não aberta.**
+**Status: EM ANDAMENTO — Etapas 1–6 consolidadas; Etapa 7 próxima e ainda não aberta.**
 
-Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
-
-A UX já foi consolidada no Bloco 8. O fechamento técnico do Bloco 10 segue uma etapa por vez.
-
-### Etapas
+Fonte: `bloco-10-exportacao-impressao-ficha.md`.
 
 | Ordem | Etapa | Estado |
 |---|---|---|
@@ -156,224 +142,154 @@ A UX já foi consolidada no Bloco 8. O fechamento técnico do Bloco 10 segue uma
 | 3 | DOCX de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 4 | Impressão Windows de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 5 | Template físico de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
-| 6 | PDF + preview da Ficha compacta | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 7 | Template físico A4 da Ficha | PENDENTE |
+| 6 | PDF + preview da Ficha compacta | **CONSOLIDADO / APROVADO PELO PO** |
+| 7 | Template físico A4 da Ficha | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 8 | Limites textuais e densidade da Ficha | PENDENTE |
-| 9 | Múltiplos MACs / Procedimentos na Ficha | PENDENTE |
+| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | PENDENTE |
 | 10 | Nomes de arquivo + artefatos temporários | PENDENTE |
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
 
-### Etapa 1 — consolidada
+### Etapa 1 — arquitetura documental
 
-Contrato aprovado:
+- geração Host-side;
+- Client solicita identidade da fonte + revisão esperada;
+- snapshot consistente → `DocumentModel` imutável → encerra leitura/transação → renderiza;
+- renderers não usam DOM/HTML nem reconsultam banco;
+- geração é leitura derivada, fora da fila de mutações;
+- renderização tem limite próprio bounded;
+- sem job/fila persistente inicialmente;
+- Host não grava em path arbitrário do Client;
+- runtime autocontido, sem Office/LibreOffice/Adobe/browser externo/cloud obrigatória.
 
-- geração documental é responsabilidade do Host;
-- Client solicita por identidade da fonte/revisão esperada, sem enviar documento montado;
-- fonte mutável não é substituída silenciosamente por revisão mais nova;
-- Host captura snapshot consistente antes da renderização;
-- leitura/transação SQLite é encerrada antes do trabalho pesado de renderização;
-- `DocumentModel` semântico separa regras de domínio dos renderers;
-- renderers não reconsultam o banco nem recebem DOM/HTML da UI;
-- geração é leitura derivada e não passa pela fila de mutações;
-- renderização tem limite próprio de concorrência/backpressure;
-- primeira versão não cria `export_jobs`, scheduler ou fila persistente;
-- artefato retorna pela API autenticada;
-- Host não escreve em path arbitrário do Client;
-- runtime documental é autocontido, sem Office/LibreOffice/Adobe/Chrome externo/cloud obrigatório;
-- artefatos gerados não viram histórico/backup por padrão.
+### Etapa 2 — PDF de Procedimentos
 
-### Etapa 2 — consolidada
+- Typst embutido como biblioteca Rust;
+- template interno confiável e dados estruturados;
+- sem recursos remotos;
+- PDF 1.7 + Tagged PDF baseline;
+- fontes incorporadas/subsetadas;
+- blocos semânticos conhecidos são representados ou falham explicitamente;
+- multipágina automático, sem truncamento;
+- PNG/JPEG/SVG controlados.
 
-Contrato aprovado:
+### Etapa 3 — DOCX de Procedimentos
 
-- renderer PDF de Procedimentos baseado em **Typst embutido como biblioteca Rust no Host**, usando crates oficiais com adaptador interno StepFlow;
-- nenhum `typst.exe`/CLI, browser ou processo conversor externo;
-- template Typst interno, confiável e versionado com o produto;
-- conteúdo originado do domínio entra somente como valores/dados estruturados e nunca participa da construção textual do source Typst;
-- nenhum pacote/recurso remoto é resolvido durante geração; filesystem/imports ficam restritos ao mundo virtual, templates, fontes e assets controlados pelo Host;
-- PDF 1.7 é solicitado explicitamente ao exporter;
-- Tagged PDF permanece explicitamente habilitado como baseline, sem prometer conformidade formal PDF/UA/PDF-A;
-- texto textual permanece selecionável/pesquisável/copiável;
-- fontes necessárias são empacotadas e incorporadas/subsetadas, sem depender das fontes instaladas no Windows;
-- todos os blocos semânticos do Procedimento devem ser representados sem descarte silencioso; incompatibilidade deve falhar explicitamente;
-- comandos/código permanecem texto e preservam whitespace relevante;
-- engine suporta fluxo multipágina e quebra automática; formato/layout físico seguem a Etapa 5 consolidada;
-- PNG/JPEG e SVG controlado são suportados somente a partir de assets previamente aceitos/resolvidos pelo Host;
-- conteúdo visual não depende implicitamente do relógio/ambiente da máquina central;
-- falha do renderer não produz artefato parcial tratado como sucesso;
-- recursos avançados e conformidades formais ficam fora da primeira versão;
-- versões exatas de crates e limites numéricos permanecem para implementação/medição.
+- DOCX real OOXML/WordprocessingML/OPC, baseline Transitional;
+- geração Rust direta pelo mesmo `DocumentModel`, sem PDF → DOCX;
+- `docx-rs` preferido sob adaptador interno;
+- texto/listas editáveis reais;
+- sem Word/COM, LibreOffice, browser/headless ou cloud;
+- Arial/Consolas referenciadas sem embedding v1;
+- pacote incompleto/corrompido nunca é sucesso.
 
-### Etapa 3 — consolidada
+### Etapa 4 — impressão Windows
 
-Contrato aprovado:
+- impressão física no Client Windows;
+- usa o mesmo PDF oficial da revisão;
+- WebView2 transitória/dedicada + `ShowPrintUI(System)`;
+- diálogo padrão do Windows;
+- sem impressão silenciosa/seletor próprio/software externo como baseline;
+- sucesso significa fluxo entregue ao Windows, não confirmação física de papel;
+- temporários concretos ficam para Etapa 10.
 
-- DOCX de Procedimentos é gerado diretamente pelo Host Rust a partir do mesmo `DocumentModel`, sem converter PDF/Typst;
-- saída é `.docx` real em OOXML/WordprocessingML e **OOXML Transitional** é o baseline inicial de compatibilidade;
-- `docx-rs` é a biblioteca preferida, encapsulada por adaptador interno StepFlow;
-- não depende de Microsoft Word/COM, LibreOffice, browser/headless, CLI conversor ou serviço cloud;
-- conteúdo do domínio entra apenas como dados estruturados e não pode injetar XML/OOXML, relationships, partes OPC, paths ou URLs arbitrários;
-- estilos/template são internos e versionados; nenhum `.docx`/`.dotx` fornecido pelo usuário é carregado como template em runtime;
-- texto textual permanece texto Word real, selecionável, pesquisável, copiável e editável;
-- todos os blocos semânticos conhecidos são representados sem descarte silencioso;
-- passos/subpassos usam numeração/lista Word real quando aplicável;
-- checklist exportado é documental e não vira formulário/content control interativo;
-- comandos/código permanecem texto e preservam whitespace relevante;
-- PNG/JPEG são baseline de imagem; SVG não é requisito direto do DOCX v1 e exige representação interna compatível ou falha explícita;
-- DOCX é refluível e não promete paginação idêntica ao PDF;
-- DOCX v1 referencia **Arial** para texto e **Consolas** para comando/código, sem embedding/redistribuição dessas fontes;
-- conteúdo ativo/externo e importação de DOCX editado ficam fora da primeira versão;
-- pacote incompleto/corrompido nunca é tratado como sucesso;
-- versão exata da crate, limites numéricos e matriz real de compatibilidade ficam para implementação/Etapa 12.
+### Etapa 5 — template físico de Procedimentos
 
-### Etapa 4 — consolidada
+- Reader não possui geometria A4;
+- Procedimento exportado usa A4 retrato multipágina, margens-base 18 mm;
+- sem capa exclusiva/sumário físico obrigatório/header repetitivo por padrão;
+- rodapé compacto;
+- paginação automática sem truncamento/redução silenciosa;
+- PDF usa Noto Sans/Noto Sans Mono incorporadas;
+- DOCX usa Arial/Consolas referenciadas;
+- limite de uma A4 é exclusivo da Ficha.
 
-Contrato aprovado:
+### Etapa 6 — PDF + preview da Ficha compacta
 
-- impressão física de Procedimentos acontece no Client Windows da estação do usuário, não no Host central;
-- o artefato canônico de impressão é o mesmo PDF produzido pelo renderer da Etapa 2 para a revisão exata selecionada;
-- não existe renderer separado de impressão e não se imprime HTML da UI nem DOCX;
-- o Client usa uma WebView2 transitória/dedicada, sem navegar a webview principal para o PDF;
-- a WebView2 recebe somente recurso PDF local controlado, sem Internet ou path arbitrário originado do conteúdo;
-- baseline usa WebView2 `ShowPrintUI(System)` por adaptador Windows isolado sob Tauri `with_webview`;
-- o diálogo padrão é o diálogo de impressão do Windows; impressão silenciosa e seletor próprio de impressoras ficam fora da primeira versão;
-- StepFlow não enumera/persiste impressoras no Host e não gerencia drivers/spooler corporativo;
-- `ShellExecute`/handler PDF externo, Word/COM, LibreOffice, browser/visualizador externo e spool PDF bruto não são baseline/fallback silencioso;
-- recurso local de impressão é transitório; estratégia concreta, nomes, paths e limpeza ficam para a Etapa 10;
-- `ShowPrintUI` não confirma impressão física: sucesso significa fluxo entregue ao Windows, sem falso `Impresso com sucesso` ou auditoria `printed=true`;
-- fechamento/cancelamento do diálogo não é erro funcional;
-- falhas de geração, preparação local, compatibilidade WebView2 e abertura do diálogo são distintas;
-- gate técnico posterior valida Windows 10/11 x64, WebView2, PDF multipágina, impressoras locais/de rede e operação offline;
-- impressão usa o template físico consolidado na Etapa 5.
+Finalidade:
 
-### Etapa 5 — consolidada
+- Ficha é prestação de contas resumida ao cliente;
+- prioriza identificação do serviço/dispositivo, características relevantes, `Resumo do trabalho` e observações;
+- processador, RAM, HD/SSD, SO quando útil, bateria quando aplicável e observações do Equipamento podem compor a folha;
+- observações de serviço por Etapa entram quando preenchidas;
+- checklist, percentual/progresso, passos, comandos, timeline, IDs internos e lista detalhada de revisões não aparecem por padrão.
 
-Contrato aprovado:
-
-- Reader diário e Procedimento exportado são superfícies separadas; página lógica do app não possui geometria A4;
-- `Visão geral` é a primeira página lógica e cada `process_stage` mantém página própria;
-- stepper horizontal compacto de círculos/linhas navega entre Etapas, com estados anteriores/atual/seguintes e sem rótulos permanentes repetitivos;
-- estado anterior no stepper representa percurso de navegação, nunca conclusão operacional/checklist;
-- Procedimento completo usa **A4 retrato multipágina** com margens-base de **18 mm**;
-- sem capa exclusiva; identificação e conteúdo útil começam na primeira página;
-- v1 não exige sumário físico por padrão;
-- título de Etapa pode usar forma curta como `01 · Preparação` e não força nova folha automaticamente;
-- sem cabeçalho repetitivo; rodapé compacto identifica código/revisão e paginação;
-- paginação automática evita títulos/linhas órfãs e nunca trunca/reduz fonte silenciosamente para caber;
-- blocos físicos usam hierarquia/forma/símbolo com baixa densidade, sem cards/bordas desnecessários;
-- PDF usa **Noto Sans + Noto Sans Mono** empacotadas/incorporadas/subsetadas conforme OFL 1.1;
-- DOCX usa **Arial + Consolas** referenciadas, sem embedding/redistribuição dessas fontes pelo StepFlow v1;
-- baseline tipográfico: título 18 pt, Etapa 14 pt, corpo 10,5 pt, comando/código 9 pt e rodapé 8 pt;
-- PDF é referência física de impressão; DOCX compartilha hierarquia/semântica, mas permanece refluível;
-- limite rígido de **uma A4** pertence à Ficha compacta de Atendimento, não ao Procedimento completo.
-
-A **Etapa 6 — PDF + preview da Ficha compacta** é apenas a próxima. Ela ainda não está em análise. Etapas 7–12 continuam pendentes.
-
-## Bloco 11 — Backup e restauração
-
-**Ainda não iniciado.**
-
-Fechar mecanismo técnico de backup consistente do SQLite + arquivos administrados.
-
-UX normal já exige:
-
-- operação Host-side;
-- Restore autorizado + backup elegível;
-- confirmação reforçada;
-- safety backup antes da etapa destrutiva;
-- disaster recovery sem Host funcional fora da UI normal.
-
-Ainda fechar:
-
-- pacote;
-- atomicidade;
-- verificações/checksums;
-- retenção;
-- compressão/criptografia quando aplicável;
-- restart/reconexão/sessões;
-- recuperação local de desastre.
-
-## Bloco 12 — Fundação da Fase 2
-
-Somente depois dos blocos anteriores:
-
-- resolver parâmetros finais que bloqueiam implementação;
-- fechar regra editorial de categoria arquivada;
-- definir árvore oficial Client/Host/launcher/contratos/testes/assets;
-- convenções/scripts;
-- configuração de desenvolvimento;
-- migrations oficiais iniciais;
-- tarefas pequenas de fundação;
-- plano oficial da Fase 2;
-- sincronizar explicitamente o checkout local antes do primeiro trabalho de implementação com Codex.
-
-## Pendências de autenticação/configuração
-
-Antes da implementação correspondente:
-
-- Argon2id final;
-- senha mínima final;
-- duração de sessão;
-- entropia/tamanho final do token;
-- Gerência × configuração da empresa;
-- Gerência × Backup.
-
-## Pendências do ambiente corporativo
-
-- hostname/IP e paths reais;
-- SMB/permissões/políticas;
-- Windows/WebView2 reais;
-- antivírus/EDR/firewall;
-- HTTP/HTTPS;
-- mecanismo real de start do Controller.
-
-## Critérios de saída da Fase 1
-
-- [x] Client/Windows definidos;
-- [x] Host Pocket definido;
-- [x] launcher/update definidos;
-- [x] comunicação definida;
-- [x] núcleo de autenticação/autorização definido;
-- [ ] parâmetros finais de autenticação necessários à implementação;
-- [x] modelo de dados original definido;
-- [x] extensão operacional conceitual aprovada;
-- [x] concorrência geral definida;
-- [x] Telas 01–15 especificadas/aprovadas;
-- [x] modelagem `Procedimento × Atendimento × Equipamento` aprovada;
-- [x] lifecycle/execução/checklist decididos;
-- [x] matriz operacional de permissões decidida;
-- [x] códigos legíveis decididos;
-- [x] gestão de categorias por preset decidida;
-- [x] lifecycle/capacidade da ficha decididos;
-- [x] arquitetura-base de geração documental decidida;
-- [x] renderer PDF de Procedimentos decidido;
-- [x] renderer DOCX de Procedimentos decidido;
-- [x] impressão Windows de Procedimentos decidida;
-- [x] template físico de Procedimentos decidido;
-- [ ] exportação/impressão + ficha tecnicamente definidas por completo;
-- [ ] backup/restore técnico definido;
-- [ ] regra editorial de categoria arquivada fechada;
-- [ ] estrutura oficial definida;
-- [x] pendências não bloqueantes registradas;
-- [ ] plano da Fase 2 aprovado.
-
-## Gate entre Etapa 5 e Etapa 6
-
-A Etapa 6 somente pode ser aberta após:
+Geração:
 
 ```text
-consolidação documental da Etapa 5
-→ squash merge do PR
-→ remoção da branch remota da Etapa 5
-→ verificação de remoto somente com main
-→ zero PRs abertos
-→ abertura explícita da Etapa 6
+Atendimento confirmado + source_version
+→ DocumentModel service_sheet
+→ template Typst próprio
+→ PagedDocument
+→ exigir exatamente 1 página
+   ├─→ PDF canônico
+   └─→ SVG de preview
 ```
 
-Até esse gate ser satisfeito, não iniciar pesquisa, proposta ou branch da Etapa 6.
+- PDF e SVG derivam do mesmo layout;
+- 2+ páginas = `SHEET_OVERFLOW`, sem segunda folha/corte/redução silenciosa;
+- preview aparece em modal/overlay simples com A4 centralizada;
+- `Salvar PDF` e `Imprimir` usam os mesmos bytes PDF da prévia;
+- impressão reutiliza WebView2 + diálogo Windows;
+- prévia fica presa à `source_version` e não muda silenciosamente;
+- resultado PDF/SVG é transitório, sem job/histórico/backup automático;
+- reimpressão de concluído usa estado histórico aplicável.
 
-## Regra de execução
+## Próximas etapas do Bloco 10
+
+### Etapa 7 — Template físico A4 da Ficha
+
+Fechar geometria, hierarquia, seções, espaçamentos, tipografia e apresentação da única folha, sem reabrir PDF/preview.
+
+### Etapa 8 — Limites textuais e densidade
+
+Fechar limites/priorização de resumo e observações, incluindo diagnóstico de overflow.
+
+### Etapa 9 — Casos de muitos dados
+
+Fechar múltiplos MACs, muitos Procedimentos/observações e demais situações que pressionem a única A4.
+
+### Etapa 10 — Nomes + temporários
+
+Fechar naming, materialização local, paths controlados e limpeza.
+
+### Etapa 11 — QR/barcode
+
+Somente se houver benefício operacional aprovado.
+
+### Etapa 12 — validação técnica final
+
+Fechar matriz corporativa, limites de recursos, erros e critérios técnicos antes da implementação.
+
+## Gate para abrir a Etapa 7
+
+A Etapa 7 só pode iniciar depois de:
+
+```text
+Etapa 6 consolidada
+→ PR validado
+→ squash merge em main
+→ branch da Etapa 6 removida
+→ remoto somente com main
+→ zero PRs abertos
+```
+
+## Bloco 11 — Backup/Restore
+
+Permanece pendente para fechar pacote, atomicidade, checksums, retenção, restart/reconexão, sessões e disaster recovery local.
+
+## Bloco 12 / antes da implementação
+
+Permanecem pendentes:
+
+- parâmetros finais de autenticação;
+- Gerência × configuração da empresa;
+- Gerência × Backup;
+- regra editorial de categoria arquivada em nova revisão;
+- forma física final dos snapshots históricos necessários;
+- árvore oficial/migrations/scripts/testes;
+- plano da Fase 2;
+- sincronização explícita de `C:\dev\StepFlow` com o remoto, preservando alterações preexistentes do PO.
 
 Não criar scaffold, runtime definitivo ou código de negócio durante a Fase 1.
 
