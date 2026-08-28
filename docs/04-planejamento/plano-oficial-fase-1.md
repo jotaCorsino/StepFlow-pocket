@@ -24,7 +24,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–8 CONSOLIDADAS / ETAPA 9 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–9 CONSOLIDADAS / ETAPA 10 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -47,6 +47,7 @@ Fazem parte da Fase 1:
 - PDF próprio + preview da Ficha;
 - template físico A4 da Ficha;
 - limites textuais orientativos e política de overflow da Ficha;
+- projeção compacta de MACs e regras para dados multiplicativos/excepcionais;
 - estados transversais;
 - matriz operacional de capacidades;
 - códigos `AT-000001` / `EQP-000001`;
@@ -65,7 +66,7 @@ Direção transversal:
 - stepper representa navegação, não conclusão operacional;
 - informação secundária sob demanda e baixa densidade textual quando possível.
 
-A Tela 05 incorpora `Observação do serviço` por Etapa somente no contexto operacional. A Tela 14 consolida a Ficha como prestação de contas resumida, PDF/preview, template físico A4 e política de limites/overflow.
+A Tela 05 incorpora `Observação do serviço` por Etapa somente no contexto operacional. A Tela 14 consolida a Ficha como prestação de contas resumida, PDF/preview, template físico A4, política de limites/overflow e regras de dados excepcionais.
 
 ## Bloco 9 — Execução operacional / Atendimentos
 
@@ -88,7 +89,7 @@ Consolidado:
 
 ## Bloco 10 — Exportação e impressão
 
-**Status: EM ANDAMENTO — Etapas 1–8 consolidadas; Etapa 9 próxima, ainda não aberta.**
+**Status: EM ANDAMENTO — Etapas 1–9 consolidadas; Etapa 10 próxima, ainda não aberta.**
 
 Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 
@@ -104,8 +105,8 @@ Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 | 6 | PDF + preview da Ficha compacta | **CONSOLIDADO / APROVADO PELO PO** |
 | 7 | Template físico A4 da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
 | 8 | Limites textuais e densidade da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
-| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 10 | Nomes de arquivo + artefatos temporários | PENDENTE |
+| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **CONSOLIDADO / APROVADO PELO PO** |
+| 10 | Nomes de arquivo + artefatos temporários | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
 
@@ -168,13 +169,28 @@ Contrato aprovado:
 - sem IA, resumo automático, truncamento, reticências, deduplicação semântica, modo compacto ou redução automática de fonte/margem/espaçamento;
 - hard limits técnicos de storage/API não são derivados da A4.
 
+### Etapa 9 — dados excepcionais e multiplicidade
+
+Contrato aprovado:
+
+- Ficha permanece projeção client-facing resumida e não dump integral do domínio;
+- Procedimentos vinculados ficam fora da Ficha por padrão, independentemente da quantidade;
+- MACs: 0 omite; 1–2 exibem valores compactos; 3+ exibem apenas a quantidade cadastrada;
+- labels existentes podem contextualizar MACs; não inventar `MAC principal`;
+- observações legítimas não recebem cap de quantidade nem descarte automático;
+- multiplicidade real pode produzir `SHEET_OVERFLOW` e exigir revisão humana consciente dos textos reais;
+- campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
+- diagnóstico pode indicar quantidade de observações, Etapa específica ou campo estruturado longo;
+- não existem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou modo compacto para resolver multiplicidade;
+- limites técnicos finais permanecem para a Etapa 12.
+
 ## Gate atual
 
-A Etapa 9 só pode ser aberta após:
+A Etapa 10 só pode ser aberta após:
 
 ```text
-squash merge da Etapa 8
-→ apagar branch remota da Etapa 8
+squash merge da Etapa 9
+→ apagar branch remota da Etapa 9
 → verificar remoto somente com main
 → verificar zero PRs abertos
 ```
@@ -183,7 +199,6 @@ squash merge da Etapa 8
 
 ### Bloco 10
 
-- Etapa 9: muitos MACs/Procedimentos/observações e outros dados excepcionais;
 - Etapa 10: nomes + temporários;
 - Etapa 11: QR/barcode somente se aprovado;
 - Etapa 12: validação técnica final/matriz real/limites.
