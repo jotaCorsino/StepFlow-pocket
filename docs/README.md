@@ -50,7 +50,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 - `11-meu-perfil.md` — Meu perfil;
 - `12-configuracoes-categorias.md` — Configurações/Categorias;
 - `13-backup-restauracao.md` — Backup/Restauração UX;
-- `14-exportacao-impressao-ficha.md` — Procedimentos + Ficha compacta/PDF/preview/template A4/limites;
+- `14-exportacao-impressao-ficha.md` — Procedimentos + Ficha compacta/PDF/preview/template A4/limites/dados excepcionais;
 - `15-estados-transversais.md` — Estados transversais.
 
 ### Arquitetura — `03-arquitetura`
@@ -70,7 +70,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–8 consolidadas, Etapa 9 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–9 consolidadas, Etapa 10 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -88,7 +88,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 
 ## Estado atual
 
-**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–8 consolidadas. Etapa 9 — Múltiplos MACs / Procedimentos / dados excepcionais é a próxima, ainda não aberta.**
+**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–9 consolidadas. Etapa 10 — Nomes de arquivo + artefatos temporários é a próxima, ainda não aberta.**
 
 Direção consolidada:
 
@@ -107,12 +107,15 @@ Direção consolidada:
 - soft limits orientativos: Resumo 600, Atendimento 400, Equipamento 300 e observação por Etapa 280 caracteres;
 - `SHEET_OVERFLOW` bloqueia somente a geração da Ficha e nunca destrói/trunca o dado operacional;
 - correção de overflow ocorre nos campos reais, sem editor paralelo ou compactação automática;
+- Procedimentos vinculados não são listados na Ficha por padrão;
+- MACs usam projeção compacta: 1–2 valores, 3+ somente quantidade cadastrada;
+- observações legítimas não sofrem cap/descarte automático; multiplicidade pode causar overflow real;
 - sem assinatura, financeiro, checklist, timeline, página 2 ou QR por padrão.
 
-## Gate antes da Etapa 9
+## Gate antes da Etapa 10
 
 ```text
-squash merge da Etapa 8
+squash merge da Etapa 9
 → remoção da branch remota
 → remoto somente com main
 → zero PRs abertos
@@ -120,7 +123,6 @@ squash merge da Etapa 8
 
 ## Pendências vigentes
 
-- Etapa 9: dados excepcionais/multiplicativos;
 - Etapa 10: nomes + temporários;
 - Etapa 11: QR/barcode apenas se aprovado;
 - Etapa 12: validação técnica final;

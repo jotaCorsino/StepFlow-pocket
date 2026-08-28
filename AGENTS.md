@@ -12,7 +12,7 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 concluídos; Bloco 5 com núcleo concluído e parâmetros finais pendentes; Bloco 6 consolidado conceitualmente; Bloco 7 concluído no núcleo; Blocos 8 e 9 concluídos.
-- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–8 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 9 — Múltiplos MACs / Procedimentos / dados excepcionais é a próxima e ainda não está aberta**.
+- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–9 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 10 — Nomes de arquivo + artefatos temporários é a próxima e ainda não está aberta**.
 - Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade
@@ -114,7 +114,7 @@ Durante o fechamento documental restante da Fase 1:
 - remoto é a fonte operacional;
 - sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex.
 
-**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 9** pode começar antes de a **Etapa 8** estar squash-mergeada, a branch da Etapa 8 removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
+**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 10** pode começar antes de a **Etapa 9** estar squash-mergeada, a branch da Etapa 9 removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
 
 ## Regras operacionais
 
@@ -231,7 +231,7 @@ Atendimento/Ficha:
 - `Cancelado`: saída identifica o estado;
 - Ficha prioriza serviço/dispositivo/resumo/observações, não checklist/timeline detalhados.
 
-## Bloco 10 — arquitetura documental consolidada / Etapas 1–8
+## Bloco 10 — arquitetura documental consolidada / Etapas 1–9
 
 ### Etapa 1 — arquitetura
 
@@ -339,9 +339,21 @@ Atendimento/Ficha:
 - sem IA/resumo automático, truncamento, reticências, deduplicação semântica, modo compacto ou redução automática de fonte/margem/espaçamento;
 - hard limits técnicos de storage/API não derivam da A4.
 
+### Etapa 9 — dados excepcionais e multiplicidade
+
+- Ficha é projeção client-facing resumida, não dump do domínio;
+- Procedimentos vinculados permanecem fora da Ficha por padrão, independentemente da quantidade;
+- MACs: 0 omite; 1–2 exibem valores compactos; 3+ exibem apenas a quantidade cadastrada;
+- labels existentes podem contextualizar MACs; não inventar `MAC principal`;
+- observações legítimas não recebem cap/descarte automático;
+- multiplicidade real pode resultar em `SHEET_OVERFLOW` e exigir revisão humana dos textos reais;
+- campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
+- diagnóstico pode indicar quantidade de observações, Etapa específica ou campo estruturado longo;
+- sem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou compactação automática;
+- limites técnicos finais de quantidade/payload/recursos ficam para a Etapa 12.
+
 ## Pendências ainda não consolidáveis para implementação
 
-- Etapa 9: muitos MACs/Procedimentos/observações e dados excepcionais;
 - Etapa 10: nomes/paths/limpeza concretos de artefatos temporários;
 - Etapa 11: QR/barcode apenas se benefício aprovado;
 - Etapa 12: matriz técnica final e limites de recursos;

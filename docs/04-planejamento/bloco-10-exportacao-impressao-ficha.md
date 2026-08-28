@@ -1,6 +1,6 @@
 # Bloco 10 — Exportação / Impressão + Ficha Compacta
 
-**Status:** EM ANDAMENTO — ETAPAS 1–8 CONSOLIDADAS / ETAPA 9 PRÓXIMA  
+**Status:** EM ANDAMENTO — ETAPAS 1–9 CONSOLIDADAS / ETAPA 10 PRÓXIMA  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-25  
 **Etapa 1 consolidada:** 2026-08-25  
@@ -10,7 +10,8 @@
 **Etapa 5 consolidada:** 2026-08-27  
 **Etapa 6 consolidada:** 2026-08-28  
 **Etapa 7 consolidada:** 2026-08-28  
-**Etapa 8 consolidada:** 2026-08-28
+**Etapa 8 consolidada:** 2026-08-28  
+**Etapa 9 consolidada:** 2026-08-28
 
 ## 1. Objetivo
 
@@ -40,8 +41,8 @@ Não pertence a este bloco implementar código de produção, fechar Backup/Rest
 | 6 | PDF + preview da Ficha compacta | **CONSOLIDADO / APROVADO PELO PO** |
 | 7 | Template físico A4 da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
 | 8 | Limites textuais e densidade da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
-| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 10 | Nomes de arquivo + artefatos temporários | PENDENTE |
+| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **CONSOLIDADO / APROVADO PELO PO** |
+| 10 | Nomes de arquivo + artefatos temporários | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
 
@@ -330,7 +331,7 @@ Serial ABC123 · Patrimônio PAT-884
 - armazenamento não assume sempre SSD;
 - campos não aplicáveis/vazios desaparecem;
 - sem Equipamento, a seção inteira colapsa;
-- MAC permanece para Etapa 9.
+- MAC segue a projeção compacta consolidada na Etapa 9.
 
 ## 11. Serviço realizado e Observações
 
@@ -501,15 +502,104 @@ Hard limits técnicos de storage/API não derivam do tamanho da A4; ficam para o
 
 ---
 
+# Etapa 9 — Múltiplos MACs / Procedimentos / dados excepcionais
+
+**Status:** CONSOLIDADO / APROVADO PELO PO
+
+## 19. Princípio de projeção
+
+A Ficha é uma **projeção client-facing resumida**, não uma serialização completa do Atendimento.
+
+```text
+dado operacional completo
+→ permanece preservado no domínio/histórico
+
+Ficha
+→ projeta apenas o que ajuda o cliente a entender o serviço
+```
+
+Multiplicidade não autoriza truncar o domínio nem obriga imprimir toda a estrutura interna.
+
+Não introduzir por causa desta Etapa:
+
+- `include_in_sheet` ou `sheet_priority` no domínio;
+- editor paralelo da Ficha;
+- seleção manual transitória de itens apenas para impressão;
+- segunda página;
+- modo compacto alternativo;
+- redução automática de fonte, margem ou espaçamento.
+
+## 20. Procedimentos vinculados
+
+Procedimentos/revisões vinculados permanecem como **proveniência operacional e histórica** e não entram na Ficha por padrão, independentemente da quantidade.
+
+O cliente recebe a síntese pelo `Resumo do trabalho` e pelas observações client-facing aplicáveis. Não imprimir lista de Procedimentos apenas porque existem vários vínculos.
+
+Essa regra não apaga nem reduz os vínculos internos usados para histórico, auditoria e reprodutibilidade.
+
+## 21. Múltiplos MACs
+
+A projeção de identificadores de rede é determinística:
+
+```text
+0 MACs
+→ omitir
+
+1 MAC
+→ exibir valor compactamente
+
+2 MACs
+→ exibir ambos compactamente
+
+3+ MACs
+→ exibir somente a quantidade
+   "MACs: N identificadores cadastrados"
+```
+
+- labels existentes, como `LAN` ou `Wi-Fi`, podem contextualizar os valores exibidos;
+- não inventar `MAC principal` se o domínio não possui essa semântica;
+- não escolher arbitrariamente dois MACs entre três ou mais como se fossem prioritários;
+- a lista completa continua preservada no domínio e nas superfícies operacionais apropriadas.
+
+## 22. Muitas observações e dados excepcionais
+
+Observações legítimas de serviço por Etapa continuam candidatas à Ficha na ordem consolidada. Não existe cap automático do tipo “mostrar somente as primeiras N”.
+
+```text
+muitas observações legítimas
+→ renderizar normalmente
+→ se couber: Ficha válida
+→ se não couber: SHEET_OVERFLOW
+```
+
+Isso é aceitável: alguns Atendimentos podem exigir revisão humana consciente dos textos reais antes de produzir uma Ficha de uma página.
+
+Campos estruturados excepcionalmente longos — como nome, SO, serial, patrimônio ou label — quebram linha quando a diagramação permitir. Não usar truncamento, reticências ou abreviação inventada para fazê-los caber.
+
+## 23. Diagnóstico de multiplicidade
+
+O diagnóstico semântico de `SHEET_OVERFLOW` pode indicar pressão causada por quantidade ou por campo estruturado longo, por exemplo:
+
+```text
+contributors:
+- stage_notes_count
+- stage_note:<stage_id>
+- long_structured_field:<field>
+```
+
+Não incluir `process_count` como contribuinte visual enquanto Procedimentos não forem renderizados na Ficha.
+
+A projeção compacta de 3+ MACs reduz a multiplicidade antes do layout; o Host não precisa fingir que cada identificador oculto consumiu espaço físico.
+
+Limites técnicos finais de quantidade/payload/recursos permanecem para a Etapa 12 e não são inferidos da geometria da A4.
+
+---
+
 # Etapas seguintes
 
-## Etapa 9 — Múltiplos MACs / Procedimentos / dados excepcionais
+## Etapa 10 — Nomes + temporários
 
 **Status:** PRÓXIMA — AINDA NÃO EM ANÁLISE
-
-Definirá comportamento com muitos MACs, muitos Procedimentos, muitas observações e outros casos multiplicativos/excepcionais que pressionem a única A4 sem reabrir o template base.
-
-## Etapa 10 — Nomes + temporários
 
 Definirá naming, materialização local, paths controlados, lifecycle e limpeza de artefatos transitórios.
 
@@ -521,12 +611,12 @@ Só entra se houver benefício operacional aprovado; não é requisito por padr�
 
 Fechará matriz real de Windows/WebView2/Office compatível, impressão, limites de recursos, casos de erro e critérios técnicos antes da implementação.
 
-## 19. Gate atual
+## 24. Gate atual
 
-A Etapa 8 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
+A Etapa 9 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
 
 ```text
-PR da Etapa 8
+PR da Etapa 9
 → validação
 → ready
 → squash merge em main
@@ -534,4 +624,4 @@ PR da Etapa 8
 → verificar somente main + zero PRs abertos
 ```
 
-Somente depois disso a Etapa 9 pode ser aberta.
+Somente depois disso a Etapa 10 pode ser aberta.

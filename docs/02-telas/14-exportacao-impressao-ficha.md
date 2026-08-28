@@ -5,7 +5,7 @@
 - código/nome da tela: Tela 14 — Exportação / Impressão + Ficha Compacta — UX;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
 - bloco original: Fase 1 — Bloco 8 (UI/UX);
-- atualização técnica/funcional: Bloco 10 / Etapas 1–8;
+- atualização técnica/funcional: Bloco 10 / Etapas 1–9;
 - última consolidação: 2026-08-28.
 
 ## 2. Objetivo
@@ -208,7 +208,18 @@ Quando aplicável:
 
 O documento usa dados já cadastrados/snapshot aplicável; não exige redigitação para imprimir.
 
-Prioriza identificação/nome/tipo, processador, RAM, armazenamento HD/SSD, sistema operacional quando útil, serial/patrimônio quando úteis, saúde da bateria quando aplicável e observações relevantes. MAC segue regra própria da Etapa 9.
+Prioriza identificação/nome/tipo, processador, RAM, armazenamento HD/SSD, sistema operacional quando útil, serial/patrimônio quando úteis, saúde da bateria quando aplicável e observações relevantes.
+
+MACs usam projeção compacta e determinística:
+
+```text
+0 MACs → omitir
+1 MAC  → exibir valor
+2 MACs → exibir ambos
+3+     → "MACs: N identificadores cadastrados"
+```
+
+Labels existentes podem contextualizar os valores exibidos. Não inventar `MAC principal` nem escolher arbitrariamente dois identificadores entre três ou mais.
 
 Campos vazios/não aplicáveis são omitidos.
 
@@ -217,6 +228,8 @@ Campos vazios/não aplicáveis são omitidos.
 Durante a execução vinculada, cada Etapa pode receber `Observação do serviço` opcional no Reader.
 
 Quando houver conteúdo, essas observações entram na prestação de contas de forma resumida e legível. O texto completo da Etapa não precisa ser reproduzido; um nome curto da Etapa só aparece quando necessário para contextualizar a observação.
+
+Observações legítimas não recebem cap automático de quantidade nem descarte apenas para caber na Ficha.
 
 ## 14. O que não aparece por padrão
 
@@ -230,9 +243,10 @@ Para preservar uma folha limpa e útil ao cliente, não imprimir por padrão:
 - IDs internos;
 - detalhes de concorrência;
 - lista detalhada de revisões técnicas utilizadas;
+- lista de Procedimentos vinculados;
 - metadados editoriais que não ajudam o cliente a entender o serviço.
 
-Os vínculos/revisões continuam preservados internamente para histórico e consistência.
+Os vínculos/revisões continuam preservados internamente para histórico e consistência. A quantidade de Procedimentos não muda essa regra: eles são proveniência operacional/histórica, não conteúdo client-facing por padrão.
 
 ## 15. Atendimento sem Equipamento
 
@@ -316,7 +330,18 @@ Não usar para “resolver” overflow:
 
 Ordem normal das observações: Atendimento → Equipamento → Etapas na ordem executada. Textos semelhantes não são deduplicados automaticamente.
 
-Dados multiplicativos/excepcionais pertencem à Etapa 9.
+### Multiplicidade e dados excepcionais
+
+A Ficha é uma projeção client-facing, não dump completo do domínio.
+
+- Procedimentos vinculados permanecem fora da Ficha por padrão, seja um ou vários;
+- 1–2 MACs aparecem compactamente; 3+ MACs são representados apenas pela quantidade cadastrada;
+- muitas observações legítimas continuam candidatas à Ficha; se não couberem, o resultado correto é `SHEET_OVERFLOW`;
+- campos estruturados excepcionalmente longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
+- o diagnóstico pode apontar `stage_notes_count`, `stage_note:<stage_id>` ou `long_structured_field:<field>`;
+- não criar `include_in_sheet`, `sheet_priority`, seleção transitória de itens ou editor paralelo apenas para resolver multiplicidade.
+
+É aceitável que um Atendimento real exija revisão humana consciente dos textos antes de produzir uma Ficha de uma página.
 
 ## 17. Template físico consolidado
 
@@ -375,7 +400,7 @@ Windows 11 Pro 24H2 · Bateria 82%
 Serial ABC123 · Patrimônio PAT-884
 ```
 
-Armazenamento não assume sempre SSD; o valor real do domínio é apresentado. Campos ausentes desaparecem e a seção inteira colapsa quando não houver Equipamento.
+Armazenamento não assume sempre SSD; o valor real do domínio é apresentado. Campos ausentes desaparecem e a seção inteira colapsa quando não houver Equipamento. MACs seguem a projeção compacta da Etapa 9.
 
 ### Serviço realizado
 
@@ -491,7 +516,6 @@ Estados mínimos incluem preparando ficha, preparando prévia, pronta, desatuali
 
 ## 23. Pendências restantes do Bloco 10
 
-- Etapa 9 — múltiplos MACs/Procedimentos/observações e casos excepcionais;
 - Etapa 10 — nomes de arquivo + temporários;
 - Etapa 11 — QR/barcode somente se houver benefício aprovado;
 - Etapa 12 — validação técnica final/matriz/limites de recursos.
@@ -532,5 +556,11 @@ Estados mínimos incluem preparando ficha, preparando prévia, pronta, desatuali
 20. `SHEET_OVERFLOW` bloqueia somente a geração da Ficha e preserva integralmente o Atendimento;
 21. correção do overflow ocorre nos dados reais, guiada por diagnóstico semântico do Host, sem editor paralelo;
 22. não há IA/resumo automático, truncamento, deduplicação semântica ou compactação automática para caber;
-23. DOCX da Ficha não é requisito inicial;
-24. QR/barcode permanece pendente de benefício operacional explícito.
+23. Procedimentos vinculados não são listados na Ficha por padrão, independentemente da quantidade;
+24. MACs usam projeção determinística: 0 omite, 1–2 exibem valores, 3+ exibem apenas a quantidade cadastrada;
+25. não existe `MAC principal` por inferência;
+26. observações legítimas não sofrem cap/descarte automático e multiplicidade pode causar `SHEET_OVERFLOW`;
+27. campos estruturados longos quebram linha quando possível, sem truncamento/reticências/abreviação inventada;
+28. não existem `include_in_sheet`, `sheet_priority`, seleção transitória ou editor paralelo para resolver multiplicidade;
+29. DOCX da Ficha não é requisito inicial;
+30. QR/barcode permanece pendente de benefício operacional explícito.
