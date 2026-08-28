@@ -5,8 +5,8 @@
 - código/nome da tela: Tela 09 — Atendimento / Execução + Equipamento;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
 - bloco original: Fase 1 — Bloco 8 (UI/UX);
-- atualização operacional: Bloco 9;
-- última consolidação: 2026-08-25.
+- atualização operacional: Bloco 9 + Bloco 10 / Etapa 6;
+- última consolidação: 2026-08-28.
 
 ## 2. Objetivo
 
@@ -20,7 +20,8 @@ Ser o workspace principal de um Atendimento real, reunindo numa única página v
 - Procedimentos/revisões utilizados;
 - progresso/checklist operacional;
 - resumo do trabalho;
-- observações;
+- observações gerais;
+- observações de serviço registradas durante as Etapas;
 - histórico operacional compacto;
 - `Ficha / Imprimir`.
 
@@ -160,6 +161,8 @@ HISTÓRICO
 25/08 10:28 · Equipamento EQP-0031 vinculado · Maria
 ```
 
+As observações específicas de execução ficam junto da Etapa correspondente no Reader operacional, em vez de criar uma lista textual permanente adicional na Tela 09.
+
 Ações aparecem somente quando estado + capacidade permitirem.
 
 ## 7. Novo Atendimento
@@ -215,9 +218,11 @@ Campos principais:
 - responsável/técnico;
 - `started_at`/datas de lifecycle quando relevantes;
 - resumo do trabalho;
-- observações.
+- observações gerais.
 
 `Resumo do trabalho` é obrigatório para conclusão, não necessariamente para primeiro save.
+
+Observações de serviço por Etapa são dados operacionais separados das observações gerais do Atendimento e do cadastro do Equipamento.
 
 ## 10. Responsável
 
@@ -239,11 +244,12 @@ Conforme capacidade, pode alterar:
 - cliente;
 - responsável;
 - resumo;
-- observações;
+- observações gerais;
 - vínculo de Equipamento;
 - cadastro do Equipamento em fluxo separado;
 - Procedimentos/revisões;
-- checklist operacional.
+- checklist operacional;
+- observações de serviço por Etapa no Reader operacional.
 
 ### Concluído
 
@@ -254,6 +260,7 @@ Permitido conforme capacidade:
 - consultar;
 - abrir revisões usadas;
 - consultar checklist final;
+- consultar observações de serviço registradas;
 - reimprimir ficha;
 - reabrir.
 
@@ -278,6 +285,8 @@ Salvamento é explícito; não existe autosave inicial.
 - evento remoto não substitui formulário;
 - resultado incerto após desconexão é reconciliado, não repetido cegamente.
 
+Recursos granulares, como checklist e observação de serviço por Etapa, podem usar mutações próprias sem transformar cada alteração em save global de toda a Tela 09.
+
 ## 13. Concluir Atendimento
 
 Disponível apenas em `Em andamento` e conforme capacidade.
@@ -299,7 +308,8 @@ Não são obrigatórios por si só:
 - OS;
 - cliente;
 - Equipamento;
-- Procedimento vinculado.
+- Procedimento vinculado;
+- observação de serviço por Etapa.
 
 ### Checklist incompleto
 
@@ -321,9 +331,12 @@ Host:
 - grava `Concluído`;
 - define `completed_at`;
 - preserva revisões usadas/checklist final;
+- preserva o estado final aplicável das observações de serviço por Etapa;
 - congela projeção relevante do Equipamento;
 - registra evento;
 - publica pós-commit.
+
+O histórico precisa permitir reimprimir a prestação de contas do estado final aplicável mesmo se o Atendimento for reaberto e alterado depois.
 
 ## 14. Cancelar Atendimento
 
@@ -356,8 +369,9 @@ Disponível em `Concluído` ou `Cancelado`.
 - auditável;
 - volta para `Em andamento`;
 - preserva histórico anterior;
-- checklist/vínculos continuam disponíveis;
-- nova conclusão grava novo estado final.
+- checklist, observações de serviço e vínculos continuam disponíveis;
+- nova conclusão grava novo estado final;
+- alteração posterior não reescreve silenciosamente a ficha histórica de conclusão anterior.
 
 ## 16. Equipamento opcional
 
@@ -473,6 +487,8 @@ Cada item mostra:
 
 A revisão nunca é atualizada automaticamente após nova publicação.
 
+Esses detalhes são importantes para operação/histórico interno, mas não precisam aparecer por padrão na Ficha entregue ao cliente.
+
 ## 22. Adicionar Procedimento
 
 Enquanto `Em andamento` e autorizado:
@@ -492,13 +508,13 @@ Se Atendimento veio do Reader, a revisão consultada pode estar pré-selecionada
 
 Somente `Em andamento` + capacidade.
 
-Se houver checklist marcado:
+Se houver checklist marcado ou observação de serviço registrada para aquele vínculo:
 
 - mostrar confirmação;
 - remover da composição ativa somente após ação consciente;
-- preservar auditoria da remoção.
+- preservar auditoria/histórico necessário.
 
-## 24. Executar Procedimento / Checklist
+## 24. Executar Procedimento / Checklist / Observação
 
 Ação `Executar` abre Tela 05 na revisão exata e contexto do Atendimento.
 
@@ -509,9 +525,14 @@ Atendimento AT-00142
 → Reader: "Executando no atendimento AT-00142"
 ```
 
-Checklist nesse contexto é persistente.
+Nesse contexto:
 
-Em Reader standalone, continua documental.
+- checklist é persistente;
+- cada Etapa pode receber `Observação do serviço` opcional;
+- a observação fica vinculada ao Atendimento, revisão e Etapa;
+- a observação não altera o Procedimento original.
+
+Em Reader standalone, checklist e observação operacional não persistem.
 
 ## 25. Progresso
 
@@ -525,15 +546,26 @@ Atendimento   6 de 8
 
 - deriva apenas de checklist;
 - etapas visitadas não contam;
+- observações de serviço não contam;
 - revisão sem checklist não mostra 0%;
 - 100% não conclui automaticamente.
 
-## 26. Concorrência do checklist
+## 26. Concorrência operacional granular
+
+Checklist:
 
 - controle granular por item/equivalente;
 - usuários marcando itens diferentes não conflitam globalmente;
-- mesmo item concorrente recebe resultado determinístico/conflito apropriado;
-- não usar revisão global do Atendimento para invalidar todo checkbox por conveniência.
+- mesmo item concorrente recebe resultado determinístico/conflito apropriado.
+
+Observação de serviço:
+
+- controle granular por Etapa/equivalente;
+- alteração em uma Etapa não invalida observação independente de outra Etapa;
+- conflito do mesmo campo preserva texto local e exige reconciliação apropriada;
+- evento remoto não sobrescreve texto em edição silenciosamente.
+
+Não usar revisão global do Atendimento para invalidar todo checkbox ou toda observação por conveniência.
 
 ## 27. Histórico operacional compacto
 
@@ -547,7 +579,7 @@ Eventos de alto valor podem aparecer numa área/painel compacto:
 - cancelado + motivo;
 - reaberto.
 
-Não mostrar timeline enorme de cada checkbox/campo por padrão.
+Não mostrar timeline enorme de cada checkbox, observação de Etapa ou campo por padrão. Auditoria técnica pode preservar informação proporcional sem poluir a UI.
 
 ## 28. Ficha / Imprimir
 
@@ -559,20 +591,48 @@ Preset de capacidade:
 
 Lifecycle:
 
-- `Em andamento`: pode gerar ficha de acompanhamento;
+- `Em andamento`: pode gerar ficha de acompanhamento a partir do estado confirmado;
 - `Concluído`: pode reimprimir usando estado histórico aplicável;
 - `Cancelado`: saída precisa identificar claramente o estado;
 - alterações não salvas/conflitos bloqueiam geração.
 
-A ficha:
+A Ficha é uma **prestação de contas resumida ao cliente**, não relatório técnico completo.
+
+Prioriza, quando aplicável:
+
+- identificação do Atendimento/serviço;
+- cliente/solicitante e responsável/técnico sem excesso de metadados;
+- identificação do Equipamento;
+- processador;
+- RAM;
+- armazenamento HD/SSD;
+- sistema operacional quando útil;
+- saúde da bateria quando aplicável e informada;
+- observações do Equipamento;
+- `Resumo do trabalho`;
+- observações gerais do Atendimento;
+- observações de serviço por Etapa que tenham sido registradas.
+
+Por padrão não precisa imprimir:
+
+- checklist completo;
+- percentual/progresso;
+- etapas/passos do Procedimento;
+- comandos;
+- timeline operacional;
+- IDs técnicos internos;
+- lista detalhada de revisões utilizadas.
+
+A Ficha:
 
 - usa estado confirmado do Host;
 - pode existir com ou sem Equipamento;
 - nunca é screenshot;
-- máximo uma página A4;
+- possui PDF próprio e preview do mesmo layout;
+- ocupa exatamente uma única folha física quando gerada com sucesso;
 - usa identidade central da empresa.
 
-Template, preview, PDF específico, margens, limites textuais e impressão Windows ficam no Bloco 10.
+Template físico final, limites/priorização textual e tratamento de excesso continuam nas Etapas 7–9 do Bloco 10.
 
 ## 29. Voltar para lista
 
@@ -609,6 +669,7 @@ Segue Tela 15:
 - cliente é opcional;
 - responsável obrigatório para conclusão;
 - resumo obrigatório para conclusão;
+- observação de serviço é opcional e vinculada à Etapa/revisão em execução;
 - cancelamento exige motivo;
 - lifecycle é transição explícita, não dropdown livre.
 
@@ -631,9 +692,10 @@ Pós-commit podem sinalizar:
 - Equipamento alterado/vinculado;
 - Procedimento vinculado/removido;
 - checklist alterado;
+- observação de serviço por Etapa alterada;
 - conclusão/reabertura/cancelamento.
 
-Client reconsulta estado relevante; nunca sobrescreve formulário local silenciosamente.
+Client reconsulta estado relevante; nunca sobrescreve formulário/texto local silenciosamente.
 
 ## 33. Acessibilidade e janelas
 
@@ -642,6 +704,7 @@ Client reconsulta estado relevante; nunca sobrescreve formulário local silencio
 - foco visível;
 - icon-only com nome acessível;
 - listas/checklists operáveis por teclado;
+- campos de observação com label inequívoco;
 - mensagens não dependem só de cor;
 - desktop Windows como alvo;
 - em janela menor, colunas empilham sem transformar em UI mobile/hamburger.
@@ -663,10 +726,13 @@ Client reconsulta estado relevante; nunca sobrescreve formulário local silencio
 - revisão exata do Procedimento é preservada;
 - Funcionário usa revisão publicada por padrão;
 - checklist persiste só em contexto de Atendimento;
+- observação de serviço persiste por Etapa somente em contexto de Atendimento;
 - progresso deriva só de checklist;
-- snapshot de Equipamento protege histórico concluído;
+- snapshot de Equipamento e estado final aplicável protegem histórico concluído;
+- ficha é prestação de contas resumida ao cliente;
 - ficha segue lifecycle e estado confirmado;
-- concorrência continua otimista e granular.
+- concorrência continua otimista e granular;
+- não há autosave/offline queue por inferência.
 
 ## 35. Fora do escopo
 
