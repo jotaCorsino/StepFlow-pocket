@@ -50,7 +50,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 - `11-meu-perfil.md` — Meu perfil;
 - `12-configuracoes-categorias.md` — Configurações/Categorias;
 - `13-backup-restauracao.md` — Backup/Restauração UX;
-- `14-exportacao-impressao-ficha.md` — Procedimentos + Ficha compacta/PDF/preview/template A4/limites/dados excepcionais;
+- `14-exportacao-impressao-ficha.md` — Procedimentos + Ficha compacta/PDF/preview/template A4/limites/dados excepcionais/naming/temporários;
 - `15-estados-transversais.md` — Estados transversais.
 
 ### Arquitetura — `03-arquitetura`
@@ -70,7 +70,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–9 consolidadas, Etapa 10 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–10 consolidadas, Etapa 11 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -88,7 +88,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 
 ## Estado atual
 
-**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–9 consolidadas. Etapa 10 — Nomes de arquivo + artefatos temporários é a próxima, ainda não aberta.**
+**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–10 consolidadas. Etapa 11 — QR / barcode é a próxima, ainda não aberta.**
 
 Direção consolidada:
 
@@ -110,12 +110,16 @@ Direção consolidada:
 - Procedimentos vinculados não são listados na Ficha por padrão;
 - MACs usam projeção compacta: 1–2 valores, 3+ somente quantidade cadastrada;
 - observações legítimas não sofrem cap/descarte automático; multiplicidade pode causar overflow real;
+- nomes persistentes são previsíveis e sanitizados para Windows; Ficha usa somente o código do Atendimento por padrão;
+- temporários pertencem ao Client, usam nomes opacos sem dados de negócio e só são materializados quando uma integração local exigir filesystem;
+- cleanup é best-effort e não usa serviço, daemon ou tarefa agendada;
+- arquivo salvo pelo usuário não entra no lifecycle de cleanup do StepFlow;
 - sem assinatura, financeiro, checklist, timeline, página 2 ou QR por padrão.
 
-## Gate antes da Etapa 10
+## Gate antes da Etapa 11
 
 ```text
-squash merge da Etapa 9
+squash merge da Etapa 10
 → remoção da branch remota
 → remoto somente com main
 → zero PRs abertos
@@ -123,7 +127,6 @@ squash merge da Etapa 9
 
 ## Pendências vigentes
 
-- Etapa 10: nomes + temporários;
 - Etapa 11: QR/barcode apenas se aprovado;
 - Etapa 12: validação técnica final;
 - parâmetros finais de autenticação;

@@ -5,7 +5,7 @@
 - código/nome da tela: Tela 14 — Exportação / Impressão + Ficha Compacta — UX;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
 - bloco original: Fase 1 — Bloco 8 (UI/UX);
-- atualização técnica/funcional: Bloco 10 / Etapas 1–9;
+- atualização técnica/funcional: Bloco 10 / Etapas 1–10;
 - última consolidação: 2026-08-28.
 
 ## 2. Objetivo
@@ -28,7 +28,8 @@ As duas superfícies compartilham a arquitetura documental do Host, mas possuem 
 - Client mantém a experiência local de salvar/preview/imprimir;
 - autorização real permanece no Host;
 - baixa densidade textual orienta preview e documento quando compatível com clareza;
-- a Ficha usa espaço apenas para informação existente e útil ao cliente.
+- a Ficha usa espaço apenas para informação existente e útil ao cliente;
+- arquivo persistente escolhido pelo usuário e artefato transitório interno possuem lifecycles distintos.
 
 ## 4. Dois fluxos separados
 
@@ -126,6 +127,14 @@ Baseline consolidado do Bloco 10:
 - PDF é a referência física de impressão; DOCX é refluível.
 
 Procedimentos podem ocupar várias páginas. O limite de uma A4 nunca se aplica ao Procedimento completo.
+
+Nome persistente sugerido:
+
+```text
+{codigo} - {titulo} - v{display_version} - r{revision_no}.{ext}
+```
+
+Sem `display_version`, omitir somente esse segmento. O usuário pode editar o nome no diálogo nativo antes de salvar. A sanitização do filename nunca altera o conteúdo documental.
 
 ## 9. Estados de geração documental
 
@@ -503,9 +512,44 @@ Ficha AT-000142                  [ salvar ] [ imprimir ] [ × ]
 
 Impressão reutiliza WebView2 dedicada/transitória + `ShowPrintUI(System)`. O StepFlow informa entrega do fluxo ao Windows, não confirmação física de papel impresso.
 
+### Nome persistente e save
+
+A Ficha sugere:
+
+```text
+{service_code} - Ficha.pdf
+```
+
+Não incluir por padrão cliente, equipamento, serial/patrimônio/MAC, resumo, técnico, status ou timestamp no filename. O usuário pode editar o nome no diálogo nativo.
+
+Conflito de nome nunca sobrescreve silenciosamente arquivo existente. O save só é sucesso após a gravação integral do arquivo aceito pelo usuário; quando suportado pela API/filesystem, preferir auxiliar opaco no mesmo diretório de destino e promoção/replace seguro ao final.
+
+### Artefatos transitórios internos
+
+```text
+bytes canônicos
+→ manter em memória quando suficiente
+→ materializar no Client somente se uma integração local exigir filesystem
+→ consumir
+→ remover best-effort após liberação
+```
+
+- temporários ficam em diretório temporário por usuário resolvido por API do sistema/Tauri, sob namespace StepFlow e subdiretório opaco por instância;
+- nomes temporários são opacos, como `print-<opaque-id>.pdf`, sem dados de negócio;
+- não usar pasta de instalação, compartilhamento central, dados SQLite, backup, Documents/Desktop/Downloads ou pasta final de exportação como raiz normal de temporários;
+- cada instância do Client isola seus temporários;
+- não apagar enquanto WebView2/Windows ainda puder usar o recurso;
+- lock de arquivo gera cleanup/retry seguro, nunca kill, alteração de ACL ou unlock forçado;
+- crash pode deixar órfãos; scavenging posterior é best-effort e restrito ao namespace transitório do StepFlow;
+- não criar Windows Service, Task Scheduler, daemon ou watchdog para limpeza;
+- falha de cleanup não altera retroativamente save/preview/print já concluído;
+- temporários/exportações não entram em SQLite, histórico ou backup por padrão.
+
 ## 22. Estados e acessibilidade
 
 Estados mínimos incluem preparando ficha, preparando prévia, pronta, desatualizada, cancelada pelo usuário, sem permissão, fonte indisponível, `SHEET_OVERFLOW`, falha de renderer/preview, Host indisponível e `SERVER_BUSY`.
+
+Para save/temporários, também distinguir falha de gravação, conflito de nome conduzido pelo diálogo do sistema e falha de cleanup não bloqueante.
 
 - não exibir percentual fictício;
 - ações operáveis por teclado;
@@ -516,7 +560,6 @@ Estados mínimos incluem preparando ficha, preparando prévia, pronta, desatuali
 
 ## 23. Pendências restantes do Bloco 10
 
-- Etapa 10 — nomes de arquivo + temporários;
 - Etapa 11 — QR/barcode somente se houver benefício aprovado;
 - Etapa 12 — validação técnica final/matriz/limites de recursos.
 
@@ -562,5 +605,14 @@ Estados mínimos incluem preparando ficha, preparando prévia, pronta, desatuali
 26. observações legítimas não sofrem cap/descarte automático e multiplicidade pode causar `SHEET_OVERFLOW`;
 27. campos estruturados longos quebram linha quando possível, sem truncamento/reticências/abreviação inventada;
 28. não existem `include_in_sheet`, `sheet_priority`, seleção transitória ou editor paralelo para resolver multiplicidade;
-29. DOCX da Ficha não é requisito inicial;
-30. QR/barcode permanece pendente de benefício operacional explícito.
+29. arquivo persistente escolhido pelo usuário é separado do lifecycle de temporários;
+30. Procedimento sugere filename com código, título, versão editorial quando houver e revisão técnica; Ficha sugere `{service_code} - Ficha.pdf`;
+31. sanitização de filename segue Windows e não altera conteúdo documental;
+32. conflito de nome não gera overwrite silencioso;
+33. temporário só é materializado no Client quando integração local precisa de filesystem;
+34. temporários usam raiz do sistema por usuário, isolamento por instância e nomes opacos sem dados de domínio;
+35. cleanup e scavenging são best-effort e restritos ao namespace StepFlow, sem serviço/daemon/tarefa agendada;
+36. save só é sucesso após gravação integral e promoção segura é preferida quando suportada;
+37. temporários/exportações não entram em SQLite, histórico ou backup por padrão;
+38. DOCX da Ficha não é requisito inicial;
+39. QR/barcode permanece pendente de benefício operacional explícito.

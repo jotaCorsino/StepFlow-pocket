@@ -6,7 +6,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-28  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–9 consolidadas; Etapa 10 próxima**  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–10 consolidadas; Etapa 11 próxima**  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida. Precedência e decisões completas permanecem em `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md` e documentos específicos.
@@ -25,7 +25,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–9 consolidadas |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–10 consolidadas |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -68,8 +68,8 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 7 | Template físico A4 da Ficha | ✅ Consolidado |
 | 8 | Limites textuais e densidade da Ficha | ✅ Consolidado |
 | 9 | Múltiplos MACs / Procedimentos / dados excepcionais | ✅ Consolidado |
-| 10 | Nomes de arquivo + artefatos temporários | 🟡 Próxima — ainda não aberta |
-| 11 | QR / barcode | ⏳ Pendente |
+| 10 | Nomes de arquivo + artefatos temporários | ✅ Consolidado |
+| 11 | QR / barcode | 🟡 Próxima — ainda não aberta |
 | 12 | Validação técnica final do Bloco 10 | ⏳ Pendente |
 
 ### Etapas 1–5 — Procedimentos
@@ -135,15 +135,31 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - sem `include_in_sheet`, editor paralelo, seleção transitória, modo compacto, segunda página ou redução automática do template;
 - limites técnicos finais permanecem para a Etapa 12.
 
+### Etapa 10 — nomes e artefatos temporários
+
+- arquivo salvo pelo usuário é persistente e separado dos artefatos transitórios internos;
+- Procedimento sugere `{codigo} - {titulo} - v{display_version} - r{revision_no}.{ext}`; sem versão editorial, omite o segmento `v...`;
+- Ficha sugere `{service_code} - Ficha.pdf`, sem cliente, equipamento, MAC, técnico ou resumo no filename;
+- sanitização segue regras de filename Windows e nunca altera conteúdo documental;
+- conflito de nome não sobrescreve silenciosamente arquivo existente;
+- temporário só é materializado no Client quando uma integração local realmente precisa de filesystem;
+- temporários ficam em raiz do sistema por usuário, sob namespace StepFlow e subdiretório opaco por instância;
+- filenames temporários são opacos e sem dados de negócio;
+- cleanup é best-effort após uso e no encerramento normal; crash pode deixar órfãos para scavenging posterior restrito ao namespace StepFlow;
+- sem Windows Service, Task Scheduler, daemon ou watchdog para limpeza;
+- save só é sucesso após gravação integral; arquivo auxiliar no mesmo destino e promoção segura são preferidos quando o filesystem/API suportarem;
+- temporários/exportações não entram em SQLite, histórico ou backup por padrão;
+- validações concretas de NTFS/SMB/WebView2, memória, paths e concorrência ficam para a Etapa 12.
+
 Fonte técnica: `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
 ## Gate atual
 
-A Etapa 10 não pode ser aberta antes de:
+A Etapa 11 não pode ser aberta antes de:
 
 ```text
-squash merge da Etapa 9
-→ remoção da branch remota da Etapa 9
+squash merge da Etapa 10
+→ remoção da branch remota da Etapa 10
 → remoto somente com main
 → zero PRs abertos
 ```
@@ -154,7 +170,7 @@ squash merge da Etapa 9
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- Etapas 10–12 do Bloco 10;
+- Etapas 11–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo;
 - estrutura oficial/Fase 2 no Bloco 12.
