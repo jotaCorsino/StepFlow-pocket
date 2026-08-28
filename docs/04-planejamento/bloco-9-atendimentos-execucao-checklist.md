@@ -3,11 +3,11 @@
 **Status:** CONSOLIDADO / APROVADO PELO PO  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-25  
-**Consolidação:** 2026-08-25
+**Consolidação:** 2026-08-28
 
 ## 1. Objetivo
 
-Fechar as regras operacionais de `Atendimento/Execução`, `Equipamento` e checklist persistente que permaneceram deliberadamente pendentes durante o Bloco 8, sem transformar o StepFlow em sistema burocrático de chamados.
+Fechar as regras operacionais de `Atendimento/Execução`, `Equipamento`, checklist persistente e observações de serviço, sem transformar o StepFlow em sistema burocrático de chamados.
 
 Este bloco consolida:
 
@@ -17,6 +17,7 @@ Este bloco consolida:
 - Equipamento opcional e reutilizável;
 - vínculo com revisões exatas de Procedimentos;
 - checklist persistente em contexto de execução;
+- observação de serviço opcional por Etapa;
 - progresso operacional;
 - histórico operacional proporcional;
 - concorrência específica;
@@ -25,7 +26,7 @@ Este bloco consolida:
 - preset para gestão de categorias;
 - capacidade e lifecycle de `Ficha / Imprimir`.
 
-Não pertence a este bloco fechar engine PDF/DOCX/impressão, template físico final da ficha, backup/restore técnico nem scaffold/runtime oficial.
+Não pertence a este bloco fechar engine documental, template físico final da ficha, backup/restore técnico nem scaffold/runtime oficial.
 
 ## 2. Contratos herdados
 
@@ -40,11 +41,11 @@ Permanecem consolidados:
 - Atendimento e Equipamento são dados oficiais do Host;
 - Clients nunca acessam SQLite diretamente;
 - concorrência relevante usa controle otimista;
-- ficha usa somente estado confirmado pelo Host;
+- ficha usa somente estado confirmado/histórico aplicável do Host;
 - ficha pode existir com ou sem Equipamento;
-- ficha permanece limitada a no máximo uma página A4;
+- ficha permanece limitada a uma página A4;
 - Reader standalone continua documental;
-- checklist persistente só existe em contexto operacional de Atendimento;
+- checklist e observações de serviço persistentes só existem em contexto operacional de Atendimento;
 - nenhuma edição offline, fila local persistente ou autosave é introduzida.
 
 ## 3. Lifecycle mínimo
@@ -119,10 +120,11 @@ Pode receber, conforme capacidade:
 - cliente/solicitante;
 - responsável;
 - resumo do trabalho;
-- observações;
+- observações gerais;
 - Equipamento vinculado;
 - Procedimentos/revisões vinculados;
-- checklist/progresso.
+- checklist/progresso;
+- observações de serviço por Etapa no Reader operacional.
 
 ### Concluído
 
@@ -133,6 +135,7 @@ Permitido:
 - consultar;
 - abrir revisões utilizadas;
 - consultar checklist final;
+- consultar observações de serviço registradas;
 - gerar/reimprimir ficha conforme capacidade;
 - reabrir quando autorizado.
 
@@ -166,7 +169,8 @@ Não são obrigatórios para conclusão:
 - cliente/solicitante;
 - Equipamento;
 - Procedimento vinculado;
-- checklist, quando a revisão utilizada não possuir itens.
+- checklist, quando a revisão utilizada não possuir itens;
+- observação de serviço por Etapa.
 
 ### 7.1 Checklist incompleto
 
@@ -192,11 +196,12 @@ Ao concluir, o Host:
 - define `completed_at`;
 - preserva revisões de Procedimentos utilizadas;
 - preserva o estado final dos checklists;
+- preserva o estado final aplicável das observações de serviço por Etapa;
 - congela a projeção histórica relevante do Equipamento para que alterações futuras do cadastro global não reescrevam o Atendimento/ficha final;
 - registra evento de conclusão;
 - publica evento pós-commit.
 
-Cada nova conclusão após reabertura produz novo evento e nova projeção final aplicável; conclusões anteriores não desaparecem do histórico/auditoria.
+Cada nova conclusão após reabertura produz novo evento e novo estado final aplicável. Conclusões anteriores não desaparecem nem podem ter sua ficha histórica reescrita silenciosamente.
 
 ## 8. Cancelamento
 
@@ -218,10 +223,11 @@ Cada nova conclusão após reabertura produz novo evento e nova projeção final
 - ação explícita e auditável;
 - ADM/Gerência recebem por preset;
 - Funcionário não recebe por preset;
-- preserva vínculos, checklist e conteúdo existentes;
+- preserva vínculos, checklist, observações de serviço e conteúdo existentes;
 - histórico mantém conclusões/cancelamentos anteriores;
 - volta a aceitar edição conforme capacidades normais;
-- nova conclusão grava novo estado final.
+- nova conclusão grava novo estado final;
+- alterações posteriores não reescrevem silenciosamente o estado final anterior.
 
 Não existe edição escondida de Atendimento histórico sem reabertura.
 
@@ -250,7 +256,7 @@ Cada vínculo preserva:
 
 Permitida somente em `Em andamento` e conforme capacidade.
 
-Se houver checklist já marcado para aquele vínculo, a UI exige confirmação explícita. O estado deixa a composição ativa, mas a ação permanece auditável.
+Se houver checklist marcado ou observação de serviço registrada para aquele vínculo, a UI exige confirmação explícita. O vínculo deixa a composição ativa somente após ação consciente; histórico/auditoria necessários são preservados.
 
 ## 11. Reader em contexto de execução
 
@@ -264,7 +270,8 @@ Processos → Leitor
 
 - checklist é definição documental;
 - não persiste estado operacional;
-- `Etapa X de Y` representa posição, não progresso.
+- não existe observação de serviço persistente;
+- `Etapa X de Y`/stepper representam navegação, não progresso.
 
 ### Execução vinculada ao Atendimento
 
@@ -280,6 +287,7 @@ Nesse contexto:
 - cabeçalho identifica `Executando no atendimento AT-...`;
 - a revisão continua presa ao vínculo;
 - itens de checklist usam estado persistente daquele Atendimento;
+- cada Etapa pode receber `Observação do serviço` opcional;
 - navegação entre etapas não altera conclusão/progresso;
 - voltar retorna ao Atendimento preservando contexto.
 
@@ -330,12 +338,38 @@ Atendimento           6 de 8 itens
 ```
 
 - etapas visitadas não contam como progresso;
+- observações de serviço não contam como progresso;
 - `Etapa X de Y` não é percentual de execução;
 - revisão sem checklist não mostra `0%` artificial;
 - percentual visual, se usado, deriva de marcados/total;
 - 100% não conclui Atendimento automaticamente.
 
-## 13. Histórico operacional
+## 13. Observação do serviço por Etapa
+
+Durante a execução, o técnico pode registrar uma nota simples relacionada à Etapa atual.
+
+Contrato:
+
+```text
+Atendimento
++ service_record_process
++ Etapa da revisão exata
+→ Observação do serviço opcional
+```
+
+- pertence à execução, não ao Procedimento oficial;
+- não cria nova revisão do Procedimento;
+- texto vazio é omitido da Ficha;
+- pode ser alterado apenas enquanto o Atendimento estiver editável e autorizado;
+- fica somente leitura em `Concluído`/`Cancelado` até reabertura;
+- precisa de controle concorrente por Etapa/equivalente;
+- evento remoto não sobrescreve texto local em edição silenciosamente;
+- não é chat/comentário social;
+- não há autosave implícito como requisito.
+
+Observações preenchidas podem compor a Ficha como evidência resumida do serviço realizado.
+
+## 14. Histórico operacional
 
 Preservar ao menos eventos de alto valor:
 
@@ -348,11 +382,11 @@ Preservar ao menos eventos de alto valor:
 - Atendimento cancelado e motivo;
 - alterações administrativas relevantes.
 
-Não é necessário transformar cada campo/checkbox em uma timeline visível. Auditoria técnica pode registrar detalhes adicionais de forma proporcional.
+Não é necessário transformar cada campo, checkbox ou observação de Etapa em uma timeline visível. Auditoria técnica pode registrar detalhes adicionais de forma proporcional.
 
-## 14. Equipamento
+## 15. Equipamento
 
-### 14.1 Cadastro e edição
+### 15.1 Cadastro e edição
 
 Preset inicial:
 
@@ -360,7 +394,7 @@ Preset inicial:
 - arquivar/reativar Equipamento: ADM/Gerência;
 - capacidades continuam granulares/personalizáveis dentro dos limites de delegação.
 
-### 14.2 Arquivamento
+### 15.2 Arquivamento
 
 - Equipamento arquivado não aparece para novo vínculo normal;
 - histórico permanece;
@@ -368,13 +402,13 @@ Preset inicial:
 - antes disso, é necessário concluir/cancelar o Atendimento ou desvincular;
 - reativação depende de capacidade.
 
-### 14.3 Histórico após conclusão
+### 15.3 Histórico após conclusão
 
 Alterar cadastro global depois da conclusão não altera silenciosamente o histórico/ficha final do Atendimento concluído.
 
 A conclusão congela a projeção relevante do Equipamento. A forma física de persistência será fechada antes da implementação correspondente, sem criar tabela meramente de apresentação.
 
-## 15. Códigos legíveis
+## 16. Códigos legíveis
 
 Formato inicial consolidado:
 
@@ -393,9 +427,9 @@ Equipamento: EQP-000001
 - busca aceita código como referência operacional principal;
 - sem ano, departamento, hostname ou dados pessoais no código inicial.
 
-## 16. Lista de Atendimentos
+## 17. Lista de Atendimentos
 
-A Tela 08 passa a usar o lifecycle consolidado:
+A Tela 08 usa o lifecycle consolidado:
 
 - coluna `Status`: `Em andamento`, `Concluído`, `Cancelado`;
 - filtro por Status;
@@ -404,7 +438,7 @@ A Tela 08 passa a usar o lifecycle consolidado:
 - ordenação padrão: `started_at` mais recente primeiro;
 - busca/filtros continuam combináveis e preservados no retorno.
 
-## 17. Matriz operacional de capacidades
+## 18. Matriz operacional de capacidades
 
 A autorização é Host-side; presets são defaults.
 
@@ -424,6 +458,7 @@ A autorização é Host-side; presets são defaults.
 | Adicionar/remover Procedimento em Atendimento editável | sim | sim | sim, quando responsável |
 | Selecionar revisão não publicada/histórica para execução | sim | sim | não |
 | Marcar/desmarcar checklist em Atendimento editável | sim | sim | sim, quando responsável |
+| Registrar/editar observação de serviço por Etapa | sim | sim | sim, quando responsável |
 | Gerar/reimprimir ficha de Atendimento acessível | sim | sim | sim |
 | Gerir categorias de Procedimentos | sim | sim | não |
 
@@ -434,17 +469,22 @@ Permanecem PENDENTES e não são alterados por este bloco:
 - Gerência × configuração da empresa;
 - Gerência × Backup.
 
-## 18. Ficha / Imprimir — lifecycle
+## 19. Ficha / Imprimir — lifecycle e finalidade
 
 - exige capacidade e acesso ao Atendimento;
 - em `Em andamento`, pode ser gerada para acompanhamento a partir do estado confirmado do Host;
 - em `Concluído`, pode ser reimpressa usando o estado histórico congelado aplicável;
 - em `Cancelado`, quando gerada/reimpressa, identifica inequivocamente `Cancelado`;
 - alterações não salvas/conflitos bloqueiam a geração;
-- Funcionário recebe capacidade por preset para Atendimentos que pode consultar;
-- template, preview, PDF específico e impressão Windows permanecem no Bloco 10.
+- Funcionário recebe capacidade por preset para Atendimentos que pode consultar.
 
-## 19. Concorrência operacional
+A Ficha é uma **prestação de contas resumida ao cliente**. Prioriza identificação do serviço/dispositivo, características relevantes do Equipamento, resumo do trabalho e observações relevantes — incluindo observações registradas nas Etapas.
+
+Checklist, percentual/progresso, passos, comandos, timeline e lista detalhada de revisões permanecem no histórico interno e não aparecem por padrão na folha.
+
+Bloco 10 / Etapa 6 consolidou PDF próprio da Ficha e preview derivado do mesmo layout; Etapas 7–9 ainda fecham template físico, limites/densidade e casos de múltiplos dados na única A4.
+
+## 20. Concorrência operacional
 
 ### Atendimento
 
@@ -455,17 +495,22 @@ Permanecem PENDENTES e não são alterados por este bloco:
 
 ### Checklist
 
-Checklist usa controle atômico/versionado por item ou mecanismo equivalente.
-
+- controle atômico/versionado por item ou equivalente;
 - usuários podem marcar itens diferentes sem conflito global desnecessário;
-- alteração concorrente do mesmo item tem resultado determinístico/conflito apropriado;
-- checkbox não deve invalidar toda a edição do Atendimento por conveniência de implementação.
+- alteração concorrente do mesmo item tem resultado determinístico/conflito apropriado.
+
+### Observação de serviço
+
+- controle versionado por Etapa/equivalente;
+- Etapas diferentes não conflitam globalmente;
+- alteração concorrente da mesma observação exige reconciliação proporcional;
+- não sobrescrever texto local em edição por evento remoto.
 
 ### Equipamento
 
 Cadastro global tem revisão própria, separada da revisão do Atendimento.
 
-## 20. Eventos em tempo real
+## 21. Eventos em tempo real
 
 Eventos pós-commit podem sinalizar:
 
@@ -475,11 +520,12 @@ Eventos pós-commit podem sinalizar:
 - Equipamento vinculado/alterado;
 - Procedimento vinculado/removido;
 - checklist alterado;
+- observação de serviço por Etapa alterada;
 - conclusão/reabertura/cancelamento.
 
 Client reconsulta o estado relevante e não sobrescreve edição local silenciosamente.
 
-## 21. Impacto conceitual no modelo de dados
+## 22. Impacto conceitual no modelo de dados
 
 Sem criar migration neste bloco documental, a implementação futura precisa refletir:
 
@@ -487,25 +533,29 @@ Sem criar migration neste bloco documental, a implementação futura precisa ref
 - motivo/evento de cancelamento;
 - eventos operacionais de lifecycle;
 - estado de checklist por `service_record_process`;
+- observação de serviço vinculada ao `service_record_process` + Etapa;
+- concorrência granular dessas observações;
+- preservação histórica do estado final aplicável das observações após reabertura;
 - snapshot/projeção histórica de Equipamento por conclusão;
 - geração segura de `AT-000001` / `EQP-000001`;
 - capacidades operacionais granulares.
 
 Árvore física/migrations oficiais permanecem para o gate correspondente antes do código.
 
-## 22. Pendências fora do Bloco 9
+## 23. Pendências fora do Bloco 9
 
 ### Bloco 10
 
-- limites numéricos finais de resumo/observações destinados à ficha;
-- template A4 final;
+Após Etapa 6, permanecem:
+
+- template A4 final da Ficha;
 - margens/tipografia/densidade;
-- regras físicas de resumo/truncamento controlado;
-- tratamento de muitos MACs/procedimentos;
-- preview;
-- impressão direta;
-- PDF específico da ficha;
-- QR/barcode se houver benefício.
+- limites numéricos finais de resumo/observações;
+- regras físicas de priorização/tratamento de excesso;
+- tratamento de muitos MACs/Procedimentos/dados excepcionais;
+- nomes de arquivo + temporários;
+- QR/barcode se houver benefício;
+- validação técnica final.
 
 ### Autenticação/configuração
 
@@ -528,7 +578,7 @@ Sem criar migration neste bloco documental, a implementação futura precisa ref
 - EDR/firewall;
 - start real do Controller.
 
-## 23. Fora do escopo
+## 24. Fora do escopo
 
 - SLA;
 - fila complexa de chamados;
@@ -546,7 +596,7 @@ Sem criar migration neste bloco documental, a implementação futura precisa ref
 - autosave;
 - implementação funcional.
 
-## 24. Decisões consolidadas
+## 25. Decisões consolidadas
 
 1. lifecycle `Em andamento → Concluído/Cancelado`, com reabertura explícita;
 2. primeiro save cria Atendimento e gera código; abrir tela não persiste registro;
@@ -560,29 +610,31 @@ Sem criar migration neste bloco documental, a implementação futura precisa ref
 10. Gerência gere categorias por preset; configuração da empresa/Backup continuam pendentes;
 11. Funcionário seleciona revisão publicada; ADM/Gerência podem selecionar explicitamente outras revisões legíveis/autorizadas;
 12. Reader em contexto de Atendimento persiste checklist; Reader standalone continua documental;
-13. progresso deriva somente de checklist marcado/total;
-14. checklist não conclui Atendimento automaticamente;
-15. Equipamento global alterado depois da conclusão não reescreve histórico/ficha final;
-16. códigos `AT-000001` e `EQP-000001`;
-17. Status entra na Tela 08; Data/Período usam `started_at`, com mais recente primeiro;
-18. ficha pode ser gerada em `Em andamento`, reimpressa em `Concluído` e identificada como cancelada quando aplicável;
-19. checklist usa concorrência granular por item/equivalente;
-20. nenhum workflow completo de chamados/SLA é criado.
+13. cada Etapa em execução pode persistir `Observação do serviço` opcional, sem alterar o Procedimento;
+14. progresso deriva somente de checklist marcado/total;
+15. checklist não conclui Atendimento automaticamente;
+16. Equipamento global alterado depois da conclusão não reescreve histórico/ficha final;
+17. observações de serviço também precisam preservar estado histórico aplicável após conclusão/reabertura;
+18. códigos `AT-000001` e `EQP-000001`;
+19. Status entra na Tela 08; Data/Período usam `started_at`, com mais recente primeiro;
+20. ficha pode ser gerada em `Em andamento`, reimpressa em `Concluído` e identificada como cancelada quando aplicável;
+21. ficha é prestação de contas resumida ao cliente;
+22. checklist e observações usam concorrência granular por recurso/equivalente;
+23. nenhum workflow completo de chamados/SLA é criado.
 
-## 25. Critérios de aceite — concluídos
+## 26. Critérios de aceite — concluídos
 
 - [x] lifecycle aprovado;
 - [x] criação/edição/conclusão/cancelamento/reabertura aprovadas;
 - [x] regra de responsável aprovada;
 - [x] revisão selecionável por perfil aprovada;
 - [x] checklist persistente/progresso aprovados;
+- [x] observação de serviço por Etapa aprovada;
 - [x] histórico operacional aprovado;
 - [x] regra de Equipamento após conclusão aprovada;
 - [x] códigos legíveis aprovados;
 - [x] matriz operacional aprovada;
 - [x] gestão de categorias por preset aprovada;
-- [x] lifecycle/capacidade da ficha aprovado;
+- [x] lifecycle/capacidade/finalidade da ficha aprovados;
 - [x] concorrência operacional aprovada;
 - [x] nenhuma implementação funcional criada.
-
-O fechamento documental do Bloco 9 exige ainda que os documentos canônicos impactados sejam alinhados no mesmo checkpoint antes do merge em `main`.
