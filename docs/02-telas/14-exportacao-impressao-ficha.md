@@ -5,7 +5,7 @@
 - código/nome da tela: Tela 14 — Exportação / Impressão + Ficha Compacta — UX;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
 - bloco original: Fase 1 — Bloco 8 (UI/UX);
-- atualização técnica/funcional: Bloco 10 / Etapas 1–6;
+- atualização técnica/funcional: Bloco 10 / Etapas 1–7;
 - última consolidação: 2026-08-28.
 
 ## 2. Objetivo
@@ -13,7 +13,7 @@
 Definir duas famílias distintas de saída sem transformar telas em documentos:
 
 1. **Procedimento** — exportar/imprimir uma revisão específica como documento técnico completo;
-2. **Ficha compacta de Atendimento** — prestação de contas resumida ao cliente, com no máximo uma folha A4.
+2. **Ficha compacta de Atendimento** — prestação de contas resumida ao cliente, com exatamente uma folha A4 quando válida.
 
 As duas superfícies compartilham a arquitetura documental do Host, mas possuem templates e objetivos diferentes.
 
@@ -27,7 +27,8 @@ As duas superfícies compartilham a arquitetura documental do Host, mas possuem 
 - campos vazios ou não aplicáveis são omitidos;
 - Client mantém a experiência local de salvar/preview/imprimir;
 - autorização real permanece no Host;
-- baixa densidade textual também orienta preview e documento quando compatível com clareza.
+- baixa densidade textual orienta preview e documento quando compatível com clareza;
+- a Ficha usa espaço apenas para informação existente e útil ao cliente.
 
 ## 4. Dois fluxos separados
 
@@ -128,16 +129,7 @@ Procedimentos podem ocupar várias páginas. O limite de uma A4 nunca se aplica 
 
 ## 9. Estados de geração documental
 
-A UX suporta:
-
-- preparando;
-- pronto para salvar/imprimir;
-- concluído;
-- cancelado pelo usuário;
-- falha de geração;
-- Host indisponível;
-- sem permissão;
-- revisão indisponível/obsoleta.
+A UX suporta preparando, pronto para salvar/imprimir, concluído, cancelado pelo usuário, falha de geração, Host indisponível, sem permissão e revisão indisponível/obsoleta.
 
 Não inventar percentual sem progresso real.
 
@@ -165,8 +157,6 @@ Não é relatório técnico detalhado, checklist impresso, reprodução do Proce
 
 ## 11. Entrada, capacidade e lifecycle
 
-Ponto de entrada:
-
 ```text
 Tela 09 — Atendimento
 → Ficha / Imprimir
@@ -182,13 +172,13 @@ Lifecycle:
 
 - `Em andamento`: pode gerar ficha de acompanhamento do estado confirmado;
 - `Concluído`: pode reimprimir o estado histórico aplicável;
-- `Cancelado`: pode gerar/reimprimir quando autorizado, identificando claramente `Cancelado`.
+- `Cancelado`: pode gerar/reimprimir quando autorizado, identificando claramente `CANCELADO`.
 
 Alterações locais não salvas ou conflito pendente bloqueiam a geração.
 
 ## 12. Fonte confirmada
 
-A ficha nunca mistura rascunho local com estado oficial.
+A Ficha nunca mistura rascunho local com estado oficial.
 
 ```text
 Ficha / Imprimir
@@ -200,7 +190,7 @@ Ficha / Imprimir
 
 Uma prévia já aberta permanece ligada à `source_version` usada. Evento remoto não troca a folha silenciosamente; o usuário precisa regenerar para produzir uma nova saída atual.
 
-## 13. Conteúdo essencial da Ficha
+## 13. Conteúdo essencial
 
 ### Serviço
 
@@ -218,17 +208,7 @@ Quando aplicável:
 
 O documento usa dados já cadastrados/snapshot aplicável; não exige redigitação para imprimir.
 
-Prioriza:
-
-- identificação/nome/tipo;
-- processador;
-- RAM;
-- armazenamento HD/SSD;
-- sistema operacional quando útil;
-- serial/patrimônio quando úteis à identificação;
-- MAC somente conforme regra futura de densidade;
-- saúde da bateria quando aplicável e informada;
-- observações gerais/específicas do Equipamento.
+Prioriza identificação/nome/tipo, processador, RAM, armazenamento HD/SSD, sistema operacional quando útil, serial/patrimônio quando úteis, saúde da bateria quando aplicável e observações relevantes. MAC segue regra própria da Etapa 9.
 
 Campos vazios/não aplicáveis são omitidos.
 
@@ -236,16 +216,9 @@ Campos vazios/não aplicáveis são omitidos.
 
 Durante a execução vinculada, cada Etapa pode receber `Observação do serviço` opcional no Reader.
 
-Quando houver conteúdo, essas observações entram na prestação de contas de forma resumida e legível.
+Quando houver conteúdo, essas observações entram na prestação de contas de forma resumida e legível. O texto completo da Etapa não precisa ser reproduzido; um nome curto da Etapa só aparece quando necessário para contextualizar a observação.
 
-```text
-Etapa: Validação do SSD
-Observação: unidade antiga apresentou setores defeituosos.
-```
-
-A ficha não precisa reproduzir o texto completo da Etapa para contextualizar a observação. A forma física exata de apresentação será fechada nas Etapas 7–8 do Bloco 10.
-
-## 14. O que não aparece por padrão na Ficha
+## 14. O que não aparece por padrão
 
 Para preservar uma folha limpa e útil ao cliente, não imprimir por padrão:
 
@@ -268,46 +241,152 @@ A Ficha também pode existir sem Equipamento.
 Nesse cenário:
 
 - seção de Equipamento é omitida;
-- não se reserva grande área vazia;
+- não se reserva área vazia;
 - identificação do serviço, resumo e observações continuam válidos.
 
-Isso atende rede, infraestrutura, Help Desk e outras execuções sem ativo físico vinculado.
+Não imprimir `Nenhum equipamento vinculado` na prestação de contas.
 
 ## 16. Regra rígida de uma A4
 
-A Ficha possui **uma única página A4**.
+A Ficha válida possui **exatamente uma página A4**.
 
 ```text
 1 página → válida
-2+ páginas → overflow → geração bloqueada
+2+ páginas → SHEET_OVERFLOW → geração bloqueada
 ```
 
-Não:
-
-- criar segunda folha;
-- retornar só a primeira página;
-- truncar silenciosamente informação importante;
-- reduzir fonte indefinidamente;
-- omitir conteúdo conhecido de forma silenciosa apenas para caber.
+Não criar segunda folha, retornar apenas a primeira página, truncar informação importante, reduzir fonte dinamicamente ou omitir conteúdo silenciosamente para caber.
 
 Mensagem funcional base:
 
 `A ficha possui conteúdo demais para uma página A4. Revise os campos indicados antes de imprimir.`
 
-Template físico final pertence à Etapa 7; limites/priorização textual à Etapa 8; múltiplos MACs/Procedimentos excepcionais à Etapa 9.
+Limites/priorização textual pertencem à Etapa 8; dados multiplicativos/excepcionais à Etapa 9.
 
-## 17. PDF canônico da Ficha
+## 17. Template físico consolidado
 
-A Ficha possui PDF próprio.
+### Geometria
 
-Fluxo:
+```text
+papel:       A4
+orientação:  retrato
+páginas:     exatamente 1
+margens:     15 mm em todos os lados
+bleed:       nenhum
+```
+
+A composição é predominantemente vertical/uma coluna. Pequenos grupos horizontais são permitidos para dados curtos do serviço e do Equipamento.
+
+### Ordem da folha
+
+```text
+1. Identidade da empresa + Atendimento
+2. Identificação curta do serviço
+3. Equipamento/dispositivo, quando houver
+4. Serviço realizado
+5. Observações, quando houver
+```
+
+### Cabeçalho
+
+- logo opcional preservando proporção;
+- nome da empresa como principal elemento institucional;
+- contato/site/e-mail compactos quando configurados;
+- código e data do Atendimento facilmente localizáveis;
+- sem título gigante `FICHA DE ATENDIMENTO`;
+- sem footer obrigatório e sem paginação;
+- `Em andamento`/acompanhamento é discreto;
+- `CANCELADO` deve ser textual e inequívoco, sem depender de cor;
+- sem watermark grande.
+
+### Identificação do serviço
+
+Preferir linha curta, omitindo campos vazios:
+
+```text
+João Silva · OS-4587 · Técnico: Maria Souza
+```
+
+Não usar tabela de formulário apenas para distribuir esses campos.
+
+### Equipamento
+
+Usar **ficha técnica resumida sem grade/tabela pesada**:
+
+```text
+NOTE-15 · Notebook · EQP-0031
+CPU i5-1135G7 · RAM 16 GB · SSD NVMe 512 GB
+Windows 11 Pro 24H2 · Bateria 82%
+Serial ABC123 · Patrimônio PAT-884
+```
+
+Armazenamento não assume sempre SSD; o valor real do domínio é apresentado. Campos ausentes desaparecem e a seção inteira colapsa quando não houver Equipamento.
+
+### Serviço realizado
+
+`SERVIÇO REALIZADO` contém o `Resumo do trabalho` como texto corrido legível. Não repetir checklist, passos ou revisão técnica.
+
+### Observações
+
+Usar uma única seção `OBSERVAÇÕES`, reunindo quando aplicável:
+
+- observação geral do Atendimento;
+- observação relevante do Equipamento;
+- observações de serviço por Etapa.
+
+Apresentação preferencial: lista simples, sem subcards. Nome curto da Etapa entra somente quando melhora a compreensão. Se não houver observações, a seção inteira é omitida; não imprimir `Sem observações`.
+
+## 18. Tipografia, contraste e espaçamento
+
+PDF da Ficha usa **Noto Sans**.
+
+Baseline:
+
+```text
+identificação principal:   14 pt
+seção:                     10,5 pt semibold
+corpo/resumo:               10 pt
+ficha técnica:               9 pt
+metadados institucionais:  8,5 pt
+```
+
+Regras:
+
+- não reduzir dinamicamente abaixo do baseline para caber;
+- divisórias horizontais finas apenas entre grandes grupos;
+- contraste neutro e legível em monocromático;
+- sem grandes fundos preenchidos;
+- não congelar hex/RGB nesta fase;
+- seções não têm altura fixa;
+- seções vazias colapsam;
+- Observações usam a maior área variável restante;
+- não reservar caixas para escrita manual.
+
+## 19. Exclusões do template
+
+Não adicionar por inferência:
+
+- assinatura do cliente/técnico;
+- campo manual de data;
+- termos jurídicos/garantia;
+- valores/custos/financeiro;
+- peças/estoque;
+- SLA/prioridade;
+- checklist/progresso/timeline;
+- QR/barcode;
+- lista detalhada de Procedimentos;
+- página 2;
+- footer promocional do StepFlow.
+
+## 20. PDF canônico e preview
 
 ```text
 Atendimento confirmado
 → DocumentModel document_kind = service_sheet
 → template Typst interno da Ficha
-→ PagedDocument de exatamente 1 página
-→ PDF canônico
+→ mesmo PagedDocument de 1 página
+   ├─→ PDF canônico
+   └─→ SVG de preview
 ```
 
 Baseline:
@@ -319,25 +398,11 @@ Baseline:
 - sem HTML → PDF;
 - sem screenshot/canvas;
 - sem renderer externo;
-- falha nunca retorna artefato parcial como sucesso.
+- DOCX específico da Ficha não é requisito inicial.
 
-DOCX específico da Ficha não é requisito inicial.
+## 21. Preview, salvar e imprimir
 
-## 18. Preview da Ficha
-
-O preview representa **o mesmo layout que originou o PDF**.
-
-```text
-mesmo DocumentModel
-→ mesmo template Typst
-→ mesmo PagedDocument de 1 página
-   ├─→ PDF
-   └─→ SVG de preview
-```
-
-O SVG é somente representação visual da mesma página diagramada; o PDF permanece artefato canônico.
-
-Superfície:
+Preview:
 
 ```text
 Tela 09
@@ -348,77 +413,36 @@ Tela 09
 Ficha AT-000142                  [ salvar ] [ imprimir ] [ × ]
 ```
 
-Regras:
-
-- sem nova sidebar;
-- sem toolbar extensa de navegador;
+- sem nova sidebar ou toolbar extensa;
 - página escalada proporcionalmente;
-- controles compactos, com ícones quando inequívocos e nomes acessíveis;
+- controles compactos e acessíveis;
 - PDF e preview pertencem à mesma `source_version`;
-- mudança remota não substitui a prévia silenciosamente;
-- preview desatualizado pede regeneração antes de nova saída atual.
+- mudança remota não substitui a prévia silenciosamente.
 
-## 19. Salvar PDF e imprimir
+`Salvar PDF` e `Imprimir` reutilizam os **mesmos bytes PDF** da prévia aberta; não regeneram silenciosamente outro documento.
 
-`Salvar PDF` e `Imprimir` reutilizam os **mesmos bytes PDF** correspondentes à prévia aberta; não regeneram silenciosamente outro documento.
+Impressão reutiliza WebView2 dedicada/transitória + `ShowPrintUI(System)`. O StepFlow informa entrega do fluxo ao Windows, não confirmação física de papel impresso.
 
-### Salvar
+## 22. Estados e acessibilidade
 
-- usuário escolhe destino local;
-- Host não recebe path arbitrário da workstation;
-- cancelar diálogo é ação voluntária, não erro;
-- naming final fica para Etapa 10.
+Estados mínimos incluem preparando ficha, preparando prévia, pronta, desatualizada, cancelada pelo usuário, sem permissão, fonte indisponível, `SHEET_OVERFLOW`, falha de renderer/preview, Host indisponível e `SERVER_BUSY`.
 
-### Imprimir
-
-Reutiliza o fluxo Windows consolidado:
-
-```text
-PDF canônico
-→ recurso local transitório controlado
-→ WebView2 dedicada/transitória
-→ ShowPrintUI(System)
-→ diálogo Windows
-```
-
-O StepFlow informa entrega do fluxo ao Windows, não afirma que papel foi fisicamente impresso quando a API não fornece essa confirmação.
-
-## 20. Estados da Ficha
-
-Estados mínimos:
-
-- preparando ficha;
-- preparando prévia;
-- pronta;
-- desatualizada por mudança confirmada do Atendimento;
-- cancelada pelo usuário;
-- sem permissão;
-- fonte/revisão indisponível;
-- `SHEET_OVERFLOW`;
-- falha de renderer/preview;
-- Host indisponível/`SERVER_BUSY`.
-
-Não exibir percentual fictício.
-
-## 21. Acessibilidade e baixa densidade
-
+- não exibir percentual fictício;
 - ações operáveis por teclado;
-- icon-only apenas quando inequívoco, sempre com nome acessível;
+- icon-only somente quando inequívoco, com nome acessível;
 - foco gerenciado no modal;
 - status/cancelamento/desatualização não dependem apenas de cor;
-- folha permanece A4 independentemente da janela;
-- interface ao redor da folha mostra apenas o necessário para entender e agir.
+- folha permanece A4 independentemente da janela.
 
-## 22. Pendências restantes do Bloco 10
+## 23. Pendências restantes do Bloco 10
 
-- Etapa 7 — template físico A4 final da Ficha;
-- Etapa 8 — limites textuais, priorização e densidade;
-- Etapa 9 — múltiplos MACs/Procedimentos e casos excepcionais;
+- Etapa 8 — limites textuais, priorização, densidade e diagnóstico de overflow;
+- Etapa 9 — múltiplos MACs/Procedimentos/observações e casos excepcionais;
 - Etapa 10 — nomes de arquivo + temporários;
 - Etapa 11 — QR/barcode somente se houver benefício aprovado;
 - Etapa 12 — validação técnica final/matriz/limites de recursos.
 
-## 23. Fora do escopo inicial
+## 24. Fora do escopo inicial
 
 - assinatura digital;
 - envio por e-mail;
@@ -430,7 +454,7 @@ Não exibir percentual fictício.
 - QR/barcode sem aprovação;
 - implementação funcional nesta fase.
 
-## 24. Decisões consolidadas pelo PO
+## 25. Decisões consolidadas pelo PO
 
 1. exportação/impressão permanece contextual;
 2. Procedimento exportado usa revisão exata e documento completo;
@@ -438,14 +462,16 @@ Não exibir percentual fictício.
 4. Ficha é prestação de contas resumida ao cliente;
 5. Ficha usa estado confirmado/histórico aplicável;
 6. Ficha pode existir sem Equipamento;
-7. dados do Equipamento vêm do cadastro/snapshot já existente;
-8. observações de serviço por Etapa são persistentes no Atendimento e podem entrar na Ficha;
+7. dados do Equipamento vêm do cadastro/snapshot existente;
+8. observações de serviço por Etapa podem entrar na Ficha;
 9. checklist/progresso/revisões detalhadas não poluem a Ficha por padrão;
-10. Ficha nunca ultrapassa uma A4;
-11. Ficha possui PDF canônico próprio;
-12. preview SVG e PDF derivam do mesmo PagedDocument;
-13. Salvar/Imprimir reutilizam o PDF correspondente à prévia;
-14. impressão usa o fluxo Windows já consolidado;
-15. PDF/preview não alteram dados funcionais;
-16. DOCX da Ficha não é requisito inicial;
-17. QR/barcode permanece pendente de benefício operacional explícito.
+10. Ficha válida possui exatamente uma A4 e overflow falha explicitamente;
+11. Ficha possui PDF canônico próprio e preview SVG do mesmo PagedDocument;
+12. template físico usa A4 retrato, margens 15 mm, composição vertical e baixa densidade;
+13. cabeçalho é compacto, Equipamento é ficha técnica sem grade e `SERVIÇO REALIZADO` é a área narrativa principal;
+14. `OBSERVAÇÕES` unifica observações relevantes sem subcards;
+15. Noto Sans usa escala 14 / 10,5 / 10 / 9 / 8,5 pt conforme hierarquia;
+16. Salvar/Imprimir reutilizam o PDF correspondente à prévia;
+17. impressão usa o fluxo Windows consolidado;
+18. DOCX da Ficha não é requisito inicial;
+19. QR/barcode permanece pendente de benefício operacional explícito.
