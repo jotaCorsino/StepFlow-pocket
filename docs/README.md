@@ -50,12 +50,12 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 - `11-meu-perfil.md` — Meu perfil;
 - `12-configuracoes-categorias.md` — Configurações/Categorias;
 - `13-backup-restauracao.md` — Backup/Restauração UX;
-- `14-exportacao-impressao-ficha.md` — Procedimentos + Ficha compacta/PDF/preview/template A4;
+- `14-exportacao-impressao-ficha.md` — Procedimentos + Ficha compacta/PDF/preview/template A4/limites;
 - `15-estados-transversais.md` — Estados transversais.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão consolidada, incluindo Bloco 10 / Etapas 1–7;
+- `arquitetura-vigente.md` — visão consolidada, incluindo Bloco 10 / Etapas 1–8;
 - `modelo-dados-schema-fase-1.md` — schema conceitual, checklist, observações por Etapa e snapshots;
 - `concorrencia-fila-conflitos-eventos.md` — concorrência geral;
 - `implantacao-pocket.md` — implantação/ciclo central;
@@ -70,7 +70,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–7 consolidadas, Etapa 8 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–8 consolidadas, Etapa 9 próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -88,7 +88,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 
 ## Estado atual
 
-**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–7 consolidadas. Etapa 8 — Limites textuais e densidade da Ficha é a próxima, ainda não aberta.**
+**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–8 consolidadas. Etapa 9 — Múltiplos MACs / Procedimentos / dados excepcionais é a próxima, ainda não aberta.**
 
 Direção consolidada:
 
@@ -104,12 +104,15 @@ Direção consolidada:
 - Ficha válida possui exatamente uma A4;
 - template físico da Ficha usa A4 retrato, margens 15 mm, cabeçalho compacto, ficha técnica sem grade, `SERVIÇO REALIZADO` e `OBSERVAÇÕES` como seções centrais;
 - Noto Sans com baseline 14 / 10,5 / 10 / 9 / 8,5 pt;
+- soft limits orientativos: Resumo 600, Atendimento 400, Equipamento 300 e observação por Etapa 280 caracteres;
+- `SHEET_OVERFLOW` bloqueia somente a geração da Ficha e nunca destrói/trunca o dado operacional;
+- correção de overflow ocorre nos campos reais, sem editor paralelo ou compactação automática;
 - sem assinatura, financeiro, checklist, timeline, página 2 ou QR por padrão.
 
-## Gate antes da Etapa 8
+## Gate antes da Etapa 9
 
 ```text
-squash merge da Etapa 7
+squash merge da Etapa 8
 → remoção da branch remota
 → remoto somente com main
 → zero PRs abertos
@@ -117,7 +120,6 @@ squash merge da Etapa 7
 
 ## Pendências vigentes
 
-- Etapa 8: limites textuais/priorização/densidade/diagnóstico de overflow;
 - Etapa 9: dados excepcionais/multiplicativos;
 - Etapa 10: nomes + temporários;
 - Etapa 11: QR/barcode apenas se aprovado;
