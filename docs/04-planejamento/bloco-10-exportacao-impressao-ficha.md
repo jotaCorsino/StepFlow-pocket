@@ -1,6 +1,6 @@
 # Bloco 10 — Exportação / Impressão + Ficha Compacta
 
-**Status:** EM ANDAMENTO — ETAPAS 1–7 CONSOLIDADAS / ETAPA 8 PRÓXIMA  
+**Status:** EM ANDAMENTO — ETAPAS 1–8 CONSOLIDADAS / ETAPA 9 PRÓXIMA  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-25  
 **Etapa 1 consolidada:** 2026-08-25  
@@ -9,7 +9,8 @@
 **Etapa 4 consolidada:** 2026-08-26  
 **Etapa 5 consolidada:** 2026-08-27  
 **Etapa 6 consolidada:** 2026-08-28  
-**Etapa 7 consolidada:** 2026-08-28
+**Etapa 7 consolidada:** 2026-08-28  
+**Etapa 8 consolidada:** 2026-08-28
 
 ## 1. Objetivo
 
@@ -38,8 +39,8 @@ Não pertence a este bloco implementar código de produção, fechar Backup/Rest
 | 5 | Template físico de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 6 | PDF + preview da Ficha compacta | **CONSOLIDADO / APROVADO PELO PO** |
 | 7 | Template físico A4 da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
-| 8 | Limites textuais e densidade da Ficha | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | PENDENTE |
+| 8 | Limites textuais e densidade da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
+| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 10 | Nomes de arquivo + artefatos temporários | PENDENTE |
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
@@ -374,21 +375,139 @@ metadados institucionais:  8,5 pt
 - observações usam a maior área variável restante;
 - não adicionar assinatura, termos jurídicos, garantia, financeiro, peças/estoque, SLA, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional.
 
-Overflow continua falha explícita; a Etapa 8 define limites/priorização textual e a Etapa 9 trata dados multiplicativos/excepcionais.
+---
+
+# Etapa 8 — Limites textuais e densidade da Ficha
+
+**Status:** CONSOLIDADO / APROVADO PELO PO
+
+## 14. Princípio central
+
+A restrição de uma A4 pertence ao artefato client-facing e **não pode destruir o dado operacional**.
+
+```text
+Atendimento
+→ preserva dados reais
+
+Ficha
+→ usa os mesmos dados aplicáveis
+→ Typst tenta diagramar
+
+1 página
+→ válido
+
+2+ páginas
+→ SHEET_OVERFLOW
+→ técnico revisa conscientemente os campos reais
+```
+
+Não criar na v1:
+
+- campos paralelos exclusivos para impressão;
+- versão resumida duplicada de observações;
+- resumo automático/IA;
+- truncamento ou reticências automáticas;
+- deduplicação semântica;
+- editor paralelo da Ficha.
+
+## 15. Soft limits recomendados
+
+| Campo | Faixa recomendada |
+|---|---:|
+| `Resumo do trabalho` | até **600 caracteres** |
+| Observação geral do Atendimento | até **400 caracteres** |
+| Observação do Equipamento | até **300 caracteres** |
+| Observação do serviço por Etapa | até **280 caracteres por Etapa** |
+
+Essas faixas são **soft limits**:
+
+- orientam escrita curta compatível com prestação de contas;
+- não bloqueiam save;
+- não bloqueiam conclusão;
+- não truncam nem alteram o dado;
+- não garantem encaixe físico sozinhas;
+- podem ser refinadas futuramente por evidência da validação real da Etapa 12.
+
+Contador/aviso aparece somente próximo de aproximadamente **80%** da faixa recomendada para não poluir a UI.
+
+## 16. Autoridade de encaixe e overflow
+
+A contagem de caracteres não é autoridade física. O resultado real do Typst decide se a Ficha cabe.
+
+Quando o layout produzir mais de uma página:
+
+```text
+SHEET_OVERFLOW
+→ nenhum PDF final confirmado
+→ nenhum preview final válido
+→ nenhuma impressão
+→ Atendimento permanece íntegro
+```
+
+O bloqueio pertence somente à geração da Ficha.
+
+O Host devolve diagnóstico semântico suficiente para orientar revisão, por exemplo:
+
+```text
+SHEET_OVERFLOW
+contributors:
+- work_summary
+- service_general_note
+- device_note
+- stage_note:<stage_id>
+```
+
+Não é necessário prometer percentual exato de contribuição visual. O diagnóstico pode considerar comprimento, quebras/linhas, quantidade de observações, faixas recomendadas ultrapassadas e blocos variáveis presentes.
+
+## 17. UX de correção
+
+```text
+Ficha / Imprimir
+→ SHEET_OVERFLOW
+→ mensagem curta
+→ Revisar atendimento
+→ destacar discretamente os campos mais prováveis
+```
+
+A edição acontece sempre nos dados reais do Atendimento/Equipamento/Etapa. Após salvar estado confirmado, a Ficha é gerada novamente.
+
+Ordem normal das observações:
+
+```text
+1. observação geral do Atendimento
+2. observação do Equipamento
+3. observações das Etapas na ordem executada
+```
+
+Textos semelhantes não são deduplicados automaticamente; podem representar fatos distintos.
+
+## 18. Densidade e normalização segura
+
+Existe um único template físico consolidado na Etapa 7.
+
+Não criar fallback automático por:
+
+- modo compacto;
+- redução de fonte;
+- redução de margem;
+- compressão automática de espaçamento;
+- omissão de conteúdo legítimo.
+
+Espaço em branco é aceitável e não deve ser preenchido artificialmente.
+
+Normalização de apresentação pode somente remover ruído sem mudar significado, como trim, quebras de linha consistentes, colapso de linhas vazias repetidas sem significado e omissão de campos/labels vazios.
+
+Hard limits técnicos de storage/API não derivam do tamanho da A4; ficam para os gates técnicos/implementação correspondentes.
 
 ---
 
 # Etapas seguintes
 
-## Etapa 8 — Limites textuais e densidade
+## Etapa 9 — Múltiplos MACs / Procedimentos / dados excepcionais
 
 **Status:** PRÓXIMA — AINDA NÃO EM ANÁLISE
 
-Definirá limites/priorização para resumo, observações do Atendimento, Equipamento e Etapas, além do diagnóstico de overflow.
-
-## Etapa 9 — Múltiplos dados excepcionais
-
-Definirá comportamento com muitos MACs, muitas observações/Procedimentos e outros casos que pressionem a única A4.
+Definirá comportamento com muitos MACs, muitos Procedimentos, muitas observações e outros casos multiplicativos/excepcionais que pressionem a única A4 sem reabrir o template base.
 
 ## Etapa 10 — Nomes + temporários
 
@@ -402,12 +521,12 @@ Só entra se houver benefício operacional aprovado; não é requisito por padr�
 
 Fechará matriz real de Windows/WebView2/Office compatível, impressão, limites de recursos, casos de erro e critérios técnicos antes da implementação.
 
-## 14. Gate atual
+## 19. Gate atual
 
-A Etapa 7 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
+A Etapa 8 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
 
 ```text
-PR da Etapa 7
+PR da Etapa 8
 → validação
 → ready
 → squash merge em main
@@ -415,4 +534,4 @@ PR da Etapa 7
 → verificar somente main + zero PRs abertos
 ```
 
-Somente depois disso a Etapa 8 pode ser aberta.
+Somente depois disso a Etapa 9 pode ser aberta.
