@@ -287,6 +287,22 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - não reservar caixas para escrita manual e não adicionar assinatura, financeiro, garantia, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional;
 - nenhuma redução dinâmica de fonte para caber; overflow continua `SHEET_OVERFLOW`.
 
+### Etapa 8 — limites textuais e densidade da Ficha
+
+- a restrição de uma A4 pertence ao artefato e não pode apagar/truncar o dado operacional;
+- soft limits recomendados: `Resumo do trabalho` **600**, observação geral do Atendimento **400**, observação do Equipamento **300** e observação de serviço por Etapa **280 caracteres**;
+- contador/aviso aparece apenas próximo de aproximadamente **80%** da faixa recomendada;
+- soft limit não bloqueia save nem conclusão do Atendimento;
+- o layout real do Typst é a autoridade final para o encaixe físico;
+- `SHEET_OVERFLOW` bloqueia somente a geração da Ficha e mantém o Atendimento íntegro;
+- Host devolve diagnóstico semântico dos principais campos que pressionam a folha, sem necessidade de percentual visual exato;
+- Client orienta revisão dos campos reais, sem editor paralelo exclusivo da Ficha;
+- observações seguem ordem Atendimento → Equipamento → Etapas na ordem executada;
+- não deduplicar automaticamente textos semelhantes;
+- não usar IA/resumo automático, truncamento, reticências, modo compacto ou redução automática de fonte/margem/espaçamento;
+- normalização de apresentação só pode remover ruído de whitespace sem alterar significado;
+- hard limits técnicos de storage/API são independentes da geometria A4.
+
 ## 9. Estado da Fase 1
 
 - Blocos 0–4: concluídos;
@@ -294,20 +310,19 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - Bloco 6: núcleo + extensão operacional conceitual consolidados;
 - Bloco 7: núcleo concluído;
 - Blocos 8–9: concluídos;
-- **Bloco 10: em andamento — Etapas 1–7 consolidadas; Etapa 8 é a próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–8 consolidadas; Etapa 9 é a próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 ## 10. Pendências vigentes
 
 ### Bloco 10
 
-- Etapa 8: limites textuais, priorização, densidade e diagnóstico de overflow da Ficha;
 - Etapa 9: muitos MACs/Procedimentos/observações e outros dados excepcionais;
 - Etapa 10: nomes de arquivo + temporários concretos;
 - Etapa 11: QR/barcode somente se benefício aprovado;
 - Etapa 12: validação técnica final/matriz real/limites de recursos.
 
-**Gate:** Etapa 8 só pode ser aberta após squash merge da Etapa 7, remoção da branch correspondente e verificação de remoto somente com `main` e zero PRs abertos.
+**Gate:** Etapa 9 só pode ser aberta após squash merge da Etapa 8, remoção da branch correspondente e verificação de remoto somente com `main` e zero PRs abertos.
 
 ### Bloco 11
 
