@@ -1,6 +1,6 @@
 # Bloco 10 — Etapa 6 — PDF + preview da Ficha compacta — Proposta para análise
 
-**Status:** PROPOSTA / AGUARDANDO APROVAÇÃO DO PO  
+**Status:** PROPOSTA CORRIGIDA / AGUARDANDO APROVAÇÃO DO PO  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-28  
 **Base consolidada:** Bloco 10 / Etapas 1–5  
@@ -8,94 +8,193 @@
 
 ## 1. Objetivo
 
-Fechar somente o contrato técnico da **Ficha compacta de Atendimento em PDF** e sua **pré-visualização no Client**, preservando:
+Fechar o contrato técnico da **Ficha compacta de Atendimento em PDF** e sua **pré-visualização no Client**.
 
-- a arquitetura documental já consolidada;
-- o limite rígido de uma única A4;
-- o estado confirmado do Atendimento;
-- a experiência visual de baixa densidade do Pocket;
-- o mecanismo Windows de impressão já definido na Etapa 4;
-- a separação entre preview, artefato PDF e UI da Tela 09.
+A Ficha é uma **prestação de contas resumida ao cliente**: mostra o panorama geral do equipamento e do serviço executado, sem reproduzir o Procedimento, checklist, histórico técnico completo ou detalhes internos desnecessários.
 
-Esta etapa não define o template físico final da Ficha, limites numéricos de textos, tratamento final de muitos MACs/Procedimentos, nomes de arquivo, temporários concretos ou QR/barcode.
+Permanecem fora desta etapa:
+
+- template físico final A4 — Etapa 7;
+- limites/priorização textual — Etapa 8;
+- muitos MACs/Procedimentos — Etapa 9;
+- nomes e temporários concretos — Etapa 10;
+- QR/barcode — Etapa 11;
+- limites e matriz técnica final — Etapa 12.
 
 ## 2. Contratos herdados
 
 Permanecem vigentes:
 
 - `Ficha / Imprimir` parte do Atendimento/Tela 09;
-- ficha usa somente estado confirmado pelo Host;
-- alterações locais não salvas ou conflito pendente bloqueiam a geração;
+- a ficha usa apenas estado confirmado pelo Host;
+- alterações locais não salvas ou conflito pendente bloqueiam geração;
 - `Em andamento` pode gerar ficha de acompanhamento;
 - `Concluído` pode reimprimir o estado histórico aplicável;
-- `Cancelado` deve aparecer inequivocamente como cancelado;
-- capacidade padrão de gerar/reimprimir ficha existe para ADM/Gerência/Funcionário em Atendimento acessível;
-- Atendimento sem Equipamento também pode gerar ficha;
+- `Cancelado` precisa ser identificado inequivocamente;
+- ADM/Gerência/Funcionário podem gerar/reimprimir ficha de Atendimento acessível conforme matriz vigente;
 - campos vazios/não aplicáveis são omitidos;
-- ficha lista revisões efetivamente utilizadas dos Procedimentos;
-- ficha nunca ultrapassa uma página A4 como comportamento normal;
-- conteúdo excessivo não cria segunda página nem sofre truncamento silencioso;
-- DOCX específico da ficha não é requisito inicial;
+- Atendimento sem Equipamento continua podendo gerar ficha;
+- a ficha nunca ultrapassa uma página A4;
+- conteúdo excessivo não cria segunda página nem é truncado silenciosamente;
+- DOCX específico da ficha não é requisito v1;
 - geração documental pertence ao Host;
-- Client não monta documento a partir de HTML/DOM;
-- artefatos gerados não viram histórico/backup automaticamente;
-- renderização usa limite próprio bounded de concorrência, fora da fila de mutações.
+- Client não monta documento por HTML/DOM;
+- renderização fica fora da fila de mutações e usa limite próprio bounded.
 
-## 3. Decisão proposta — a Ficha possui PDF próprio
+## 3. Correção funcional — finalidade da Ficha
 
-A primeira versão terá **PDF específico da Ficha compacta**.
+A Ficha não é relatório técnico detalhado, nem espelho da Tela 09, nem extrato de auditoria.
 
-Esse PDF é um artefato documental próprio, diferente do PDF de Procedimento.
-
-Fluxo conceitual:
+O documento existe para responder de forma curta ao cliente:
 
 ```text
-Atendimento confirmado
-→ Host captura snapshot/revisão esperada
-→ DocumentModel com document_kind = service_sheet
-→ template Typst interno da Ficha
-→ uma página diagramada
-→ PDF canônico da Ficha
+qual equipamento/dispositivo foi atendido?
+como ele está identificado/configurado?
+o que foi feito?
+quais observações relevantes surgiram durante o serviço?
 ```
 
-Consequências:
+Consequência: informações internas úteis ao StepFlow podem permanecer no histórico do Atendimento sem aparecer na folha impressa.
 
-- ficha não é screenshot da Tela 09;
-- ficha não reutiliza o template de Procedimento;
-- ficha não depende de HTML/CSS da aplicação;
-- `Salvar PDF`, preview e impressão compartilham o mesmo conteúdo/layout físico;
-- nenhum segundo renderer documental é criado somente para impressão.
+Por padrão a Ficha **não precisa imprimir**:
 
-## 4. Fonte e consistência
+- checklist item a item;
+- percentual/progresso;
+- passos executados;
+- comandos/código;
+- timeline operacional;
+- IDs técnicos internos;
+- `row_revision`;
+- lista detalhada de revisões de Procedimento;
+- conteúdo integral das Etapas;
+- metadados que não ajudam o cliente a compreender o serviço.
 
-A geração recebe identidade estável do Atendimento + revisão/versão esperada do estado confirmado.
+A revisão exata dos Procedimentos continua preservada internamente para histórico e consistência, mesmo quando não aparece na Ficha.
 
-### Em andamento
+## 4. Conteúdo principal da prestação de contas
+
+A Ficha deve priorizar quatro grupos semânticos.
+
+### 4.1 Identificação do serviço
+
+Somente o necessário para reconhecer a prestação:
+
+- código do Atendimento;
+- data/período aplicável;
+- responsável/técnico;
+- cliente/solicitante ou referência externa quando informado e útil;
+- status somente quando necessário para evitar ambiguidade, especialmente `Cancelado`.
+
+A Etapa 7 decide a composição física desses dados.
+
+### 4.2 Identificação do equipamento/dispositivo
+
+Quando houver Equipamento vinculado, usar os dados previamente cadastrados/confirmados, sem solicitar redigitação para a Ficha.
+
+Conceitualmente:
+
+- código/nome do Equipamento;
+- tipo;
+- serial/patrimônio quando existentes e úteis à identificação;
+- demais identificadores consolidados conforme regra física posterior.
+
+MAC continua sujeito à Etapa 9, especialmente quando houver múltiplos endereços.
+
+### 4.3 Características relevantes do dispositivo
+
+Quando aplicáveis e informadas:
+
+- processador;
+- memória RAM;
+- armazenamento HD/SSD e capacidade;
+- sistema operacional/versão quando útil;
+- saúde/vida da bateria para dispositivo aplicável;
+- observação geral do Equipamento.
+
+Esses dados vêm do cadastro/snapshot aplicável já mantido pelo Atendimento. A geração da Ficha não cria um segundo cadastro.
+
+### 4.4 Serviço realizado e observações
+
+É o núcleo da prestação de contas:
+
+- `Resumo do trabalho` do Atendimento;
+- Observações gerais do Atendimento, quando preenchidas;
+- Observações do Equipamento, quando relevantes;
+- **Observações específicas registradas pelo técnico durante a execução das Etapas**.
+
+A Ficha não reproduz a instrução estática da Etapa. Ela leva apenas a observação operacional realmente criada durante aquele serviço.
+
+## 5. Novo refinamento operacional — observação por Etapa
+
+A documentação atual já persiste checklist no Reader vinculado a Atendimento, mas ainda não descreve a observação operacional específica da Etapa.
+
+Fica proposta a seguinte correção transversal:
+
+- durante a execução de um Procedimento em Atendimento, cada Etapa pode ter uma **Observação do serviço** opcional;
+- essa observação pertence ao Atendimento/executado, nunca à revisão oficial do Procedimento;
+- Reader standalone não cria nem persiste essa observação;
+- somente Atendimento `Em andamento` + capacidade apropriada permite edição;
+- `Concluído`/`Cancelado` tornam a observação somente leitura até eventual reabertura;
+- observação vazia não ocupa espaço na Ficha;
+- uma nova publicação do Procedimento não troca nem reatribui a observação de uma execução existente.
+
+Conceitualmente, o dado precisa estar ligado a:
 
 ```text
-Client mostra Atendimento na revisão 42
-→ solicita Ficha para revisão esperada 42
-→ Host já está na revisão 43
-→ não gerar silenciosamente a 43
-→ informar estado obsoleto
-→ Client reconsulta antes de nova tentativa
+Atendimento
++ vínculo Atendimento × Procedimento/revisão
++ Etapa da revisão executada
++ texto da observação
++ controle concorrente/auditoria mínima
 ```
 
-### Concluído
+O schema físico não é fechado nesta etapa.
 
-Usa o estado histórico congelado aplicável, inclusive snapshots/projeções históricas já consolidadas.
+## 6. Concorrência das observações por Etapa
 
-### Cancelado
+Para preservar o modelo multiusuário sem criar conflitos globais desnecessários:
 
-Usa o estado oficial aplicável e inclui identificação inequívoca do cancelamento.
+- a observação de uma Etapa deve possuir controle de revisão próprio ou equivalente;
+- editar a observação da Etapa 2 não deve invalidar checklist/observação da Etapa 5 por conveniência de implementação;
+- conflito no mesmo texto preserva a edição local e exige reconciliação;
+- confirmação visual só acontece após estado aceito pelo Host.
 
-A identidade corporativa segue a regra vigente: usa a configuração central válida no momento da geração; versionamento histórico da identidade da empresa não é requisito v1.
+Isso segue a mesma filosofia de granularidade já adotada para checklist.
 
-## 5. DocumentModel da Ficha
+A interação exata de salvar no Reader será consolidada nas fontes de UI quando esta decisão for aprovada; não se introduz autosave por inferência nesta proposta.
 
-Não é criada uma segunda arquitetura documental.
+## 7. Observações na Ficha
 
-A Ficha usa o `DocumentModel` consolidado na Etapa 1 com `document_kind` específico e conteúdo estruturado apropriado ao Atendimento.
+Somente observações realmente preenchidas entram no documento.
+
+Origens possíveis:
+
+```text
+Observação geral do Equipamento
+Observação geral do Atendimento
+Observação do serviço — Etapa A
+Observação do serviço — Etapa B
+...
+```
+
+As observações por Etapa devem manter associação suficiente para o leitor compreender o contexto, mas sem imprimir estrutura técnica pesada.
+
+Exemplo conceitual enxuto:
+
+```text
+OBSERVAÇÕES DO SERVIÇO
+• Limpeza interna realizada; excesso de poeira próximo ao cooler.
+• Troca do SSD: unidade anterior apresentou setores defeituosos.
+• Validação final: bateria em 68% de saúde, recomendado acompanhamento.
+```
+
+A Etapa 7 define se o título da Etapa aparece ou se a observação é apresentada em lista simples. A Etapa 8 define limites/priorização quando houver texto demais.
+
+Não resumir, truncar ou remover automaticamente uma observação legítima sem regra consolidada. Se o conjunto ultrapassar uma A4, a geração falha por overflow e orienta revisão dos campos aplicáveis.
+
+## 8. DocumentModel da Ficha
+
+A Ficha reutiliza a arquitetura `DocumentModel` já consolidada, com `document_kind` próprio.
 
 Conceitualmente:
 
@@ -107,59 +206,62 @@ DocumentModel
 ├── company_identity
 ├── metadata
 │   ├── atendimento
-│   ├── lifecycle/status
+│   ├── data/status aplicável
 │   ├── responsável
-│   ├── referência externa
-│   └── data aplicável
+│   └── cliente/referência?
 ├── sections
-│   ├── equipamento? 
-│   ├── procedimentos utilizados
-│   ├── resumo do trabalho
-│   └── observações aplicáveis
+│   ├── device_summary?
+│   │   ├── identity
+│   │   ├── cpu
+│   │   ├── memory
+│   │   ├── storage
+│   │   ├── os?
+│   │   ├── battery?
+│   │   └── device_note?
+│   ├── work_summary
+│   ├── general_service_note?
+│   └── stage_service_notes[]
 └── generation_metadata
 ```
 
-A forma exata das structs fica para implementação; esta etapa consolida apenas a semântica.
+O modelo pode carregar informações internas adicionais necessárias à consistência, mas o template da Ficha só apresenta o subconjunto aprovado para o cliente.
 
-## 6. Renderer PDF da Ficha
+## 9. PDF próprio e canônico
 
-A Ficha reutiliza a infraestrutura **Typst embutida no Host** consolidada para PDF, mas com template interno próprio.
-
-Não criar:
-
-- biblioteca PDF diferente apenas para Ficha;
-- processo conversor externo;
-- browser/headless para gerar PDF;
-- HTML → PDF;
-- canvas/screenshot → PDF.
-
-Baseline técnico herdado:
-
-- PDF 1.7;
-- Tagged PDF habilitado como baseline estrutural;
-- texto real selecionável/pesquisável/copiável;
-- fontes necessárias incorporadas/subsetadas;
-- assets controlados;
-- nenhum recurso remoto em runtime;
-- template confiável/versionado;
-- domínio entra apenas como dados estruturados;
-- falha não produz PDF parcial tratado como sucesso.
-
-Tagged PDF continua sem promessa formal PDF/UA ou PDF/A.
-
-A família tipográfica e demais detalhes físicos da Ficha permanecem para a Etapa 7.
-
-## 7. Gate estrutural de uma única página
-
-A regra de uma A4 é validada **depois do layout**, não por estimativa do Client.
+A Ficha possui PDF próprio, diferente do PDF de Procedimento.
 
 Fluxo:
 
 ```text
-DocumentModel da Ficha
-→ Typst compila/layout
+Atendimento confirmado
+→ snapshot/revisão esperada
+→ DocumentModel da Ficha
+→ template Typst interno específico
 → PagedDocument
-→ validar quantidade de páginas
+→ validar exatamente 1 página
+→ PDF canônico da Ficha
+```
+
+A Ficha reutiliza a infraestrutura Typst embutida do Host:
+
+- PDF 1.7;
+- Tagged PDF como baseline estrutural;
+- texto real selecionável/pesquisável/copiável;
+- fontes/assets controlados;
+- nenhum recurso remoto em runtime;
+- conteúdo do domínio apenas como dados estruturados;
+- falha nunca produz PDF parcial tratado como sucesso.
+
+Não criar HTML→PDF, screenshot, browser headless ou nova biblioteca PDF apenas para a Ficha.
+
+## 10. Gate rígido de uma página
+
+A validação ocorre depois do layout real.
+
+```text
+DocumentModel
+→ Typst layout
+→ PagedDocument
 
 1 página
 → válido
@@ -169,142 +271,97 @@ DocumentModel da Ficha
 
 2+ páginas
 → SHEET_OVERFLOW
-→ nenhum PDF/preview é confirmado
+→ nenhum PDF/preview confirmado
 ```
 
-Regras:
+Proibido resolver overflow por:
 
-- não retornar apenas a primeira página;
-- não cortar conteúdo excedente;
-- não reduzir fonte dinamicamente para forçar encaixe;
-- não criar segunda folha silenciosamente;
-- não omitir seção conhecida para fazer caber.
+- retornar somente a primeira página;
+- criar segunda folha;
+- cortar texto silenciosamente;
+- remover observações sem regra;
+- reduzir fonte dinamicamente até caber.
 
-A Etapa 7 define o template A4 final. A Etapa 8 define limites/priorização textual e diagnósticos úteis de excesso.
+Template A4 final = Etapa 7. Limites/priorização de conteúdo = Etapa 8.
 
-## 8. Preview — princípio central
+## 11. Preview usa exatamente o mesmo layout
 
-A prévia deve representar **o mesmo layout que originará o PDF**, sem reconstruir a Ficha em HTML.
-
-Direção proposta:
+O preview não possui um segundo template.
 
 ```text
 mesmo DocumentModel
 → mesmo template Typst
 → mesmo PagedDocument de 1 página
-   ├─→ typst-pdf → PDF canônico
-   └─→ typst-svg → SVG de preview
+   ├─→ PDF canônico
+   └─→ SVG de preview
 ```
 
-O preview SVG é derivado da **mesma página já diagramada** que alimenta o PDF.
+O SVG é uma representação vetorial da mesma página diagramada.
 
-Isso evita:
+Benefícios:
 
-- um segundo template de preview;
-- divergência HTML × PDF;
-- screenshot da Tela 09;
-- dependência do toolbar do visualizador PDF;
-- necessidade de abrir software externo apenas para conferir a Ficha.
+- preview e impressão mostram o mesmo conteúdo;
+- não existe divergência HTML × PDF;
+- não é screenshot da Tela 09;
+- não exige toolbar do visualizador PDF;
+- encaixa no princípio de baixa densidade visual do Pocket.
 
-## 9. Por que SVG para o preview
+O PDF permanece o artefato oficial; SVG é transitório e somente para visualização.
 
-Typst possui renderer oficial de página para SVG. O SVG mantém a geometria vetorial da página diagramada e é apropriado para exibição no Client.
+## 12. Superfície de preview no Client
 
-Para a Ficha, que obrigatoriamente possui uma única página, isso permite:
-
-- página A4 escalada responsivamente;
-- preview nítido em diferentes tamanhos de janela;
-- ausência de toolbar/browser chrome;
-- controles de salvar/imprimir pertencendo ao próprio Pocket;
-- manutenção da Tela 09 e do Shell intactos;
-- nenhum arquivo PDF temporário necessário apenas para visualizar.
-
-O SVG de preview não é o artefato oficial exportável. O **PDF continua sendo o documento canônico**.
-
-## 10. Segurança do preview
-
-O SVG é produzido pelo Host a partir de template e dados controlados.
-
-No Client, a representação deve ser tratada como **imagem/documento visual**, não como HTML arbitrário a ser injetado na aplicação.
-
-Direção:
-
-- usar recurso/Blob controlado como imagem;
-- não executar script do SVG;
-- não habilitar navegação externa automática;
-- não receber SVG fornecido diretamente pelo usuário;
-- nenhum URL/path remoto originado do conteúdo;
-- links textuais permanecem texto, salvo futura semântica explícita.
-
-A forma concreta de transporte/Blob URL permanece detalhe de implementação.
-
-## 11. Superfície de preview no Client
-
-A Ficha não ganha item permanente na sidebar nem uma nova área pesada da aplicação.
-
-Direção visual:
+Fluxo:
 
 ```text
-Tela 09 — Atendimento
+Tela 09
 → Ficha / Imprimir
-→ gera artefato
-→ abre preview sobre o contexto atual
+→ Host gera PDF + preview
+→ modal/overlay grande
 ```
 
-Superfície proposta:
+A superfície deve ser simples:
 
-- modal/overlay grande dentro da própria experiência do Client;
-- página A4 centralizada e escalada para a área disponível;
-- fundo neutro apenas para separar a folha do restante da UI;
-- sem painel lateral permanente;
-- sem metadados repetidos ao redor da página;
-- sem toolbar textual extensa.
+- uma folha A4 centralizada e escalada proporcionalmente;
+- sem sidebar adicional;
+- sem metadados repetidos fora da folha;
+- sem toolbar textual extensa;
+- ações mínimas para salvar PDF, imprimir e fechar;
+- ícones podem ser usados quando inequívocos, com nome acessível/tooltip.
 
-Cabeçalho do preview pode ser mínimo:
+Salvar e imprimir reutilizam os mesmos bytes PDF correspondentes à prévia aberta.
 
-```text
-Ficha AT-000142                      [ salvar ] [ imprimir ] [ × ]
-```
+## 13. Impressão
 
-Os ícones podem ser icon-only quando inequívocos, sempre com nome acessível/tooltip.
-
-## 12. Ações do preview
-
-### Salvar PDF
-
-`Salvar PDF`/ícone equivalente salva **os mesmos bytes PDF já produzidos para aquela prévia**.
-
-- não regenerar silenciosamente;
-- destino é escolhido localmente pelo usuário;
-- Host não recebe path arbitrário da workstation;
-- cancelamento do diálogo é voluntário, não erro;
-- naming final permanece Etapa 10.
-
-### Imprimir
-
-`Imprimir` usa **os mesmos bytes PDF da prévia**.
-
-O Client reaproveita o mecanismo Windows já consolidado:
+A impressão da Ficha reutiliza o mecanismo Windows já consolidado:
 
 ```text
 PDF canônico da Ficha
-→ recurso local transitório controlado
+→ recurso local transitório
 → WebView2 dedicada/transitória
 → ShowPrintUI(System)
 → diálogo de impressão do Windows
 ```
 
-Não existe um renderer ou layout separado de impressão da Ficha.
+Não criar renderer separado para impressão.
 
-Os detalhes concretos do recurso temporário continuam na Etapa 10.
+Detalhes de nome/path/limpeza do recurso local permanecem na Etapa 10.
 
-### Fechar
+## 14. Fonte e estabilidade da geração
 
-Fechar a prévia descarta o estado transitório local daquela visualização. Não altera o Atendimento.
+A prévia e o PDF ficam presos ao Atendimento + `source_version` usado na geração.
 
-## 13. Uma geração, dois derivados transitórios
+Se o Atendimento mudar depois:
 
-A operação conceitual produz um par coerente:
+- a folha aberta não muda silenciosamente;
+- o Client indica de forma discreta que a ficha precisa ser atualizada;
+- nova saída do estado atual exige regeneração;
+- não existe regeneração automática em background substituindo a folha que está sendo conferida.
+
+Em `Concluído`, usar o estado histórico congelado aplicável, incluindo características/observações preservadas. Em `Cancelado`, identificar o cancelamento claramente.
+
+## 15. Resultado transitório
+
+Conceitualmente:
 
 ```text
 ServiceSheetGenerationResult
@@ -314,47 +371,13 @@ ServiceSheetGenerationResult
 └── preview_svg
 ```
 
-A forma exata do transporte HTTP não é congelada nesta etapa.
+- PDF e SVG derivam da mesma página;
+- não há job persistente;
+- não há URL pública permanente;
+- artefatos não viram histórico/backup automaticamente;
+- fechar o preview pode descartar o resultado local transitório.
 
-Requisitos:
-
-- PDF e SVG derivam do mesmo `PagedDocument`;
-- o par pertence à mesma revisão esperada;
-- não existe job persistente;
-- não existe URL pública permanente;
-- artefatos não são gravados automaticamente no Host;
-- Client pode manter o resultado somente enquanto a prévia estiver aberta/necessária.
-
-A geração do par conta como uma única operação documental para fins de limite de concorrência.
-
-## 14. Preview estável e mudanças em tempo real
-
-Uma prévia aberta não muda silenciosamente quando chega evento WebSocket.
-
-Ela permanece ligada a:
-
-```text
-Atendimento X
-source_version Y
-```
-
-Se o Client confirmar que o Atendimento mudou depois da geração:
-
-- a prévia atual permanece visualmente estável;
-- deve ser marcada discretamente como desatualizada;
-- salvar/imprimir como estado atual não pode acontecer silenciosamente;
-- o usuário deve regenerar a prévia antes de produzir nova saída operacional atual.
-
-Direção de UX curta:
-
-```text
-Atendimento atualizado. Gere novamente a ficha.
-[ Atualizar ]
-```
-
-Não regenerar automaticamente em background e não trocar a folha enquanto o usuário está conferindo.
-
-## 15. Estados de geração
+## 16. Estado e erros
 
 Estados mínimos:
 
@@ -364,152 +387,75 @@ preparando ficha
 → pronta
 ```
 
-Falhas distintas:
+Falhas relevantes:
 
-- alterações locais não salvas;
-- conflito pendente;
-- sem autenticação/permissão;
+- alteração local não salva;
+- conflito;
+- sem permissão;
 - Atendimento indisponível;
 - revisão esperada obsoleta;
 - `SHEET_OVERFLOW`;
-- falha do renderer/template/asset;
-- falha na geração do preview;
-- limite de recursos/backpressure;
+- falha de renderer/template/asset;
+- falha de preview;
+- backpressure/limite de recursos;
 - conexão interrompida.
 
-Não exibir percentual sem progresso real.
+Nenhum percentual fictício. Nenhum artefato parcial como sucesso.
 
-Nenhum PDF/preview parcial é apresentado como sucesso.
+## 17. Alterações canônicas necessárias após aprovação
 
-## 16. Overflow e mensagem ao usuário
+Esta proposta introduz um refinamento que impacta decisões anteriores.
 
-Até a Etapa 8 fechar diagnósticos específicos, a mensagem funcional consolidada continua válida:
+Se aprovada, a consolidação da Etapa 6 deverá atualizar minimamente:
 
-`A ficha possui conteúdo demais para uma página A4. Revise os campos indicados antes de imprimir.`
+- Tela 05 — Reader operacional: área de Observação do serviço por Etapa;
+- Tela 09 — Atendimento: observações específicas das Etapas como parte do estado operacional e da Ficha;
+- Tela 14 — Ficha: finalidade de prestação de contas resumida e conteúdo client-facing enxuto;
+- modelo de dados conceitual: persistência da observação por Etapa/vínculo de execução;
+- Bloco 9/registro de decisões: lifecycle, concorrência e snapshot dessas observações;
+- arquitetura/Bloco 10: `DocumentModel` e PDF/preview da Ficha.
 
-Nesta Etapa 6 fica consolidado apenas que a detecção real é feita pelo Host após layout e que 2+ páginas resultam em falha explícita.
+Nenhuma fonte canônica é alterada antes da aprovação do PO.
 
-A identificação exata dos campos responsáveis pelo excesso permanece Etapa 8.
+## 18. Decisões propostas da Etapa 6
 
-## 17. Acessibilidade
+1. a Ficha é uma prestação de contas resumida ao cliente;
+2. o conteúdo impresso prioriza identificação do serviço, dispositivo, características, resumo do trabalho e observações;
+3. checklist, progresso, passos, comandos, timeline e detalhes internos não aparecem por padrão;
+4. cada Etapa executada em Atendimento pode receber uma Observação do serviço opcional e persistente;
+5. observação por Etapa é estado do Atendimento, não conteúdo da revisão do Procedimento;
+6. observações por Etapa vazias são omitidas da Ficha;
+7. observações preenchidas entram no material impresso dentro das regras de uma A4;
+8. equipamento usa dados previamente cadastrados/snapshotados, sem redigitação para gerar a Ficha;
+9. PDF específico da Ficha passa a ser artefato canônico;
+10. PDF e preview SVG derivam do mesmo `PagedDocument` Typst;
+11. resultado precisa possuir exatamente uma página;
+12. overflow falha explicitamente, sem segunda página/truncamento/redução arbitrária de fonte;
+13. preview é modal/overlay simples dentro do Client;
+14. salvar/imprimir usam os mesmos bytes PDF apresentados pela geração;
+15. impressão reutiliza WebView2 + `ShowPrintUI(System)`;
+16. prévia fica presa à `source_version` e nunca muda silenciosamente após evento remoto;
+17. DOCX da Ficha continua fora da v1;
+18. Etapas 7–12 permanecem fechadas até esta Etapa 6 ser aprovada/consolidada e operacionalmente encerrada.
 
-- ações do preview operam por teclado;
-- ícones têm nomes acessíveis;
-- foco fica contido/gerenciado enquanto modal estiver aberto;
-- a prévia visual possui identificação acessível como `Pré-visualização da ficha AT-...`;
-- cor não é o único meio para indicar status/cancelamento/desatualização;
-- PDF final mantém o baseline Tagged PDF;
-- o SVG é representação visual da página, não substituto semântico do Atendimento na UI.
+## 19. Fora do escopo
 
-Não se cria promessa formal PDF/UA nesta etapa.
-
-## 18. Dimensões e responsividade do preview
-
-O documento continua fisicamente A4 independentemente da janela.
-
-Na tela:
-
-- a folha é escalada proporcionalmente;
-- não deformar a razão A4;
-- não alterar o layout físico porque a janela é menor;
-- controles permanecem acessíveis;
-- a página pode usar rolagem da superfície de preview se necessário;
-- zoom fino pode ser adicionado na implementação se testes demonstrarem necessidade, sem virar requisito funcional desta etapa.
-
-## 19. Concorrência e recursos
-
-Aplicam-se os limites documentais já consolidados:
-
-- geração fora da fila de mutações;
-- bounded concurrency/backpressure;
-- não criar fila persistente;
-- não renderizar novamente ao clicar `Salvar` ou `Imprimir` enquanto a prévia válida já contém o PDF correspondente;
-- limites numéricos de bytes/memória/tempo ficam para implementação/Etapa 12.
-
-## 20. Alternativas avaliadas
-
-### Screenshot/HTML da Tela 09
-
-Rejeitado. Criaria um segundo contrato visual e misturaria UI com documento.
-
-### HTML dedicado → imprimir/salvar PDF pelo browser
-
-Rejeitado como baseline. Duplicaria o template e introduziria divergência entre HTML e PDF oficial.
-
-### WebView2 PDF viewer como preview principal
-
-É tecnicamente capaz de abrir PDF local e permanece útil para o fluxo de impressão. Não é a direção principal do preview porque:
-
-- introduz toolbar/chrome próprio do viewer;
-- reduz controle visual do Pocket;
-- acopla a experiência de preview a detalhes do viewer do runtime;
-- exige recurso PDF local/materialização apenas para visualizar.
-
-### PDF + SVG derivados do mesmo PagedDocument
-
-Direção proposta porque preserva uma única composição documental, mantém PDF como artefato oficial e permite preview vetorial leve dentro da própria UI.
-
-## 21. Referências técnicas verificadas
-
-Verificação realizada em 2026-08-28:
-
-- Typst PDF: `https://typst.app/docs/reference/pdf/`;
-- Typst SVG: `https://typst.app/docs/reference/svg/`;
-- `typst-pdf`: `https://docs.rs/typst-pdf/`;
-- `typst-svg`: `https://docs.rs/typst-svg/`;
-- WebView2 — local content/PDF: `https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/working-with-local-content`;
-- WebView2 — APIs/PDF toolbar: `https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/overview-features-apis`;
-- Tauri 2 WebviewWindow/Webview APIs: `https://v2.tauri.app/reference/javascript/api/namespacewebviewwindow/`.
-
-As versões atuais observadas em documentação não são congeladas como contrato da Fase 1. Versões exatas continuam para Cargo.lock/gate técnico.
-
-## 22. Fora do escopo da Etapa 6
-
-- margens finais da Ficha;
-- tipografia física final da Ficha;
-- hierarquia/composição detalhada das seções da única A4;
-- limites numéricos de resumo/observações;
-- regras finais de priorização/truncamento controlado;
-- tratamento físico de muitos MACs;
-- tratamento físico de muitos Procedimentos utilizados;
-- nomes finais de arquivo;
-- diretórios/temporários e política concreta de limpeza;
+- layout físico final da folha;
+- margens e tipografia finais;
+- quantidade máxima de caracteres;
+- regra exata para muitos MACs/Procedimentos;
+- mecanismo visual exato de salvar observação por Etapa;
+- schema físico/migration;
+- nomes de arquivos;
+- temporários concretos;
 - QR/barcode;
-- DOCX da Ficha;
-- envio por e-mail/cloud;
-- histórico persistente de exportações;
 - implementação funcional.
 
-Esses pontos permanecem nas Etapas 7–12 correspondentes.
+## 20. Gate
 
-## 23. Decisões propostas para aprovação do PO
+Até aprovação explícita do PO:
 
-1. a Ficha compacta terá **PDF próprio e canônico**;
-2. o PDF será gerado pelo Host a partir do estado confirmado/revisão esperada do Atendimento;
-3. a Ficha usa o mesmo `DocumentModel` arquitetural, com `document_kind = service_sheet` ou equivalente;
-4. o PDF da Ficha reutiliza a infraestrutura Typst embutida, com template interno específico da Ficha;
-5. mantém PDF 1.7 + Tagged PDF + texto real + fontes incorporadas como baseline técnico;
-6. layout é validado pelo Host e precisa resultar em **exatamente uma página**;
-7. 2+ páginas geram erro explícito `SHEET_OVERFLOW`/equivalente, sem segunda folha, truncamento ou redução automática de fonte;
-8. preview não é HTML reconstruído nem screenshot;
-9. o preview é SVG produzido da mesma página do `PagedDocument` que origina o PDF;
-10. preview aparece em modal/overlay grande dentro do Client, sem nova sidebar nem toolbar de navegador;
-11. controles permanentes do preview são mínimos: salvar PDF, imprimir e fechar, podendo usar ícones acessíveis;
-12. salvar e imprimir reutilizam **os mesmos bytes PDF** apresentados por aquela geração, sem regenerar silenciosamente;
-13. impressão reutiliza o mecanismo local WebView2 + `ShowPrintUI(System)` já consolidado;
-14. PDF + SVG formam um resultado transitório coerente da mesma `source_version`, sem job/persistência no Host;
-15. evento remoto não troca a prévia aberta silenciosamente;
-16. se a fonte mudar, a prévia fica marcada como desatualizada e exige regeneração antes de nova saída atual;
-17. preview SVG é tratado como recurso visual controlado, sem execução de script/navegação externa;
-18. template físico da Ficha permanece Etapa 7; limites textuais permanecem Etapa 8; muitos MACs/Procedimentos Etapa 9; nomes/temporários Etapa 10; QR Etapa 11; matriz/limites técnicos Etapa 12.
-
-## 24. Gate de fechamento
-
-A Etapa 6 só será consolidada após aprovação explícita do PO.
-
-Até lá:
-
-- este arquivo é proposta;
-- fontes canônicas não mudam para `Etapa 6 consolidada`;
-- Etapa 7 não é aberta;
-- nenhum código/dependency/migration/scaffold é criado.
+- PR permanece draft;
+- somente esta proposta pode ser alterada;
+- nenhuma fonte canônica é promovida;
+- Etapa 7 não é aberta.
