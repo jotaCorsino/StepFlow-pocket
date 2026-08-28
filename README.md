@@ -6,7 +6,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-28  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–7 consolidadas; Etapa 8 próxima**  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–8 consolidadas; Etapa 9 próxima**  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida. Precedência e decisões completas permanecem em `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md` e documentos específicos.
@@ -25,7 +25,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–7 consolidadas |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–8 consolidadas |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -66,8 +66,8 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 5 | Template físico de Procedimentos | ✅ Consolidado |
 | 6 | PDF + preview da Ficha compacta | ✅ Consolidado |
 | 7 | Template físico A4 da Ficha | ✅ Consolidado |
-| 8 | Limites textuais e densidade da Ficha | 🟡 Próxima — ainda não aberta |
-| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | ⏳ Pendente |
+| 8 | Limites textuais e densidade da Ficha | ✅ Consolidado |
+| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | 🟡 Próxima — ainda não aberta |
 | 10 | Nomes de arquivo + artefatos temporários | ⏳ Pendente |
 | 11 | QR / barcode | ⏳ Pendente |
 | 12 | Validação técnica final do Bloco 10 | ⏳ Pendente |
@@ -107,18 +107,30 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - Noto Sans com baseline 14 / 10,5 / 10 / 9 / 8,5 pt;
 - divisórias discretas, contraste neutro e legível em monocromático;
 - seções vazias colapsam;
-- sem assinatura, financeiro, checklist, progresso, timeline, QR, página 2 ou footer promocional;
-- overflow continua falha explícita; Etapa 8 fechará limites/priorização textual.
+- sem assinatura, financeiro, checklist, progresso, timeline, QR, página 2 ou footer promocional.
+
+### Etapa 8 — limites textuais e densidade
+
+- soft limits recomendados: `Resumo do trabalho` 600, observação geral do Atendimento 400, observação do Equipamento 300 e observação por Etapa 280 caracteres;
+- contador/aviso surge somente próximo de aproximadamente 80% da faixa recomendada;
+- soft limit não bloqueia save nem conclusão e nunca trunca/altera o dado operacional;
+- o layout Typst real é a autoridade final para encaixe em uma A4;
+- `SHEET_OVERFLOW` bloqueia somente PDF/preview/impressão da Ficha;
+- Host devolve diagnóstico semântico dos principais campos que pressionam a folha;
+- correção ocorre nos campos reais do Atendimento, sem editor paralelo da Ficha;
+- sem IA, resumo automático, reticências, deduplicação semântica, modo compacto ou redução automática de fonte/margem/espaçamento;
+- observações seguem Atendimento → Equipamento → Etapas, preservando textos legítimos;
+- hard limits técnicos de storage/API não derivam da geometria A4.
 
 Fonte técnica: `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
 ## Gate atual
 
-A Etapa 8 não pode ser aberta antes de:
+A Etapa 9 não pode ser aberta antes de:
 
 ```text
-squash merge da Etapa 7
-→ remoção da branch remota da Etapa 7
+squash merge da Etapa 8
+→ remoção da branch remota da Etapa 8
 → remoto somente com main
 → zero PRs abertos
 ```
@@ -129,7 +141,7 @@ squash merge da Etapa 7
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- Etapas 8–12 do Bloco 10;
+- Etapas 9–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo;
 - estrutura oficial/Fase 2 no Bloco 12.
