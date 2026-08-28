@@ -6,7 +6,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-28  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–8 consolidadas; Etapa 9 próxima**  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–9 consolidadas; Etapa 10 próxima**  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida. Precedência e decisões completas permanecem em `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md` e documentos específicos.
@@ -25,7 +25,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–8 consolidadas |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–9 consolidadas |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -67,8 +67,8 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 6 | PDF + preview da Ficha compacta | ✅ Consolidado |
 | 7 | Template físico A4 da Ficha | ✅ Consolidado |
 | 8 | Limites textuais e densidade da Ficha | ✅ Consolidado |
-| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | 🟡 Próxima — ainda não aberta |
-| 10 | Nomes de arquivo + artefatos temporários | ⏳ Pendente |
+| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | ✅ Consolidado |
+| 10 | Nomes de arquivo + artefatos temporários | 🟡 Próxima — ainda não aberta |
 | 11 | QR / barcode | ⏳ Pendente |
 | 12 | Validação técnica final do Bloco 10 | ⏳ Pendente |
 
@@ -122,15 +122,28 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - observações seguem Atendimento → Equipamento → Etapas, preservando textos legítimos;
 - hard limits técnicos de storage/API não derivam da geometria A4.
 
+### Etapa 9 — dados excepcionais e multiplicidade
+
+- a Ficha continua sendo projeção resumida para o cliente, não dump integral do domínio;
+- Procedimentos vinculados permanecem fora da Ficha por padrão, independentemente da quantidade;
+- MACs: nenhum = omite; um ou dois = exibe compactamente; três ou mais = mostra somente a quantidade de identificadores cadastrados;
+- labels existentes podem contextualizar MACs, sem inventar `MAC principal`;
+- observações de serviço legítimas não recebem cap de quantidade nem descarte automático;
+- multiplicidade real pode levar a `SHEET_OVERFLOW`, exigindo revisão humana dos textos reais;
+- campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
+- diagnóstico de overflow pode indicar multiplicidade, como quantidade de observações ou campo estruturado longo;
+- sem `include_in_sheet`, editor paralelo, seleção transitória, modo compacto, segunda página ou redução automática do template;
+- limites técnicos finais permanecem para a Etapa 12.
+
 Fonte técnica: `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
 ## Gate atual
 
-A Etapa 9 não pode ser aberta antes de:
+A Etapa 10 não pode ser aberta antes de:
 
 ```text
-squash merge da Etapa 8
-→ remoção da branch remota da Etapa 8
+squash merge da Etapa 9
+→ remoção da branch remota da Etapa 9
 → remoto somente com main
 → zero PRs abertos
 ```
@@ -141,7 +154,7 @@ squash merge da Etapa 8
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- Etapas 9–12 do Bloco 10;
+- Etapas 10–12 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo;
 - estrutura oficial/Fase 2 no Bloco 12.
