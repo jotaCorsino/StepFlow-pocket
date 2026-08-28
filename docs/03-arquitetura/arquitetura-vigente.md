@@ -1,6 +1,6 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–7  
+**Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–8  
 **Atualização:** 2026-08-28
 
 ## Visão geral
@@ -364,7 +364,23 @@ Contrato:
 - sem caixas vazias para escrita manual, assinatura, financeiro, garantia, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional;
 - nenhuma redução dinâmica de fonte para caber; overflow continua `SHEET_OVERFLOW`.
 
-Etapa 8 definirá limites/priorização/densidade textual. Etapa 9 tratará dados multiplicativos/excepcionais.
+## Etapa 8 — limites textuais e densidade da Ficha
+
+- a geometria de uma A4 não altera nem trunca os dados operacionais do Atendimento;
+- soft limits recomendados: `Resumo do trabalho` 600, observação geral do Atendimento 400, observação do Equipamento 300 e observação por Etapa 280 caracteres;
+- aviso/contador aparece apenas próximo de aproximadamente 80% da faixa recomendada;
+- soft limits não bloqueiam save nem conclusão;
+- o layout real Typst é a autoridade final de encaixe;
+- `SHEET_OVERFLOW` bloqueia somente o artefato da Ficha e mantém o estado operacional íntegro;
+- Host retorna diagnóstico semântico dos principais `contributors`, sem prometer percentual exato de pressão visual;
+- Client orienta revisão dos campos reais e não mantém editor paralelo client-facing;
+- ordem normal das observações: Atendimento → Equipamento → Etapas na ordem executada;
+- sem deduplicação automática de textos semelhantes;
+- sem IA/resumo automático, truncamento, reticências, modo compacto ou redução automática de fonte/margem/espaçamento;
+- normalização segura limita-se a whitespace/apresentação sem alterar significado;
+- hard limits técnicos de storage/API permanecem independentes da geometria A4.
+
+Etapa 9 tratará dados multiplicativos/excepcionais sem reabrir o template base.
 
 ## Backup / Restore
 
@@ -384,7 +400,7 @@ UX já consolidada:
 - Bloco 6: núcleo + extensão operacional conceitual consolidados;
 - Bloco 7: núcleo concluído;
 - Blocos 8–9: concluídos;
-- **Bloco 10: em andamento — Etapas 1–7 consolidadas; Etapa 8 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–8 consolidadas; Etapa 9 próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 Nenhum runtime/código funcional oficial foi criado durante esse fechamento documental.

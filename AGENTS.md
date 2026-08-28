@@ -12,7 +12,7 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 concluídos; Bloco 5 com núcleo concluído e parâmetros finais pendentes; Bloco 6 consolidado conceitualmente; Bloco 7 concluído no núcleo; Blocos 8 e 9 concluídos.
-- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–7 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 8 — Limites textuais e densidade da Ficha é a próxima e ainda não está aberta**.
+- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–8 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 9 — Múltiplos MACs / Procedimentos / dados excepcionais é a próxima e ainda não está aberta**.
 - Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade
@@ -114,7 +114,7 @@ Durante o fechamento documental restante da Fase 1:
 - remoto é a fonte operacional;
 - sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex.
 
-**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 8** pode começar antes de a **Etapa 7** estar squash-mergeada, a branch da Etapa 7 removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
+**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 9** pode começar antes de a **Etapa 8** estar squash-mergeada, a branch da Etapa 8 removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
 
 ## Regras operacionais
 
@@ -231,7 +231,7 @@ Atendimento/Ficha:
 - `Cancelado`: saída identifica o estado;
 - Ficha prioriza serviço/dispositivo/resumo/observações, não checklist/timeline detalhados.
 
-## Bloco 10 — arquitetura documental consolidada / Etapas 1–7
+## Bloco 10 — arquitetura documental consolidada / Etapas 1–8
 
 ### Etapa 1 — arquitetura
 
@@ -324,12 +324,23 @@ Atendimento/Ficha:
 - PDF usa Noto Sans: 14 pt identificação principal, 10,5 pt seção, 10 pt corpo, 9 pt ficha técnica e 8,5 pt metadados;
 - divisórias discretas e contraste neutro legível em monocromático;
 - sem caixas de escrita manual, assinatura, financeiro, garantia, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional;
-- sem redução dinâmica de fonte; overflow continua `SHEET_OVERFLOW`;
-- Etapa 8 define limites/priorização/densidade; Etapa 9 trata dados excepcionais.
+- sem redução dinâmica de fonte; overflow continua `SHEET_OVERFLOW`.
+
+### Etapa 8 — limites textuais e densidade da Ficha
+
+- soft limits são orientação, nunca hard limit de dado: Resumo 600, Atendimento 400, Equipamento 300 e observação por Etapa 280 caracteres;
+- contador/aviso surge somente próximo de aproximadamente 80% da faixa recomendada;
+- ultrapassar soft limit não bloqueia save nem conclusão;
+- Typst real é a autoridade final de encaixe em uma A4;
+- `SHEET_OVERFLOW` bloqueia somente PDF/preview/impressão da Ficha e preserva o Atendimento integralmente;
+- Host devolve diagnóstico semântico dos campos mais prováveis para revisão;
+- usuário corrige os dados reais, sem editor paralelo da Ficha;
+- observações seguem Atendimento → Equipamento → Etapas na ordem executada;
+- sem IA/resumo automático, truncamento, reticências, deduplicação semântica, modo compacto ou redução automática de fonte/margem/espaçamento;
+- hard limits técnicos de storage/API não derivam da A4.
 
 ## Pendências ainda não consolidáveis para implementação
 
-- Etapa 8: limites textuais/priorização/densidade/diagnóstico de overflow da Ficha;
 - Etapa 9: muitos MACs/Procedimentos/observações e dados excepcionais;
 - Etapa 10: nomes/paths/limpeza concretos de artefatos temporários;
 - Etapa 11: QR/barcode apenas se benefício aprovado;

@@ -24,7 +24,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–7 CONSOLIDADAS / ETAPA 8 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–8 CONSOLIDADAS / ETAPA 9 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -46,6 +46,7 @@ Fazem parte da Fase 1:
 - PDF/DOCX/impressão contextual de Procedimentos;
 - PDF próprio + preview da Ficha;
 - template físico A4 da Ficha;
+- limites textuais orientativos e política de overflow da Ficha;
 - estados transversais;
 - matriz operacional de capacidades;
 - códigos `AT-000001` / `EQP-000001`;
@@ -64,7 +65,7 @@ Direção transversal:
 - stepper representa navegação, não conclusão operacional;
 - informação secundária sob demanda e baixa densidade textual quando possível.
 
-A Tela 05 incorpora `Observação do serviço` por Etapa somente no contexto operacional. A Tela 14 consolida a Ficha como prestação de contas resumida, PDF/preview e template físico A4.
+A Tela 05 incorpora `Observação do serviço` por Etapa somente no contexto operacional. A Tela 14 consolida a Ficha como prestação de contas resumida, PDF/preview, template físico A4 e política de limites/overflow.
 
 ## Bloco 9 — Execução operacional / Atendimentos
 
@@ -87,7 +88,7 @@ Consolidado:
 
 ## Bloco 10 — Exportação e impressão
 
-**Status: EM ANDAMENTO — Etapas 1–7 consolidadas; Etapa 8 próxima, ainda não aberta.**
+**Status: EM ANDAMENTO — Etapas 1–8 consolidadas; Etapa 9 próxima, ainda não aberta.**
 
 Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 
@@ -102,8 +103,8 @@ Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 | 5 | Template físico de Procedimentos | **CONSOLIDADO / APROVADO PELO PO** |
 | 6 | PDF + preview da Ficha compacta | **CONSOLIDADO / APROVADO PELO PO** |
 | 7 | Template físico A4 da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
-| 8 | Limites textuais e densidade da Ficha | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | PENDENTE |
+| 8 | Limites textuais e densidade da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
+| 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 10 | Nomes de arquivo + artefatos temporários | PENDENTE |
 | 11 | QR / barcode | PENDENTE |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
@@ -148,16 +149,32 @@ Contrato aprovado:
 - divisórias discretas, contraste neutro e legível em monocromático;
 - sem assinatura, financeiro, garantia, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional;
 - nenhuma redução dinâmica de fonte para caber;
-- overflow continua `SHEET_OVERFLOW`;
-- Etapa 8 fecha limites/priorização/densidade; Etapa 9 trata dados excepcionais.
+- overflow continua `SHEET_OVERFLOW`.
+
+### Etapa 8 — limites textuais e densidade da Ficha
+
+Contrato aprovado:
+
+- limite de uma A4 não altera nem destrói o dado operacional;
+- soft limits: `Resumo do trabalho` 600, observação geral do Atendimento 400, observação do Equipamento 300 e observação de serviço por Etapa 280 caracteres;
+- contadores/avisos aparecem somente perto de aproximadamente 80% da faixa recomendada;
+- soft limits não bloqueiam save nem conclusão;
+- layout real Typst é a autoridade final para saber se a Ficha cabe;
+- `2+ páginas` = `SHEET_OVERFLOW`, bloqueando somente PDF/preview/impressão da Ficha;
+- Atendimento continua válido e íntegro após overflow;
+- Host devolve diagnóstico semântico dos principais campos que pressionam a folha;
+- correção ocorre nos dados reais, sem editor paralelo exclusivo da Ficha;
+- observações seguem Atendimento → Equipamento → Etapas na ordem executada;
+- sem IA, resumo automático, truncamento, reticências, deduplicação semântica, modo compacto ou redução automática de fonte/margem/espaçamento;
+- hard limits técnicos de storage/API não são derivados da A4.
 
 ## Gate atual
 
-A Etapa 8 só pode ser aberta após:
+A Etapa 9 só pode ser aberta após:
 
 ```text
-squash merge da Etapa 7
-→ apagar branch remota da Etapa 7
+squash merge da Etapa 8
+→ apagar branch remota da Etapa 8
 → verificar remoto somente com main
 → verificar zero PRs abertos
 ```
@@ -166,7 +183,6 @@ squash merge da Etapa 7
 
 ### Bloco 10
 
-- Etapa 8: limites textuais/priorização/densidade/diagnóstico de overflow;
 - Etapa 9: muitos MACs/Procedimentos/observações e outros dados excepcionais;
 - Etapa 10: nomes + temporários;
 - Etapa 11: QR/barcode somente se aprovado;
