@@ -6,10 +6,10 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-28  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — Etapas 1–6 consolidadas; Etapa 7 próxima  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–7 consolidadas; Etapa 8 próxima**  
 **Implementação funcional oficial:** ainda não iniciada
 
-Este painel é apenas a visão rápida. Precedência e decisões completas permanecem em `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md` e documentos específicos.
+Este painel é a visão rápida. Precedência e decisões completas permanecem em `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md` e documentos específicos.
 
 ### Fase 1
 
@@ -25,52 +25,35 @@ Este painel é apenas a visão rápida. Precedência e decisões completas perma
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–6 consolidadas |
+| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–7 consolidadas |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
-## Direção de produto e UI
+## Produto e UI
 
-- Procedimento, Atendimento/Execução e Equipamento são domínios distintos;
+- `Procedimento`, `Atendimento/Execução` e `Equipamento` são domínios distintos;
 - Reader usa experiência de manual/livro;
-- `Visão geral` precede Etapa 1;
-- cada Etapa é uma página lógica própria;
-- stepper compacto de círculos/linhas navega entre Etapas;
-- stepper representa navegação, não conclusão operacional;
+- `Visão geral` precede Etapa 1 e cada Etapa é página lógica própria;
+- stepper compacto de círculos/linhas navega entre Etapas e não representa conclusão operacional;
 - UI privilegia clareza com baixa densidade textual;
-- cor, forma, símbolo, posição e ícones podem reduzir texto repetitivo quando o significado continuar claro;
-- cor nunca é o único meio para estado importante.
+- cor nunca é o único meio para estado importante;
+- Reader operacional persiste checklist e pode registrar `Observação do serviço` opcional por Etapa;
+- Ficha compacta é prestação de contas resumida ao cliente, não relatório técnico completo.
 
 ## Bloco 9 — operação consolidada
 
-Lifecycle:
-
-```text
-rascunho local
-→ primeiro save aceito
-→ Em andamento
-   ├─→ Concluído
-   └─→ Cancelado
-
-Concluído/Cancelado
-→ Reabrir
-→ Em andamento
-```
-
-Principais decisões:
-
-- códigos `AT-000001` e `EQP-000001`, gerados pelo Host;
-- responsável + `Resumo do trabalho` obrigatórios para conclusão;
+- lifecycle `Em andamento / Concluído / Cancelado`, com reabertura explícita;
+- primeiro save cria `AT-000001`; Equipamento usa `EQP-000001`;
+- responsável + `Resumo do trabalho` são obrigatórios para concluir;
 - checklist incompleto avisa, não bloqueia automaticamente;
-- Reader standalone não persiste execução;
-- Reader operacional persiste checklist;
-- cada Etapa em execução pode receber `Observação do serviço` opcional e persistente;
-- observação pertence ao Atendimento/revisão/Etapa e não altera o Procedimento;
-- progresso deriva somente de checklist;
+- Funcionário opera por padrão Atendimento do qual é responsável;
+- revisão exata do Procedimento é preservada;
+- checklist persiste somente em Atendimento;
+- observação de serviço por Etapa é opcional, persistente e separada do Procedimento oficial;
+- progresso deriva somente do checklist;
 - Equipamento é opcional/reutilizável;
-- conclusão preserva projeção histórica do Equipamento e estado final aplicável das observações;
-- gerar/reimprimir Ficha é permitido por preset para ADM/Gerência/Funcionário em Atendimento acessível;
-- concorrência de checklist/observações é granular por recurso.
+- conclusão preserva projeção histórica relevante de Equipamento/estado operacional;
+- Ficha pode ser gerada/reimpressa conforme lifecycle/capacidade.
 
 ## Bloco 10 — etapas
 
@@ -82,81 +65,75 @@ Principais decisões:
 | 4 | Impressão Windows de Procedimentos | ✅ Consolidado |
 | 5 | Template físico de Procedimentos | ✅ Consolidado |
 | 6 | PDF + preview da Ficha compacta | ✅ Consolidado |
-| 7 | Template físico A4 da Ficha | 🟡 Próxima — ainda não aberta |
-| 8 | Limites textuais e densidade da Ficha | ⏳ Pendente |
+| 7 | Template físico A4 da Ficha | ✅ Consolidado |
+| 8 | Limites textuais e densidade da Ficha | 🟡 Próxima — ainda não aberta |
 | 9 | Múltiplos MACs / Procedimentos / dados excepcionais | ⏳ Pendente |
 | 10 | Nomes de arquivo + artefatos temporários | ⏳ Pendente |
 | 11 | QR / barcode | ⏳ Pendente |
 | 12 | Validação técnica final do Bloco 10 | ⏳ Pendente |
 
-### Etapas 1–5 — baseline
+### Etapas 1–5 — Procedimentos
 
-- geração documental Host-side por `DocumentModel` semântico;
-- renderização fora da fila de mutações, com limite próprio;
-- PDF de Procedimentos via Typst embutido;
-- DOCX real via pipeline Rust direto;
-- impressão Windows usa o mesmo PDF oficial em WebView2 transitória + `ShowPrintUI(System)`;
-- Procedimento físico usa A4 retrato multipágina;
-- Reader não possui geometria A4;
-- PDF usa Noto Sans/Noto Sans Mono; DOCX referencia Arial/Consolas.
+- geração documental no Host a partir de snapshot consistente e `DocumentModel`;
+- PDF via Typst embutido, sem processo conversor externo;
+- DOCX OOXML Transitional via pipeline Rust próprio;
+- impressão local no Client Windows usando o mesmo PDF oficial e WebView2 `ShowPrintUI(System)`;
+- Procedimento físico A4 retrato multipágina, margens 18 mm;
+- PDF usa Noto Sans/Noto Sans Mono incorporadas;
+- DOCX usa Arial/Consolas referenciadas;
+- nenhuma truncagem/redução silenciosa para caber.
 
-### Etapa 6 — Ficha compacta
+### Etapa 6 — Ficha: PDF + preview
 
-A Ficha é uma **prestação de contas resumida ao cliente**.
+- Ficha é prestação de contas resumida ao cliente;
+- conteúdo prioritário: identificação do serviço/dispositivo, características relevantes, `Resumo do trabalho` e observações;
+- PDF próprio/canônico via template Typst da Ficha;
+- preview SVG e PDF derivam do mesmo `PagedDocument`;
+- resultado válido exige exatamente uma página;
+- `2+ páginas` = `SHEET_OVERFLOW`;
+- Salvar/Imprimir reutilizam os mesmos bytes PDF;
+- impressão reutiliza o fluxo Windows consolidado.
 
-Conteúdo prioritário:
+### Etapa 7 — template físico da Ficha
 
-- identificação do serviço;
-- identificação/características do computador/dispositivo;
-- processador, RAM, HD/SSD, SO quando útil, bateria quando aplicável;
-- observações do Equipamento;
-- `Resumo do trabalho`;
-- observações gerais;
-- observações de serviço registradas nas Etapas.
+- A4 retrato, exatamente uma página, margens **15 mm**, sem bleed;
+- composição predominantemente vertical/uma coluna;
+- cabeçalho institucional compacto, sem título gigante e sem footer obrigatório;
+- identificação curta de cliente/OS/técnico, omitindo vazios;
+- Equipamento como ficha técnica resumida sem tabela gradeada;
+- `SERVIÇO REALIZADO` como área narrativa principal;
+- única seção `OBSERVAÇÕES` reunindo observações relevantes do Atendimento, Equipamento e Etapas;
+- nome curto da Etapa apenas quando necessário para contexto;
+- Noto Sans com baseline 14 / 10,5 / 10 / 9 / 8,5 pt;
+- divisórias discretas, contraste neutro e legível em monocromático;
+- seções vazias colapsam;
+- sem assinatura, financeiro, checklist, progresso, timeline, QR, página 2 ou footer promocional;
+- overflow continua falha explícita; Etapa 8 fechará limites/priorização textual.
 
-Por padrão não imprime checklist, percentual/progresso, passos, comandos, timeline, IDs internos ou lista detalhada de revisões.
+Fonte técnica: `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
-Geração:
+## Gate atual
 
-```text
-Atendimento confirmado + source_version
-→ DocumentModel service_sheet
-→ template Typst da Ficha
-→ PagedDocument de exatamente 1 página
-   ├─→ PDF canônico
-   └─→ SVG de preview
-```
-
-- 2+ páginas = `SHEET_OVERFLOW`;
-- sem segunda folha, corte ou redução silenciosa de fonte;
-- preview é modal/overlay simples com folha A4 centralizada;
-- `Salvar PDF` e `Imprimir` usam os mesmos bytes PDF da prévia;
-- impressão reutiliza WebView2 + diálogo Windows;
-- prévia permanece presa à `source_version` e não muda silenciosamente;
-- reimpressão de concluído usa estado histórico aplicável.
-
-## Próximo gate
-
-A Etapa 7 só pode começar após:
+A Etapa 8 não pode ser aberta antes de:
 
 ```text
-PR da Etapa 6
-→ validação
-→ squash merge
-→ apagar branch
-→ verificar somente main + zero PRs abertos
+squash merge da Etapa 7
+→ remoção da branch remota da Etapa 7
+→ remoto somente com main
+→ zero PRs abertos
 ```
 
-## Fontes principais
+## Pendências principais
 
-- `AGENTS.md`
-- `docs/README.md`
-- `docs/05-progresso/registro-de-decisoes.md`
-- `docs/03-arquitetura/arquitetura-vigente.md`
-- `docs/04-planejamento/plano-oficial-fase-1.md`
-- `docs/04-planejamento/bloco-9-atendimentos-execucao-checklist.md`
-- `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`
+- parâmetros finais de autenticação;
+- Gerência × configuração da empresa;
+- Gerência × Backup;
+- regra editorial de categoria arquivada;
+- Etapas 8–12 do Bloco 10;
+- mecanismo técnico do Bloco 11;
+- validações reais do ambiente corporativo;
+- estrutura oficial/Fase 2 no Bloco 12.
 
-## Regra de atualização deste painel
+### Regra de atualização deste painel
 
-Todo avanço consolidado de **fase, bloco, tela ou etapa do bloco atual** atualiza este README no mesmo checkpoint documental. Um avanço não está documentalmente encerrado se este painel ficar atrasado.
+Todo avanço consolidado de fase, bloco, tela ou etapa do bloco atual deve atualizar este README no mesmo checkpoint documental.
