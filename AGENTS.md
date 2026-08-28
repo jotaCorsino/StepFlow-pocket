@@ -12,7 +12,7 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 concluídos; Bloco 5 com núcleo concluído e parâmetros finais pendentes; Bloco 6 consolidado conceitualmente; Bloco 7 concluído no núcleo; Blocos 8 e 9 concluídos.
-- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–9 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 10 — Nomes de arquivo + artefatos temporários é a próxima e ainda não está aberta**.
+- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–10 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 11 — QR / barcode é a próxima e ainda não está aberta**.
 - Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade
@@ -114,7 +114,7 @@ Durante o fechamento documental restante da Fase 1:
 - remoto é a fonte operacional;
 - sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex.
 
-**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 10** pode começar antes de a **Etapa 9** estar squash-mergeada, a branch da Etapa 9 removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
+**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 11** pode começar antes de a **Etapa 10** estar squash-mergeada, a branch da Etapa 10 removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
 
 ## Regras operacionais
 
@@ -231,7 +231,7 @@ Atendimento/Ficha:
 - `Cancelado`: saída identifica o estado;
 - Ficha prioriza serviço/dispositivo/resumo/observações, não checklist/timeline detalhados.
 
-## Bloco 10 — arquitetura documental consolidada / Etapas 1–9
+## Bloco 10 — arquitetura documental consolidada / Etapas 1–10
 
 ### Etapa 1 — arquitetura
 
@@ -280,7 +280,7 @@ Atendimento/Ficha:
 - WebView2 transitória/dedicada + `ShowPrintUI(System)`;
 - diálogo padrão do Windows, sem impressão silenciosa/seletor próprio como baseline;
 - StepFlow não gerencia drivers/spooler;
-- recurso local é transitório; naming/path/limpeza ficam para Etapa 10;
+- recurso local transitório segue naming/path/lifecycle da Etapa 10;
 - sucesso = fluxo entregue ao Windows, não confirmação física de papel;
 - sem fallback silencioso para software externo.
 
@@ -352,9 +352,23 @@ Atendimento/Ficha:
 - sem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou compactação automática;
 - limites técnicos finais de quantidade/payload/recursos ficam para a Etapa 12.
 
+### Etapa 10 — nomes de arquivo e artefatos temporários
+
+- arquivo persistente escolhido pelo usuário e temporário interno têm lifecycles distintos;
+- Procedimento sugere `{codigo} - {titulo} - v{display_version} - r{revision_no}.{ext}`; Ficha sugere `{service_code} - Ficha.pdf`;
+- sanitização de filename segue Windows, impede injeção de path e nunca altera conteúdo documental;
+- conflito de nome não causa overwrite silencioso;
+- save só é sucesso após gravação integral; auxiliar opaco no mesmo destino e promoção/replace seguro são preferidos quando suportados;
+- temporário só é materializado no Client quando uma integração local precisa de filesystem;
+- raiz temporária é por usuário, via API do sistema/Tauri, sob namespace StepFlow e subdiretório opaco por instância;
+- filename temporário é opaco e não contém dados do domínio;
+- cleanup/retry/scavenging são best-effort, restritos ao namespace StepFlow e não usam serviço/daemon/Task Scheduler/watchdog;
+- lock não autoriza kill, unlock forçado ou alteração de ACL;
+- temporários/exportações não entram em SQLite, histórico ou backup por padrão;
+- detalhes concretos NTFS/SMB/WebView2, memória, paths, concorrência e EDR ficam para a Etapa 12.
+
 ## Pendências ainda não consolidáveis para implementação
 
-- Etapa 10: nomes/paths/limpeza concretos de artefatos temporários;
 - Etapa 11: QR/barcode apenas se benefício aprovado;
 - Etapa 12: matriz técnica final e limites de recursos;
 - mecanismo técnico final de Backup/Restore;
