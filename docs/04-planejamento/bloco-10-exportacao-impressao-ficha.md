@@ -1,6 +1,6 @@
 # Bloco 10 — Exportação / Impressão + Ficha Compacta
 
-**Status:** EM ANDAMENTO — ETAPAS 1–9 CONSOLIDADAS / ETAPA 10 PRÓXIMA  
+**Status:** EM ANDAMENTO — ETAPAS 1–10 CONSOLIDADAS / ETAPA 11 PRÓXIMA  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-25  
 **Etapa 1 consolidada:** 2026-08-25  
@@ -11,7 +11,8 @@
 **Etapa 6 consolidada:** 2026-08-28  
 **Etapa 7 consolidada:** 2026-08-28  
 **Etapa 8 consolidada:** 2026-08-28  
-**Etapa 9 consolidada:** 2026-08-28
+**Etapa 9 consolidada:** 2026-08-28  
+**Etapa 10 consolidada:** 2026-08-28
 
 ## 1. Objetivo
 
@@ -42,8 +43,8 @@ Não pertence a este bloco implementar código de produção, fechar Backup/Rest
 | 7 | Template físico A4 da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
 | 8 | Limites textuais e densidade da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
 | 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **CONSOLIDADO / APROVADO PELO PO** |
-| 10 | Nomes de arquivo + artefatos temporários | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 11 | QR / barcode | PENDENTE |
+| 10 | Nomes de arquivo + artefatos temporários | **CONSOLIDADO / APROVADO PELO PO** |
+| 11 | QR / barcode | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 | 12 | Validação técnica final do Bloco 10 | PENDENTE |
 
 ---
@@ -155,7 +156,7 @@ PDF oficial da revisão exata
 - sem software externo, seletor próprio ou impressão silenciosa como baseline;
 - StepFlow não gerencia drivers/spooler nem persiste impressoras no Host;
 - sucesso é entrega do fluxo ao Windows, não confirmação física de papel;
-- detalhes do recurso temporário ficam para Etapa 10.
+- recurso local transitório segue o contrato consolidado na Etapa 10.
 
 ---
 
@@ -595,15 +596,145 @@ Limites técnicos finais de quantidade/payload/recursos permanecem para a Etapa 
 
 ---
 
+# Etapa 10 — Nomes de arquivo + artefatos temporários
+
+**Status:** CONSOLIDADO / APROVADO PELO PO
+
+## 24. Arquivo persistente e naming
+
+Arquivo salvo pelo usuário e artefato transitório interno são conceitos distintos.
+
+```text
+artefato gerado
+→ Salvar
+→ diálogo nativo do Windows
+→ usuário escolhe pasta/nome
+→ arquivo persistente fora do cleanup do StepFlow
+```
+
+Nome sugerido para Procedimento:
+
+```text
+{codigo} - {titulo} - v{display_version} - r{revision_no}.{ext}
+```
+
+Sem `display_version`:
+
+```text
+{codigo} - {titulo} - r{revision_no}.{ext}
+```
+
+Nome sugerido para Ficha:
+
+```text
+{service_code} - Ficha.pdf
+```
+
+- a revisão técnica permanece no nome do Procedimento;
+- o usuário pode editar o nome no diálogo nativo;
+- Ficha não inclui por padrão cliente, equipamento, serial/patrimônio/MAC, resumo, técnico, status ou timestamp no filename;
+- arquivo persistente salvo pelo usuário não é apagado posteriormente pelo StepFlow.
+
+## 25. Sanitização e escrita segura
+
+Sanitização afeta somente o filename, nunca o conteúdo documental.
+
+- bloquear caracteres/controles inválidos no Windows, segmentos `.`/`..`, nomes reservados e injeção de caminho;
+- preservar Unicode/acentos válidos;
+- extensão deriva do tipo de artefato e não de texto livre;
+- segmento variável do título pode ser limitado para manter nome manejável;
+- conflito com arquivo existente não gera overwrite silencioso: o diálogo do sistema conduz confirmação/substituição ou outro nome;
+- save só é sucesso após gravação integral;
+- quando a plataforma/filesystem suportar, preferir auxiliar opaco no mesmo diretório e promoção/replace seguro ao final;
+- falha tenta remover somente o parcial criado pela própria operação, sem apagar arquivo preexistente do usuário.
+
+## 26. Materialização transitória no Client
+
+Regra principal: se o consumidor consegue usar bytes/memória com segurança, não criar temporário apenas por conveniência.
+
+```text
+bytes canônicos
+→ materializar no Client somente quando integração local exige filesystem
+→ consumo local
+→ descarte best-effort
+```
+
+- Host não cria temporário para simular acesso à workstation;
+- preview pode permanecer em memória/protocolo controlado quando a implementação permitir;
+- PDF para WebView2/impressão pode usar recurso local transitório;
+- PDF/DOCX final escolhido pelo usuário não é temporário;
+- raiz temporária é por usuário, resolvida por API do sistema/Tauri, sob namespace StepFlow;
+- cada instância do Client usa subdiretório opaco próprio;
+- temporários usam nomes opacos, sem cliente, título, equipamento, serial/MAC, resumo/observações ou técnico;
+- não usar instalação, diretório corrente, SMB central, dados SQLite, backup, Documents/Desktop/Downloads ou destino final de exportação como raiz normal de temporários.
+
+## 27. Lifecycle, lock e scavenging
+
+Lifecycle normal:
+
+```text
+criar
+→ concluir escrita
+→ disponibilizar ao consumidor
+→ manter enquanto houver uso local
+→ fechar consumidor
+→ remover best-effort
+```
+
+- não apagar enquanto WebView2/Windows ainda puder precisar do recurso;
+- encerramento normal tenta limpar somente o diretório da própria instância;
+- lock por Windows/WebView2/antivírus não autoriza unlock forçado, kill de processo ou alteração de ACL;
+- retry pode ocorrer apenas em momento seguro do lifecycle;
+- crash pode deixar órfãos;
+- scavenging posterior atua somente no namespace transitório StepFlow, não segue symlink/reparse point para fora e não apaga item que possa pertencer a instância ativa;
+- item bloqueado é ignorado e não impede uso normal;
+- não criar Windows Service, Task Scheduler, daemon ou watchdog para limpeza;
+- falha de cleanup não altera retroativamente o resultado funcional de save/preview/print já concluído.
+
+## 28. Privacidade, persistência e não-objetivos
+
+Logs técnicos podem registrar tipo de artefato, operação, resultado, erro técnico e ID opaco quando necessário, sem conteúdo documental por padrão.
+
+Evitar por padrão em log:
+
+- resumo/observações;
+- cliente;
+- serial/MAC;
+- path completo escolhido pelo usuário quando desnecessário ao diagnóstico.
+
+Não criar nesta etapa:
+
+- pasta global permanente `Exports` mantida pelo Host;
+- histórico de exportações no SQLite;
+- `export_jobs` persistente;
+- cache permanente de PDFs/Fichas por Atendimento;
+- retenção automática de cópia de todo arquivo salvo;
+- temporários no compartilhamento central por conveniência;
+- regeneração silenciosa apenas para salvar/imprimir.
+
+Temporários e exportações não entram em SQLite, histórico ou backup por padrão.
+
+## 29. Validação reservada para a Etapa 12
+
+Validar concretamente antes da implementação:
+
+- API Tauri/Windows para diretório temporário por usuário;
+- comportamento WebView2 com PDF local e momento seguro de remoção;
+- escrita/promote/replace em NTFS e SMB;
+- proteções de symlink/reparse point;
+- múltiplas instâncias do Client;
+- limites de memória/tamanho/concurrency;
+- antivírus/EDR mantendo handle;
+- path longo e Unicode no Windows 10/11 alvo;
+- política final de retry/scavenging sem daemon.
+
+---
+
 # Etapas seguintes
 
-## Etapa 10 — Nomes + temporários
+## Etapa 11 — QR/barcode
 
 **Status:** PRÓXIMA — AINDA NÃO EM ANÁLISE
-
-Definirá naming, materialização local, paths controlados, lifecycle e limpeza de artefatos transitórios.
-
-## Etapa 11 — QR/barcode
 
 Só entra se houver benefício operacional aprovado; não é requisito por padrão.
 
@@ -611,12 +742,12 @@ Só entra se houver benefício operacional aprovado; não é requisito por padr�
 
 Fechará matriz real de Windows/WebView2/Office compatível, impressão, limites de recursos, casos de erro e critérios técnicos antes da implementação.
 
-## 24. Gate atual
+## 30. Gate atual
 
-A Etapa 9 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
+A Etapa 10 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
 
 ```text
-PR da Etapa 9
+PR da Etapa 10
 → validação
 → ready
 → squash merge em main
@@ -624,4 +755,4 @@ PR da Etapa 9
 → verificar somente main + zero PRs abertos
 ```
 
-Somente depois disso a Etapa 10 pode ser aberta.
+Somente depois disso a Etapa 11 pode ser aberta.
