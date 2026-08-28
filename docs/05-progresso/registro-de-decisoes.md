@@ -303,6 +303,19 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - normalização de apresentação só pode remover ruído de whitespace sem alterar significado;
 - hard limits técnicos de storage/API são independentes da geometria A4.
 
+### Etapa 9 — dados excepcionais e multiplicidade
+
+- a Ficha permanece projeção client-facing resumida e não dump integral do domínio;
+- Procedimentos vinculados permanecem fora da Ficha por padrão, independentemente da quantidade;
+- MACs: 0 omite; 1–2 exibem valores compactos; 3+ exibem apenas a quantidade cadastrada;
+- labels existentes podem contextualizar MACs; não inventar `MAC principal`;
+- observações legítimas não recebem cap/descarte automático;
+- multiplicidade real pode produzir `SHEET_OVERFLOW` e exigir revisão humana consciente dos textos reais;
+- campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
+- diagnóstico pode indicar quantidade de observações, Etapa específica ou campo estruturado longo;
+- sem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou compactação automática;
+- limites técnicos finais de quantidade/payload/recursos permanecem para a Etapa 12.
+
 ## 9. Estado da Fase 1
 
 - Blocos 0–4: concluídos;
@@ -310,19 +323,18 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - Bloco 6: núcleo + extensão operacional conceitual consolidados;
 - Bloco 7: núcleo concluído;
 - Blocos 8–9: concluídos;
-- **Bloco 10: em andamento — Etapas 1–8 consolidadas; Etapa 9 é a próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–9 consolidadas; Etapa 10 é a próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 ## 10. Pendências vigentes
 
 ### Bloco 10
 
-- Etapa 9: muitos MACs/Procedimentos/observações e outros dados excepcionais;
 - Etapa 10: nomes de arquivo + temporários concretos;
 - Etapa 11: QR/barcode somente se benefício aprovado;
 - Etapa 12: validação técnica final/matriz real/limites de recursos.
 
-**Gate:** Etapa 9 só pode ser aberta após squash merge da Etapa 8, remoção da branch correspondente e verificação de remoto somente com `main` e zero PRs abertos.
+**Gate:** Etapa 10 só pode ser aberta após squash merge da Etapa 9, remoção da branch correspondente e verificação de remoto somente com `main` e zero PRs abertos.
 
 ### Bloco 11
 
