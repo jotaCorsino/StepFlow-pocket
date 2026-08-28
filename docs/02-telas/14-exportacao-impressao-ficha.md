@@ -5,7 +5,7 @@
 - código/nome da tela: Tela 14 — Exportação / Impressão + Ficha Compacta — UX;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
 - bloco original: Fase 1 — Bloco 8 (UI/UX);
-- atualização técnica/funcional: Bloco 10 / Etapas 1–7;
+- atualização técnica/funcional: Bloco 10 / Etapas 1–8;
 - última consolidação: 2026-08-28.
 
 ## 2. Objetivo
@@ -259,9 +259,64 @@ Não criar segunda folha, retornar apenas a primeira página, truncar informaç�
 
 Mensagem funcional base:
 
-`A ficha possui conteúdo demais para uma página A4. Revise os campos indicados antes de imprimir.`
+`A ficha ficou extensa demais para uma página A4. Revise os textos indicados e gere novamente.`
 
-Limites/priorização textual pertencem à Etapa 8; dados multiplicativos/excepcionais à Etapa 9.
+### Limites textuais como orientação
+
+A contagem de caracteres não decide se a Ficha cabe. O layout real do Typst permanece a autoridade final.
+
+Soft limits recomendados:
+
+| Campo | Faixa recomendada |
+|---|---:|
+| `Resumo do trabalho` | até **600 caracteres** |
+| Observação geral do Atendimento | até **400 caracteres** |
+| Observação do Equipamento | até **300 caracteres** |
+| Observação do serviço por Etapa | até **280 caracteres por Etapa** |
+
+- os limites são orientativos;
+- ultrapassar a faixa não bloqueia save nem conclusão;
+- o dado operacional nunca é truncado ou substituído para satisfazer a A4;
+- contador/aviso aparece somente próximo de aproximadamente **80%** da faixa recomendada;
+- hard limits técnicos de storage/API são independentes da geometria A4.
+
+Exemplo de orientação discreta:
+
+```text
+Observação do serviço
+[ texto ]
+326 / 280 recomendado
+Texto extenso pode dificultar a Ficha de uma página.
+```
+
+### Overflow e correção
+
+Quando o Typst produzir 2+ páginas:
+
+```text
+SHEET_OVERFLOW
+→ nenhum PDF final válido
+→ nenhum preview final válido
+→ nenhuma impressão
+→ Atendimento permanece salvo e íntegro
+```
+
+O Host devolve diagnóstico semântico indicando os principais campos que pressionam a Ficha. Não precisa atribuir percentual exato de contribuição visual.
+
+O Client oferece ação de revisão e leva o técnico aos **campos reais** do Atendimento/Equipamento/Etapa. Não existe editor paralelo exclusivo da Ficha.
+
+Não usar para “resolver” overflow:
+
+- IA/resumo automático;
+- truncamento/reticências;
+- deduplicação semântica;
+- modo compacto alternativo;
+- redução automática de fonte, margem ou espaçamento;
+- omissão silenciosa de conteúdo legítimo.
+
+Ordem normal das observações: Atendimento → Equipamento → Etapas na ordem executada. Textos semelhantes não são deduplicados automaticamente.
+
+Dados multiplicativos/excepcionais pertencem à Etapa 9.
 
 ## 17. Template físico consolidado
 
@@ -436,7 +491,6 @@ Estados mínimos incluem preparando ficha, preparando prévia, pronta, desatuali
 
 ## 23. Pendências restantes do Bloco 10
 
-- Etapa 8 — limites textuais, priorização, densidade e diagnóstico de overflow;
 - Etapa 9 — múltiplos MACs/Procedimentos/observações e casos excepcionais;
 - Etapa 10 — nomes de arquivo + temporários;
 - Etapa 11 — QR/barcode somente se houver benefício aprovado;
@@ -473,5 +527,10 @@ Estados mínimos incluem preparando ficha, preparando prévia, pronta, desatuali
 15. Noto Sans usa escala 14 / 10,5 / 10 / 9 / 8,5 pt conforme hierarquia;
 16. Salvar/Imprimir reutilizam o PDF correspondente à prévia;
 17. impressão usa o fluxo Windows consolidado;
-18. DOCX da Ficha não é requisito inicial;
-19. QR/barcode permanece pendente de benefício operacional explícito.
+18. soft limits são orientação: Resumo 600, Atendimento 400, Equipamento 300 e observação por Etapa 280 caracteres;
+19. contador/aviso aparece apenas próximo de aproximadamente 80% da faixa recomendada;
+20. `SHEET_OVERFLOW` bloqueia somente a geração da Ficha e preserva integralmente o Atendimento;
+21. correção do overflow ocorre nos dados reais, guiada por diagnóstico semântico do Host, sem editor paralelo;
+22. não há IA/resumo automático, truncamento, deduplicação semântica ou compactação automática para caber;
+23. DOCX da Ficha não é requisito inicial;
+24. QR/barcode permanece pendente de benefício operacional explícito.
