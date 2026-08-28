@@ -241,7 +241,7 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - WebView2 transitória/dedicada + `ShowPrintUI(System)`;
 - sem HTML da UI, DOCX, software externo, seletor próprio ou impressão silenciosa como baseline;
 - sucesso = fluxo entregue ao Windows, não confirmação de papel impresso;
-- temporário concreto fica para Etapa 10.
+- recurso local transitório segue a Etapa 10.
 
 ### Etapa 5 — template físico de Procedimentos
 
@@ -316,6 +316,24 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - sem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou compactação automática;
 - limites técnicos finais de quantidade/payload/recursos permanecem para a Etapa 12.
 
+### Etapa 10 — nomes de arquivo e artefatos temporários
+
+- arquivo persistente escolhido pelo usuário e temporário interno são lifecycles distintos;
+- Procedimento sugere `{codigo} - {titulo} - v{display_version} - r{revision_no}.{ext}`; sem `display_version`, omite esse segmento;
+- Ficha sugere `{service_code} - Ficha.pdf`, sem dados pessoais/operacionais adicionais no filename por padrão;
+- sanitização segue regras Windows, impede injeção de path e não altera conteúdo documental;
+- conflito de nome não causa overwrite silencioso;
+- save só é sucesso após gravação integral; auxiliar opaco no mesmo destino + promoção/replace seguro são preferidos quando suportados;
+- temporário só é materializado no Client se uma integração local precisar de filesystem;
+- raiz transitória é por usuário, resolvida por API do sistema/Tauri, sob namespace StepFlow e subdiretório opaco por instância;
+- filenames temporários são opacos e não contêm cliente, título, equipamento, serial/MAC, resumo/observações ou técnico;
+- cleanup ocorre best-effort após liberação e no encerramento normal; lock não autoriza kill/unlock forçado/alteração de ACL;
+- crash pode deixar órfãos para scavenging posterior restrito ao namespace StepFlow, sem seguir reparse point para fora e sem apagar instância possivelmente ativa;
+- sem Windows Service, Task Scheduler, daemon ou watchdog para limpeza;
+- falha de cleanup não altera retroativamente save/preview/print já concluído;
+- temporários/exportações não entram em SQLite, histórico ou backup por padrão;
+- API concreta, NTFS/SMB, WebView2, memória, Unicode/path longo, concorrência e EDR ficam para a Etapa 12.
+
 ## 9. Estado da Fase 1
 
 - Blocos 0–4: concluídos;
@@ -323,18 +341,17 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - Bloco 6: núcleo + extensão operacional conceitual consolidados;
 - Bloco 7: núcleo concluído;
 - Blocos 8–9: concluídos;
-- **Bloco 10: em andamento — Etapas 1–9 consolidadas; Etapa 10 é a próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–10 consolidadas; Etapa 11 é a próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 ## 10. Pendências vigentes
 
 ### Bloco 10
 
-- Etapa 10: nomes de arquivo + temporários concretos;
 - Etapa 11: QR/barcode somente se benefício aprovado;
 - Etapa 12: validação técnica final/matriz real/limites de recursos.
 
-**Gate:** Etapa 10 só pode ser aberta após squash merge da Etapa 9, remoção da branch correspondente e verificação de remoto somente com `main` e zero PRs abertos.
+**Gate:** Etapa 11 só pode ser aberta após squash merge da Etapa 10, remoção da branch correspondente e verificação de remoto somente com `main` e zero PRs abertos.
 
 ### Bloco 11
 
