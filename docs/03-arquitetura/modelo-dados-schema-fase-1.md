@@ -42,7 +42,7 @@ archived_at / archived_by_user_id
 
 `process_revisions` preserva snapshots imutáveis. `revision_no` técnico permanece separado de `display_version` editorial.
 
-Cada revisão possui Etapas e blocos ordenados. Tipos iniciais:
+Cada revisão possui `process_stages` e `stage_blocks` ordenados. Tipos iniciais:
 
 ```text
 paragraph
@@ -54,7 +54,7 @@ command
 code
 ```
 
-Checklist aqui é definição documental. Estado de execução fica no domínio do Atendimento.
+Checklist aqui é definição documental. Estado de execução e observações feitas durante o serviço ficam separados no domínio do Atendimento.
 
 ## Categorias
 
@@ -71,7 +71,13 @@ process_categories
 - updated_at / updated_by_user_id
 ```
 
-Relação múltipla conceitual entre Procedimento e Categoria.
+Relação múltipla conceitual:
+
+```text
+process_category_assignments
+- process_id
+- category_id
+```
 
 Regras:
 
@@ -80,7 +86,7 @@ Regras:
 - categoria arquivada não é opção normal para nova associação;
 - sem hierarquia complexa inicialmente;
 - índices adequados para filtro/listagem;
-- gestão por ADM/Gerência.
+- gestão por ADM/Gerência; autorização real permanece Host-side.
 
 Pendente: regra editorial de nova revisão ainda carregando categoria arquivada.
 
@@ -112,7 +118,14 @@ equipment
 - updated_at / updated_by_user_id
 ```
 
-`equipment_id` é identidade canônica. `equipment_code` usa formato inicial `EQP-000001`, gerado pelo Host, com seis dígitos e gaps permitidos.
+`equipment_id` é identidade canônica. `equipment_code` usa formato inicial `EQP-000001`:
+
+- gerado somente pelo Host;
+- seis dígitos;
+- sequência numérica simples por implantação/banco ativo;
+- gaps permitidos;
+- não editável pelo Client;
+- não substitui `equipment_id`.
 
 Múltiplos identificadores de rede ficam separados conceitualmente:
 
@@ -125,7 +138,7 @@ equipment_network_identifiers
 - label NULL
 ```
 
-MAC, serial e patrimônio não são identidade canônica exclusiva por inferência.
+MAC, serial e patrimônio não são identidade canônica exclusiva por inferência. Campos não aplicáveis permanecem nulos.
 
 ## Atendimento / Execução
 
@@ -160,7 +173,17 @@ COMPLETED     → Concluído
 CANCELLED     → Cancelado
 ```
 
-Código inicial `AT-000001`, gerado no primeiro save aceito, com seis dígitos, gaps permitidos e sem reutilização após cancelamento.
+Nomes físicos de enum podem variar desde que a semântica permaneça estável.
+
+`service_code` usa formato inicial `AT-000001`:
+
+- gerado somente no primeiro save aceito;
+- seis dígitos;
+- sequência numérica simples por implantação/banco ativo;
+- gaps permitidos;
+- não editável;
+- não reutilizado após cancelamento;
+- não substitui `service_record_id`.
 
 ## Lifecycle do Atendimento
 
@@ -180,12 +203,13 @@ Regras:
 
 - abrir tela não cria registro;
 - `started_at` nasce no Host no primeiro save;
+- `completed_at` representa a conclusão atualmente aplicável quando o registro está concluído;
 - cancelamento preserva código e dados;
-- reabertura não apaga lifecycle anterior;
+- reabertura não apaga eventos históricos anteriores;
 - conclusão/cancelamento/reabertura são mutações versionadas;
 - não há exclusão física normal de Atendimento.
 
-## Histórico de lifecycle
+## Histórico de lifecycle e auditoria
 
 Histórico relevante pode ser representado por `audit_events` e/ou estrutura operacional dedicada, desde que preserve pelo menos:
 
@@ -194,9 +218,21 @@ Histórico relevante pode ser representado por `audit_events` e/ou estrutura ope
 - reabertura;
 - cancelamento + motivo;
 - mudanças relevantes de responsável;
-- vínculos relevantes de Equipamento/Procedimento.
+- vínculos relevantes de Equipamento/Procedimento;
+- operações administrativas críticas quando aplicável.
 
-Não é requisito persistir timeline de cada alteração trivial ou checkbox.
+Não é requisito persistir timeline de cada alteração trivial, campo ou checkbox.
+
+Histórico oficial combina, conforme aplicabilidade:
+
+1. snapshots imutáveis de Procedimentos;
+2. vínculos/snapshots operacionais do Atendimento;
+3. checklist operacional persistente;
+4. observações de serviço por Etapa;
+5. projeções finais de Equipamento por conclusão;
+6. eventos append-only/auditoria proporcional.
+
+Nunca guardar senha, token reutilizável ou segredo em auditoria.
 
 ## Procedimentos utilizados no Atendimento
 
@@ -216,9 +252,11 @@ service_record_processes
 - added_by_user_id
 ```
 
+Regras:
+
 - publicação futura não altera vínculo;
 - Funcionário usa normalmente revisão publicada;
-- ADM/Gerência podem selecionar explicitamente outra revisão autorizada;
+- ADM/Gerência podem selecionar explicitamente outra revisão que já possam ler;
 - revisão histórica/não publicada nunca é escolhida silenciosamente;
 - remoção só ocorre em Atendimento editável e preserva auditoria necessária.
 
@@ -238,7 +276,13 @@ service_record_checklist_items
 - row_revision
 ```
 
-A implementação física deve preservar vínculo à revisão/origem imutável, estado marcado, autoria/data quando aplicável, snapshot necessário e controle concorrente por item/equivalente.
+A implementação física deve preservar:
+
+- vínculo à revisão/origem imutável;
+- estado marcado/desmarcado;
+- usuário/data quando aplicável;
+- snapshot textual quando necessário à integridade histórica;
+- controle concorrente por item/equivalente.
 
 Checklist não pertence ao `process_revision` como estado mutável.
 
@@ -260,14 +304,17 @@ service_record_stage_notes
 
 Deve preservar:
 
-- vínculo inequívoco ao Atendimento, revisão e Etapa;
+- vínculo inequívoco ao Atendimento, `service_record_process` e Etapa da revisão exata;
 - texto separado do Procedimento oficial;
+- ausência de ruído persistente quando não houver texto relevante, conforme forma física escolhida;
 - autoria/timestamps quando necessários;
 - controle concorrente por Etapa/equivalente;
 - edição somente quando Atendimento estiver editável/autorizado;
 - somente leitura em `Concluído`/`Cancelado` até reabertura;
 - nenhum autosave implícito;
 - reprodução histórica do estado final aplicável.
+
+A observação não é comentário social, chat, bloco documental ou item de checklist.
 
 ## Progresso operacional
 
@@ -282,6 +329,8 @@ checked_count / total_checklist_items
 - revisão sem checklist não gera `0%` artificial;
 - 100% não conclui Atendimento automaticamente.
 
+Se cache de contagem for usado por desempenho, continua derivável do estado oficial.
+
 ## Concorrência granular
 
 - Atendimento possui revisão otimista própria;
@@ -289,6 +338,7 @@ checked_count / total_checklist_items
 - checklist possui revisão/controle por item;
 - observação possui revisão/controle por Etapa;
 - recursos independentes não devem conflitar globalmente;
+- alteração concorrente do mesmo recurso recebe resultado determinístico/conflito apropriado;
 - eventos só são emitidos pós-commit;
 - evento remoto não sobrescreve edição local silenciosamente.
 
@@ -317,7 +367,15 @@ equipment_id
 
 A forma física pode ser snapshot estruturado, campos normalizados ou mecanismo versionado equivalente. O requisito é reprodução histórica determinística, não tabela de apresentação.
 
-Cada nova conclusão após reabertura produz novo estado final aplicável sem apagar os anteriores da auditoria.
+Cada nova conclusão após reabertura produz novo estado final aplicável sem apagar os anteriores da auditoria/histórico.
+
+## Equipamento arquivado
+
+- não aparece para novo vínculo normal;
+- não pode ser arquivado enquanto vinculado a Atendimento `Em andamento`;
+- histórico permanece;
+- reativação depende de capacidade;
+- arquivar não invalida snapshots de Atendimentos concluídos.
 
 ## Busca
 
@@ -347,7 +405,7 @@ FTS5 só entra se necessidade real justificar.
 
 ## Ficha compacta
 
-A Ficha é projeção resumida derivada do estado confirmado/histórico de Atendimento, Equipamento e observações aplicáveis.
+A Ficha é projeção resumida derivada do estado confirmado/histórico aplicável de Atendimento, Equipamento e observações.
 
 - não criar tabela exclusiva apenas para apresentação;
 - vínculos/revisões, checklist, progresso e auditoria permanecem fontes internas, mas não conteúdo padrão impresso;
@@ -366,6 +424,14 @@ data\
 ```
 
 Backup inclui banco e arquivos administrados conforme contrato técnico final do Bloco 11.
+
+## Arquivamento/desativação
+
+- Procedimentos: arquivar;
+- categorias: arquivar;
+- Equipamentos: arquivar quando permitido;
+- usuários: desativar;
+- revisões/auditoria/Atendimentos históricos: não excluir por operação normal.
 
 ## Migrations
 
@@ -388,7 +454,7 @@ Usar migrations numeradas/versionadas e `schema_migrations` com identificador, n
 
 - forma física final do snapshot de Equipamento/conclusão;
 - forma física final para preservar observações em conclusões históricas após reabertura;
-- nomes físicos finais de tabelas/colunas;
+- nomes físicos finais de tabelas/colunas de checklist/observações/lifecycle;
 - regra editorial de nova revisão com categoria arquivada;
 - migrations oficiais, somente após gate de estrutura;
 - integração precisa do pacote de Backup/Restore após Bloco 11.

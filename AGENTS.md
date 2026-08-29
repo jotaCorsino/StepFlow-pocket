@@ -28,7 +28,7 @@ Em caso de conflito:
 5. tarefa, dentro das decisões vigentes;
 6. histórico Git.
 
-O enunciado autoriza trabalho, mas não revoga silenciosamente decisão consolidada. Ambiguidade nunca autoriza escolher a alternativa mais conveniente.
+O enunciado autoriza trabalho, mas não revoga silenciosamente decisão consolidada. Se a tarefa contrariar uma decisão vigente, parar e retornar ao PO/Assistente até existir nova decisão explícita e sincronização documental. Ambiguidade nunca autoriza escolher a alternativa mais conveniente.
 
 ## Leitura por camadas
 
@@ -56,7 +56,7 @@ O enunciado autoriza trabalho, mas não revoga silenciosamente decisão consolid
 
 ## Pré-flight para Codex
 
-Antes de tarefa de implementação, o Assistente entrega separadamente:
+Antes de **cada nova tarefa Codex**, inclusive PoC ou trabalho técnico preparatório, o Assistente entrega separadamente:
 
 1. `PRÉ-FLIGHT PARA O PO — NÃO ENVIAR AO CODEX`;
 2. `PROMPT / ENUNCIADO PARA O CODEX`.
@@ -80,7 +80,7 @@ Se `HEAD` divergir, não fazer `pull`, `merge`, `rebase`, `reset` ou checkout co
 
 Alteração preexistente pertence ao PO/outro fluxo.
 
-Sem autorização explícita e específica, é proibido:
+Sem autorização explícita e específica do PO, é proibido:
 
 - `git reset --hard`;
 - `git clean`;
@@ -142,6 +142,7 @@ pasta pronta publicada no servidor Windows
 → usuário executa StepFlowLauncher.exe
 → Launcher prepara/valida o Client local automaticamente
 → Client abre de %LOCALAPPDATA%
+→ Launcher encerra
 ```
 
 É obrigatório no uso normal:
@@ -206,6 +207,12 @@ Detalhes ficam nas fontes específicas; não ampliar estas invariantes por infer
 - mecanismo técnico do Bloco 11;
 - estrutura oficial e plano da Fase 2 no Bloco 12;
 - gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/EDR.
+
+## Gate de implementação
+
+Na Fase 1, trabalho estrutural significa documentação ou PoC explicitamente descartável autorizada. Não criar scaffold oficial, módulos runtime definitivos, árvore final ou código de negócio antes do Bloco 12/Fase 2 autorizar.
+
+Antes do primeiro trabalho de implementação, sincronizar explicitamente o checkout local com o remoto **sem apagar, sobrescrever, descartar ou incorporar indevidamente** alterações preexistentes do PO.
 
 ## Regra final
 

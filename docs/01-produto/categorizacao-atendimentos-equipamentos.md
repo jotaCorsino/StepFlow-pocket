@@ -32,8 +32,10 @@ Alterações futuras do Procedimento ou do cadastro global do Equipamento não d
 - podem ser arquivadas preservando histórico;
 - categoria arquivada deixa de ser opção normal para nova associação;
 - nomes equivalentes após normalização não devem ser duplicados;
-- gestão por preset: ADM e Gerência;
+- gestão por preset: ADM e Gerência; Funcionário não;
 - autorização real continua granular e Host-side.
+
+Exemplos de categoria servem apenas como ilustração e não viram taxonomia hardcoded.
 
 Pendente antes da implementação editorial: regra exata ao criar nova revisão de Procedimento que ainda carregue categoria arquivada.
 
@@ -68,7 +70,7 @@ Regras:
 
 - bateria é opcional/contextual e, quando percentual, fica entre 0 e 100;
 - campos vazios/não aplicáveis não viram burocracia visual;
-- CPU/RAM/armazenamento são resumos textuais inicialmente;
+- CPU/RAM/armazenamento são resumos textuais inicialmente, sem inventário automático;
 - observação do Equipamento possui soft limit recomendado de 300 caracteres para favorecer a Ficha, sem virar hard limit de domínio por causa do layout.
 
 ## 5. Identidade e busca do Equipamento
@@ -84,10 +86,13 @@ Formato inicial:
 EQP-000001
 ```
 
-- seis dígitos;
-- sequência simples por implantação/banco ativo;
+Regras:
+
+- seis dígitos com zero à esquerda;
+- sequência numérica simples por implantação/banco ativo;
 - gaps permitidos;
-- não editável pelo usuário.
+- não editável pelo usuário;
+- não substitui o ID interno estável.
 
 Atributos pesquisáveis, mas não identidade canônica exclusiva:
 
@@ -98,7 +103,7 @@ Atributos pesquisáveis, mas não identidade canônica exclusiva:
 - MAC normalizado;
 - cliente/solicitante relacionado.
 
-Múltiplos MACs podem existir no mesmo Equipamento.
+Múltiplos MACs podem existir no mesmo Equipamento, com label opcional quando útil. MAC, serial e patrimônio não são chaves canônicas por inferência.
 
 ## 6. Lifecycle do Atendimento
 
@@ -128,7 +133,7 @@ Não criar workflow de chamados com SLA, prioridade, pausa, aprovação ou estad
 
 ## 7. Criação e identidade do Atendimento
 
-Antes do primeiro save, `Novo atendimento` é rascunho somente em memória.
+Antes do primeiro save, `Novo atendimento`/`Iniciar atendimento` é rascunho somente em memória.
 
 No primeiro save aceito pelo Host:
 
@@ -144,10 +149,14 @@ Formato inicial:
 AT-000001
 ```
 
-- seis dígitos;
+Regras:
+
+- seis dígitos com zero à esquerda;
+- sequência numérica simples por implantação/banco ativo;
 - gaps permitidos;
 - não editável;
-- cancelamento não reutiliza código.
+- cancelamento não libera/reutiliza código;
+- não substitui o ID interno estável.
 
 ## 8. Conteúdo do Atendimento
 
@@ -158,7 +167,7 @@ Pode conter:
 - cliente/solicitante opcional;
 - Equipamento opcional;
 - responsável/técnico;
-- datas de lifecycle;
+- `started_at` e demais datas de lifecycle aplicáveis;
 - `Resumo do trabalho`;
 - observação geral;
 - zero, um ou vários Procedimentos/revisões utilizados;
@@ -197,9 +206,15 @@ Para concluir:
 
 Não são obrigatórios por si só: OS, cliente, Equipamento ou Procedimento vinculado.
 
-Checklist incompleto gera confirmação, não bloqueio automático.
+Checklist incompleto gera confirmação, não bloqueio automático, pois os itens documentais não possuem semântica obrigatório/opcional na primeira versão.
 
-Ao concluir, o Host preserva estado suficiente para reprodução histórica, incluindo revisões usadas, checklist final, observações de serviço e projeção relevante do Equipamento.
+Ao concluir, o Host:
+
+- grava `Concluído` e `completed_at`;
+- preserva revisões utilizadas e checklist final;
+- preserva observações de serviço aplicáveis;
+- congela projeção histórica relevante do Equipamento;
+- registra evento/auditoria correspondente.
 
 ### Cancelamento
 
@@ -230,7 +245,7 @@ Cada vínculo preserva a revisão exata realmente utilizada:
 Seleção por preset:
 
 - Funcionário: revisão publicada que possa ler;
-- ADM/Gerência: publicada por padrão; podem selecionar explicitamente outra revisão autorizada;
+- ADM/Gerência: publicada por padrão; podem selecionar explicitamente outra revisão histórica/não publicada já autorizada;
 - revisão histórica/não publicada nunca é escolhida silenciosamente;
 - publicação futura não substitui vínculo existente.
 
@@ -247,6 +262,8 @@ Processos → Reader
 Atendimento → revisão vinculada → Executar
 → checklist persistente daquele Atendimento
 ```
+
+Cada item operacional preserva identidade/vínculo de origem suficiente, estado marcado/desmarcado, autoria/data quando aplicável e controle concorrente por item/equivalente.
 
 Regras:
 
@@ -268,7 +285,8 @@ Regras:
 - editável somente enquanto Atendimento estiver editável/autorizado;
 - somente leitura em `Concluído`/`Cancelado` até reabertura;
 - participa da reprodução histórica da Ficha;
-- sem autosave por inferência.
+- sem autosave por inferência;
+- não é comentário social, chat, bloco documental ou checklist.
 
 ## 14. Equipamento e histórico
 
@@ -280,7 +298,7 @@ Preset:
 
 Equipamento arquivado não aparece para novos vínculos normais.
 
-Não arquivar Equipamento enquanto estiver vinculado a Atendimento `Em andamento`.
+Não arquivar Equipamento enquanto estiver vinculado a Atendimento `Em andamento`; antes disso, o Atendimento deve ser concluído/cancelado ou o vínculo removido.
 
 Conclusão congela a projeção relevante do Equipamento para reprodução histórica. Alteração posterior do cadastro global não reescreve a Ficha daquele estado final.
 
@@ -293,20 +311,25 @@ Lifecycle:
 - `Em andamento`: gera estado confirmado atual;
 - `Concluído`: reimprime estado histórico aplicável;
 - `Cancelado`: saída identifica claramente o estado;
-- alterações locais não salvas/conflitos bloqueiam geração.
+- alterações locais não salvas/conflitos bloqueiam geração;
+- preset de gerar/reimprimir: ADM, Gerência e Funcionário para Atendimentos acessíveis.
 
 Contrato físico/documental:
 
 - prestação de contas resumida ao cliente;
+- documento próprio, nunca screenshot da UI;
 - PDF canônico + preview do mesmo `PagedDocument`;
 - exatamente uma página A4, margens 15 mm;
 - `2+ páginas` = `SHEET_OVERFLOW`;
 - nenhuma truncagem, segunda página, resumo automático ou redução dinâmica para caber;
 - campos vazios/não aplicáveis são omitidos;
+- identidade central da empresa é utilizada;
 - Procedimentos vinculados não são listados por padrão;
 - checklist/progresso/timeline não são impressos por padrão;
 - MACs: 0 omite; 1–2 exibem valores; 3+ exibem somente a quantidade cadastrada;
 - observações legítimas não recebem descarte automático.
+
+A impressão é requisito. DOCX específico da Ficha não é requisito inicial.
 
 Detalhes: `../02-telas/14-exportacao-impressao-ficha.md`.
 
@@ -346,6 +369,7 @@ Pode pesquisar por:
 | Adicionar/remover Procedimento | sim | sim | sim, quando responsável |
 | Selecionar revisão não publicada/histórica | sim | sim | não |
 | Marcar/desmarcar checklist | sim | sim | sim, quando responsável |
+| Registrar/editar observação de serviço por Etapa | sim | sim | sim, quando responsável |
 | Gerar/reimprimir Ficha acessível | sim | sim | sim |
 | Gerir categorias | sim | sim | não |
 
@@ -356,10 +380,12 @@ Gerência × configuração da empresa e Gerência × Backup permanecem pendente
 ## 18. Concorrência e histórico
 
 - Atendimento usa revisão otimista;
+- concluir/cancelar/reabrir também são mutações versionadas;
 - Equipamento possui revisão própria;
 - checklist usa granularidade por item;
 - observação de serviço usa granularidade por Etapa;
 - eventos pós-commit sinalizam mudança e Client reconsulta;
+- evento remoto não sobrescreve edição local silenciosamente;
 - timeout/desconexão após mutação exige reconciliação, não retry cego.
 
 Preservar eventos de alto valor: criação, mudança de responsável, vínculo de Equipamento/Procedimento, conclusão, cancelamento + motivo, reabertura e alterações administrativas relevantes.
