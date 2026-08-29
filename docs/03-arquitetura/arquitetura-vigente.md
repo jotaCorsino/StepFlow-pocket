@@ -1,6 +1,6 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1 ATÉ O BLOCO 10  
+**Status:** CONSOLIDADA PARA A FASE 1 — BLOCO 11 EM ANÁLISE  
 **Atualização:** 2026-08-29
 
 Este arquivo é o **mapa arquitetural**. Contratos detalhados pertencem aos documentos específicos e não devem ser duplicados integralmente aqui.
@@ -197,20 +197,55 @@ Fontes:
 - `../04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`;
 - `../02-telas/14-exportacao-impressao-ficha.md`.
 
-## Backup / Restore
+## Backup / Restore — decisões aprovadas no Bloco 11
 
-UX já consolidada:
+UX continua em `../02-telas/13-backup-restauracao.md`.
 
-- dentro de Configurações;
-- Host coordena;
-- Client não escolhe SQLite/path;
-- Restore exige autorização, backup elegível e confirmação reforçada;
-- safety backup é obrigatório antes da etapa destrutiva no fluxo normal;
-- disaster recovery sem Host funcional é técnico/local.
+Estado recuperável inicial:
 
-A estratégia de pacote, consistência, retenção, restart/sessões e disaster recovery será fechada no Bloco 11.
+```text
+stepflow.sqlite
+company/**
+avatars/**
+```
 
-Fonte UX: `../02-telas/13-backup-restauracao.md`.
+Ficam fora do Backup normal: binários, configuração de implantação, logs, backups anteriores, exportações e temporários.
+
+Envelope:
+
+- um pacote imutável `.stepflow-backup`;
+- ZIP `Stored` no baseline;
+- `manifest.json` versionado;
+- SHA-256 por entrada;
+- paths lógicos allowlisted;
+- staging antes de promoção;
+- pacote parcial nunca é válido.
+
+Consistência:
+
+```text
+Host entra em BACKUP_CAPTURE
+→ drena mutações aceitas
+→ ponto quiescente
+→ Online Backup API para SQLite novo em staging
+→ copia company/** + avatars/** no mesmo barrier
+→ libera mutações
+→ hash/ZIP/verificação/promoção fora do barrier
+```
+
+- `-wal`/`-shm` não entram no pacote;
+- criação exige `quick_check = ok` e `foreign_key_check` vazio;
+- candidato recebe flush explícito;
+- promoção final é same-volume e no-replace;
+- sucesso somente após arquivo final reaberto/confirmado;
+- crash/falha nunca transforma staging/parcial em válido.
+
+Catálogo, retenção, coordenação administrativa, Restore, sessões, disaster recovery e capacidades ainda estão sendo fechados.
+
+Fontes:
+
+- `../04-planejamento/bloco-11-backup-restauracao.md`;
+- `../04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md` — proposta ainda não aprovada.
 
 ## Pendências arquiteturais ainda abertas
 
@@ -218,8 +253,8 @@ Fonte UX: `../02-telas/13-backup-restauracao.md`.
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- contrato técnico final de Backup/Restore;
+- restante do contrato técnico do Bloco 11: catálogo/retenção/coordenação, Restore/compatibilidade, restart/sessões, disaster recovery, capacidades/auditoria e validação final;
 - estrutura oficial da implementação e plano da Fase 2;
 - gates de ambiente real: Windows/WebView2, Launcher/SMB, Word, impressoras e EDR.
 
-Nenhum runtime/código funcional oficial foi criado durante o fechamento documental até o Bloco 10.
+Nenhum runtime/código funcional oficial foi criado durante a Fase 1.
