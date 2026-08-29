@@ -4,9 +4,9 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 ## Painel de acompanhamento
 
-**Atualização:** 2026-08-28  
+**Atualização:** 2026-08-29  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–10 consolidadas; Etapa 11 próxima**  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–10 consolidadas; Etapa 11 — validação técnica final próxima**  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida. Precedência e decisões completas permanecem em `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md` e documentos específicos.
@@ -69,8 +69,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 8 | Limites textuais e densidade da Ficha | ✅ Consolidado |
 | 9 | Múltiplos MACs / Procedimentos / dados excepcionais | ✅ Consolidado |
 | 10 | Nomes de arquivo + artefatos temporários | ✅ Consolidado |
-| 11 | QR / barcode | 🟡 Próxima — ainda não aberta |
-| 12 | Validação técnica final do Bloco 10 | ⏳ Pendente |
+| 11 | Validação técnica final do Bloco 10 | 🟡 Próxima — ainda não aberta |
 
 ### Etapas 1–5 — Procedimentos
 
@@ -107,7 +106,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - Noto Sans com baseline 14 / 10,5 / 10 / 9 / 8,5 pt;
 - divisórias discretas, contraste neutro e legível em monocromático;
 - seções vazias colapsam;
-- sem assinatura, financeiro, checklist, progresso, timeline, QR, página 2 ou footer promocional.
+- sem assinatura, financeiro, checklist, progresso, timeline, página 2 ou footer promocional.
 
 ### Etapa 8 — limites textuais e densidade
 
@@ -133,7 +132,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
 - diagnóstico de overflow pode indicar multiplicidade, como quantidade de observações ou campo estruturado longo;
 - sem `include_in_sheet`, editor paralelo, seleção transitória, modo compacto, segunda página ou redução automática do template;
-- limites técnicos finais permanecem para a Etapa 12.
+- limites técnicos finais permanecem para a Etapa 11.
 
 ### Etapa 10 — nomes e artefatos temporários
 
@@ -149,17 +148,17 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - sem Windows Service, Task Scheduler, daemon ou watchdog para limpeza;
 - save só é sucesso após gravação integral; arquivo auxiliar no mesmo destino e promoção segura são preferidos quando o filesystem/API suportarem;
 - temporários/exportações não entram em SQLite, histórico ou backup por padrão;
-- validações concretas de NTFS/SMB/WebView2, memória, paths e concorrência ficam para a Etapa 12.
+- validações concretas de NTFS/SMB/WebView2, memória, paths e concorrência ficam para a Etapa 11.
 
 Fonte técnica: `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
 ## Gate atual
 
-A Etapa 11 não pode ser aberta antes de:
+A Etapa 11 — Validação técnica final não pode ser aberta antes de:
 
 ```text
-squash merge da Etapa 10
-→ remoção da branch remota da Etapa 10
+squash merge da limpeza documental atual
+→ remoção da branch remota correspondente
 → remoto somente com main
 → zero PRs abertos
 ```
@@ -170,7 +169,7 @@ squash merge da Etapa 10
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- Etapas 11–12 do Bloco 10;
+- Etapa 11 do Bloco 10;
 - mecanismo técnico do Bloco 11;
 - validações reais do ambiente corporativo;
 - estrutura oficial/Fase 2 no Bloco 12.
