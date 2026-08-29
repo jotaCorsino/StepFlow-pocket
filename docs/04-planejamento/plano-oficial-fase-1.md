@@ -25,7 +25,7 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 8 | UI/UX | CONCLUÍDO | `../02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
-| 11 | Backup/restauração técnico | PENDENTE | a abrir |
+| 11 | Backup/restauração técnico | EM ANÁLISE | `bloco-11-backup-restauracao.md` |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | a abrir |
 
 ## Extensão de produto consolidada
@@ -139,24 +139,29 @@ Resultado:
 
 ## Bloco 11 — Backup / Restore técnico
 
-**PENDENTE.**
+**EM ANÁLISE.**
 
-A UX já está consolidada em `../02-telas/13-backup-restauracao.md`.
+Fonte de trabalho: `bloco-11-backup-restauracao.md`.
+
+A UX já está consolidada em `../02-telas/13-backup-restauracao.md` e não será reaberta sem bloqueador técnico concreto.
 
 O Bloco 11 deve fechar tecnicamente:
 
-- conteúdo exato do pacote administrado;
+- conjunto exato do estado recuperável;
 - snapshot consistente de SQLite + arquivos administrados;
-- manifesto/checksums/compatibilidade;
-- estratégia de escrita/promoção/atomicidade possível;
-- safety backup antes do Restore normal;
+- formato/identidade do backup;
+- manifesto, verificação e compatibilidade;
+- escrita/promoção e tratamento de backup parcial;
 - retenção;
 - coordenação com operações e mutações;
+- safety backup e Restore normal;
 - restart/reconexão/sessões;
+- falhas parciais/resultado incerto;
 - disaster recovery local quando Host não inicia;
-- comportamento de falhas parciais/resultado incerto.
+- capacidades/auditoria;
+- validação técnica final.
 
-Não reabrir a UX sem bloqueador técnico concreto.
+Alternativas técnicas listadas durante a análise não são contrato até aprovação explícita e sincronização documental.
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
