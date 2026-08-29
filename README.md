@@ -6,8 +6,8 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-29  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Checkpoint atual:** Bloco 11 — Backup / restauração técnico em análise  
-**Próximo bloco após consolidação:** Bloco 12 — Estrutura oficial + plano da Fase 2  
+**Checkpoint atual:** Bloco 11 — Análise 3: catálogo, retenção e coordenação administrativa  
+**Próximo passo:** revisar P11.26–P11.42; depois Análise 4 — Restore + safety backup + compatibilidade  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -25,7 +25,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
 | 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
-| 11 | Backup / restauração | 🟡 Em análise |
+| 11 | Backup / restauração | 🔎 Em análise técnica |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
 ## Produto
@@ -89,7 +89,7 @@ O Controller/Host continua sob demanda na máquina central. WebView2 não pode e
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- Bloco 11 — fechar o mecanismo técnico de Backup/Restore atualmente em análise;
+- concluir Bloco 11 — mecanismo técnico de Backup/Restore;
 - Bloco 12 — estrutura oficial, parâmetros finais e plano da Fase 2;
 - validações corporativas de Windows/WebView2/Launcher/SMB/Word/impressoras/EDR no momento apropriado.
 
