@@ -1,7 +1,7 @@
 # Arquitetura Vigente — StepFlow Pocket
 
 **Status:** CONSOLIDADA PARA A FASE 1, INCLUINDO BLOCO 9 E BLOCO 10 / ETAPAS 1–8  
-**Atualização:** 2026-08-28
+**Atualização:** 2026-08-29
 
 ## Visão geral
 
@@ -361,7 +361,7 @@ Contrato:
 - seções vazias colapsam completamente;
 - PDF usa Noto Sans: 14 pt identificação principal, 10,5 pt seção, 10 pt corpo, 9 pt ficha técnica, 8,5 pt metadados;
 - divisórias discretas e contraste neutro legível em monocromático;
-- sem caixas vazias para escrita manual, assinatura, financeiro, garantia, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional;
+- sem caixas vazias para escrita manual, assinatura, financeiro, garantia, checklist, progresso, timeline, lista detalhada de Procedimentos, página 2 ou footer promocional;
 - nenhuma redução dinâmica de fonte para caber; overflow continua `SHEET_OVERFLOW`.
 
 ## Etapa 8 — limites textuais e densidade da Ficha
@@ -400,7 +400,7 @@ UX já consolidada:
 - Bloco 6: núcleo + extensão operacional conceitual consolidados;
 - Bloco 7: núcleo concluído;
 - Blocos 8–9: concluídos;
-- **Bloco 10: em andamento — Etapas 1–8 consolidadas; Etapa 9 próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–10 consolidadas; Etapa 11 — Validação técnica final próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 Nenhum runtime/código funcional oficial foi criado durante esse fechamento documental.
