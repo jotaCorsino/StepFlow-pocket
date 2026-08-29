@@ -1,19 +1,19 @@
-# Autenticação, Sessão e Autorização — StepFlow
+# Autenticação, Sessão e Autorização — StepFlow Pocket
 
-**Status:** NÚCLEO CONSOLIDADO PARA A FASE 1 / PARÂMETROS DE SEGURANÇA AINDA PENDENTES  
-**Atualização:** 2026-08-25
+**Status:** NÚCLEO CONSOLIDADO PARA A FASE 1 / PARÂMETROS FINAIS PENDENTES  
+**Atualização:** 2026-08-29
 
-## Princípios consolidados
+## Princípios
 
 - autenticação e autorização ocorrem no Host;
 - Client nunca é fonte de verdade de permissão;
 - senha nunca é armazenada em texto puro;
 - sessão inicial é opaca/server-side, sem JWT;
 - token fica somente em memória do Client inicialmente;
-- nenhuma função `lembrar-me` persistente na primeira versão;
+- sem `lembrar-me` persistente na primeira versão;
 - autorização real é por capacidade no Host;
 - `ADM`, `GERENCIA` e `FUNCIONARIO` são presets de capacidades;
-- ocultar/desabilitar botão no Client é UX, não controle de segurança.
+- ocultar/desabilitar ação no Client é UX, não segurança.
 
 ## Usuário
 
@@ -33,7 +33,7 @@ created_at
 updated_at
 ```
 
-`user_id` é imutável e usado por relacionamentos/histórico.
+`user_id` é identidade estável usada por relacionamentos/histórico.
 
 ## Senhas
 
@@ -45,14 +45,7 @@ Consolidado:
 - aceitar frases-senha;
 - nunca registrar senha em logs/auditoria.
 
-### Parâmetros ainda não definitivos
-
-Referências/propostas, não contrato de implementação:
-
-- custo Argon2id aproximado de 19 MiB / 2 iterações / paralelismo 1;
-- senha mínima de 10 caracteres.
-
-Valores finais serão fechados antes da implementação de autenticação.
+Parâmetros numéricos de custo e senha mínima permanecem **PENDENTES** e serão fechados antes da implementação correspondente. Valores históricos/provisórios não são contrato.
 
 ## Login e sessão
 
@@ -70,78 +63,68 @@ Consolidado:
 - logout revoga sessão;
 - desativação/reset/mudança administrativa relevante pode revogar sessões;
 - token reutilizável não é persistido em texto puro;
-- troca da própria senha mantém a sessão atual e revoga as demais sessões da conta;
+- troca da própria senha mantém sessão atual e revoga demais sessões da conta;
 - sessão expirada exige nova autenticação;
 - edição não salva pode permanecer somente em memória/oculta durante reautenticação do mesmo Client, sem virar draft persistente.
 
-### Parâmetros de sessão pendentes
+Duração de sessão, inatividade, validade absoluta e tamanho/entropia numérica do token permanecem pendentes.
 
-Propostas, não contrato:
-
-- expiração por inatividade: 8 h;
-- validade absoluta: 24 h;
-- tamanho/entropia numérica exata do token.
-
-## Perfis e capacidades documentais/administrativas
+## Capacidades documentais/administrativas
 
 | Capacidade | ADM | Gerência | Funcionário |
 |---|---:|---:|---:|
-| Ler processos | sim | sim | sim |
-| Criar/editar processos | sim | sim | não |
-| Arquivar/publicar processos | sim | sim | não |
-| Exportar/imprimir procedimentos | sim | sim | sim |
+| Ler Procedimentos | sim | sim | sim |
+| Criar/editar Procedimentos | sim | sim | não |
+| Arquivar/publicar Procedimentos | sim | sim | não |
+| Exportar/imprimir Procedimentos | sim | sim | sim |
 | Ler/gerir usuários não-ADM | sim | sim | não |
 | Criar/promover/rebaixar ADM | sim | não | não |
-| Gerir categorias de Procedimentos | sim | sim | não |
+| Gerir categorias | sim | sim | não |
 | Alterar configuração da empresa | sim | **PENDENTE** | não |
 | Backup | sim | **PENDENTE** | não |
 | Restore | sim | não | não |
 
 `PENDENTE` não significa sim nem não.
 
-## Capacidades operacionais — Bloco 9
+## Capacidades operacionais
 
-Preset consolidado:
-
-| Capacidade operacional | ADM | Gerência | Funcionário |
+| Capacidade | ADM | Gerência | Funcionário |
 |---|---:|---:|---:|
 | Consultar Atendimentos | sim | sim | sim |
 | Criar Atendimento | sim | sim | sim |
-| Editar Atendimento em andamento do qual é responsável | sim | sim | sim |
+| Editar Atendimento próprio em andamento | sim | sim | sim |
 | Editar qualquer Atendimento em andamento | sim | sim | não |
-| Concluir Atendimento do qual é responsável | sim | sim | sim |
+| Concluir Atendimento próprio | sim | sim | sim |
 | Concluir qualquer Atendimento | sim | sim | não |
 | Cancelar Atendimento | sim | sim | não |
 | Reabrir Atendimento | sim | sim | não |
-| Vincular/trocar/desvincular Equipamento em Atendimento editável | sim | sim | sim, quando responsável |
-| Criar/editar cadastro de Equipamento | sim | sim | sim |
+| Vincular/trocar/desvincular Equipamento editável | sim | sim | sim, quando responsável |
+| Criar/editar Equipamento | sim | sim | sim |
 | Arquivar/reativar Equipamento | sim | sim | não |
-| Adicionar/remover Procedimento em Atendimento editável | sim | sim | sim, quando responsável |
-| Selecionar revisão não publicada/histórica para execução | sim | sim | não |
-| Marcar/desmarcar checklist em Atendimento editável | sim | sim | sim, quando responsável |
-| Gerar/reimprimir ficha de Atendimento acessível | sim | sim | sim |
+| Adicionar/remover Procedimento em Atendimento | sim | sim | sim, quando responsável |
+| Selecionar revisão não publicada/histórica | sim | sim | não |
+| Marcar/desmarcar checklist | sim | sim | sim, quando responsável |
+| Gerar/reimprimir Ficha acessível | sim | sim | sim |
 
 ### Responsabilidade do Funcionário
 
-Para o preset `FUNCIONARIO`, `próprio Atendimento` significa inicialmente:
+`próprio Atendimento` significa inicialmente:
 
 ```text
 service_record.responsible_user_id == session.user_id
 ```
 
-Regras:
-
-- ao criar Atendimento, Funcionário começa como responsável;
+- Funcionário inicia como responsável pelo Atendimento que cria;
 - Funcionário padrão não reatribui para outro usuário;
 - ADM/Gerência podem atribuir/reatribuir;
-- usuário desativado permanece identificável no histórico, mas não é opção normal para nova atribuição.
+- usuário desativado permanece no histórico, mas não é opção normal para nova atribuição.
 
 ## Revisões de Procedimento para execução
 
 - Funcionário seleciona normalmente somente revisão publicada que possa ler;
-- ADM/Gerência usam publicada por padrão e podem selecionar explicitamente revisão histórica/atual não publicada que já possam ler;
-- revisão histórica/não publicada nunca é selecionada silenciosamente;
-- autorização de leitura da revisão continua obrigatória além da capacidade operacional de vinculá-la.
+- ADM/Gerência usam publicada por padrão e podem selecionar explicitamente revisão histórica/atual não publicada já autorizada;
+- revisão histórica/não publicada nunca é escolhida silenciosamente;
+- capacidade de vincular não substitui autorização de leitura.
 
 ## Lifecycle e autorização
 
@@ -154,38 +137,31 @@ Cancelado
 ```
 
 - editar/checklist/vínculos: somente em `Em andamento`, conforme capacidade;
-- concluir: capacidade de conclusão + estado `Em andamento`;
+- concluir: capacidade + estado `Em andamento`;
 - cancelar: capacidade própria + estado `Em andamento`;
 - reabrir: capacidade própria + `Concluído` ou `Cancelado`;
-- Atendimento concluído/cancelado não recebe edição operacional direta;
-- mudança posterior exige reabertura.
-
-O Host revalida estado e `row_revision`/base além da capacidade.
+- concluído/cancelado não recebe edição operacional direta;
+- mudança posterior exige reabertura;
+- Host revalida estado e revisão/base além da capacidade.
 
 ## Ficha de Atendimento
 
-Preset `Gerar/reimprimir ficha de Atendimento acessível` é sim para ADM/Gerência/Funcionário.
+`Gerar/reimprimir Ficha de Atendimento acessível` é permitido pelos três presets, condicionado a:
 
-Ainda são obrigatórios:
-
-- sessão poder consultar aquele Atendimento;
+- sessão poder consultar o Atendimento;
 - estado confirmado do Host;
-- ausência de conflito/alteração local não salva na geração;
-- regras de lifecycle.
+- ausência de conflito/alteração local não salva;
+- lifecycle aplicável.
 
-Comportamento:
+- `Em andamento`: gera estado confirmado atual;
+- `Concluído`: reimprime estado histórico aplicável;
+- `Cancelado`: identifica claramente o estado.
 
-- `Em andamento`: ficha pode ser gerada para acompanhamento;
-- `Concluído`: pode ser reimpressa do estado histórico aplicável;
-- `Cancelado`: quando gerada/reimpressa, precisa identificar claramente o estado.
-
-Tecnologia/template permanecem no Bloco 10.
+Tecnologia, template e política de overflow estão consolidados na Tela 14 e no Bloco 10; não são pendência deste documento.
 
 ## Delegação e capacidades personalizadas
 
-Presets são defaults. Capacidades podem ser personalizadas dentro das regras de delegação já consolidadas.
-
-Regras obrigatórias:
+Presets são defaults. Capacidades podem ser personalizadas dentro das regras de delegação.
 
 - Gerência nunca administra ADM;
 - Gerência não cria/promove/rebaixa ADM;
@@ -210,15 +186,13 @@ Não altera por conta própria:
 - perfil/capacidades;
 - estado ativo;
 - `is_primary_admin`;
-- login, quando tratado como identidade de autenticação somente leitura na Tela 11.
+- login quando definido como identidade somente leitura.
 
 ## Bootstrap do primeiro ADM
 
 Primeiro ADM é criado por fluxo local/controlado na máquina central quando o banco não possui usuários.
 
-Nunca transformar `primeiro Client da rede` em ADM automaticamente.
-
-Após bootstrap bem-sucedido, o fluxo fica desabilitado para aquele banco.
+Nunca transformar `primeiro Client da rede` em ADM automaticamente. Após bootstrap bem-sucedido, o fluxo fica desabilitado para aquele banco.
 
 ## Reset/desativação
 
@@ -227,16 +201,16 @@ Após bootstrap bem-sucedido, o fluxo fica desabilitado para aquele banco.
 - revoga sessões pertinentes;
 - desativação é preferida à exclusão física para preservar histórico.
 
-## Auditoria de segurança e operação
+## Auditoria
 
-Registrar de forma proporcional:
+Registrar proporcionalmente:
 
 - criação/desativação de usuário;
 - mudança de perfil/capacidades;
 - reset de senha;
 - mudança relevante de responsável;
-- cancelamento/reabertura/conclusão de Atendimento;
-- operações administrativas críticas.
+- conclusão/cancelamento/reabertura de Atendimento;
+- operações administrativas críticas, incluindo Backup/Restore quando aplicável.
 
 Nunca registrar senha, token reutilizável ou segredo.
 
@@ -246,17 +220,11 @@ Credenciais e sessão usam o canal Client↔Host vigente. Proteção final de tr
 
 ## Pendências vigentes
 
-Ainda não definitivos:
-
-- custo Argon2id;
-- senha mínima;
-- expiração de sessão;
-- entropia/tamanho numérico exato do token;
+- custo Argon2id final;
+- senha mínima final;
+- duração/expiração de sessão;
+- entropia/tamanho numérico do token;
 - Gerência × configuração da empresa;
 - Gerência × Backup.
 
-As capacidades operacionais do Bloco 9 e a gestão de categorias por Gerência **não estão mais pendentes**.
-
-## Regra para implementação futura
-
-Nenhum valor marcado como `PENDENTE`, `PROPOSTA`, `aproximado` ou equivalente pode ser convertido silenciosamente em requisito definitivo pelo executor.
+Nenhum valor marcado como pendente pode ser convertido silenciosamente em requisito definitivo pelo executor.

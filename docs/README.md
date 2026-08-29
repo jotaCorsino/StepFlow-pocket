@@ -1,6 +1,6 @@
 # Documentação do StepFlow Pocket
 
-Esta pasta contém a documentação ativa do projeto. O `README.md` da raiz é o painel resumido de acompanhamento.
+Esta pasta contém a documentação ativa do projeto. O `README.md` da raiz é apenas o painel executivo.
 
 ## Precedência
 
@@ -15,71 +15,77 @@ Em caso de divergência:
 
 Proposta não aprovada não pode ser implementada como decisão.
 
+## Ownership documental
+
+Cada camada possui uma função principal:
+
+- **Governança** — regras de trabalho, ambientes e execução assistida;
+- **Produto** — o que o StepFlow é, domínio, requisitos e limites;
+- **Telas** — comportamento e UX das superfícies;
+- **Arquitetura** — mecanismos, componentes, persistência, segurança e restrições técnicas;
+- **Planejamento** — fases, blocos, dependências e gates ainda ativos;
+- **Progresso** — decisões vigentes e marcos históricos.
+
+Regra de higiene: documento técnico estável não anuncia “próximo bloco”. Estado corrente pertence ao `README.md`, ao plano da fase e ao roadmap.
+
 ## Leitura eficiente
 
-Sempre: `AGENTS.md`, enunciado da tarefa, este índice e documentos específicos indicados.
+Sempre:
 
-Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, contexto de ambientes e documento técnico relacionado.
+1. `AGENTS.md`;
+2. enunciado da tarefa;
+3. este índice;
+4. documento específico indicado.
+
+Conforme impacto, consultar também registro de decisões, plano da fase, arquitetura vigente e contexto de ambientes.
 
 ## Índice vigente
 
 ### Governança — `00-governanca`
 
-- `contexto-ambientes.md` — ambientes;
+- `contexto-ambientes.md` — ambientes e limites de validação;
 - `metodo-padrao-trabalho-assistido.md` — processo PO + Assistente + Codex;
 - `politica-capacidade-codex.md` — seleção de capacidade.
 
 ### Produto — `01-produto`
 
-- `visao-geral.md` — propósito/requisitos/limites;
+- `visao-geral.md` — propósito, requisitos e limites;
 - `categorizacao-atendimentos-equipamentos.md` — domínio `Procedimento × Atendimento × Equipamento`.
 
 ### Telas — `02-telas`
 
-- `README.md` — mapa do Bloco 8;
-- `01-login.md` — Login;
-- `02-shell-sidebar.md` — Shell;
-- `03-dashboard.md` — Dashboard;
-- `04-lista-pesquisa-processos.md` — Processos;
-- `05-leitor-processo.md` — Reader, stepper, checklist e observação de serviço por Etapa;
-- `06-editor-processo.md` — Editor;
-- `07-historico-revisoes.md` — Histórico/Revisões;
-- `08-lista-pesquisa-atendimentos.md` — Lista de Atendimentos;
-- `09-atendimento-execucao-equipamento.md` — Atendimento/Equipamento/checklist/observações/Ficha;
-- `10-usuarios-permissoes.md` — Usuários/Permissões;
-- `11-meu-perfil.md` — Meu perfil;
-- `12-configuracoes-categorias.md` — Configurações/Categorias;
-- `13-backup-restauracao.md` — Backup/Restauração UX;
-- `14-exportacao-impressao-ficha.md` — Procedimentos + Ficha compacta/PDF/preview/template A4/limites/dados excepcionais/naming/temporários;
-- `15-estados-transversais.md` — Estados transversais.
+- `README.md` — índice das superfícies;
+- `01-login.md` a `15-estados-transversais.md` — contratos UX consolidados;
+- `13-backup-restauracao.md` — UX de Backup/Restore;
+- `14-exportacao-impressao-ficha.md` — UX documental e Ficha compacta.
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão consolidada da arquitetura e contratos funcionais/técnicos vigentes;
-- `modelo-dados-schema-fase-1.md` — schema conceitual, checklist, observações por Etapa e snapshots;
-- `concorrencia-fila-conflitos-eventos.md` — concorrência geral;
-- `implantacao-pocket.md` — implantação/ciclo central;
-- `compatibilidade-windows-client.md` — Windows/WebView2 e gate Pocket;
+- `arquitetura-vigente.md` — mapa arquitetural;
+- `modelo-dados-schema-fase-1.md` — modelo conceitual e histórico;
+- `concorrencia-fila-conflitos-eventos.md` — concorrência e eventos;
+- `implantacao-pocket.md` — implantação e ciclo central;
+- `launcher-distribuicao-client.md` — distribuição Pocket do Client;
+- `compatibilidade-windows-client.md` — Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
-- `launcher-distribuicao-client.md` — distribuição Pocket sem instalação manual;
 - `comunicacao-client-host.md` — HTTP/JSON/WebSocket;
 - `autenticacao-sessao-autorizacao.md` — autenticação/autorização.
 
 ### Planejamento — `04-planejamento`
 
 - `roadmap.md` — fases;
-- `plano-oficial-fase-1.md` — estado/gates/pendências;
-- `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–11 consolidadas**;
-- `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz técnica final, limites e pendências de ambiente real do Bloco 10;
-- `tarefas-codex/README.md` — somente tarefas Codex ativas.
+- `plano-oficial-fase-1.md` — estado, gates e pendências da Fase 1;
+- `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico consolidado do Bloco 10;
+- `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz técnica final do Bloco 10;
+- `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
 
-- `registro-de-decisoes.md` — decisões vigentes/pendências/gates;
-- `changelog-projeto.md` — marcos;
-- `diario-de-progresso.md` — histórico, não fonte superior;
-- `revisao-cruzada-fase-0.md` — evidência histórica.
+- `registro-de-decisoes.md` — decisões vigentes, pendências e gates;
+- `changelog-projeto.md` — marcos cronológicos relevantes;
+- `diario-de-progresso.md` — histórico inicial congelado;
+- `revisao-cruzada-fase-0.md` — evidência histórica da Fase 0.
 
 ### Templates — `templates`
 
@@ -89,58 +95,6 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 
 ## Estado atual
 
-**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 possui as Etapas 1–11 consolidadas e aguarda apenas o gate operacional do PR/branch antes da abertura do Bloco 11.**
+A **Fase 1 permanece em andamento**. Blocos 0–10 estão documentalmente encerrados nos respectivos escopos; Bloco 11 fecha Backup/Restore técnico e Bloco 12 fecha estrutura oficial e plano da Fase 2.
 
-Direção consolidada:
-
-- baixa densidade textual como princípio transversal;
-- Reader em formato livro/manual com `Visão geral`, uma página lógica por Etapa e stepper compacto;
-- Reader operacional persiste checklist e observação de serviço opcional por Etapa;
-- geração documental no Host por `DocumentModel` e snapshot consistente;
-- PDF de Procedimentos via Typst e DOCX OOXML via pipeline Rust próprio;
-- impressão Windows local pelo PDF oficial e WebView2;
-- Procedimento físico A4 retrato multipágina;
-- Ficha compacta = prestação de contas resumida ao cliente;
-- PDF da Ficha + preview SVG saem do mesmo `PagedDocument`;
-- Ficha válida possui exatamente uma A4;
-- template físico da Ficha usa A4 retrato, margens 15 mm, cabeçalho compacto, ficha técnica sem grade, `SERVIÇO REALIZADO` e `OBSERVAÇÕES` como seções centrais;
-- Noto Sans com baseline 14 / 10,5 / 10 / 9 / 8,5 pt;
-- soft limits orientativos: Resumo 600, Atendimento 400, Equipamento 300 e observação por Etapa 280 caracteres;
-- `SHEET_OVERFLOW` bloqueia somente a geração da Ficha e nunca destrói/trunca o dado operacional;
-- correção de overflow ocorre nos campos reais, sem editor paralelo ou compactação automática;
-- Procedimentos vinculados não são listados na Ficha por padrão;
-- MACs usam projeção compacta: 1–2 valores, 3+ somente quantidade cadastrada;
-- observações legítimas não sofrem cap/descarte automático; multiplicidade pode causar overflow real;
-- nomes persistentes são previsíveis e sanitizados para Windows; Ficha usa somente o código do Atendimento por padrão;
-- temporários pertencem ao Client, usam nomes opacos sem dados de negócio e só são materializados quando uma integração local exigir filesystem;
-- cleanup é best-effort e não usa serviço, daemon ou tarefa agendada;
-- arquivo salvo pelo usuário não entra no lifecycle de cleanup do StepFlow;
-- validação final não encontrou bloqueador arquitetural para os contratos documentais do Bloco 10;
-- Word, impressoras, SMB e EDR corporativos permanecem gates de ambiente real;
-- limites de memória/concorrência serão medidos na fase executável, sem números arbitrários;
-- contrato Pocket exige pasta publicada no servidor + Launcher no compartilhamento + Client local preparado automaticamente, sem instalador/manualidade/elevação por estação;
-- WebView2 Fixed Version não roda por UNC/SMB e só pode ser fallback se PoC provar preparação local automática sem quebrar o contrato Pocket;
-- sem assinatura, financeiro, checklist, timeline ou página 2 por padrão.
-
-## Gate após a Etapa 11
-
-```text
-PR #24 validado
-→ ready
-→ squash merge em main
-→ remoção da branch remota
-→ remoto somente com main
-→ zero PRs abertos
-```
-
-Somente após esse gate o Bloco 11 pode ser aberto.
-
-## Pendências vigentes
-
-- parâmetros finais de autenticação;
-- Gerência × configuração da empresa;
-- Gerência × Backup;
-- regra editorial de categoria arquivada;
-- validações reais de Windows/WebView2/Word/impressoras/SMB/EDR;
-- mecanismo técnico do Bloco 11;
-- estrutura oficial e plano da Fase 2 no Bloco 12.
+Nenhuma implementação funcional oficial foi iniciada.

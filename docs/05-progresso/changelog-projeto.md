@@ -1,84 +1,87 @@
 # Changelog do Projeto — StepFlow Pocket
 
+Este arquivo registra **marcos relevantes**, não cada commit ou conversa. O histórico operacional detalhado permanece no Git/PRs; decisões vigentes ficam em `registro-de-decisoes.md`.
+
+## 2026-08-29
+
+### Bloco 10 — geração documental, impressão e Ficha compacta
+
+- Etapas 1–11 consolidadas e aprovadas;
+- geração documental Host-side por snapshot consistente + `DocumentModel`;
+- PDF de Procedimentos via Typst embutido;
+- DOCX OOXML direto em Rust sob adaptador;
+- impressão Windows pelo mesmo PDF oficial via WebView2 + `ShowPrintUI(System)`;
+- Procedimento físico A4 multipágina;
+- Ficha compacta PDF + preview do mesmo `PagedDocument`, exatamente uma A4;
+- `SHEET_OVERFLOW` sem truncamento, segunda página ou compactação automática;
+- soft limits orientativos 600/400/300/280;
+- naming persistente e política de temporários consolidados;
+- validação técnica final sem bloqueador arquitetural conhecido;
+- Word, impressoras, SMB, Windows/WebView2 e EDR mantidos como gates de ambiente real;
+- limites de performance ficaram para medição na fase executável.
+
+### Contrato Pocket reforçado
+
+- pasta pronta publicada no servidor Windows;
+- entrada do usuário pelo `StepFlowLauncher.exe` no compartilhamento;
+- Client preparado automaticamente em `%LOCALAPPDATA%`;
+- zero instalador tradicional, preparação manual ou elevação por estação no uso normal;
+- Client operacional não roda permanentemente do SMB;
+- WebView2 Fixed Version não é executado de UNC/SMB;
+- fallback WebView2 autocontido só entra após PoC provar preparação local sem instalação/admin/manualidade.
+
+### Higiene documental pós-Bloco 10
+
+- iniciado checkpoint para remover estados de transição consumidos e duplicações;
+- documentos de entrada passam a ter ownership mais estrito;
+- referências históricas a blocos já encerrados deixam de permanecer como pendências ativas;
+- histórico detalhado permanece no Git em vez de ser repetido em documentos técnicos.
+
+## 2026-08-25 a 2026-08-28
+
+### Blocos 8 e 9 — UI/UX e operação
+
+- Telas 01–15 consolidadas;
+- Reader definido como manual/livro, com `Visão geral` e uma Etapa por página lógica;
+- stepper definido como navegação, não conclusão operacional;
+- domínio `Procedimento × Atendimento/Execução × Equipamento` consolidado;
+- lifecycle `Em andamento / Concluído / Cancelado` com reabertura explícita;
+- checklist persistente somente em Atendimento;
+- `Observação do serviço` opcional por Etapa;
+- códigos `AT-000001` e `EQP-000001`;
+- permissões operacionais e reprodução histórica consolidadas;
+- Ficha definida como prestação de contas resumida ao cliente.
+
 ## 2026-08-21
 
-### Expansão de produto — categorização e registro de serviço/equipamento
+### Expansão do domínio
 
-Requisitos confirmados pelo PO:
+- categorias de Procedimentos incorporadas;
+- Atendimentos e Equipamentos separados do Procedimento oficial;
+- busca documental e operacional separadas;
+- manutenção de computadores/notebooks passou a suportar dados específicos de Equipamento;
+- requisito de Ficha compacta incorporado ao produto.
 
-- StepFlow passa a cobrir manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias e outros procedimentos internos;
-- categorização de procedimentos incorporada como requisito;
-- manutenção de computadores/notebooks precisa permitir registrar dados específicos como nome, processador, RAM, armazenamento, SO/versão, MAC/identificador útil, saúde de bateria e observações;
-- registro deve poder usar cliente e/ou OS/referência para facilitar busca;
-- precisa haver resumo do que foi feito/procedimentos realizados;
-- ficha/relatório compacto deve poder ser gerado para impressão e anexação física ao equipamento.
+### Hardening de governança
 
-Direção de modelagem criada como **PROPOSTA**, ainda aguardando aprovação do PO:
-
-- separar Procedimento × Atendimento/Execução × Equipamento;
-- categorias configuráveis, simples e potencialmente múltiplas;
-- identidade interna/código StepFlow para equipamentos, usando MAC/serial/patrimônio como busca;
-- equipamento reutilizável entre serviços;
-- múltiplos procedimentos por atendimento;
-- vínculo do atendimento à revisão exata utilizada;
-- item `Atendimentos` próprio na sidebar.
-
-Documentação atualizada:
-
-- criado `docs/01-produto/categorizacao-atendimentos-equipamentos.md` separando requisitos confirmados e propostas;
-- modelo de dados ganhou extensão **proposta**, sem migration/código;
-- arquitetura vigente registra o requisito e mantém a modelagem como pendente;
-- Blocos 8, 9 e 10 foram ampliados no planejamento para acomodar o novo requisito;
-- Shell reaberto apenas na decisão de navegação operacional;
-- roadmap, índice, decisões e AGENTS sincronizados;
-- nenhum código de produção criado.
-
-### Hardening documental para execução Codex
-
-- simulada leitura do repositório por um Codex sem memória de conversa;
-- adicionada proteção explícita contra `reset --hard`, `git clean`, `stash`, descarte ou incorporação de alterações preexistentes;
-- toda tarefa Codex que altere arquivos passa a exigir branch/base e commit SHA esperado;
-- prompt autoriza escopo, mas não revoga silenciosamente decisão consolidada;
-- leitura do Codex reduzida a camadas;
-- restaurada distinção sessão Windows normal do PO × sandbox Codex;
-- “trabalho estrutural” na Fase 1 não autoriza scaffold/runtime oficial antes do Bloco 12/Fase 2;
-- Host esclarecido: Client individual não encerra Host; ciclo central pertence ao Controller; auto-shutdown por último Client/timeout não consolidado;
-- autenticação separada entre núcleo consolidado e parâmetros pendentes;
-- Bloco 8 inclui Dashboard e limita Backup/Exportação à UX até Blocos 10/11;
-- precedência documental alinhada.
+- proteção explícita do working tree do PO;
+- branch/base/SHA obrigatórios em tarefas Codex que alterem arquivos;
+- distinção entre sessão Windows normal e sandbox Codex;
+- Fase 1 mantida documental, sem scaffold/runtime de produção prematuro.
 
 ## 2026-08-20
 
 ### Arquitetura da Fase 1
 
-- Tauri 2 validado como direção do Client Windows;
-- baseline Windows 10/11 x64 e WebView2;
-- launcher transitório + Client local versionado em `%LOCALAPPDATA%`;
+- Tauri 2 + HTML/CSS/JavaScript modular para o Client;
+- Windows 10/11 x64 + WebView2 como baseline;
+- Launcher transitório + Client local versionado;
 - Host Rust + Tokio/Axum + SQLite bundled;
-- requisito Pocket reforçado;
-- Controller central sob demanda;
-- HTTP/JSON + WebSocket e `deployment.json`;
+- Controller/Host sob demanda;
+- HTTP/JSON + WebSocket;
 - Argon2id, sessão opaca e autorização Host-side no núcleo;
-- modelo de dados com revisões imutáveis/migrations;
-- concorrência com WAL, writer coordenado, fila bounded e revisão otimista;
-- Blocos 0–7 encerrados no núcleo arquitetural;
-- Bloco 8 definido como próximo trabalho.
-
-### Provas técnicas úteis
-
-- PoC Tauri comprovou build/execução isolada sem toolchain no runtime;
-- PoC Host comprovou HTTP + SQLite bundled + execução isolada;
-- PoCs descartáveis removidas após os testes.
-
-### Limpeza documental
-
-- removidos troubleshooting, tarefas concluídas, gates descartáveis e revisões granulares consumidas;
-- documentos do Host consolidados;
-- `arquitetura-inicial.md` substituída por `arquitetura-vigente.md`;
-- índices/produto/planejamento/roadmap/decisões atualizados;
-- histórico removido permanece no Git;
-- diário preservado sem alteração por existir edição local;
-- varredura final dos Markdown ativos concluída.
+- WAL, writer coordenado, fila bounded e revisão otimista;
+- PoCs descartáveis de Client e Host validaram execução isolada sem toolchain no runtime.
 
 ## 2026-08-19
 
@@ -86,11 +89,11 @@ Documentação atualizada:
 
 - repositório e estrutura documental inicializados;
 - `AGENTS.md`, método PO + Assistente + Codex e política de capacidade criados;
-- visão de produto, arquitetura, roadmap, planejamento, decisões, diário e templates criados;
-- Fase 0 revisada/encerrada;
+- visão de produto, arquitetura, roadmap, planejamento, decisões e templates criados;
+- Fase 0 revisada e encerrada;
 - Fase 1 aberta;
-- multiusuário, modelo enxuto, metáfora de livro, perfis e exportação consolidados.
+- modularidade, multiusuário, modelo Pocket e metáfora de livro estabelecidos.
 
 ### Código
 
-Nenhuma implementação funcional oficial foi criada.
+Nenhuma implementação funcional oficial foi criada durante esses marcos da Fase 1.

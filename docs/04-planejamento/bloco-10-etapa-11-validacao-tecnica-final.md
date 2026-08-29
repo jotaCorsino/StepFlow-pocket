@@ -3,31 +3,27 @@
 **Status:** CONSOLIDADO / APROVADO PELO PO  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Data:** 2026-08-29  
-**Base de abertura:** `main` em `d74459b2b342a9fda2ccc4e0645c02613edc4fc8`
+**Base original da validação:** `main` em `d74459b2b342a9fda2ccc4e0645c02613edc4fc8`
 
 ## 1. Objetivo
 
-Fechar tecnicamente o Bloco 10 verificando se os contratos aprovados nas Etapas 1–10 possuem mecanismos implementáveis, limites explícitos e critérios de validação suficientes, sem antecipar código de produção.
+Validar tecnicamente os contratos das Etapas 1–10, identificando mecanismos implementáveis, limites e evidências necessárias sem antecipar código de produção.
 
-A Etapa 11 não reabre produto por inferência. Um requisito só retorna ao PO quando houver bloqueio técnico concreto.
+A validação não reabre produto por inferência. Requisito só volta ao PO diante de bloqueio técnico concreto.
 
 ## 2. Resultado executivo
 
 **Nenhum bloqueador arquitetural foi identificado para os contratos documentais do Bloco 10.**
 
-Há três classes de limite que permanecem conscientes:
+Permanecem três classes conscientes de limite:
 
-1. **limite de implementação** — precisa de adaptador, pinagem de versão, fila bounded, cleanup conservador etc.;
-2. **limite de medição** — memória, tamanho, concorrência, fila e timeout serão definidos por benchmark/fixtures na fase executável;
-3. **limite de ambiente real** — Word, impressoras, SMB, WebView2 corporativo, políticas Windows e EDR só podem ser fechados nas estações/LAN reais.
+1. **implementação** — adaptadores, pinagem de versões, fila bounded, cleanup conservador etc.;
+2. **medição** — memória, tamanho, concorrência, fila e timeout definidos por benchmark/fixtures;
+3. **ambiente real** — Word, impressoras, SMB, WebView2/Windows corporativo, políticas e EDR.
 
 Nenhum número de performance foi inventado nesta fase.
 
 ## 3. Gate Pocket obrigatório
-
-O critério Pocket é superior a qualquer conveniência de biblioteca.
-
-Para o StepFlow, a experiência suportada é:
 
 ```text
 pasta pronta publicada no servidor Windows
@@ -35,10 +31,9 @@ pasta pronta publicada no servidor Windows
 → usuário executa StepFlowLauncher.exe
 → Launcher prepara/valida recursos locais automaticamente
 → Client abre de %LOCALAPPDATA%
-→ Launcher encerra
 ```
 
-Uma solução **não atende ao StepFlow Pocket** se exigir, por estação:
+Uma solução não atende ao StepFlow Pocket se exigir, por estação:
 
 - instalador tradicional obrigatório;
 - configuração manual de dependência;
@@ -47,13 +42,13 @@ Uma solução **não atende ao StepFlow Pocket** se exigir, por estação:
 - Internet obrigatória para uso normal;
 - execução permanente do Client diretamente pelo SMB.
 
-A preparação automática em `%LOCALAPPDATA%` é parte do comportamento Pocket; não é tratada como instalação tradicional.
+A preparação automática em `%LOCALAPPDATA%` faz parte do comportamento Pocket.
 
 ## 4. Matriz consolidada
 
 | ID | Contrato | Estado | Consequência técnica |
 |---|---|---|---|
-| D01 | Typst embutido no Host | **VALIDADO** | usar crates oficiais sob adaptador interno; sem `typst.exe` |
+| D01 | Typst embutido no Host | **VALIDADO** | crates oficiais sob adaptador; sem `typst.exe` |
 | D02 | `World` Typst restrito | **VALIDADO** | somente template/assets/fontes autorizados; sem resolução remota arbitrária |
 | D03 | PDF 1.7 + Tagged PDF baseline | **VALIDADO** | manter baseline testado; sem promessa formal PDF/A/PDF/UA |
 | D04 | PDF/preview via mesmo `PagedDocument` | **VALIDADO** | page count é autoridade física da Ficha |
@@ -61,32 +56,30 @@ A preparação automática em `%LOCALAPPDATA%` é parte do comportamento Pocket;
 | D06 | Soft limits 600/400/300/280 | **VALIDADO COM LIMITE** | orientação editorial; ajuste somente por fixtures/evidência |
 | D07 | DOCX OOXML direto em Rust | **VALIDADO COM LIMITE** | `docx-rs` preferido sob adaptador; Word real ainda deve ser testado |
 | D08 | Arial/Consolas sem embedding | **VALIDADO COM LIMITE** | substituição pode alterar reflow; DOCX não promete paginação do PDF |
-| D09 | Transporte binário Host → Client | **VALIDADO** | artefatos como body binário; não base64 em JSON sem necessidade |
+| D09 | Transporte binário Host → Client | **VALIDADO** | body binário quando apropriado; evitar base64 em JSON sem necessidade |
 | D10 | Renderização fora da fila SQLite | **VALIDADO** | CPU/blocking separado da fila de mutações |
 | D11 | Concorrência documental bounded | **VALIDADO COM LIMITE** | admissão + semáforo/executor; números por benchmark |
-| D12 | `ShowPrintUI(System)` | **VALIDADO** | diálogo oficial do Windows; sem seletor próprio/silent print baseline |
-| D13 | Tauri → WebView2 nativo | **VALIDADO COM LIMITE** | `with_webview` + adaptador Windows; pinagem/teste da família Tauri/Wry/WebView2 |
+| D12 | `ShowPrintUI(System)` | **VALIDADO** | diálogo oficial do Windows; sem silent print/seletor próprio baseline |
+| D13 | Tauri → WebView2 nativo | **VALIDADO COM LIMITE** | `with_webview` + adaptador Windows; pinagem/teste Tauri/Wry/WebView2 |
 | D14 | Lifetime do PDF durante impressão | **PENDENTE DE AMBIENTE REAL** | validar load/print/cancel/close/cleanup em Windows real |
-| D15 | Naming Windows | **VALIDADO** | sanitização e extensão controlada permanecem |
-| D16 | Long paths | **VALIDADO COM LIMITE** | depende também de manifesto/política Windows; nomes sugeridos continuam manejáveis |
+| D15 | Naming Windows | **VALIDADO** | sanitização e extensão controlada |
+| D16 | Long paths | **VALIDADO COM LIMITE** | depende também de manifesto/política Windows |
 | D17 | Save local NTFS | **VALIDADO COM LIMITE** | helper no mesmo destino + write/flush/close + promoção; sem promessa ACID absoluta |
 | D18 | Save em SMB | **PENDENTE DE AMBIENTE REAL** | testar permissões, rename/replace, queda de rede, quota e pós-falha |
 | D19 | Temp dir por usuário | **VALIDADO** | API OS/Tauri; sem path hardcoded |
-| D20 | Isolamento por Client | **VALIDADO COM LIMITE** | subdiretório/ID próprios + `active.lock`; cleanup conservador |
+| D20 | Isolamento por Client | **VALIDADO COM LIMITE** | subdiretório/ID próprios + sinal de atividade equivalente |
 | D21 | Reparse-safe scavenging | **VALIDADO** | nunca seguir reparse para fora da raiz gerenciada; incerteza = skip |
 | D22 | Locks WebView2/AV | **VALIDADO COM LIMITE** | cleanup best-effort; sem kill/unlock forçado/alteração de ACL |
 | D23 | Word corporativo | **PENDENTE DE AMBIENTE REAL** | testar versões realmente existentes |
 | D24 | Impressoras/driver corporativo | **PENDENTE DE AMBIENTE REAL** | impressora física + Microsoft Print to PDF + cancelamento/falhas |
 | D25 | EDR/antivírus corporativo | **PENDENTE DE AMBIENTE REAL** | validar execução, handles e cleanup |
 | D26 | WebView2 Evergreen existente | **VALIDADO COM LIMITE** | preferível quando presente/compatível; presença real deve ser detectada |
-| D27 | WebView2 Fixed Version por UNC/SMB | **NÃO UTILIZAR** | Microsoft documenta que Fixed Version não roda de localização de rede/UNC |
-| D28 | Fallback WebView2 autocontido local | **VALIDADO COM LIMITE / PoC OBRIGATÓRIA** | só adotar se funcionar em `%LOCALAPPDATA%` sem instalação, elevação ou ação manual |
+| D27 | WebView2 Fixed Version por UNC/SMB | **NÃO UTILIZAR** | Fixed Version não roda de localização de rede/UNC |
+| D28 | Fallback WebView2 autocontido local | **VALIDADO COM LIMITE / PoC OBRIGATÓRIA** | só adotar se funcionar em `%LOCALAPPDATA%` sem instalação/admin/manualidade |
 | D29 | Windows 10 + Fixed Runtime moderno | **VALIDADO COM LIMITE / PoC OBRIGATÓRIA** | requisitos ACL/AppContainer precisam ser automatizáveis no perfil do usuário |
-| D30 | Contrato Pocket zero instalação/manualidade | **VALIDADO COMO GATE** | qualquer solução que exija setup/admin manual volta à arquitetura |
+| D30 | Contrato Pocket zero instalação/manualidade | **VALIDADO COMO GATE** | solução que exija setup/admin manual retorna à arquitetura |
 
 ## 5. Pipeline documental
-
-Baseline aprovado:
 
 ```text
 Client solicita fonte + revisão esperada
@@ -94,12 +87,12 @@ Client solicita fonte + revisão esperada
 → captura snapshot consistente
 → materializa DocumentModel
 → encerra leitura/transação SQLite
-→ admite renderização em capacidade bounded
+→ admite renderização bounded
 → renderer PDF/DOCX trabalha fora da fila de mutações
 → Host devolve bytes
 ```
 
-Para Typst:
+Typst:
 
 ```text
 DocumentModel
@@ -109,17 +102,9 @@ DocumentModel
 → PDF / SVG
 ```
 
-Não há consulta SQLite durante renderização nem recurso remoto arbitrário.
-
-### Toolchain
-
-Versões de crates serão pinadas em conjunto na fundação executável. O MSRV efetivo será o maior exigido pelas dependências escolhidas.
-
-Na referência verificada em 2026-08-29, a família atual de `typst-pdf` impõe MSRV superior a toolchains antigas; isso afeta apenas o **ambiente de build**, nunca a máquina central de produção ou as estações.
+Versões de crates serão pinadas em conjunto na fundação executável. O MSRV efetivo será o maior exigido pelas dependências escolhidas e afeta ambiente de build, não estações/produção.
 
 ## 6. Ficha A4
-
-A autoridade final continua sendo o layout real do Typst:
 
 ```text
 1 página
@@ -129,10 +114,10 @@ A autoridade final continua sendo o layout real do Typst:
 → SHEET_OVERFLOW
 ```
 
-Fixtures futuras devem cobrir pelo menos:
+Fixtures futuras devem cobrir:
 
 - sem Equipamento;
-- campos opcionais vazios;
+- opcionais vazios;
 - 0/1/2/3+ MACs;
 - Unicode/acentos;
 - strings estruturadas longas;
@@ -141,13 +126,13 @@ Fixtures futuras devem cobrir pelo menos:
 - caso determinístico de duas páginas;
 - ausência de truncamento/redução automática.
 
-Os valores 600 / 400 / 300 / 280 continuam soft limits, não hard limits de domínio.
+Soft limits 600/400/300/280 continuam orientação, não hard limit de domínio.
 
 ## 7. DOCX
 
 OOXML/WordprocessingML direto em Rust permanece viável sem Word/COM, LibreOffice ou conversão de PDF.
 
-O adaptador deve isolar `docx-rs` do domínio. A validação corporativa futura deve confirmar:
+O adaptador deve isolar `docx-rs` do domínio. Validação corporativa futura deve confirmar:
 
 - abertura nas versões reais do Word;
 - texto/listas/numeração editáveis;
@@ -158,38 +143,32 @@ O adaptador deve isolar `docx-rs` do domínio. A validação corporativa futura 
 
 ## 8. Impressão Windows
 
-Fluxo validado arquiteturalmente:
-
 ```text
 PDF oficial
 → Client Windows
 → recurso local transitório quando necessário
 → WebView2 dedicada/transitória
-→ acesso nativo via adapter
+→ acesso nativo via adaptador
 → ShowPrintUI(System)
 ```
 
-O método genérico de impressão do Tauri não deve substituir por inferência esse contrato. O adapter Windows deve ficar isolado e a família Tauri/Wry/WebView2 usada por ele deve ser pinada/testada.
+O método genérico de impressão do Tauri não substitui por inferência esse contrato. A família Tauri/Wry/WebView2 usada pelo adaptador deve ser pinada/testada.
 
-O lifetime exato do PDF durante diálogo/spooler continua ensaio Windows real.
+Lifetime exato do PDF durante diálogo/spooler permanece ensaio Windows real.
 
 ## 9. WebView2 e Pocket
 
-### 9.1 Evergreen
+### Evergreen
 
-Quando um Evergreen Runtime compatível já existe na estação, ele é a opção preferível porque recebe servicing de segurança do ecossistema Microsoft e reduz o pacote do StepFlow.
+Quando compatível e já presente, é preferível. Launcher/Client deve detectar disponibilidade real; não assumir presença em todo Windows corporativo.
 
-O Launcher/Client deve detectar disponibilidade real; não assumir cegamente presença em toda edição corporativa de Windows.
+### Fixed Version
 
-### 9.2 Fixed Version
-
-Fixed Version pode ser distribuído junto da aplicação, porém:
-
-- não pode rodar diretamente de localização de rede/UNC;
-- precisa ser mantido/atualizado pelo distribuidor da aplicação;
+- não pode rodar diretamente de UNC/SMB;
+- precisa ser mantido/atualizado pelo distribuidor;
 - em Windows 10, versões modernas para app Win32 unpackaged possuem requisitos adicionais de ACL/AppContainer.
 
-Portanto, um eventual fallback é necessariamente local:
+Fallback, se necessário:
 
 ```text
 share
@@ -199,22 +178,22 @@ share
 → iniciar Client local
 ```
 
-### 9.3 PoC obrigatória do fallback
+### PoC obrigatória
 
-Antes de afirmar suporte Pocket para uma estação sem Evergreen utilizável, a Fase 2 deve provar em PoC descartável:
+Antes de afirmar suporte Pocket para estação sem Evergreen utilizável, provar em PoC descartável:
 
 - Windows 10 x64 alvo;
 - Windows 11 x64;
 - usuário padrão, sem elevação;
 - share acessível;
-- Client + Fixed Runtime copiados para `%LOCALAPPDATA%`;
-- configuração do runtime local sem instalador;
-- requisitos ACL realizados automaticamente, se necessários;
+- Client + Fixed Runtime em `%LOCALAPPDATA%`;
+- configuração sem instalador;
+- ACL necessária automática, se aplicável;
 - funcionamento sem Internet;
-- atualização de versão sem modificar registro/PATH global;
-- remoção/rollback da versão local sem afetar outros aplicativos.
+- atualização sem registro/PATH global;
+- rollback/remoção sem afetar outros aplicativos.
 
-Se uma estação que deva ser suportada exigir instalação, admin ou preparação manual, o fallback é **BLOQUEADOR** até redesign. Não se reduz o requisito Pocket para acomodar a dependência.
+Se estação que deva ser suportada exigir instalação, admin ou preparação manual, o fallback fica bloqueado até redesign.
 
 ## 10. Filesystem e temporários
 
@@ -225,7 +204,7 @@ bytes completos
 → helper opaco no diretório escolhido
 → write
 → flush/close
-→ promoção/replace após fluxo de confirmação
+→ promoção/replace após fluxo aplicável
 → sucesso
 ```
 
@@ -235,19 +214,15 @@ Temporários:
 <temp do usuário>/StepFlow/artifacts/<client-instance-id>/
 ```
 
-Regras:
-
 - nomes opacos;
-- uma instância não limpa outra potencialmente ativa;
-- `active.lock`/mecanismo equivalente mantém sinal explícito de atividade;
+- instância não limpa outra potencialmente ativa;
+- mecanismo equivalente a sinal de atividade pode ser usado;
 - reparse point nunca é seguido para fora da raiz gerenciada;
 - lock de WebView2/EDR gera cleanup best-effort;
-- falha de cleanup não retroage sucesso funcional já obtido;
+- falha de cleanup não retroage sucesso funcional;
 - sem daemon, serviço ou Task Scheduler para limpeza.
 
 ## 11. Performance e backpressure
-
-Nenhum valor é congelado sem medição.
 
 Na fundação executável medir:
 
@@ -263,13 +238,11 @@ Esses limites são técnicos e independentes da regra de uma A4.
 
 ## 12. Gates de ambiente real
 
-Não bloqueiam o fechamento arquitetural do Bloco 10, mas devem ser executados antes do deployment correspondente:
-
 ### Windows/WebView2
 
-- edições/versões reais de Windows 10/11;
+- versões/edições reais de Windows 10/11;
 - Evergreen disponível/compatível;
-- PoC de fallback local sem instalação/elevação;
+- PoC de fallback local;
 - execução do Launcher pelo compartilhamento;
 - cenário sem Internet.
 
@@ -302,51 +275,22 @@ Não bloqueiam o fechamento arquitetural do Bloco 10, mas devem ser executados a
 - política de execução de binário vindo do share;
 - long paths/políticas relevantes.
 
-Quando não for possível testar fora da empresa, registrar `NÃO APLICÁVEL NESTE AMBIENTE` no ensaio local e manter o gate corporativo aberto.
+Fora da empresa, registrar `NÃO APLICÁVEL NESTE AMBIENTE` no ensaio local e manter gate corporativo aberto.
 
-## 13. Critério de encerramento do Bloco 10
+## 13. Encerramento
 
-Com esta matriz aprovada, o Bloco 10 está documentalmente consolidado porque:
+A Etapa 11 e o Bloco 10 estão documental e operacionalmente encerrados no repositório.
 
-1. todas as Etapas 1–10 possuem mecanismo técnico identificável;
-2. não há bloqueador arquitetural conhecido;
-3. limites estão explícitos;
-4. medições não foram substituídas por números arbitrários;
-5. dependências do ambiente real estão separadas;
-6. o contrato Pocket foi preservado como gate superior;
-7. nenhum código de produção, migration ou scaffold foi criado nesta etapa.
-
-O encerramento **operacional** ainda exige o gate Git normal do PR da Etapa 11: squash merge, remoção da branch e remoto somente com `main` e zero PRs abertos.
+A evidência histórica do PR/branch permanece no Git; não é requisito técnico ativo.
 
 ## 14. Fontes primárias verificadas em 2026-08-29
 
-- Typst PDF: https://typst.app/docs/reference/pdf/
-- Typst compile/World/PagedDocument: https://docs.rs/typst/latest/typst/ ; https://docs.rs/typst-layout/latest/typst_layout/
-- `typst-svg`: https://docs.rs/typst-svg/latest/typst_svg/
-- `docx-rs`: https://docs.rs/docx-rs/latest/docx_rs/
-- Tauri WebView/`with_webview`: https://docs.rs/tauri/latest/tauri/webview/struct.WebviewWindow.html
-- Tauri WebView2 distribution: https://v2.tauri.app/distribute/windows-installer/
-- Microsoft WebView2 distribution/Fixed Version: https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution
-- Microsoft WebView2 Evergreen vs Fixed: https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/evergreen-vs-fixed-version
-- Microsoft WebView2 printing: https://learn.microsoft.com/en-us/microsoft-edge/webview2/how-to/print
-- Windows filename/path rules: https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file
-- Windows long paths: https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
-- Windows filesystem primitives: `ReplaceFileW`, `FlushFileBuffers`
-- Windows reparse points: https://learn.microsoft.com/en-us/windows/win32/fileio/reparse-point-operations
-- Tokio `spawn_blocking`: https://docs.rs/tokio/latest/tokio/task/fn.spawn_blocking.html
-- Axum responses: https://docs.rs/axum/latest/axum/response/trait.IntoResponse.html
-
-## 15. Não objetivos
-
-A Etapa 11 não autoriza:
-
-- scaffold/runtime oficial;
-- migrations;
-- implementação do renderer;
-- implementação do fluxo de impressão;
-- instalador obrigatório por estação;
-- serviço/daemon/watchdog;
-- novo formato de exportação;
-- alteração de UX sem bloqueador técnico;
-- sincronização destrutiva do checkout local;
-- valores arbitrários de performance tratados como contrato.
+- Typst PDF: `https://typst.app/docs/reference/pdf/`
+- Typst crates/docs: `https://docs.rs/typst/latest/typst/`
+- `typst-svg`: `https://docs.rs/typst-svg/latest/typst_svg/`
+- `docx-rs`: `https://docs.rs/docx-rs/latest/docx_rs/`
+- Tauri WebView/`with_webview`: `https://docs.rs/tauri/latest/tauri/webview/struct.WebviewWindow.html`
+- Tauri Windows/WebView2 distribution: `https://v2.tauri.app/distribute/windows-installer/`
+- Microsoft WebView2 distribution/Fixed Version: documentação oficial Microsoft Learn
+- Microsoft WebView2 `ShowPrintUI`: documentação oficial Microsoft Learn
+- Microsoft Windows naming/long paths/filesystem: documentação oficial Microsoft Learn

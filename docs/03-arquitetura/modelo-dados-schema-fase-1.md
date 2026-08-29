@@ -1,7 +1,9 @@
-# Modelo de Dados, Schema, Migrations e Histórico — StepFlow
+# Modelo de Dados, Schema, Migrations e Histórico — StepFlow Pocket
 
 **Status:** NÚCLEO + EXTENSÃO OPERACIONAL CONSOLIDADOS CONCEITUALMENTE PARA A FASE 1  
-**Atualização:** 2026-08-28
+**Atualização:** 2026-08-29
+
+Este documento define **semântica e invariantes conceituais**. Nomes físicos finais de tabelas/colunas e migrations oficiais serão fechados no gate de estrutura/Fase 2.
 
 ## Princípios
 
@@ -16,13 +18,15 @@
 - migrations versionadas e imutáveis após publicação;
 - revisões de Procedimento são imutáveis;
 - concorrência relevante usa revisão otimista/controle equivalente;
-- nenhuma migration é criada durante esta fase documental.
+- nenhuma migration oficial é criada durante esta fase documental.
 
 ## Usuários, sessões e empresa
 
-`users`, `sessions` e `company_settings` seguem os contratos vigentes de autenticação, Tela 10/11/12 e configuração da empresa.
+`users`, `sessions` e `company_settings` seguem os contratos vigentes de autenticação, Telas 10–12 e configuração da empresa.
 
-## Processos / Procedimentos
+Parâmetros finais de segurança permanecem pendentes e não devem ser inferidos pelo schema.
+
+## Procedimentos e revisões
 
 `processes` mantém identidade estável e ponteiros para revisões:
 
@@ -38,7 +42,7 @@ archived_at / archived_by_user_id
 
 `process_revisions` preserva snapshots imutáveis. `revision_no` técnico permanece separado de `display_version` editorial.
 
-Cada revisão possui `process_stages` e `stage_blocks` ordenados. Tipos iniciais:
+Cada revisão possui Etapas e blocos ordenados. Tipos iniciais:
 
 ```text
 paragraph
@@ -50,9 +54,9 @@ command
 code
 ```
 
-Checklist aqui é **definição documental**. Estado de execução e observações feitas durante o serviço ficam separados no domínio do Atendimento.
+Checklist aqui é definição documental. Estado de execução fica no domínio do Atendimento.
 
-## Categorias de Procedimentos
+## Categorias
 
 Conceitualmente:
 
@@ -67,13 +71,7 @@ process_categories
 - updated_at / updated_by_user_id
 ```
 
-Relação múltipla:
-
-```text
-process_category_assignments
-- process_id
-- category_id
-```
+Relação múltipla conceitual entre Procedimento e Categoria.
 
 Regras:
 
@@ -82,11 +80,11 @@ Regras:
 - categoria arquivada não é opção normal para nova associação;
 - sem hierarquia complexa inicialmente;
 - índices adequados para filtro/listagem;
-- preset de gestão: ADM/Gerência; autorização real por capacidade.
+- gestão por ADM/Gerência.
 
-Permanece pendente antes da implementação editorial a regra exata de nova revisão de Procedimento que ainda carregue categoria arquivada.
+Pendente: regra editorial de nova revisão ainda carregando categoria arquivada.
 
-## Equipamentos
+## Equipamento
 
 Equipamento é opcional e reutilizável entre Atendimentos.
 
@@ -114,18 +112,9 @@ equipment
 - updated_at / updated_by_user_id
 ```
 
-`equipment_id` é identidade canônica. `equipment_code` é referência legível gerada pelo Host no formato inicial:
+`equipment_id` é identidade canônica. `equipment_code` usa formato inicial `EQP-000001`, gerado pelo Host, com seis dígitos e gaps permitidos.
 
-```text
-EQP-000001
-```
-
-- seis dígitos;
-- gaps permitidos;
-- sequência por implantação/banco ativo;
-- não editável pelo Client.
-
-Múltiplos identificadores de rede ficam separados:
+Múltiplos identificadores de rede ficam separados conceitualmente:
 
 ```text
 equipment_network_identifiers
@@ -136,15 +125,13 @@ equipment_network_identifiers
 - label NULL
 ```
 
-MAC não é chave canônica. Serial/patrimônio também não se tornam identidade exclusiva por inferência.
-
-Campos não aplicáveis permanecem nulos.
+MAC, serial e patrimônio não são identidade canônica exclusiva por inferência.
 
 ## Atendimento / Execução
 
 `service_records` representa ocorrência real de trabalho.
 
-Modelo conceitual atualizado:
+Modelo conceitual:
 
 ```text
 service_records
@@ -165,7 +152,7 @@ service_records
 - updated_at / updated_by_user_id
 ```
 
-Status inicial consolidado:
+Status:
 
 ```text
 IN_PROGRESS   → Em andamento
@@ -173,24 +160,12 @@ COMPLETED     → Concluído
 CANCELLED     → Cancelado
 ```
 
-Os nomes físicos/enum internos podem variar na implementação, desde que a semântica permaneça estável.
-
-Código inicial:
-
-```text
-AT-000001
-```
-
-- gerado somente no primeiro save aceito;
-- seis dígitos;
-- gaps permitidos;
-- não editável;
-- não substitui `service_record_id`.
+Código inicial `AT-000001`, gerado no primeiro save aceito, com seis dígitos, gaps permitidos e sem reutilização após cancelamento.
 
 ## Lifecycle do Atendimento
 
 ```text
-novo rascunho Client
+rascunho Client
 → primeiro save Host
 → Em andamento
    ├─→ Concluído
@@ -201,35 +176,31 @@ Concluído/Cancelado
 → Em andamento
 ```
 
-Regras de persistência:
+Regras:
 
 - abrir tela não cria registro;
 - `started_at` nasce no Host no primeiro save;
-- `completed_at` representa a conclusão atualmente aplicável quando o registro está concluído;
 - cancelamento preserva código e dados;
-- reabertura não apaga eventos históricos anteriores;
-- conclusão/cancelamento/reabertura incrementam/revalidam revisão do recurso;
+- reabertura não apaga lifecycle anterior;
+- conclusão/cancelamento/reabertura são mutações versionadas;
 - não há exclusão física normal de Atendimento.
 
 ## Histórico de lifecycle
 
-Além do estado atual, lifecycle relevante precisa ficar auditável.
-
-Pode ser representado por `audit_events` e/ou estrutura operacional dedicada, desde que preserve pelo menos:
+Histórico relevante pode ser representado por `audit_events` e/ou estrutura operacional dedicada, desde que preserve pelo menos:
 
 - criação;
 - conclusão;
 - reabertura;
-- cancelamento;
-- motivo de cancelamento;
+- cancelamento + motivo;
 - mudanças relevantes de responsável;
 - vínculos relevantes de Equipamento/Procedimento.
 
-Não é requisito criar uma timeline persistente de cada alteração trivial de campo, checkbox ou edição textual.
+Não é requisito persistir timeline de cada alteração trivial ou checkbox.
 
-## Procedimentos utilizados em Atendimento
+## Procedimentos utilizados no Atendimento
 
-O vínculo preserva a revisão exata:
+Vínculo conceitual:
 
 ```text
 service_record_processes
@@ -245,17 +216,13 @@ service_record_processes
 - added_by_user_id
 ```
 
-Regras:
-
 - publicação futura não altera vínculo;
-- Funcionário seleciona normalmente revisão publicada;
-- ADM/Gerência podem selecionar explicitamente outra revisão que já possam ler;
+- Funcionário usa normalmente revisão publicada;
+- ADM/Gerência podem selecionar explicitamente outra revisão autorizada;
 - revisão histórica/não publicada nunca é escolhida silenciosamente;
-- remoção de vínculo só ocorre em Atendimento editável e é auditável.
+- remoção só ocorre em Atendimento editável e preserva auditoria necessária.
 
 ## Checklist operacional persistente
-
-O estado operacional é separado da revisão documental.
 
 Modelo conceitual possível:
 
@@ -271,19 +238,11 @@ service_record_checklist_items
 - row_revision
 ```
 
-A implementação pode ajustar nomes/normalização, mas deve preservar:
-
-- vínculo com a revisão/origem imutável;
-- estado marcado/desmarcado;
-- usuário/data quando aplicável;
-- snapshot textual quando necessário para integridade histórica;
-- controle concorrente por item ou equivalente.
+A implementação física deve preservar vínculo à revisão/origem imutável, estado marcado, autoria/data quando aplicável, snapshot necessário e controle concorrente por item/equivalente.
 
 Checklist não pertence ao `process_revision` como estado mutável.
 
 ## Observações de serviço por Etapa
-
-Durante a execução de uma revisão vinculada, cada Etapa pode possuir uma observação operacional opcional do técnico.
 
 Modelo conceitual possível:
 
@@ -299,54 +258,45 @@ service_record_stage_notes
 - updated_at / updated_by_user_id
 ```
 
-A forma física pode variar, mas a implementação precisa preservar:
+Deve preservar:
 
-- vínculo inequívoco ao Atendimento, ao `service_record_process` e à Etapa da revisão exata;
-- texto de execução separado do conteúdo oficial do Procedimento;
-- ausência de registro/saída visual quando não houver texto relevante, conforme estratégia física escolhida;
-- autoria e timestamps quando necessários para histórico/auditoria;
-- controle concorrente por observação/Etapa ou equivalente;
-- edição apenas enquanto o Atendimento estiver em estado editável e a sessão possuir capacidade;
-- somente leitura em `Concluído`/`Cancelado` até eventual reabertura;
-- nenhum autosave implícito é exigido por este modelo.
-
-A observação não é comentário social, chat, bloco documental nem item de checklist.
-
-Quando um Atendimento é concluído, o estado final aplicável dessas observações precisa participar da reprodução histórica da ficha. Se uma reabertura permitir alterações posteriores, conclusões anteriores não podem ser reescritas silenciosamente; a implementação física deve preservar snapshot/versionamento/evento equivalente suficiente para reproduzir o estado histórico aplicável.
+- vínculo inequívoco ao Atendimento, revisão e Etapa;
+- texto separado do Procedimento oficial;
+- autoria/timestamps quando necessários;
+- controle concorrente por Etapa/equivalente;
+- edição somente quando Atendimento estiver editável/autorizado;
+- somente leitura em `Concluído`/`Cancelado` até reabertura;
+- nenhum autosave implícito;
+- reprodução histórica do estado final aplicável.
 
 ## Progresso operacional
 
-Progresso é derivado, não armazenado como percentual arbitrário:
+Derivado, não armazenado como percentual arbitrário:
 
 ```text
 checked_count / total_checklist_items
 ```
 
-- etapas visitadas não contam;
-- observações de serviço não contam como progresso;
+- Etapas visitadas não contam;
+- observações não contam;
 - revisão sem checklist não gera `0%` artificial;
 - 100% não conclui Atendimento automaticamente.
 
-Se cache de contagem for usado futuramente por desempenho, continua derivável do estado oficial.
+## Concorrência granular
 
-## Concorrência do checklist e das observações
-
-Checklist e observações de serviço não devem depender da revisão global do Atendimento para cada alteração.
-
-Direção consolidada:
-
-- item de checklist possui `row_revision` próprio ou controle atômico equivalente;
-- observação por Etapa possui `row_revision` próprio ou controle equivalente;
-- usuários alterando itens/Etapas independentes não devem conflitar globalmente;
-- alteração concorrente do mesmo recurso recebe resultado determinístico/conflito apropriado;
+- Atendimento possui revisão otimista própria;
+- Equipamento possui `row_revision`/equivalente;
+- checklist possui revisão/controle por item;
+- observação possui revisão/controle por Etapa;
+- recursos independentes não devem conflitar globalmente;
 - eventos só são emitidos pós-commit;
-- evento remoto nunca sobrescreve edição local silenciosamente.
+- evento remoto não sobrescreve edição local silenciosamente.
 
-## Snapshot histórico do Equipamento na conclusão
+## Snapshot histórico do Equipamento
 
-Mudanças posteriores do cadastro global não podem reescrever Atendimento concluído/ficha final.
+Mudanças posteriores no cadastro global não podem reescrever Atendimento concluído/Ficha histórica.
 
-A conclusão precisa congelar a projeção de Equipamento relevante ao estado final. Conceitualmente, o snapshot deve poder preservar quando aplicável:
+Ao concluir, preservar quando aplicável a projeção de:
 
 ```text
 equipment_id
@@ -365,23 +315,9 @@ equipment_id
  observations
 ```
 
-A persistência física pode ser:
+A forma física pode ser snapshot estruturado, campos normalizados ou mecanismo versionado equivalente. O requisito é reprodução histórica determinística, não tabela de apresentação.
 
-- snapshot estruturado ligado ao evento/conclusão;
-- campos snapshot normalizados necessários;
-- outra forma versionada/documentada.
-
-Não criar tabela meramente para apresentação. O requisito é **reprodução histórica determinística**, não uma forma física específica.
-
-Cada nova conclusão após reabertura gera novo estado final aplicável sem apagar conclusões anteriores da auditoria/histórico.
-
-## Equipamento arquivado
-
-- não aparece para novo vínculo normal;
-- não pode ser arquivado enquanto vinculado a Atendimento `Em andamento`;
-- histórico permanece;
-- reativação depende de capacidade;
-- arquivar não invalida snapshots de Atendimentos concluídos.
+Cada nova conclusão após reabertura produz novo estado final aplicável sem apagar os anteriores da auditoria.
 
 ## Busca
 
@@ -390,7 +326,7 @@ Inicialmente por campos normalizados/índices SQLite, sem engine externo.
 Procedimentos:
 
 - código;
-- título/termos compatíveis;
+- título/termos;
 - área/departamento;
 - categoria.
 
@@ -407,39 +343,18 @@ Atendimentos/Equipamentos:
 - status;
 - `started_at` para período/ordenação.
 
-FTS5 só entra se a necessidade real justificar.
+FTS5 só entra se necessidade real justificar.
 
 ## Ficha compacta
 
-A ficha é uma **prestação de contas resumida ao cliente**, derivada do estado confirmado/histórico aplicável de:
+A Ficha é projeção resumida derivada do estado confirmado/histórico de Atendimento, Equipamento e observações aplicáveis.
 
-- identidade da empresa;
-- Atendimento e identificação do serviço;
-- responsável/técnico e datas aplicáveis;
-- Equipamento ou snapshot histórico aplicável;
-- características relevantes do dispositivo, como processador, RAM, armazenamento, SO quando útil, bateria quando aplicável e observações do Equipamento;
-- `Resumo do trabalho`;
-- observações gerais do Atendimento;
-- observações de serviço por Etapa que tenham conteúdo.
-
-Os vínculos/revisões de Procedimentos, checklist, progresso e auditoria continuam sendo fontes internas importantes do histórico, mas **não são conteúdo impresso padrão da prestação de contas**.
-
-Não criar tabela exclusiva apenas para apresentação.
-
-O Bloco 10 / Etapa 6 consolidou PDF próprio e preview derivado do mesmo layout. Etapas seguintes ainda fecham template físico, limites textuais e tratamento de excesso na única A4.
-
-## Histórico e auditoria
-
-Histórico oficial combina:
-
-1. snapshots imutáveis de Procedimentos;
-2. vínculos/snapshots operacionais do Atendimento;
-3. checklist operacional persistente;
-4. observações de serviço por Etapa;
-5. projeções finais de Equipamento quando concluído;
-6. eventos append-only em `audit_events`.
-
-Nunca guardar senha, token reutilizável ou segredo em auditoria.
+- não criar tabela exclusiva apenas para apresentação;
+- vínculos/revisões, checklist, progresso e auditoria permanecem fontes internas, mas não conteúdo padrão impresso;
+- PDF e preview derivam do mesmo `PagedDocument`;
+- resultado válido exige exatamente uma A4;
+- soft limits 600/400/300/280 orientam densidade, não storage;
+- `SHEET_OVERFLOW` não altera/trunca dado operacional.
 
 ## Arquivos persistentes
 
@@ -450,15 +365,7 @@ data\
 └── avatars\
 ```
 
-Backup inclui banco e arquivos administrados.
-
-## Arquivamento/desativação
-
-- Processos: arquivar;
-- categorias: arquivar;
-- Equipamentos: arquivar quando permitido;
-- usuários: desativar;
-- revisões/auditoria/Atendimentos históricos: não excluir por operação normal.
+Backup inclui banco e arquivos administrados conforme contrato técnico final do Bloco 11.
 
 ## Migrations
 
@@ -468,15 +375,25 @@ Usar migrations numeradas/versionadas e `schema_migrations` com identificador, n
 - Host aplica pendências na inicialização;
 - usar transação quando SQLite permitir;
 - falha bloqueia readiness;
-- correção exige nova migration.
-
-Antes de migration incompatível, backup consistente.
+- correção exige nova migration;
+- antes de migration incompatível, exigir backup consistente conforme política vigente.
 
 ## Rollback
 
 - binário anterior só volta sem Restore quando suporta schema atual;
 - caso contrário, restaurar backup correspondente;
 - não usar down migration destrutiva automática por conveniência.
+
+## Pendências antes da implementação física
+
+- forma física final do snapshot de Equipamento/conclusão;
+- forma física final para preservar observações em conclusões históricas após reabertura;
+- nomes físicos finais de tabelas/colunas;
+- regra editorial de nova revisão com categoria arquivada;
+- migrations oficiais, somente após gate de estrutura;
+- integração precisa do pacote de Backup/Restore após Bloco 11.
+
+Essas pendências não reabrem regras funcionais já consolidadas.
 
 ## Fora do schema inicial
 
@@ -489,14 +406,3 @@ Antes de migration incompatível, backup consistente.
 - workflow complexo/SLA;
 - fila distribuída;
 - banco externo.
-
-## Pendências antes da implementação correspondente
-
-- forma física final do snapshot de Equipamento/conclusão;
-- forma física final para preservar observações de serviço em conclusões históricas após reabertura;
-- nomes físicos finais de tabelas/colunas de checklist/observações/lifecycle;
-- limites numéricos dos textos destinados à ficha, no Bloco 10;
-- regra editorial de nova revisão com categoria arquivada;
-- migrations oficiais, somente após o gate de estrutura da Fase 1.
-
-Essas pendências não reabrem as regras funcionais já consolidadas.

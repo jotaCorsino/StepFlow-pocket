@@ -1,303 +1,127 @@
-# Tela 09 — Atendimento / Execução + Equipamento
+# Tela 09 — Atendimento / Execução / Equipamento
 
 ## 1. Identificação
 
-- código/nome da tela: Tela 09 — Atendimento / Execução + Equipamento;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
-- bloco original: Fase 1 — Bloco 8 (UI/UX);
-- atualização operacional: Bloco 9 + Bloco 10 / Etapa 6;
-- última consolidação: 2026-08-28.
+- domínio: Atendimento/Execução + Equipamento opcional;
+- atualização: 2026-08-29.
 
 ## 2. Objetivo
 
-Ser o workspace principal de um Atendimento real, reunindo numa única página vertical:
+Ser o workspace operacional do serviço real, sem misturar edição do Procedimento oficial com dados do Atendimento.
 
-- lifecycle/status;
-- dados básicos do Atendimento;
+A tela permite:
+
+- criar e editar Atendimento;
+- vincular Equipamento opcional;
+- vincular uma ou mais revisões de Procedimento;
+- abrir o Reader em contexto operacional;
+- acompanhar checklist/progresso;
+- registrar resumo e observações;
+- concluir/cancelar/reabrir conforme capacidade;
+- gerar/reimprimir Ficha compacta.
+
+## 3. Princípios de UX
+
+- workspace vertical único;
+- baixa densidade textual;
+- ações críticas contextuais, sem painel burocrático;
+- estado/lifecycle sempre compreensível;
+- Equipamento é opcional;
+- checklist e observações operacionais não alteram Procedimento oficial;
+- autorização real é Host-side;
+- nenhum autosave/offline queue por inferência.
+
+## 4. Rascunho e primeiro save
+
+`Novo atendimento` começa somente em memória.
+
+```text
+Novo atendimento
+→ preencher dados
+→ primeiro save aceito pelo Host
+→ cria registro oficial
+→ código AT-000001
+→ status Em andamento
+```
+
+Sair antes do primeiro save não cria Atendimento.
+
+O código é Host-only, seis dígitos, gaps permitidos e não editável.
+
+## 5. Estrutura da tela
+
+Ordem conceitual:
+
+```text
+cabeçalho do Atendimento
+→ identificação / responsável / referência
+→ Equipamento opcional
+→ Procedimentos utilizados
+→ Resumo do trabalho / observações
+→ ações de lifecycle
+→ Ficha / histórico compacto quando aplicável
+```
+
+Evitar múltiplos painéis competindo pela atenção.
+
+## 6. Campos do Atendimento
+
+Quando aplicável:
+
+- código `AT-...` somente leitura;
+- OS/referência externa opcional;
+- cliente/solicitante opcional;
 - responsável/técnico;
-- cliente/solicitante e OS/referência opcionais;
+- status;
+- data/início aplicável;
+- `Resumo do trabalho`;
+- observação geral;
 - Equipamento opcional;
-- Procedimentos/revisões utilizados;
-- progresso/checklist operacional;
-- resumo do trabalho;
-- observações gerais;
-- observações de serviço registradas durante as Etapas;
-- histórico operacional compacto;
-- `Ficha / Imprimir`.
+- Procedimentos/revisões utilizados.
 
-A tela não transforma o StepFlow em CRM, estoque, RMM ou sistema completo de chamados.
+Responsável e `Resumo do trabalho` são obrigatórios para conclusão, não necessariamente para o primeiro save.
 
-## 3. Acesso e capacidades
+## 7. Soft limits de texto
 
-Preset inicial:
+Orientativos para favorecer a Ficha compacta:
 
-- ADM: consulta/criação/gestão ampla;
-- Gerência: consulta/criação/gestão ampla, sem administrar ADM;
-- Funcionário: consulta/criação e edição/conclusão do Atendimento do qual é responsável.
+- `Resumo do trabalho`: 600 caracteres;
+- observação geral do Atendimento: 400;
+- observação do Equipamento: 300;
+- observação do serviço por Etapa: 280.
 
-Autorização real permanece no Host.
+- não bloqueiam save/conclusão;
+- não truncam dados;
+- aviso aparece apenas próximo da faixa recomendada;
+- layout real da Ficha continua autoridade de encaixe.
 
-A tela pode estar:
-
-- em rascunho de novo Atendimento;
-- `Em andamento`;
-- `Concluído`;
-- `Cancelado`.
-
-## 4. Entrada na tela
+## 8. Lifecycle
 
 ```text
-Atendimentos
-→ selecionar registro
-→ Tela 09
+Em andamento
+Concluído
+Cancelado
 ```
 
-ou:
-
 ```text
-Atendimentos
-→ Novo atendimento
-→ Tela 09 em rascunho somente em memória
-```
-
-ou:
-
-```text
-Leitor de Processo
-→ Iniciar atendimento
-→ Tela 09 em rascunho
-→ revisão consultada pré-selecionada quando elegível
-```
-
-Abrir a tela em modo novo não cria registro oficial. O primeiro save aceito pelo Host cria o Atendimento.
-
-## 5. Lifecycle consolidado
-
-```text
-rascunho local
-    ↓ primeiro save aceito
 Em andamento
    ├─→ Concluído
    └─→ Cancelado
 
 Concluído/Cancelado
-   ↓ Reabrir
-Em andamento
+   → Reabrir
+   → Em andamento
 ```
 
-Estados visíveis iniciais:
+Lifecycle não é dropdown livre.
 
-- `Em andamento`;
-- `Concluído`;
-- `Cancelado`.
-
-Não criar `Aguardando`, `Pausado`, `Resolvido`, SLA etc. sem novo requisito.
-
-## 6. Layout consolidado
-
-Exemplo em `Em andamento`:
-
-```text
-← Atendimentos
-
-Atendimento AT-00142                    Em andamento
-OS-4587 · João Silva · Responsável: Maria
-
-[ Ficha / Imprimir ]                    [ Salvar ]
-[ Concluir atendimento ]                [ Mais ▾ ]
-
-────────────────────────────────────────────────────────────
-ATENDIMENTO
-
-OS / Referência        [ OS-4587                    ]
-Cliente / Solicitante  [ João Silva                 ]
-Responsável            [ Maria ▾                    ]
-
-Resumo do trabalho
-[ Manutenção preventiva, limpeza e troca de SSD...         ]
-
-Observações
-[ ......................................................... ]
-
-────────────────────────────────────────────────────────────
-EQUIPAMENTO                                              [ Editar ]
-
-NOTE-15 · EQP-0031                                 Notebook
-
-Nome               NOTE-15
-Tipo               Notebook
-Processador         Intel Core i5-1135G7
-RAM                 16 GB
-Armazenamento       SSD NVMe 512 GB
-Sistema             Windows 11 Pro · 24H2
-Serial              ABC123
-Patrimônio          PAT-884
-MAC                 A0:B1:C2:D3:E4:F5
-Bateria             82%
-Observações         Texto curto...
-
-[ Trocar/Vincular equipamento ] [ Desvincular ]
-
-────────────────────────────────────────────────────────────
-PROCEDIMENTOS UTILIZADOS
-
-PR-001  Manutenção preventiva
-Versão 1.3 · revisão r18                  4 de 6 itens
-[ Executar ] [ Abrir revisão ] [ Remover ]
-
-PR-022  Substituição de SSD
-Versão 2.0 · revisão r7                   2 de 2 itens
-[ Executar ] [ Abrir revisão ] [ Remover ]
-
-[ + Adicionar procedimento ]
-
-────────────────────────────────────────────────────────────
-PROGRESSO DO ATENDIMENTO
-6 de 8 itens concluídos
-
-────────────────────────────────────────────────────────────
-HISTÓRICO
-25/08 10:21 · Atendimento criado · Maria
-25/08 10:28 · Equipamento EQP-0031 vinculado · Maria
-```
-
-As observações específicas de execução ficam junto da Etapa correspondente no Reader operacional, em vez de criar uma lista textual permanente adicional na Tela 09.
-
-Ações aparecem somente quando estado + capacidade permitirem.
-
-## 7. Novo Atendimento
-
-Antes do primeiro save:
-
-- sem `AT-...` definitivo;
-- rascunho somente em memória;
-- se veio do Reader, revisão elegível pode vir pré-selecionada;
-- Funcionário começa como responsável por padrão;
-- sair com alterações pede confirmação;
-- sair descarta rascunho; não existe draft persistente inicial.
-
-No primeiro save aceito:
-
-- Host cria `service_record_id`;
-- gera `AT-000001`/sequência aplicável;
-- define `started_at`;
-- define `Em andamento`;
-- registra criador/responsável;
-- devolve estado confirmado.
-
-## 8. Códigos
-
-Atendimento:
-
-```text
-AT-000001
-```
-
-Equipamento:
-
-```text
-EQP-000001
-```
-
-Regras:
-
-- Host-only;
-- seis dígitos;
-- gaps permitidos;
-- não editáveis;
-- não substituem IDs internos.
-
-## 9. Dados do Atendimento
-
-Campos principais:
-
-- código legível — somente leitura;
-- Status — derivado do lifecycle, não dropdown livre;
-- OS/referência externa opcional;
-- cliente/solicitante opcional;
-- responsável/técnico;
-- `started_at`/datas de lifecycle quando relevantes;
-- resumo do trabalho;
-- observações gerais.
-
-`Resumo do trabalho` é obrigatório para conclusão, não necessariamente para primeiro save.
-
-Observações de serviço por Etapa são dados operacionais separados das observações gerais do Atendimento e do cadastro do Equipamento.
-
-## 10. Responsável
-
-- Atendimento precisa de responsável para concluir;
-- Funcionário cria inicialmente para si;
-- Funcionário preset não reatribui para outro usuário;
-- ADM/Gerência podem atribuir/reatribuir;
-- usuário inativo não é escolha normal para nova atribuição;
-- histórico continua identificando usuários antigos;
-- troca de responsável é auditável.
-
-## 11. Edição por estado
-
-### Em andamento
-
-Conforme capacidade, pode alterar:
-
-- OS/Ref.;
-- cliente;
-- responsável;
-- resumo;
-- observações gerais;
-- vínculo de Equipamento;
-- cadastro do Equipamento em fluxo separado;
-- Procedimentos/revisões;
-- checklist operacional;
-- observações de serviço por Etapa no Reader operacional.
-
-### Concluído
-
-Somente leitura operacional.
-
-Permitido conforme capacidade:
-
-- consultar;
-- abrir revisões usadas;
-- consultar checklist final;
-- consultar observações de serviço registradas;
-- reimprimir ficha;
-- reabrir.
-
-Qualquer correção operacional exige `Reabrir`.
-
-### Cancelado
-
-Somente leitura operacional.
-
-- permanece consultável/pesquisável;
-- não é excluído;
-- pode ser reaberto por ADM/Gerência por preset;
-- ficha, quando acessada, identifica `Cancelado`.
-
-## 12. Salvar
-
-Salvamento é explícito; não existe autosave inicial.
-
-- Host valida capacidade, estado e `row_revision`/base;
-- sucesso só aparece após confirmação de commit;
-- conflito preserva alterações locais;
-- evento remoto não substitui formulário;
-- resultado incerto após desconexão é reconciliado, não repetido cegamente.
-
-Recursos granulares, como checklist e observação de serviço por Etapa, podem usar mutações próprias sem transformar cada alteração em save global de toda a Tela 09.
-
-## 13. Concluir Atendimento
-
-Disponível apenas em `Em andamento` e conforme capacidade.
-
-Preset:
-
-- ADM/Gerência: podem concluir qualquer Atendimento acessível;
-- Funcionário: pode concluir Atendimento do qual é responsável.
+## 9. Concluir Atendimento
 
 Pré-condições:
 
+- estado `Em andamento`;
+- capacidade de conclusão;
 - responsável definido;
 - `Resumo do trabalho` válido;
 - estado confirmado/sem conflito;
@@ -313,69 +137,74 @@ Não são obrigatórios por si só:
 
 ### Checklist incompleto
 
-Se houver itens desmarcados:
+Se houver itens desmarcados, exibir confirmação clara:
 
 ```text
 Ainda existem itens de checklist não concluídos.
 Deseja concluir este atendimento mesmo assim?
-
-[ Continuar execução ] [ Concluir mesmo assim ]
 ```
 
-Não bloquear automaticamente; não existe semântica obrigatório/opcional nos checklists documentais iniciais.
+Checklist incompleto avisa, não bloqueia automaticamente.
 
-### Ao concluir
+### Após conclusão
 
 Host:
 
 - grava `Concluído`;
 - define `completed_at`;
 - preserva revisões usadas/checklist final;
-- preserva o estado final aplicável das observações de serviço por Etapa;
+- preserva observações de serviço aplicáveis;
 - congela projeção relevante do Equipamento;
-- registra evento;
-- publica pós-commit.
+- registra evento/auditoria;
+- publica mudança pós-commit.
 
-O histórico precisa permitir reimprimir a prestação de contas do estado final aplicável mesmo se o Atendimento for reaberto e alterado depois.
+## 10. Cancelar
 
-## 14. Cancelar Atendimento
-
-Ação contextual, por exemplo em `Mais`.
-
-Preset:
+Preset inicial:
 
 - ADM/Gerência: sim;
 - Funcionário: não.
 
 Regras:
 
-- apenas `Em andamento`;
+- somente `Em andamento`;
 - motivo curto obrigatório;
 - confirmação explícita;
-- preserva código/vínculos/histórico;
+- preserva código, vínculos e histórico;
 - não exclui;
-- bloqueia edição após commit.
+- após commit fica read-only.
 
-## 15. Reabrir
+## 11. Reabrir
 
-Preset:
+Preset inicial:
 
 - ADM/Gerência: sim;
 - Funcionário: não.
 
-Disponível em `Concluído` ou `Cancelado`.
-
-- ação explícita;
-- auditável;
-- volta para `Em andamento`;
+- disponível em `Concluído` ou `Cancelado`;
+- ação explícita e auditável;
+- retorna para `Em andamento`;
 - preserva histórico anterior;
-- checklist, observações de serviço e vínculos continuam disponíveis;
-- nova conclusão grava novo estado final;
-- alteração posterior não reescreve silenciosamente a ficha histórica de conclusão anterior.
+- nova conclusão cria novo estado final aplicável;
+- conclusão anterior não é reescrita silenciosamente.
 
-## 16. Equipamento opcional
+## 12. Responsabilidade e permissões
 
-A tela funciona com ou sem Equipamento.
+Funcionário:
+
+- cria Atendimento inicialmente para si;
+- opera/conclui o Atendimento do qual é responsável;
+- não reatribui para outro usuário por preset;
+- não cancela/reabre por preset.
+
+ADM/Gerência:
+
+- podem atribuir/reatribuir;
+- podem operar Atendimentos acessíveis conforme capacidades.
+
+Autorização real permanece granular e Host-side.
+
+## 13. Equipamento opcional
 
 Sem Equipamento:
 
@@ -386,9 +215,7 @@ Nenhum equipamento vinculado a este atendimento.
 
 Não renderizar ficha técnica vazia.
 
-## 17. Vincular Equipamento
-
-Busca por:
+Busca de Equipamento pode usar:
 
 - código `EQP-...`;
 - nome;
@@ -397,21 +224,9 @@ Busca por:
 - MAC;
 - cliente/solicitante relacionado quando aplicável.
 
-Fluxo:
+## 14. Cadastro do Equipamento
 
-```text
-Vincular equipamento
-→ pesquisar cadastro existente
-→ selecionar
-ou
-→ Cadastrar novo equipamento, se autorizado
-```
-
-Evitar duplicação silenciosa baseada apenas em MAC/serial/patrimônio.
-
-## 18. Cadastro do Equipamento
-
-Campos para computadores, conforme aplicável:
+Campos conforme aplicabilidade:
 
 - nome;
 - tipo;
@@ -424,119 +239,83 @@ Campos para computadores, conforme aplicável:
 - um ou mais MACs com label opcional;
 - saúde da bateria;
 - cliente/responsável relacionado;
-- observações curtas.
+- observações.
 
-Tipos mínimos:
+Tipos mínimos iniciais:
 
 - Servidor;
 - Desktop;
 - Notebook.
 
-Não transformar isso em enum global rígida.
+Não formar enum global rígida para tipos futuros.
 
-### Bateria
+Bateria é opcional/contextual; percentual válido 0–100 quando informado.
 
-- contextual para Notebook;
-- opcional;
-- percentual 0–100 quando informado;
-- não aparece como obrigação para Servidor/Desktop.
+MAC não é identidade canônica. Evitar duplicação silenciosa baseada apenas em identificadores pesquisáveis.
 
-### MACs
-
-- múltiplos;
-- labels opcionais como Wi-Fi/Ethernet/Dock;
-- Host normaliza formatos;
-- MAC não é identidade canônica.
-
-### Observações
-
-- texto curto;
-- limite explícito;
-- valor numérico final no Bloco 10 por causa da ficha A4.
-
-## 19. Capacidades de Equipamento
-
-Preset:
+## 15. Capacidades de Equipamento
 
 - criar/editar: ADM/Gerência/Funcionário;
 - arquivar/reativar: ADM/Gerência;
-- Funcionário pode vincular/trocar/desvincular em Atendimento editável do qual é responsável.
+- Funcionário vincula/troca/desvincula em Atendimento editável quando responsável;
+- Equipamento possui save/conflito separado do Atendimento;
+- não arquivar Equipamento vinculado a Atendimento `Em andamento`.
 
-Equipamento possui salvamento/conflito separado do Atendimento.
+## 16. Histórico do Equipamento
 
-Não arquivar Equipamento vinculado a Atendimento `Em andamento`.
+Conclusão congela projeção relevante do Equipamento.
 
-## 20. Histórico do Equipamento no Atendimento concluído
+Alteração futura no cadastro global não reescreve Ficha/estado histórico de conclusão anterior. Nova conclusão após reabertura pode produzir nova projeção sem apagar a anterior.
 
-Alteração futura no cadastro global não reescreve o estado histórico/ficha final já concluídos.
+## 17. Procedimentos utilizados
 
-Ao concluir, Host congela a projeção relevante do Equipamento.
-
-Após reabertura e nova conclusão, um novo estado final pode ser capturado; o histórico anterior não desaparece.
-
-## 21. Procedimentos utilizados
-
-Cada item mostra:
+Cada vínculo mostra de forma operacional:
 
 - código snapshot;
 - título snapshot;
-- versão editorial usada;
+- versão editorial;
 - revisão técnica exata;
 - progresso de checklist quando houver;
 - ações contextuais.
 
-A revisão nunca é atualizada automaticamente após nova publicação.
+A revisão vinculada nunca muda automaticamente após nova publicação.
 
-Esses detalhes são importantes para operação/histórico interno, mas não precisam aparecer por padrão na Ficha entregue ao cliente.
-
-## 22. Adicionar Procedimento
+## 18. Adicionar/remover Procedimento
 
 Enquanto `Em andamento` e autorizado:
 
-- abrir busca de Processos;
+- buscar em Processos;
 - selecionar revisão elegível;
 - vincular explicitamente.
 
-Por preset:
+Preset:
 
 - Funcionário: revisão publicada que possa ler;
-- ADM/Gerência: publicada por padrão; podem selecionar explicitamente histórica/não publicada autorizada.
+- ADM/Gerência: publicada por padrão; podem selecionar explicitamente histórica/não publicada já autorizada.
 
-Se Atendimento veio do Reader, a revisão consultada pode estar pré-selecionada conforme essas regras.
+Remoção com checklist marcado ou observação de serviço registrada exige confirmação e preservação do histórico necessário.
 
-## 23. Remover Procedimento
+## 19. Executar Procedimento
 
-Somente `Em andamento` + capacidade.
-
-Se houver checklist marcado ou observação de serviço registrada para aquele vínculo:
-
-- mostrar confirmação;
-- remover da composição ativa somente após ação consciente;
-- preservar auditoria/histórico necessário.
-
-## 24. Executar Procedimento / Checklist / Observação
-
-Ação `Executar` abre Tela 05 na revisão exata e contexto do Atendimento.
+Ação `Executar` abre a Tela 05 na revisão exata e no contexto do Atendimento.
 
 ```text
 Atendimento AT-00142
 → PR-001 r18
 → Executar
-→ Reader: "Executando no atendimento AT-00142"
+→ Reader: Executando no atendimento AT-00142
 ```
 
 Nesse contexto:
 
-- checklist é persistente;
-- cada Etapa pode receber `Observação do serviço` opcional;
-- a observação fica vinculada ao Atendimento, revisão e Etapa;
-- a observação não altera o Procedimento original.
+- checklist persiste;
+- cada Etapa pode receber `Observação do serviço`;
+- observação pertence ao Atendimento + revisão + Etapa;
+- nada altera o Procedimento oficial.
 
-Em Reader standalone, checklist e observação operacional não persistem.
+## 20. Progresso
 
-## 25. Progresso
-
-Por Procedimento e agregado do Atendimento:
+Exemplo:
 
 ```text
 PR-001        4 de 6
@@ -545,31 +324,29 @@ Atendimento   6 de 8
 ```
 
 - deriva apenas de checklist;
-- etapas visitadas não contam;
-- observações de serviço não contam;
-- revisão sem checklist não mostra 0%;
+- Etapas visitadas não contam;
+- observações não contam;
+- revisão sem checklist não mostra `0%` artificial;
 - 100% não conclui automaticamente.
 
-## 26. Concorrência operacional granular
+## 21. Concorrência granular
 
 Checklist:
 
-- controle granular por item/equivalente;
-- usuários marcando itens diferentes não conflitam globalmente;
-- mesmo item concorrente recebe resultado determinístico/conflito apropriado.
+- controle por item/equivalente;
+- itens independentes não conflitam globalmente.
 
 Observação de serviço:
 
-- controle granular por Etapa/equivalente;
-- alteração em uma Etapa não invalida observação independente de outra Etapa;
-- conflito do mesmo campo preserva texto local e exige reconciliação apropriada;
-- evento remoto não sobrescreve texto em edição silenciosamente.
+- controle por Etapa/equivalente;
+- conflito no mesmo campo preserva texto local e exige reconciliação;
+- evento remoto não sobrescreve texto em edição.
 
-Não usar revisão global do Atendimento para invalidar todo checkbox ou toda observação por conveniência.
+Atendimento e Equipamento possuem revisões próprias. Não usar uma revisão global para invalidar cada checkbox/observação por conveniência.
 
-## 27. Histórico operacional compacto
+## 22. Histórico operacional compacto
 
-Eventos de alto valor podem aparecer numa área/painel compacto:
+Eventos de alto valor podem aparecer numa área simples:
 
 - criado;
 - responsável alterado;
@@ -579,11 +356,11 @@ Eventos de alto valor podem aparecer numa área/painel compacto:
 - cancelado + motivo;
 - reaberto.
 
-Não mostrar timeline enorme de cada checkbox, observação de Etapa ou campo por padrão. Auditoria técnica pode preservar informação proporcional sem poluir a UI.
+Não mostrar timeline enorme de cada checkbox/campo por padrão.
 
-## 28. Ficha / Imprimir
+## 23. Ficha / Imprimir
 
-Preset de capacidade:
+Preset:
 
 - ADM: sim;
 - Gerência: sim;
@@ -591,64 +368,40 @@ Preset de capacidade:
 
 Lifecycle:
 
-- `Em andamento`: pode gerar ficha de acompanhamento a partir do estado confirmado;
-- `Concluído`: pode reimprimir usando estado histórico aplicável;
-- `Cancelado`: saída precisa identificar claramente o estado;
+- `Em andamento`: gera estado confirmado atual;
+- `Concluído`: reimprime estado histórico aplicável;
+- `Cancelado`: identifica claramente o estado;
 - alterações não salvas/conflitos bloqueiam geração.
 
-A Ficha é uma **prestação de contas resumida ao cliente**, não relatório técnico completo.
+A Ficha é prestação de contas resumida ao cliente.
 
-Prioriza, quando aplicável:
+Prioriza:
 
-- identificação do Atendimento/serviço;
-- cliente/solicitante e responsável/técnico sem excesso de metadados;
-- identificação do Equipamento;
-- processador;
-- RAM;
-- armazenamento HD/SSD;
-- sistema operacional quando útil;
-- saúde da bateria quando aplicável e informada;
-- observações do Equipamento;
+- identificação do serviço;
+- cliente/solicitante e técnico quando úteis;
+- Equipamento e características relevantes;
 - `Resumo do trabalho`;
-- observações gerais do Atendimento;
-- observações de serviço por Etapa que tenham sido registradas.
+- observação geral;
+- observações do Equipamento/Etapas quando aplicáveis.
 
-Por padrão não precisa imprimir:
+Por padrão não imprime checklist, progresso, passos/comandos, timeline, IDs internos ou lista detalhada de Procedimentos.
 
-- checklist completo;
-- percentual/progresso;
-- etapas/passos do Procedimento;
-- comandos;
-- timeline operacional;
-- IDs técnicos internos;
-- lista detalhada de revisões utilizadas.
+Contrato consolidado:
 
-A Ficha:
+- PDF próprio + preview do mesmo `PagedDocument`;
+- exatamente uma A4, margens 15 mm;
+- `2+ páginas` = `SHEET_OVERFLOW`;
+- sem truncamento, segunda página ou compactação automática;
+- MACs: 0 omite; 1–2 valores; 3+ quantidade;
+- `Salvar PDF`/`Imprimir` reutilizam o PDF da prévia aberta.
 
-- usa estado confirmado do Host;
-- pode existir com ou sem Equipamento;
-- nunca é screenshot;
-- possui PDF próprio e preview do mesmo layout;
-- ocupa exatamente uma única folha física quando gerada com sucesso;
-- usa identidade central da empresa.
+Detalhes: `14-exportacao-impressao-ficha.md`.
 
-Template físico final, limites/priorização textual e tratamento de excesso continuam nas Etapas 7–9 do Bloco 10.
-
-## 29. Voltar para lista
-
-Preservar quando possível:
-
-- busca;
-- filtros Responsável/Status/Período;
-- ordenação;
-- página;
-- scroll.
-
-## 30. Estados transversais
+## 24. Estados transversais
 
 Segue Tela 15:
 
-- loading local;
+- loading;
 - Host indisponível;
 - WebSocket degradado;
 - sessão expirada;
@@ -659,82 +412,17 @@ Segue Tela 15:
 - resultado incerto;
 - alterações não salvas.
 
-## 31. Validações principais
+## 25. Acessibilidade e janelas
 
-### Atendimento
-
-- código não é editável;
-- equipamento é opcional;
-- OS é opcional;
-- cliente é opcional;
-- responsável obrigatório para conclusão;
-- resumo obrigatório para conclusão;
-- observação de serviço é opcional e vinculada à Etapa/revisão em execução;
-- cancelamento exige motivo;
-- lifecycle é transição explícita, não dropdown livre.
-
-### Equipamento
-
-- código não editável;
-- múltiplos MACs normalizáveis;
-- bateria 0–100 quando informada;
-- bateria contextual;
-- observações limitadas;
-- campos não aplicáveis opcionais.
-
-## 32. Eventos em tempo real
-
-Pós-commit podem sinalizar:
-
-- Atendimento alterado;
-- status alterado;
-- responsável alterado;
-- Equipamento alterado/vinculado;
-- Procedimento vinculado/removido;
-- checklist alterado;
-- observação de serviço por Etapa alterada;
-- conclusão/reabertura/cancelamento.
-
-Client reconsulta estado relevante; nunca sobrescreve formulário/texto local silenciosamente.
-
-## 33. Acessibilidade e janelas
-
-- labels visíveis;
-- headings semânticos;
+- labels e headings semânticos;
 - foco visível;
 - icon-only com nome acessível;
 - listas/checklists operáveis por teclado;
-- campos de observação com label inequívoco;
 - mensagens não dependem só de cor;
 - desktop Windows como alvo;
-- em janela menor, colunas empilham sem transformar em UI mobile/hamburger.
+- em janela menor, colunas podem empilhar sem criar UI mobile/hamburger inicial.
 
-## 34. Decisões consolidadas
-
-- workspace vertical único;
-- lifecycle de três estados;
-- primeiro save cria registro;
-- Funcionário opera por responsabilidade;
-- resumo obrigatório para conclusão;
-- checklist incompleto avisa, não bloqueia;
-- concluído/cancelado são read-only até reabertura;
-- cancelamento exige motivo;
-- ADM/Gerência reabrem por preset;
-- Equipamento opcional/reutilizável;
-- Funcionário cria/edita Equipamento;
-- ADM/Gerência arquivam/reativam;
-- revisão exata do Procedimento é preservada;
-- Funcionário usa revisão publicada por padrão;
-- checklist persiste só em contexto de Atendimento;
-- observação de serviço persiste por Etapa somente em contexto de Atendimento;
-- progresso deriva só de checklist;
-- snapshot de Equipamento e estado final aplicável protegem histórico concluído;
-- ficha é prestação de contas resumida ao cliente;
-- ficha segue lifecycle e estado confirmado;
-- concorrência continua otimista e granular;
-- não há autosave/offline queue por inferência.
-
-## 35. Fora do escopo
+## 26. Fora do escopo
 
 - CRM;
 - estoque;
