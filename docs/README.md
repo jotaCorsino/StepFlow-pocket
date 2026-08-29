@@ -78,7 +78,8 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado;
 - `bloco-10-exportacao-impressao-ficha.md` — mapa técnico consolidado do Bloco 10;
 - `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz técnica final do Bloco 10;
-- `bloco-11-backup-restauracao.md` — proposta técnica do Bloco 11 em análise;
+- `bloco-11-backup-restauracao.md` — documento principal do Bloco 11 em análise;
+- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — proposta da Análise 3 do Bloco 11;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -96,6 +97,6 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 ## Estado atual
 
-A **Fase 1 permanece em andamento**. Blocos 0–10 estão documentalmente encerrados nos respectivos escopos; o Bloco 11 está em análise para fechar Backup/Restore técnico; o Bloco 12 fecha estrutura oficial e plano da Fase 2.
+A **Fase 1 permanece em andamento**. Blocos 0–10 estão documentalmente encerrados nos respectivos escopos; Bloco 11 está em análise técnica de Backup/Restore e Bloco 12 fecha estrutura oficial e plano da Fase 2.
 
 Nenhuma implementação funcional oficial foi iniciada.
