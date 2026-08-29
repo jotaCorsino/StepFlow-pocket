@@ -1,6 +1,6 @@
 # Bloco 10 — Exportação / Impressão + Ficha Compacta
 
-**Status:** EM ANDAMENTO — ETAPAS 1–10 CONSOLIDADAS / ETAPA 11 PRÓXIMA  
+**Status:** EM ANDAMENTO — ETAPAS 1–10 CONSOLIDADAS / ETAPA 11 — VALIDAÇÃO TÉCNICA FINAL PRÓXIMA  
 **Fase:** Fase 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-25  
 **Etapa 1 consolidada:** 2026-08-25  
@@ -44,8 +44,7 @@ Não pertence a este bloco implementar código de produção, fechar Backup/Rest
 | 8 | Limites textuais e densidade da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
 | 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **CONSOLIDADO / APROVADO PELO PO** |
 | 10 | Nomes de arquivo + artefatos temporários | **CONSOLIDADO / APROVADO PELO PO** |
-| 11 | QR / barcode | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 12 | Validação técnica final do Bloco 10 | PENDENTE |
+| 11 | Validação técnica final do Bloco 10 | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 
 ---
 
@@ -112,7 +111,7 @@ DocumentModel
 - PNG/JPEG/SVG controlados;
 - falha nunca devolve artefato parcial como sucesso.
 
-Versões exatas das crates e limites numéricos ficam para o gate de implementação/Etapa 12.
+Versões exatas das crates e limites numéricos ficam para o gate de implementação/Etapa 11.
 
 ---
 
@@ -375,7 +374,7 @@ metadados institucionais:  8,5 pt
 - seções vazias colapsam;
 - não reservar caixas para escrita manual;
 - observações usam a maior área variável restante;
-- não adicionar assinatura, termos jurídicos, garantia, financeiro, peças/estoque, SLA, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional.
+- não adicionar assinatura, termos jurídicos, garantia, financeiro, peças/estoque, SLA, checklist, progresso, timeline, lista detalhada de Procedimentos, página 2 ou footer promocional.
 
 ---
 
@@ -428,7 +427,7 @@ Essas faixas são **soft limits**:
 - não bloqueiam conclusão;
 - não truncam nem alteram o dado;
 - não garantem encaixe físico sozinhas;
-- podem ser refinadas futuramente por evidência da validação real da Etapa 12.
+- podem ser refinadas futuramente por evidência da validação real da Etapa 11.
 
 Contador/aviso aparece somente próximo de aproximadamente **80%** da faixa recomendada para não poluir a UI.
 
@@ -592,7 +591,7 @@ Não incluir `process_count` como contribuinte visual enquanto Procedimentos nã
 
 A projeção compacta de 3+ MACs reduz a multiplicidade antes do layout; o Host não precisa fingir que cada identificador oculto consumiu espaço físico.
 
-Limites técnicos finais de quantidade/payload/recursos permanecem para a Etapa 12 e não são inferidos da geometria da A4.
+Limites técnicos finais de quantidade/payload/recursos permanecem para a Etapa 11 e não são inferidos da geometria da A4.
 
 ---
 
@@ -714,7 +713,7 @@ Não criar nesta etapa:
 
 Temporários e exportações não entram em SQLite, histórico ou backup por padrão.
 
-## 29. Validação reservada para a Etapa 12
+## 29. Validação reservada para a Etapa 11
 
 Validar concretamente antes da implementação:
 
@@ -730,24 +729,18 @@ Validar concretamente antes da implementação:
 
 ---
 
-# Etapas seguintes
-
-## Etapa 11 — QR/barcode
+# Etapa 11 — Validação técnica final
 
 **Status:** PRÓXIMA — AINDA NÃO EM ANÁLISE
-
-Só entra se houver benefício operacional aprovado; não é requisito por padrão.
-
-## Etapa 12 — Validação técnica final
 
 Fechará matriz real de Windows/WebView2/Office compatível, impressão, limites de recursos, casos de erro e critérios técnicos antes da implementação.
 
 ## 30. Gate atual
 
-A Etapa 10 está documentalmente consolidada nesta branch, mas **não está operacionalmente encerrada** até:
+A simplificação documental atual precisa estar operacionalmente encerrada antes de abrir a Etapa 11:
 
 ```text
-PR da Etapa 10
+PR atual
 → validação
 → ready
 → squash merge em main
@@ -755,4 +748,4 @@ PR da Etapa 10
 → verificar somente main + zero PRs abertos
 ```
 
-Somente depois disso a Etapa 11 pode ser aberta.
+Somente depois disso a Etapa 11 — Validação técnica final pode ser aberta.

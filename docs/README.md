@@ -70,7 +70,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–10 consolidadas, Etapa 11 próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–10 consolidadas, Etapa 11 — validação técnica final próxima e ainda não aberta**;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -88,7 +88,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 
 ## Estado atual
 
-**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–10 consolidadas. Etapa 11 — QR / barcode é a próxima, ainda não aberta.**
+**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–10 consolidadas. Etapa 11 — Validação técnica final é a próxima, ainda não aberta.**
 
 Direção consolidada:
 
@@ -114,12 +114,12 @@ Direção consolidada:
 - temporários pertencem ao Client, usam nomes opacos sem dados de negócio e só são materializados quando uma integração local exigir filesystem;
 - cleanup é best-effort e não usa serviço, daemon ou tarefa agendada;
 - arquivo salvo pelo usuário não entra no lifecycle de cleanup do StepFlow;
-- sem assinatura, financeiro, checklist, timeline, página 2 ou QR por padrão.
+- sem assinatura, financeiro, checklist, timeline ou página 2 por padrão.
 
 ## Gate antes da Etapa 11
 
 ```text
-squash merge da Etapa 10
+squash merge da limpeza documental atual
 → remoção da branch remota
 → remoto somente com main
 → zero PRs abertos
@@ -127,8 +127,7 @@ squash merge da Etapa 10
 
 ## Pendências vigentes
 
-- Etapa 11: QR/barcode apenas se aprovado;
-- Etapa 12: validação técnica final;
+- Etapa 11: validação técnica final;
 - parâmetros finais de autenticação;
 - Gerência × configuração da empresa;
 - Gerência × Backup;

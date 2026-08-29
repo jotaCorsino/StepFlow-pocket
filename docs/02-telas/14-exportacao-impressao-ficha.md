@@ -6,7 +6,7 @@
 - status: **CONSOLIDADO / APROVADO PELO PO**;
 - bloco original: Fase 1 — Bloco 8 (UI/UX);
 - atualização técnica/funcional: Bloco 10 / Etapas 1–10;
-- última consolidação: 2026-08-28.
+- última consolidação: 2026-08-29.
 
 ## 2. Objetivo
 
@@ -462,7 +462,6 @@ Não adicionar por inferência:
 - peças/estoque;
 - SLA/prioridade;
 - checklist/progresso/timeline;
-- QR/barcode;
 - lista detalhada de Procedimentos;
 - página 2;
 - footer promocional do StepFlow.
@@ -558,10 +557,9 @@ Para save/temporários, também distinguir falha de gravação, conflito de nome
 - status/cancelamento/desatualização não dependem apenas de cor;
 - folha permanece A4 independentemente da janela.
 
-## 23. Pendências restantes do Bloco 10
+## 23. Pendência restante do Bloco 10
 
-- Etapa 11 — QR/barcode somente se houver benefício aprovado;
-- Etapa 12 — validação técnica final/matriz/limites de recursos.
+- Etapa 11 — validação técnica final/matriz/limites de recursos.
 
 ## 24. Fora do escopo inicial
 
@@ -572,7 +570,6 @@ Para save/temporários, também distinguir falha de gravação, conflito de nome
 - editor visual de templates;
 - armazenamento permanente de toda exportação;
 - DOCX da Ficha;
-- QR/barcode sem aprovação;
 - implementação funcional nesta fase.
 
 ## 25. Decisões consolidadas pelo PO
@@ -614,5 +611,4 @@ Para save/temporários, também distinguir falha de gravação, conflito de nome
 35. cleanup e scavenging são best-effort e restritos ao namespace StepFlow, sem serviço/daemon/tarefa agendada;
 36. save só é sucesso após gravação integral e promoção segura é preferida quando suportada;
 37. temporários/exportações não entram em SQLite, histórico ou backup por padrão;
-38. DOCX da Ficha não é requisito inicial;
-39. QR/barcode permanece pendente de benefício operacional explícito.
+38. DOCX da Ficha não é requisito inicial.

@@ -2,7 +2,7 @@
 
 **Status:** EM ANDAMENTO  
 **Início:** 2026-08-19  
-**Atualização:** 2026-08-28
+**Atualização:** 2026-08-29
 
 ## Objetivo
 
@@ -24,7 +24,7 @@ A Fase 1 autoriza documentação, decisões técnicas e provas descartáveis qua
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `03-arquitetura/concorrencia-fila-conflitos-eventos.md` + Bloco 9 |
 | 8 | UI/UX | CONCLUÍDO | `02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | **CONCLUÍDO** | `04-planejamento/bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–10 CONSOLIDADAS / ETAPA 11 PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
+| 10 | Exportação/impressão + ficha compacta | **EM ANDAMENTO — ETAPAS 1–10 CONSOLIDADAS / ETAPA 11 VALIDAÇÃO FINAL PRÓXIMA** | `04-planejamento/bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração | PENDENTE | política técnica/operacional |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | fundação do repositório |
 
@@ -90,7 +90,7 @@ Consolidado:
 
 ## Bloco 10 — Exportação e impressão
 
-**Status: EM ANDAMENTO — Etapas 1–10 consolidadas; Etapa 11 próxima, ainda não aberta.**
+**Status: EM ANDAMENTO — Etapas 1–10 consolidadas; Etapa 11 — Validação técnica final próxima, ainda não aberta.**
 
 Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 
@@ -108,8 +108,7 @@ Fonte ativa: `bloco-10-exportacao-impressao-ficha.md`.
 | 8 | Limites textuais e densidade da Ficha | **CONSOLIDADO / APROVADO PELO PO** |
 | 9 | Múltiplos MACs / Procedimentos / dados excepcionais | **CONSOLIDADO / APROVADO PELO PO** |
 | 10 | Nomes de arquivo + artefatos temporários | **CONSOLIDADO / APROVADO PELO PO** |
-| 11 | QR / barcode | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
-| 12 | Validação técnica final do Bloco 10 | PENDENTE |
+| 11 | Validação técnica final do Bloco 10 | **PRÓXIMA — AINDA NÃO EM ANÁLISE** |
 
 ### Etapas 1–5 — Procedimentos
 
@@ -149,7 +148,7 @@ Contrato aprovado:
 - seções vazias colapsam completamente;
 - Noto Sans com baseline 14 / 10,5 / 10 / 9 / 8,5 pt;
 - divisórias discretas, contraste neutro e legível em monocromático;
-- sem assinatura, financeiro, garantia, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional;
+- sem assinatura, financeiro, garantia, checklist, progresso, timeline, lista detalhada de Procedimentos, página 2 ou footer promocional;
 - nenhuma redução dinâmica de fonte para caber;
 - overflow continua `SHEET_OVERFLOW`.
 
@@ -183,7 +182,7 @@ Contrato aprovado:
 - campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
 - diagnóstico pode indicar quantidade de observações, Etapa específica ou campo estruturado longo;
 - não existem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou modo compacto para resolver multiplicidade;
-- limites técnicos finais permanecem para a Etapa 12.
+- limites técnicos finais permanecem para a Etapa 11.
 
 ### Etapa 10 — nomes de arquivo e artefatos temporários
 
@@ -201,15 +200,15 @@ Contrato aprovado:
 - lock não autoriza kill, unlock forçado ou alteração de ACL;
 - não criar Windows Service, Task Scheduler, daemon ou watchdog para limpeza;
 - temporários/exportações não entram em SQLite, histórico ou backup por padrão;
-- API concreta, NTFS/SMB, WebView2, memória, paths Unicode/longos, concorrência e EDR ficam para a Etapa 12.
+- API concreta, NTFS/SMB, WebView2, memória, paths Unicode/longos, concorrência e EDR ficam para a Etapa 11.
 
 ## Gate atual
 
-A Etapa 11 só pode ser aberta após:
+A Etapa 11 — Validação técnica final só pode ser aberta após:
 
 ```text
-squash merge da Etapa 10
-→ apagar branch remota da Etapa 10
+squash merge da limpeza documental atual
+→ apagar branch remota correspondente
 → verificar remoto somente com main
 → verificar zero PRs abertos
 ```
@@ -218,8 +217,7 @@ squash merge da Etapa 10
 
 ### Bloco 10
 
-- Etapa 11: QR/barcode somente se aprovado;
-- Etapa 12: validação técnica final/matriz real/limites.
+- Etapa 11: validação técnica final/matriz real/limites.
 
 ### Segurança/configuração
 

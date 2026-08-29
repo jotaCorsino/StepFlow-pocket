@@ -7,7 +7,7 @@
 
 As Telas **01–15 estão consolidadas/aprovadas**. As Telas 05, 08 e 09 foram atualizadas no Bloco 9 para incorporar contexto de execução, lifecycle, checklist/progresso, Status e capacidades operacionais.
 
-Próximo trabalho da Fase 1: **Bloco 10 — Exportação/impressão + ficha compacta técnica**, ainda não iniciado.
+Bloco 10 está em andamento, com Etapas 1–10 consolidadas e a validação técnica final como próxima etapa.
 
 ## Especificações atuais
 
@@ -133,12 +133,7 @@ Gerência × configuração da empresa e Gerência × Backup continuam pendentes
 ### Bloco 10
 
 - engines PDF/DOCX/impressão;
-- template físico final da ficha;
-- margens/tipografia/densidade;
-- limites numéricos dos textos;
-- preview;
-- PDF específico da ficha;
-- QR/barcode se aprovado.
+- validação técnica final de templates, filesystem, Windows/WebView2, limites e falhas reais.
 
 ### Bloco 11
 
