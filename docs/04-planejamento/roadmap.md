@@ -169,7 +169,7 @@ Implementará os contratos do Bloco 10:
 - ficha compacta com/sem Equipamento;
 - impressão da ficha;
 - reprodução do snapshot histórico de Atendimento/Equipamento;
-- validação em leitores/impressoras.
+- validação em softwares de leitura de documentos e impressoras.
 
 DOCX específico da ficha não é requisito inicial.
 
