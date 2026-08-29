@@ -1,7 +1,7 @@
 # Roadmap — StepFlow Pocket
 
 **Status:** FASE 1 EM ANDAMENTO  
-**Atualização:** 2026-08-25
+**Atualização:** 2026-08-29
 
 ## Fase 0 — Fundação documental e governança
 
@@ -31,7 +31,7 @@ Já consolidados:
 - códigos `AT-000001` / `EQP-000001`;
 - gestão de categorias por ADM/Gerência;
 - lifecycle/capacidade da ficha;
-- arquitetura-base de geração documental do Bloco 10 / Etapa 1.
+- Bloco 10 / Etapas 1–10 de geração, exportação, impressão, Ficha, densidade, dados excepcionais, naming e temporários.
 
 ### Bloco 8 — UI/UX
 
@@ -60,39 +60,22 @@ Consolidado:
 
 ### Bloco 10 — Exportação / impressão + ficha compacta
 
-**EM ANDAMENTO.**
-
-Etapa 1 — Arquitetura de geração documental: **CONSOLIDADA**.
+**EM ANDAMENTO — ETAPAS 1–10 CONSOLIDADAS.**
 
 Consolidado:
 
-- geração documental no Host;
-- solicitação por identidade/revisão esperada;
-- snapshot consistente antes da renderização;
-- `DocumentModel` semântico;
-- leitura SQLite encerrada antes da renderização;
-- geração fora da fila de mutações;
-- limite próprio de renderização/backpressure;
-- sem job/fila persistente de exportação na primeira versão;
-- transporte autenticado Host → Client;
-- runtime documental autocontido;
-- artefatos gerados fora do histórico/backup por padrão.
+- arquitetura de geração documental no Host;
+- PDF de Procedimentos via Typst embutido;
+- DOCX OOXML gerado diretamente em Rust;
+- impressão Windows pelo PDF oficial e WebView2;
+- template físico multipágina de Procedimentos;
+- PDF + preview da Ficha compacta;
+- template físico A4 de uma página da Ficha;
+- limites textuais orientativos e `SHEET_OVERFLOW`;
+- projeção de dados multiplicativos/excepcionais;
+- nomes persistentes e lifecycle de artefatos temporários no Client.
 
-**Próxima etapa: Etapa 2 — PDF de Procedimentos, ainda não aberta para análise.**
-
-As demais etapas fecharão, uma por vez:
-
-- PDF de Procedimentos;
-- DOCX de Procedimentos;
-- impressão Windows de Procedimentos;
-- template físico de Procedimentos;
-- PDF + preview da ficha;
-- template físico A4 da ficha;
-- limites textuais/densidade;
-- muitos MACs/Procedimentos;
-- nomes de arquivo + temporários concretos;
-- QR/barcode;
-- validação técnica final.
+**Próxima e última etapa do Bloco 10: Etapa 11 — Validação técnica final, ainda não aberta para análise.**
 
 Depois:
 
