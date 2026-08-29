@@ -55,13 +55,13 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 
 ### Arquitetura — `03-arquitetura`
 
-- `arquitetura-vigente.md` — visão consolidada, incluindo Bloco 10 / Etapas 1–8;
+- `arquitetura-vigente.md` — visão consolidada da arquitetura e contratos funcionais/técnicos vigentes;
 - `modelo-dados-schema-fase-1.md` — schema conceitual, checklist, observações por Etapa e snapshots;
 - `concorrencia-fila-conflitos-eventos.md` — concorrência geral;
 - `implantacao-pocket.md` — implantação/ciclo central;
-- `compatibilidade-windows-client.md` — Windows/WebView2;
+- `compatibilidade-windows-client.md` — Windows/WebView2 e gate Pocket;
 - `host-pocket.md` — Controller/Host;
-- `launcher-distribuicao-client.md` — distribuição;
+- `launcher-distribuicao-client.md` — distribuição Pocket sem instalação manual;
 - `comunicacao-client-host.md` — HTTP/JSON/WebSocket;
 - `autenticacao-sessao-autorizacao.md` — autenticação/autorização.
 
@@ -70,7 +70,8 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 - `roadmap.md` — fases;
 - `plano-oficial-fase-1.md` — estado/gates/pendências;
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional do Bloco 9;
-- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–10 consolidadas, Etapa 11 — validação técnica final próxima e ainda não aberta**;
+- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico do Bloco 10; **Etapas 1–11 consolidadas**;
+- `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz técnica final, limites e pendências de ambiente real do Bloco 10;
 - `tarefas-codex/README.md` — somente tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -88,7 +89,7 @@ Conforme impacto: registro de decisões, plano da Fase 1, arquitetura vigente, c
 
 ## Estado atual
 
-**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 está em andamento com as Etapas 1–10 consolidadas. Etapa 11 — Validação técnica final é a próxima, ainda não aberta.**
+**Fase 1 em andamento. Blocos 8 e 9 concluídos. Bloco 10 possui as Etapas 1–11 consolidadas e aguarda apenas o gate operacional do PR/branch antes da abertura do Bloco 11.**
 
 Direção consolidada:
 
@@ -114,23 +115,32 @@ Direção consolidada:
 - temporários pertencem ao Client, usam nomes opacos sem dados de negócio e só são materializados quando uma integração local exigir filesystem;
 - cleanup é best-effort e não usa serviço, daemon ou tarefa agendada;
 - arquivo salvo pelo usuário não entra no lifecycle de cleanup do StepFlow;
+- validação final não encontrou bloqueador arquitetural para os contratos documentais do Bloco 10;
+- Word, impressoras, SMB e EDR corporativos permanecem gates de ambiente real;
+- limites de memória/concorrência serão medidos na fase executável, sem números arbitrários;
+- contrato Pocket exige pasta publicada no servidor + Launcher no compartilhamento + Client local preparado automaticamente, sem instalador/manualidade/elevação por estação;
+- WebView2 Fixed Version não roda por UNC/SMB e só pode ser fallback se PoC provar preparação local automática sem quebrar o contrato Pocket;
 - sem assinatura, financeiro, checklist, timeline ou página 2 por padrão.
 
-## Gate antes da Etapa 11
+## Gate após a Etapa 11
 
 ```text
-squash merge da limpeza documental atual
+PR #24 validado
+→ ready
+→ squash merge em main
 → remoção da branch remota
 → remoto somente com main
 → zero PRs abertos
 ```
 
+Somente após esse gate o Bloco 11 pode ser aberto.
+
 ## Pendências vigentes
 
-- Etapa 11: validação técnica final;
 - parâmetros finais de autenticação;
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
+- validações reais de Windows/WebView2/Word/impressoras/SMB/EDR;
 - mecanismo técnico do Bloco 11;
-- validações reais do ambiente corporativo.
+- estrutura oficial e plano da Fase 2 no Bloco 12.
