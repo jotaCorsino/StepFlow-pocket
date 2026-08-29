@@ -1,6 +1,6 @@
 # Registro de Decisões — StepFlow Pocket
 
-**Atualização:** 2026-08-28
+**Atualização:** 2026-08-29
 
 Este arquivo registra decisões vigentes, pendências e gates. Propostas não aprovadas não podem ser tratadas como contrato. Detalhes extensos permanecem nos documentos específicos e em `docs/03-arquitetura/arquitetura-vigente.md`.
 
@@ -284,7 +284,7 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - seções vazias colapsam completamente; não imprimir `Sem observações`, `Nenhum equipamento` ou placeholders;
 - PDF da Ficha usa **Noto Sans**; baseline tipográfico: 14 pt identificação principal, 10,5 pt títulos de seção, 10 pt corpo/resumo, 9 pt ficha técnica e 8,5 pt metadados;
 - divisórias são discretas, contraste neutro e leitura precisa funcionar em monocromático; não congelar paleta RGB/hex nesta fase;
-- não reservar caixas para escrita manual e não adicionar assinatura, financeiro, garantia, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional;
+- não reservar caixas para escrita manual e não adicionar assinatura, financeiro, garantia, checklist, progresso, timeline, lista detalhada de Procedimentos, página 2 ou footer promocional;
 - nenhuma redução dinâmica de fonte para caber; overflow continua `SHEET_OVERFLOW`.
 
 ### Etapa 8 — limites textuais e densidade da Ficha
@@ -314,7 +314,7 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
 - diagnóstico pode indicar quantidade de observações, Etapa específica ou campo estruturado longo;
 - sem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou compactação automática;
-- limites técnicos finais de quantidade/payload/recursos permanecem para a Etapa 12.
+- limites técnicos finais de quantidade/payload/recursos permanecem para a Etapa 11.
 
 ### Etapa 10 — nomes de arquivo e artefatos temporários
 
@@ -332,7 +332,7 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - sem Windows Service, Task Scheduler, daemon ou watchdog para limpeza;
 - falha de cleanup não altera retroativamente save/preview/print já concluído;
 - temporários/exportações não entram em SQLite, histórico ou backup por padrão;
-- API concreta, NTFS/SMB, WebView2, memória, Unicode/path longo, concorrência e EDR ficam para a Etapa 12.
+- API concreta, NTFS/SMB, WebView2, memória, Unicode/path longo, concorrência e EDR ficam para a Etapa 11.
 
 ## 9. Estado da Fase 1
 
@@ -341,17 +341,16 @@ Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 - Bloco 6: núcleo + extensão operacional conceitual consolidados;
 - Bloco 7: núcleo concluído;
 - Blocos 8–9: concluídos;
-- **Bloco 10: em andamento — Etapas 1–10 consolidadas; Etapa 11 é a próxima, ainda não aberta**;
+- **Bloco 10: em andamento — Etapas 1–10 consolidadas; Etapa 11 — Validação técnica final é a próxima, ainda não aberta**;
 - Blocos 11–12: pendentes.
 
 ## 10. Pendências vigentes
 
 ### Bloco 10
 
-- Etapa 11: QR/barcode somente se benefício aprovado;
-- Etapa 12: validação técnica final/matriz real/limites de recursos.
+- Etapa 11: validação técnica final/matriz real/limites de recursos.
 
-**Gate:** Etapa 11 só pode ser aberta após squash merge da Etapa 10, remoção da branch correspondente e verificação de remoto somente com `main` e zero PRs abertos.
+**Gate:** Etapa 11 — Validação técnica final só pode ser aberta após squash merge da limpeza documental atual, remoção da branch correspondente e verificação de remoto somente com `main` e zero PRs abertos.
 
 ### Bloco 11
 
