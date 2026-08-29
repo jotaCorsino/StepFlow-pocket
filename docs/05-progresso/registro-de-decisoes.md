@@ -189,21 +189,6 @@ Pendentes: Gerência × configuração da empresa e Gerência × Backup.
 
 Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 
-### Backup/Restore — decisões aprovadas da Análise 1 do Bloco 11
-
-- Backup normal protege o estado StepFlow, não a implantação inteira;
-- payload inicial: `data/stepflow.sqlite` + `data/company/**` + `data/avatars/**`;
-- `app/`, `config/`, `logs/`, `backups/`, exportações, temporários e Client local ficam fora;
-- novo tipo de arquivo persistente exige allowlist/contrato explícito;
-- backup confirmado é um pacote único e imutável `.stepflow-backup`;
-- container baseline: ZIP padrão em modo `Stored`;
-- conteúdo: `manifest.json` + `payload/` controlado;
-- manifesto registra origem, versão/schema, tamanho e SHA-256 por entrada;
-- pacote parcial nunca é válido; staging precede promoção;
-- snapshot SQLite usa a Online Backup API como mecanismo baseline.
-
-A consistência entre banco + arquivos, promoção, retenção, Restore, sessões e disaster recovery continuam em análise no Bloco 11.
-
 ## 9. Geração documental — Bloco 10 concluído
 
 - geração pertence ao Host;
@@ -250,13 +235,42 @@ A consistência entre banco + arquivos, promoção, retenção, Restore, sessõe
 
 Fonte: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
 
-## 10. Estado da Fase 1
+## 10. Backup / Restore — Bloco 11 em análise
+
+### Decisões aprovadas — estado e envelope
+
+- Backup normal protege o estado da aplicação, não a implantação inteira;
+- payload = `stepflow.sqlite` + `company/**` + `avatars/**`;
+- `app/`, `config/`, `logs/`, `backups/`, exportações, temporários e Client local ficam fora;
+- pacote confirmado é um único `.stepflow-backup`, ZIP `Stored` no baseline;
+- `manifest.json` versionado registra identidade, origem, compatibilidade, tamanho e SHA-256 por entrada;
+- paths são lógicos/allowlisted; pacote parcial nunca é válido;
+- SQLite é capturado pela Online Backup API, não por cópia crua do arquivo ativo.
+
+### Decisões aprovadas — consistência e promoção
+
+- consistência é definida sobre `SQLite + arquivos administrados`;
+- Host aplica barrier curto sobre mutações, drena mutações já aceitas e captura banco + `company/**` + `avatars/**` no mesmo ponto quiescente;
+- leituras seguras podem continuar durante a captura;
+- `-wal`/`-shm` não entram no payload;
+- barrier termina após snapshot bruto completo em staging; hash/ZIP/verificação/promoção ocorrem fora dele;
+- candidato exige envelope válido, SHA-256 por entrada, `PRAGMA quick_check = ok` e `foreign_key_check` vazio;
+- `integrity_check` completo fica para validação pré-Restore;
+- pacote recebe flush explícito antes da promoção;
+- promoção final é same-volume, no-replace, sem overwrite silencioso;
+- sucesso só ocorre após reabertura/confirmação do arquivo final;
+- crash/falha nunca converte staging/parcial em backup válido;
+- números de timeout/tamanho/duração de barrier ficam para benchmark.
+
+Fonte: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
+
+## 11. Estado da Fase 1
 
 - Blocos 0–10: encerrados nos respectivos escopos documentais;
-- Bloco 11: Backup/Restore técnico em análise; Análise 1 aprovada, Análise 2 em proposta;
+- Bloco 11: Backup/Restore técnico em análise;
 - Bloco 12: estrutura oficial + Fase 2 pendente.
 
-## 11. Pendências vigentes
+## 12. Pendências vigentes
 
 ### Segurança/configuração
 
@@ -276,13 +290,12 @@ Fonte: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
 
 ### Bloco 11
 
-- consistência e barrier de captura;
-- verificação/promoção/crash safety;
-- catálogo/retenção;
+- catálogo/retenção/coordenação administrativa;
 - Restore/safety backup/compatibilidade;
-- restart/reconexão/sessões;
+- restart/reconexão/sessões e falhas;
 - disaster recovery local;
-- Gerência × Backup.
+- capacidades/auditoria;
+- validação técnica final.
 
 ### Bloco 12
 
@@ -291,7 +304,7 @@ Fonte: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
 - plano Fase 2;
 - sincronização do checkout local antes do primeiro Codex de implementação.
 
-## 12. Precedência
+## 13. Precedência
 
 Em divergência:
 
