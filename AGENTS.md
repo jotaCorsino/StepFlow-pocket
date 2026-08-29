@@ -12,7 +12,7 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 concluídos; Bloco 5 com núcleo concluído e parâmetros finais pendentes; Bloco 6 consolidado conceitualmente; Bloco 7 concluído no núcleo; Blocos 8 e 9 concluídos.
-- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–10 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 11 — QR / barcode é a próxima e ainda não está aberta**.
+- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–10 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 11 — Validação técnica final é a próxima e ainda não está aberta**.
 - Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 ## Precedência e autoridade
@@ -114,7 +114,7 @@ Durante o fechamento documental restante da Fase 1:
 - remoto é a fonte operacional;
 - sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex.
 
-**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 11** pode começar antes de a **Etapa 10** estar squash-mergeada, a branch da Etapa 10 removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
+**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 11 — Validação técnica final** pode começar antes de o checkpoint documental atual estar squash-mergeado, a branch correspondente removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
 
 ## Regras operacionais
 
@@ -323,7 +323,7 @@ Atendimento/Ficha:
 - seções vazias colapsam completamente;
 - PDF usa Noto Sans: 14 pt identificação principal, 10,5 pt seção, 10 pt corpo, 9 pt ficha técnica e 8,5 pt metadados;
 - divisórias discretas e contraste neutro legível em monocromático;
-- sem caixas de escrita manual, assinatura, financeiro, garantia, checklist, progresso, timeline, QR/barcode, lista detalhada de Procedimentos, página 2 ou footer promocional;
+- sem caixas de escrita manual, assinatura, financeiro, garantia, checklist, progresso, timeline, lista detalhada de Procedimentos, página 2 ou footer promocional;
 - sem redução dinâmica de fonte; overflow continua `SHEET_OVERFLOW`.
 
 ### Etapa 8 — limites textuais e densidade da Ficha
@@ -350,7 +350,7 @@ Atendimento/Ficha:
 - campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
 - diagnóstico pode indicar quantidade de observações, Etapa específica ou campo estruturado longo;
 - sem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou compactação automática;
-- limites técnicos finais de quantidade/payload/recursos ficam para a Etapa 12.
+- limites técnicos finais de quantidade/payload/recursos ficam para a Etapa 11.
 
 ### Etapa 10 — nomes de arquivo e artefatos temporários
 
@@ -365,12 +365,11 @@ Atendimento/Ficha:
 - cleanup/retry/scavenging são best-effort, restritos ao namespace StepFlow e não usam serviço/daemon/Task Scheduler/watchdog;
 - lock não autoriza kill, unlock forçado ou alteração de ACL;
 - temporários/exportações não entram em SQLite, histórico ou backup por padrão;
-- detalhes concretos NTFS/SMB/WebView2, memória, paths, concorrência e EDR ficam para a Etapa 12.
+- detalhes concretos NTFS/SMB/WebView2, memória, paths, concorrência e EDR ficam para a Etapa 11.
 
 ## Pendências ainda não consolidáveis para implementação
 
-- Etapa 11: QR/barcode apenas se benefício aprovado;
-- Etapa 12: matriz técnica final e limites de recursos;
+- Etapa 11: matriz técnica final e limites de recursos;
 - mecanismo técnico final de Backup/Restore;
 - parâmetros finais de autenticação;
 - Gerência × configuração da empresa;
