@@ -189,6 +189,21 @@ Pendentes: Gerência × configuração da empresa e Gerência × Backup.
 
 Parâmetros finais de Argon2id, senha, sessão e token permanecem pendentes.
 
+### Backup/Restore — decisões aprovadas da Análise 1 do Bloco 11
+
+- Backup normal protege o estado StepFlow, não a implantação inteira;
+- payload inicial: `data/stepflow.sqlite` + `data/company/**` + `data/avatars/**`;
+- `app/`, `config/`, `logs/`, `backups/`, exportações, temporários e Client local ficam fora;
+- novo tipo de arquivo persistente exige allowlist/contrato explícito;
+- backup confirmado é um pacote único e imutável `.stepflow-backup`;
+- container baseline: ZIP padrão em modo `Stored`;
+- conteúdo: `manifest.json` + `payload/` controlado;
+- manifesto registra origem, versão/schema, tamanho e SHA-256 por entrada;
+- pacote parcial nunca é válido; staging precede promoção;
+- snapshot SQLite usa a Online Backup API como mecanismo baseline.
+
+A consistência entre banco + arquivos, promoção, retenção, Restore, sessões e disaster recovery continuam em análise no Bloco 11.
+
 ## 9. Geração documental — Bloco 10 concluído
 
 - geração pertence ao Host;
@@ -238,7 +253,7 @@ Fonte: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
 ## 10. Estado da Fase 1
 
 - Blocos 0–10: encerrados nos respectivos escopos documentais;
-- Bloco 11: Backup/Restore técnico pendente;
+- Bloco 11: Backup/Restore técnico em análise; Análise 1 aprovada, Análise 2 em proposta;
 - Bloco 12: estrutura oficial + Fase 2 pendente.
 
 ## 11. Pendências vigentes
@@ -261,10 +276,13 @@ Fonte: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
 
 ### Bloco 11
 
-- pacote/mecanismo de Backup/Restore;
-- consistência/checksums/retenção;
+- consistência e barrier de captura;
+- verificação/promoção/crash safety;
+- catálogo/retenção;
+- Restore/safety backup/compatibilidade;
 - restart/reconexão/sessões;
-- disaster recovery local.
+- disaster recovery local;
+- Gerência × Backup.
 
 ### Bloco 12
 
