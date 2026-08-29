@@ -36,18 +36,24 @@ Consolidado até aqui:
 
 ### Bloco 11 — Backup / Restore técnico
 
-**PENDENTE.**
+**EM ANÁLISE.**
 
-Fechará:
+O escopo técnico atualmente em análise fechará:
 
-- pacote/formato administrado;
-- consistência e checksums;
-- atomicidade e safety backup;
+- conjunto recuperável e formato administrado;
+- consistência de SQLite + arquivos administrados;
+- manifesto, verificação e compatibilidade;
+- escrita/promoção e tratamento de backup parcial;
 - retenção;
 - coordenação com mutações e operações administrativas;
-- restart/reconexão/sessões durante Restore;
+- safety backup e Restore normal;
+- restart/reconexão/sessões;
+- falhas parciais e resultado incerto;
 - disaster recovery local quando Host não inicia;
-- compatibilidade de backup entre versões/schema.
+- capacidades/auditoria;
+- validação técnica final.
+
+Fonte de trabalho: `bloco-11-backup-restauracao.md`.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
