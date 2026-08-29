@@ -141,27 +141,41 @@ Resultado:
 
 **EM ANÁLISE.**
 
-Fonte de trabalho: `bloco-11-backup-restauracao.md`.
+Fontes:
 
-A UX já está consolidada em `../02-telas/13-backup-restauracao.md` e não será reaberta sem bloqueador técnico concreto.
+- `bloco-11-backup-restauracao.md` — mapa principal e decisões aprovadas;
+- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — proposta atual;
+- `../02-telas/13-backup-restauracao.md` — UX consolidada.
 
-O Bloco 11 deve fechar tecnicamente:
+Estado:
 
-- conjunto exato do estado recuperável;
-- snapshot consistente de SQLite + arquivos administrados;
-- formato/identidade do backup;
-- manifesto, verificação e compatibilidade;
-- escrita/promoção e tratamento de backup parcial;
-- retenção;
-- coordenação com operações e mutações;
-- safety backup e Restore normal;
+- Análise 1 — estado recuperável + envelope: **APROVADA**;
+- Análise 2 — consistência + escrita/promoção/verificação: **APROVADA**;
+- Análise 3 — catálogo + retenção + coordenação administrativa: **EM REVISÃO**;
+- Análises 4–7: pendentes.
+
+Já consolidado:
+
+- Backup normal protege `stepflow.sqlite + company/** + avatars/**`;
+- pacote único `.stepflow-backup`, ZIP `Stored` + manifesto versionado + SHA-256;
+- SQLite via Online Backup API;
+- barrier curto sobre mutações para capturar SQLite + arquivos no mesmo ponto lógico;
+- staging privado; `-wal`/`-shm` fora do pacote;
+- verificação antes da promoção;
+- promoção final same-volume/no-replace;
+- crash/parcial nunca vira backup confirmado.
+
+Ainda a fechar:
+
+- catálogo/retenção/coordenação administrativa;
+- Restore/safety backup/compatibilidade;
 - restart/reconexão/sessões;
-- falhas parciais/resultado incerto;
-- disaster recovery local quando Host não inicia;
+- falhas e resultado incerto;
+- disaster recovery local;
 - capacidades/auditoria;
 - validação técnica final.
 
-Alternativas técnicas listadas durante a análise não são contrato até aprovação explícita e sincronização documental.
+Não reabrir UX sem bloqueador técnico concreto.
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
@@ -185,7 +199,8 @@ Fechará:
 - entropia/tamanho final do token;
 - Gerência × configuração da empresa;
 - Gerência × Backup;
-- regra editorial de categoria arquivada.
+- regra editorial de categoria arquivada;
+- valor/default final do parâmetro de retenção de backups.
 
 ### Ambiente real
 
