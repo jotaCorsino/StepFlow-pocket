@@ -38,22 +38,29 @@ Consolidado até aqui:
 
 **EM ANÁLISE.**
 
-O escopo técnico atualmente em análise fechará:
+Já aprovados:
 
-- conjunto recuperável e formato administrado;
-- consistência de SQLite + arquivos administrados;
-- manifesto, verificação e compatibilidade;
-- escrita/promoção e tratamento de backup parcial;
-- retenção;
-- coordenação com mutações e operações administrativas;
-- safety backup e Restore normal;
-- restart/reconexão/sessões;
-- falhas parciais e resultado incerto;
-- disaster recovery local quando Host não inicia;
-- capacidades/auditoria;
+- fronteira do estado recuperável;
+- pacote `.stepflow-backup` + manifesto + hashes;
+- snapshot SQLite via Online Backup API;
+- consistência conjunta entre SQLite e arquivos administrados;
+- barrier curto sobre mutações;
+- staging/verificação/promoção no-replace.
+
+Em análise agora:
+
+- catálogo reconstruível;
+- retenção sem scheduler;
+- coordenação administrativa de Backup/Restore/migration.
+
+Depois:
+
+- Restore + safety backup + compatibilidade;
+- restart/reconexão/sessões + falhas;
+- disaster recovery + capacidades/auditoria;
 - validação técnica final.
 
-Fonte de trabalho: `bloco-11-backup-restauracao.md`.
+Fontes: `bloco-11-backup-restauracao.md` e `bloco-11-analise-3-catalogo-retencao-coordenacao.md`.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
@@ -190,6 +197,7 @@ Não inclui serviço StepFlow persistente.
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
+- valor/default final de retenção de backups;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
 - SMB/impressoras/EDR corporativos.
