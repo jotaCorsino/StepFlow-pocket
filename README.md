@@ -6,7 +6,8 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-29  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–10 consolidadas; Etapa 11 — validação técnica final próxima**  
+**Bloco atual:** Bloco 10 — Exportação / impressão / ficha compacta — **Etapas 1–11 consolidadas; fechamento operacional pendente do PR/gate remoto**  
+**Próximo bloco após o gate:** Bloco 11 — Backup / restauração  
 **Implementação funcional oficial:** ainda não iniciada
 
 Este painel é a visão rápida. Precedência e decisões completas permanecem em `AGENTS.md`, `docs/05-progresso/registro-de-decisoes.md` e documentos específicos.
@@ -25,7 +26,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / ficha compacta | 🟡 Em andamento — Etapas 1–10 consolidadas |
+| 10 | Exportação / impressão / ficha compacta | ✅ Etapas 1–11 consolidadas; gate remoto pendente |
 | 11 | Backup / restauração | ⏳ Pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
@@ -39,6 +40,33 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - cor nunca é o único meio para estado importante;
 - Reader operacional persiste checklist e pode registrar `Observação do serviço` opcional por Etapa;
 - Ficha compacta é prestação de contas resumida ao cliente, não relatório técnico completo.
+
+## Contrato Pocket
+
+O StepFlow deve poder ser publicado como **pasta pronta em um servidor Windows** e usado pelas estações autorizadas sem instalação individual do aplicativo.
+
+Fluxo aprovado:
+
+```text
+pasta publicada no servidor
+→ usuário acessa o compartilhamento
+→ executa StepFlowLauncher.exe
+→ Launcher prepara/valida o Client em %LOCALAPPDATA%
+→ Client abre localmente
+→ Launcher encerra
+```
+
+Requisitos:
+
+- zero instalador tradicional obrigatório por estação;
+- zero preparação manual de dependências por estação;
+- zero privilégio administrativo no uso normal;
+- nenhuma toolchain de desenvolvimento na estação ou máquina central de produção;
+- nenhuma Internet obrigatória para uso normal;
+- Client operacional local, não executado permanentemente pelo SMB;
+- Host/Controller continuam sendo iniciados na máquina central quando o ciclo StepFlow estiver ativo.
+
+WebView2 não pode enfraquecer esse contrato. Evergreen existente é preferível quando compatível. Um fallback autocontido só poderá ser adotado se uma PoC provar preparação local automática sem elevação/intervenção manual; Fixed Version nunca deve ser executado pelo UNC/SMB.
 
 ## Bloco 9 — operação consolidada
 
@@ -69,7 +97,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 | 8 | Limites textuais e densidade da Ficha | ✅ Consolidado |
 | 9 | Múltiplos MACs / Procedimentos / dados excepcionais | ✅ Consolidado |
 | 10 | Nomes de arquivo + artefatos temporários | ✅ Consolidado |
-| 11 | Validação técnica final do Bloco 10 | 🟡 Próxima — ainda não aberta |
+| 11 | Validação técnica final do Bloco 10 | ✅ Consolidado / aprovado pelo PO |
 
 ### Etapas 1–5 — Procedimentos
 
@@ -131,8 +159,7 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - multiplicidade real pode levar a `SHEET_OVERFLOW`, exigindo revisão humana dos textos reais;
 - campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
 - diagnóstico de overflow pode indicar multiplicidade, como quantidade de observações ou campo estruturado longo;
-- sem `include_in_sheet`, editor paralelo, seleção transitória, modo compacto, segunda página ou redução automática do template;
-- limites técnicos finais permanecem para a Etapa 11.
+- sem `include_in_sheet`, editor paralelo, seleção transitória, modo compacto, segunda página ou redução automática do template.
 
 ### Etapa 10 — nomes e artefatos temporários
 
@@ -147,21 +174,40 @@ Este painel é a visão rápida. Precedência e decisões completas permanecem e
 - cleanup é best-effort após uso e no encerramento normal; crash pode deixar órfãos para scavenging posterior restrito ao namespace StepFlow;
 - sem Windows Service, Task Scheduler, daemon ou watchdog para limpeza;
 - save só é sucesso após gravação integral; arquivo auxiliar no mesmo destino e promoção segura são preferidos quando o filesystem/API suportarem;
-- temporários/exportações não entram em SQLite, histórico ou backup por padrão;
-- validações concretas de NTFS/SMB/WebView2, memória, paths e concorrência ficam para a Etapa 11.
+- temporários/exportações não entram em SQLite, histórico ou backup por padrão.
 
-Fonte técnica: `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
+### Etapa 11 — validação técnica final
+
+A matriz técnica não encontrou bloqueador das decisões documentais das Etapas 1–10.
+
+Principais resultados:
+
+- Typst/PDF Host-side e `PagedDocument` foram validados;
+- DOCX Rust direto permanece viável sob adaptador, com teste de Word corporativo pendente;
+- impressão Windows usa `with_webview` + WebView2 nativo + `ShowPrintUI(System)`;
+- Tauri/Wry/WebView2 usados pelo adaptador devem ser pinados/testados;
+- save local, naming, temporários e scavenging são viáveis com limites documentados;
+- SMB, impressoras, Word e EDR permanecem validações do ambiente real;
+- memória, concorrência, filas e timeout serão medidos na fase executável, sem números arbitrários;
+- o contrato Pocket de zero instalação/preparação manual por estação é gate obrigatório;
+- WebView2 Fixed Version em fallback só pode ser adotado após PoC local sem elevação/manualidade e nunca por UNC/SMB.
+
+Fonte da matriz: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
 
 ## Gate atual
 
-A Etapa 11 — Validação técnica final não pode ser aberta antes de:
+A consolidação documental da Etapa 11 e do Bloco 10 só fica operacionalmente encerrada após:
 
 ```text
-squash merge da limpeza documental atual
-→ remoção da branch remota correspondente
+PR #24 validado
+→ ready
+→ squash merge em main
+→ remoção da branch remota
 → remoto somente com main
 → zero PRs abertos
 ```
+
+Somente depois desse gate o Bloco 11 pode ser formalmente aberto.
 
 ## Pendências principais
 
@@ -169,9 +215,8 @@ squash merge da limpeza documental atual
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- Etapa 11 do Bloco 10;
+- validações reais de WebView2/Windows/Word/impressoras/SMB/EDR;
 - mecanismo técnico do Bloco 11;
-- validações reais do ambiente corporativo;
 - estrutura oficial/Fase 2 no Bloco 12.
 
 ### Regra de atualização deste painel

@@ -12,8 +12,9 @@ Regras obrigatórias para Codex e outros agentes que atuem neste repositório.
 - Desenvolvimento atual: computador pessoal fora da LAN corporativa.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–4 concluídos; Bloco 5 com núcleo concluído e parâmetros finais pendentes; Bloco 6 consolidado conceitualmente; Bloco 7 concluído no núcleo; Blocos 8 e 9 concluídos.
-- Bloco 10 está **EM ANDAMENTO**; **Etapas 1–10 estão CONSOLIDADAS / APROVADAS PELO PO**; **Etapa 11 — Validação técnica final é a próxima e ainda não está aberta**.
+- Bloco 10 possui **Etapas 1–11 CONSOLIDADAS / APROVADAS PELO PO**; o fechamento operacional ainda depende do PR da Etapa 11, squash merge, remoção da branch e remoto limpo.
 - Bloco 11 fecha Backup/Restore técnico; Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
+- Nenhuma implementação funcional oficial foi iniciada.
 
 ## Precedência e autoridade
 
@@ -49,7 +50,9 @@ Se a tarefa contrariar decisão consolidada, só prosseguir quando houver nova d
 - `docs/01-produto/categorizacao-atendimentos-equipamentos.md`;
 - `docs/04-planejamento/bloco-9-atendimentos-execucao-checklist.md`;
 - `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`;
-- documentos técnicos específicos da tarefa.
+- `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`;
+- `docs/03-arquitetura/launcher-distribuicao-client.md`;
+- `docs/03-arquitetura/compatibilidade-windows-client.md`.
 
 ## Papéis
 
@@ -114,7 +117,7 @@ Durante o fechamento documental restante da Fase 1:
 - remoto é a fonte operacional;
 - sincronização do checkout local fica adiada até antes do primeiro trabalho de implementação com Codex.
 
-**Gate atual obrigatório:** nenhuma pesquisa, branch, proposta ou análise da **Etapa 11 — Validação técnica final** pode começar antes de o checkpoint documental atual estar squash-mergeado, a branch correspondente removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
+**Gate atual obrigatório:** o Bloco 11 não pode ser aberto antes de o PR da Etapa 11 do Bloco 10 estar squash-mergeado, a branch correspondente removida do remoto e o remoto verificado com somente `main` e zero PRs abertos.
 
 ## Regras operacionais
 
@@ -131,25 +134,51 @@ Durante o fechamento documental restante da Fase 1:
 - não versionar credenciais, segredos, banco real ou dados pessoais da empresa;
 - exemplos de IP/hostname/share/path nunca viram configuração;
 - testes de LAN corporativa fora dela são `NÃO APLICÁVEIS NESTE AMBIENTE`;
-- protótipo descartável não vira produção silenciosamente.
+- protótipo/PoC descartável não vira produção silenciosamente.
 
 ## Ambiente Codex versus sessão normal do PO
 
 Limitação do sandbox não vira requisito do produto. Codex não repara o próprio ambiente alterando ACL, Schannel, registro Windows, PATH global, políticas de segurança ou reinstalando ferramentas válidas. Operações que exijam credenciais, Internet confiável, elevação ou configuração global são reportadas para a sessão Windows normal do PO.
 
-## Regras Pocket obrigatórias
+## Contrato Pocket obrigatório
 
-- implantação central por pasta pronta;
-- nenhuma toolchain de desenvolvimento na máquina central de produção;
-- sem Windows Service persistente, auto-start, Task Scheduler, watchdog, tray agent ou daemon como padrão;
-- Host/Controller sob demanda;
-- Controller aberto representa ciclo central ativo; encerrado o ciclo, nenhum processo StepFlow permanece ativo;
+O StepFlow deve funcionar como aplicação **Pocket**, no sentido operacional aprovado:
+
+```text
+pasta pronta publicada no servidor Windows
+→ estação acessa o compartilhamento
+→ usuário executa StepFlowLauncher.exe
+→ Launcher prepara/valida o Client local automaticamente
+→ Client abre de %LOCALAPPDATA%
+→ Launcher encerra
+```
+
+É obrigatório:
+
+- zero instalador tradicional obrigatório por estação;
+- zero configuração manual de dependência por estação;
+- zero privilégio administrativo no uso normal;
+- zero toolchain de desenvolvimento na estação e máquina central de produção;
+- nenhuma Internet obrigatória para uso normal;
+- Client operacional local, não executado permanentemente do SMB;
+- distribuição/atualização central pela pasta publicada e versões validadas pelo Launcher;
+- Host/Controller sob demanda na máquina central;
 - fechar Client individual não encerra Host;
-- não inventar auto-shutdown por ausência de Clients/timeout;
-- Client roda localmente, preparado por launcher transitório;
-- launcher encerra após iniciar Client;
-- workstation remota não inicia sozinha processo na máquina central apenas por executar `.exe` via SMB;
-- dados/config/logs/backups ficam separados dos binários substituíveis.
+- encerrado o ciclo central, nenhum processo StepFlow permanece ativo;
+- sem Windows Service persistente, auto-start, Task Scheduler, watchdog, tray agent ou daemon como baseline.
+
+Se uma dependência exigir instalação, elevação ou preparação manual por computador, a solução **não atende ao contrato Pocket** e deve ser redesenhada ou tratada como bloqueador técnico.
+
+### WebView2 e Pocket
+
+- Tauri usa WebView2 no Windows;
+- Evergreen compatível já presente é preferível;
+- Launcher/Client deve detectar disponibilidade real;
+- não baixar/instalar runtime silenciosamente pela Internet em produção;
+- Fixed Version não pode ser executado de localização de rede/UNC;
+- eventual fallback Fixed/autocontido deve ser preparado localmente e só pode ser adotado após PoC provar funcionamento em `%LOCALAPPDATA%` sem instalação, elevação ou ação manual, inclusive no Windows 10 alvo;
+- requisitos ACL/AppContainer de Fixed Runtime moderno no Windows 10 precisam ser automatizáveis sem enfraquecer o contrato Pocket;
+- se a PoC falhar numa estação que deva ser suportada, o fallback é bloqueador até redesign; não autoriza instalador obrigatório.
 
 ## Regras técnicas consolidadas
 
@@ -184,198 +213,134 @@ Concluído
 Cancelado
 ```
 
-- primeiro save cria Atendimento;
-- abrir tela não cria registro oficial;
+- primeiro save cria Atendimento; abrir tela não cria registro oficial;
 - responsável + `Resumo do trabalho` são obrigatórios para conclusão;
 - checklist incompleto gera confirmação, não bloqueio automático;
 - cancelamento exige motivo;
 - Concluído/Cancelado são read-only até reabertura;
-- ADM/Gerência reabrem por preset; Funcionário não.
-
-Responsabilidade/revisões:
-
-- Funcionário cria Atendimento inicialmente para si;
-- Funcionário padrão edita/conclui apenas Atendimento do qual é responsável;
+- ADM/Gerência reabrem por preset; Funcionário não;
+- Funcionário cria Atendimento inicialmente para si e opera por responsabilidade;
 - ADM/Gerência podem atribuir/reatribuir e operar qualquer Atendimento acessível;
 - Funcionário seleciona revisão publicada;
 - ADM/Gerência podem selecionar explicitamente revisão histórica/não publicada já autorizada;
-- revisão vinculada nunca muda silenciosamente após nova publicação.
-
-Checklist/observação por Etapa:
-
-- Reader standalone não persiste execução;
-- Reader operacional persiste checklist;
-- cada Etapa pode receber `Observação do serviço` opcional;
-- observação pertence a Atendimento + vínculo da revisão + Etapa;
-- progresso deriva somente do checklist;
+- revisão vinculada nunca muda silenciosamente após nova publicação;
 - checklist usa concorrência por item/equivalente;
-- observação usa concorrência por Etapa/equivalente;
+- observação do serviço usa concorrência por Etapa/equivalente;
 - evento remoto não sobrescreve edição local silenciosamente;
-- não introduzir autosave por inferência.
-
-Equipamento:
-
-- código `EQP-000001`;
-- criar/editar: ADM/Gerência/Funcionário;
-- arquivar/reativar: ADM/Gerência;
+- não introduzir autosave por inferência;
+- Equipamento usa `EQP-000001`, Atendimento usa `AT-000001`, códigos Host-only com seis dígitos e gaps permitidos;
 - não arquivar Equipamento vinculado a Atendimento `Em andamento`;
-- conclusão congela projeção histórica relevante.
+- conclusão preserva estado histórico necessário à Ficha/reimpressão.
 
-Atendimento/Ficha:
+## Bloco 10 — arquitetura documental consolidada / Etapas 1–11
 
-- código `AT-000001`;
-- códigos Host-only, seis dígitos, gaps permitidos;
-- gerar/reimprimir Ficha: ADM/Gerência/Funcionário para Atendimento acessível;
-- `Em andamento`: estado confirmado atual;
-- `Concluído`: estado histórico aplicável;
-- `Cancelado`: saída identifica o estado;
-- Ficha prioriza serviço/dispositivo/resumo/observações, não checklist/timeline detalhados.
-
-## Bloco 10 — arquitetura documental consolidada / Etapas 1–10
+Fonte principal: `docs/04-planejamento/bloco-10-exportacao-impressao-ficha.md`.
 
 ### Etapa 1 — arquitetura
 
 - geração pertence ao Host;
 - Client solicita identidade da fonte + revisão esperada, sem documento montado;
-- Host captura snapshot consistente e materializa `DocumentModel` semântico;
+- Host captura snapshot consistente e materializa `DocumentModel`;
 - leitura/transação SQLite termina antes da renderização;
 - renderers não recebem DOM/HTML nem reconsultam banco;
 - geração é leitura derivada, fora da fila de mutações;
-- renderização usa limite próprio bounded;
-- sem `export_jobs`, scheduler ou fila persistente inicialmente;
-- Host não grava em path arbitrário do Client;
-- artefatos não viram histórico/backup por padrão;
-- runtime sem dependência operacional de Office, LibreOffice, Adobe Reader, browser externo/headless ou cloud obrigatória.
+- renderização usa capacidade própria bounded;
+- sem `export_jobs` persistente inicialmente;
+- Host não grava em path arbitrário da workstation;
+- artefatos não viram histórico/backup por padrão.
 
-### Etapa 2 — PDF de Procedimentos
+### Etapa 2 — PDF
 
-- Typst embutido no Host Rust via crates oficiais + adaptador interno;
-- template interno confiável/versionado e domínio somente como dados estruturados;
-- sem pacotes/recursos remotos; filesystem/fontes/assets controlados;
-- PDF 1.7 + Tagged PDF baseline, sem promessa formal PDF/A ou PDF/UA;
+- Typst embutido via crates oficiais + adaptador interno;
+- `World` restrito a template/fontes/assets autorizados;
+- PDF 1.7 + Tagged PDF baseline;
+- texto selecionável/pesquisável;
 - fontes incorporadas/subsetadas;
-- texto real selecionável/pesquisável;
-- todos os blocos conhecidos são representados ou falham explicitamente;
-- multipágina automático, sem truncamento;
-- PNG/JPEG/SVG controlados;
-- falha não produz artefato parcial como sucesso.
+- multipágina automático;
+- falha não produz parcial como sucesso.
 
-### Etapa 3 — DOCX de Procedimentos
+### Etapa 3 — DOCX
 
-- DOCX real OOXML/WordprocessingML/OPC, baseline Transitional;
-- geração Rust direta pelo mesmo `DocumentModel`;
-- `docx-rs` preferido sob adaptador interno;
-- sem Word/COM, LibreOffice, browser/headless, CLI ou cloud;
-- template/estilos internos; sem `.docx/.dotx` externo em runtime v1;
-- texto/listas permanecem Word reais/editáveis;
-- DOCX refluível, sem promessa de paginação idêntica ao PDF;
-- Arial + Consolas referenciadas sem embedding v1;
-- pacote incompleto/corrompido nunca é sucesso.
+- OOXML/WordprocessingML/OPC Transitional direto em Rust;
+- `docx-rs` preferido sob adaptador;
+- sem Word/COM, LibreOffice, browser/headless ou cloud;
+- texto/listas editáveis;
+- Arial/Consolas referenciadas sem embedding inicial;
+- DOCX refluível e sem promessa de paginação do PDF.
 
-### Etapa 4 — impressão Windows de Procedimentos
+### Etapa 4 — impressão Windows
 
-- impressão física no Client Windows;
-- artefato canônico = mesmo PDF da Etapa 2;
-- sem renderer separado, HTML da UI ou DOCX;
-- WebView2 transitória/dedicada + `ShowPrintUI(System)`;
-- diálogo padrão do Windows, sem impressão silenciosa/seletor próprio como baseline;
-- StepFlow não gerencia drivers/spooler;
-- recurso local transitório segue naming/path/lifecycle da Etapa 10;
-- sucesso = fluxo entregue ao Windows, não confirmação física de papel;
-- sem fallback silencioso para software externo.
+- mesmo PDF oficial;
+- Client Windows;
+- recurso local transitório quando necessário;
+- WebView2 dedicada/transitória;
+- acesso nativo isolado + `ShowPrintUI(System)`;
+- diálogo Windows, sem impressão silenciosa/seletor próprio baseline;
+- sucesso = entrega ao fluxo Windows.
 
-### Etapa 5 — template físico de Procedimentos
+### Etapa 5 — Procedimento físico
 
-- Reader e documento físico são superfícies independentes;
-- Procedimento exportado = A4 retrato multipágina, margens-base 18 mm;
-- sem capa exclusiva/sumário físico obrigatório/header repetitivo por padrão;
+- A4 retrato multipágina;
+- margens-base 18 mm;
+- sem capa exclusiva/sumário obrigatório/header repetitivo por padrão;
 - rodapé compacto;
-- paginação automática sem truncamento/redução silenciosa;
-- PDF usa Noto Sans + Noto Sans Mono incorporadas/subsetadas;
-- DOCX referencia Arial + Consolas sem embedding v1;
-- PDF é referência física; DOCX é refluível;
-- uma A4 é regra da Ficha, nunca do Procedimento completo.
+- sem truncamento/redução silenciosa;
+- PDF é referência física; DOCX é refluível.
 
-### Etapa 6 — PDF + preview da Ficha
+### Etapas 6–9 — Ficha
 
-- Ficha é prestação de contas resumida ao cliente;
-- prioriza identificação do serviço/dispositivo, características relevantes, `Resumo do trabalho` e observações;
-- PDF próprio/canônico via template Typst da Ficha;
-- PDF e preview SVG derivam do mesmo `PagedDocument`;
-- resultado válido exige exatamente uma página;
-- `2+ páginas` = `SHEET_OVERFLOW`, sem corte/segunda folha/redução silenciosa;
-- preview em modal/overlay simples;
-- Salvar/Imprimir reutilizam os mesmos bytes PDF;
-- impressão reutiliza WebView2 + `ShowPrintUI(System)`;
-- PDF/SVG são transitórios e presos à `source_version`.
-
-### Etapa 7 — template físico A4 da Ficha
-
-- A4 retrato, exatamente uma página, margens 15 mm e sem bleed;
-- composição predominantemente vertical/uma coluna;
-- cabeçalho institucional compacto, logo opcional, sem título gigante e sem footer obrigatório;
-- `CANCELADO` textual/inequívoco; acompanhamento discreto;
-- cliente/OS/técnico em linha curta, omitindo vazios;
-- Equipamento em ficha técnica resumida sem grade/tabela pesada;
-- `SERVIÇO REALIZADO` usa o `Resumo do trabalho` como área narrativa principal;
-- uma única seção `OBSERVAÇÕES` reúne observações relevantes do Atendimento, Equipamento e Etapas;
-- nome curto da Etapa só aparece quando necessário para contexto;
-- seções vazias colapsam completamente;
-- PDF usa Noto Sans: 14 pt identificação principal, 10,5 pt seção, 10 pt corpo, 9 pt ficha técnica e 8,5 pt metadados;
-- divisórias discretas e contraste neutro legível em monocromático;
-- sem caixas de escrita manual, assinatura, financeiro, garantia, checklist, progresso, timeline, lista detalhada de Procedimentos, página 2 ou footer promocional;
-- sem redução dinâmica de fonte; overflow continua `SHEET_OVERFLOW`.
-
-### Etapa 8 — limites textuais e densidade da Ficha
-
-- soft limits são orientação, nunca hard limit de dado: Resumo 600, Atendimento 400, Equipamento 300 e observação por Etapa 280 caracteres;
-- contador/aviso surge somente próximo de aproximadamente 80% da faixa recomendada;
-- ultrapassar soft limit não bloqueia save nem conclusão;
-- Typst real é a autoridade final de encaixe em uma A4;
-- `SHEET_OVERFLOW` bloqueia somente PDF/preview/impressão da Ficha e preserva o Atendimento integralmente;
-- Host devolve diagnóstico semântico dos campos mais prováveis para revisão;
-- usuário corrige os dados reais, sem editor paralelo da Ficha;
-- observações seguem Atendimento → Equipamento → Etapas na ordem executada;
-- sem IA/resumo automático, truncamento, reticências, deduplicação semântica, modo compacto ou redução automática de fonte/margem/espaçamento;
-- hard limits técnicos de storage/API não derivam da A4.
-
-### Etapa 9 — dados excepcionais e multiplicidade
-
-- Ficha é projeção client-facing resumida, não dump do domínio;
-- Procedimentos vinculados permanecem fora da Ficha por padrão, independentemente da quantidade;
-- MACs: 0 omite; 1–2 exibem valores compactos; 3+ exibem apenas a quantidade cadastrada;
-- labels existentes podem contextualizar MACs; não inventar `MAC principal`;
+- prestação de contas resumida ao cliente;
+- PDF + preview SVG do mesmo `PagedDocument`;
+- exatamente uma página A4, margens 15 mm;
+- `2+ páginas` = `SHEET_OVERFLOW`;
+- Salvar/Imprimir reutilizam os mesmos bytes PDF da prévia;
+- soft limits: Resumo 600, Atendimento 400, Equipamento 300, observação por Etapa 280;
+- soft limit não bloqueia nem trunca;
+- correção ocorre nos dados reais, sem editor paralelo/IA/resumo automático/compactação automática;
+- Procedimentos vinculados não aparecem por padrão;
+- MACs: 0 omite; 1–2 exibem valores; 3+ exibem quantidade;
 - observações legítimas não recebem cap/descarte automático;
-- multiplicidade real pode resultar em `SHEET_OVERFLOW` e exigir revisão humana dos textos reais;
-- campos estruturados longos quebram linha quando possível, sem truncamento, reticências ou abreviação inventada;
-- diagnóstico pode indicar quantidade de observações, Etapa específica ou campo estruturado longo;
-- sem `include_in_sheet`, `sheet_priority`, seleção transitória, editor paralelo, segunda página ou compactação automática;
-- limites técnicos finais de quantidade/payload/recursos ficam para a Etapa 11.
+- multiplicidade pode produzir `SHEET_OVERFLOW`.
 
-### Etapa 10 — nomes de arquivo e artefatos temporários
+### Etapa 10 — nomes e temporários
 
-- arquivo persistente escolhido pelo usuário e temporário interno têm lifecycles distintos;
-- Procedimento sugere `{codigo} - {titulo} - v{display_version} - r{revision_no}.{ext}`; Ficha sugere `{service_code} - Ficha.pdf`;
-- sanitização de filename segue Windows, impede injeção de path e nunca altera conteúdo documental;
-- conflito de nome não causa overwrite silencioso;
-- save só é sucesso após gravação integral; auxiliar opaco no mesmo destino e promoção/replace seguro são preferidos quando suportados;
-- temporário só é materializado no Client quando uma integração local precisa de filesystem;
-- raiz temporária é por usuário, via API do sistema/Tauri, sob namespace StepFlow e subdiretório opaco por instância;
-- filename temporário é opaco e não contém dados do domínio;
-- cleanup/retry/scavenging são best-effort, restritos ao namespace StepFlow e não usam serviço/daemon/Task Scheduler/watchdog;
-- lock não autoriza kill, unlock forçado ou alteração de ACL;
-- temporários/exportações não entram em SQLite, histórico ou backup por padrão;
-- detalhes concretos NTFS/SMB/WebView2, memória, paths, concorrência e EDR ficam para a Etapa 11.
+- Procedimento: `{codigo} - {titulo} - v{display_version} - r{revision_no}.{ext}`; sem versão editorial, omite esse segmento;
+- Ficha: `{service_code} - Ficha.pdf`;
+- sanitização afeta somente filename e impede path injection;
+- conflito não causa overwrite silencioso;
+- save só é sucesso após gravação integral;
+- temporário somente quando integração local exige filesystem;
+- raiz temporária por usuário sob namespace StepFlow e diretório opaco por Client;
+- cleanup/scavenging best-effort;
+- reparse point nunca seguido para fora da raiz gerenciada;
+- sem serviço/daemon/tarefa agendada de limpeza.
+
+### Etapa 11 — validação técnica final
+
+Fonte: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
+
+- nenhum bloqueador arquitetural identificado;
+- Typst/PDF/PagedDocument validados;
+- DOCX direto validado com limite e teste de Word corporativo pendente;
+- impressão Windows validada via WebView2 nativo + `ShowPrintUI(System)`;
+- adapter Tauri/Wry/WebView2 deve usar família pinada/testada;
+- save local/naming/temporários/scavenging viáveis com limites explícitos;
+- SMB, Word, impressoras e EDR pendentes de ambiente real;
+- memória/tamanho/concorrência/fila/timeout serão definidos por benchmark;
+- Fixed WebView2 por UNC/SMB não utilizar;
+- fallback WebView2 local exige PoC sem instalação/elevação/manualidade;
+- requisito Pocket é gate superior.
 
 ## Pendências ainda não consolidáveis para implementação
 
-- Etapa 11: matriz técnica final e limites de recursos;
 - mecanismo técnico final de Backup/Restore;
 - parâmetros finais de autenticação;
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- parâmetros reais do ambiente corporativo.
+- validações reais de Windows/WebView2/Word/impressoras/SMB/EDR;
+- parâmetros reais do ambiente corporativo;
+- estrutura oficial/Fase 2 no Bloco 12.
 
 ## Gate de implementação da Fase 1
 
