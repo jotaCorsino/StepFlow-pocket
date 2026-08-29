@@ -1,13 +1,13 @@
-# Concorrência, Fila de Escrita, Conflitos e Eventos — StepFlow
+# Concorrência, Fila de Escrita, Conflitos e Eventos — StepFlow Pocket
 
-**Data:** 2026-08-20  
-**Status:** DIREÇÃO ARQUITETURAL CONSOLIDADA PARA A FASE 1
+**Status:** DIREÇÃO ARQUITETURAL CONSOLIDADA PARA A FASE 1  
+**Atualização:** 2026-08-29
 
-## 1. Objetivo
+## Objetivo
 
 Garantir uso simultâneo por múltiplos Clients sem corrupção, sobrescrita silenciosa ou estados divergentes, mantendo SQLite local ao Host.
 
-## 2. Modelo geral
+## Modelo geral
 
 ```text
 Clients simultâneos
@@ -18,65 +18,50 @@ validação/autorização
       ↓
 coordenador de escrita
       ↓ fila bounded
-writer único
+writer lógico
       ↓ transação
 SQLite local em WAL
       ↓ commit
-resposta + evento
+resposta + evento pós-commit
 ```
 
-A fila e a revisão otimista têm funções diferentes e ambas são necessárias.
+Fila e revisão otimista têm funções diferentes e ambas são necessárias.
 
-## 3. SQLite
+## SQLite
 
 Direção inicial:
 
 ```text
 PRAGMA foreign_keys = ON
 PRAGMA journal_mode = WAL
-busy_timeout configurado
+busy_timeout configurado por evidência
 ```
 
-Motivos para WAL:
+- banco, `-wal` e `-shm` permanecem no filesystem local da máquina central;
+- nenhum Client acessa SQLite/WAL por rede;
+- WAL permite leituras concorrentes ao writer coordenado.
 
-- leitores podem continuar enquanto existe escritor;
-- escrita continua centralizada no Host;
-- banco permanece no mesmo computador do Host;
-- nenhum Client acessa WAL/SQLite por rede.
+## Writer lógico e fila bounded
 
-WAL não muda a regra de implantação: banco, `-wal` e `-shm` permanecem no filesystem local da máquina central.
+O Host possui coordenador explícito para comandos que alteram estado persistente.
 
-## 4. Um único writer lógico
+- fila assíncrona bounded;
+- processamento ordenado por writer lógico;
+- conexão de escrita controlada;
+- transações curtas;
+- sem chamada de rede ou espera do usuário dentro da transação;
+- leituras usam conexões controladas separadas quando apropriado.
 
-O Host terá um coordenador explícito para comandos que alteram estado persistente.
-
-Direção recomendada:
-
-- uma fila assíncrona bounded recebe comandos mutáveis;
-- um worker/writer processa comandos em ordem;
-- o writer mantém conexão de escrita controlada ao SQLite;
-- transações são curtas;
-- não realizar chamadas de rede ou espera do usuário dentro da transação;
-- leituras podem usar conexões separadas controladas pelo Host.
-
-Não depender de múltiplos writers competindo e `SQLITE_BUSY` como mecanismo normal de coordenação.
-
-## 5. Fila bounded e backpressure
-
-A fila não pode crescer sem limite.
-
-Se o Host estiver temporariamente saturado:
+Se houver saturação:
 
 - aplicar backpressure;
-- rejeitar/adiar novas mutações com erro operacional do tipo `SERVER_BUSY`/503 quando necessário;
+- rejeitar/admitir de forma controlada com `SERVER_BUSY`/503 ou equivalente;
 - nunca descartar comando aceito silenciosamente;
 - nunca responder sucesso antes do commit.
 
-Tamanho exato da fila será medido na implementação; não precisa ser grande para o uso interno esperado.
+Tamanho da fila, limites e timeouts serão definidos por benchmark, não por números arbitrários.
 
-## 6. Estrutura conceitual de comando
-
-Cada mutação chega ao coordenador com contexto suficiente, por exemplo:
+## Estrutura conceitual de comando
 
 ```text
 command_id
@@ -89,266 +74,188 @@ payload validado
 received_at
 ```
 
-`command_id` poderá atuar como chave de idempotência em operações que justificarem isso.
+`command_id` pode ser chave de idempotência quando a operação justificar.
 
-## 7. Ordem de processamento
-
-Fluxo de uma escrita:
+## Fluxo de escrita
 
 ```text
 request HTTP
-   ↓
-validar sessão/formato
-   ↓
-enfileirar
-   ↓
-writer recebe
-   ↓
-revalidar invariantes relevantes
-   ↓
-BEGIN transaction
-   ↓
-ler revisão/estado atual
-   ↓
-comparar base_revision
-   ↓
-aplicar mudança ou rejeitar
-   ↓
-COMMIT
-   ↓
-responder ao request
-   ↓
-publicar evento pós-commit
+→ validar sessão/formato
+→ admitir/enfileirar
+→ writer recebe
+→ revalidar invariantes
+→ BEGIN
+→ ler estado/revisão atual
+→ comparar base_revision
+→ aplicar ou rejeitar
+→ COMMIT
+→ responder
+→ publicar evento
 ```
 
-Evento nunca deve anunciar mudança que não foi commitada.
+Evento nunca anuncia mudança não commitada.
 
-## 8. Revisão otimista de processos
+## Revisão otimista
 
-Para processo:
+Exemplo:
 
 ```text
-Client A lê revision 41
-Client B lê revision 41
+Client A lê revisão 41
+Client B lê revisão 41
 
-A envia base_revision=41
-→ writer confirma atual=41
-→ cria revision 42
-→ commit
+A envia base=41
+→ commit revisão 42
 
-B envia base_revision=41
-→ writer encontra atual=42
-→ NÃO salva
-→ retorna conflito
+B envia base=41
+→ atual já é 42
+→ rejeitar conflito
 ```
 
-Fila não transforma o comando de B em válido. Ela apenas garante ordem previsível.
+A fila não transforma o comando de B em válido.
 
-## 9. Resposta de conflito
+Conflito retorna `409 Conflict` ou semântica equivalente e o Client oferece reconsulta/revisão consciente. Sem overwrite ou merge automático.
 
-Usar HTTP `409 Conflict` ou semântica equivalente no contrato.
+## Granularidade por domínio
 
-Envelope conceitual:
+Controle concorrente deve ser proporcional ao recurso:
 
-```json
-{
-  "error": {
-    "code": "PROCESS_REVISION_CONFLICT",
-    "message": "O processo foi alterado por outro usuário.",
-    "details": {
-      "submitted_revision": 41,
-      "current_revision": 42
-    }
-  }
-}
-```
+- Procedimento/revisão: revisão otimista do recurso;
+- usuários/configuração: `row_revision`/equivalente quando necessário;
+- Atendimento: revisão própria;
+- Equipamento: revisão própria;
+- checklist: por item/equivalente;
+- observação de serviço: por Etapa/equivalente.
 
-O Client oferece recarregar/revisar. Não sobrescreve automaticamente a revisão mais nova.
+Alterações independentes não devem gerar conflito global apenas por conveniência de implementação.
 
-## 10. Outras entidades mutáveis
+## Constraints como última defesa
 
-Entidades relevantes além de processo devem possuir controle equivalente quando edição concorrente puder causar perda silenciosa.
+Unicidade, foreign keys e demais constraints continuam protegendo invariantes no banco.
 
-Direção:
+Exemplo: duas criações simultâneas com mesmo código não podem produzir duas entidades válidas; uma deve falhar de modo determinístico.
 
-- `processes`: `revision_no` obrigatório;
-- `users`: `row_revision`/equivalente;
-- `company_settings`: `row_revision`/equivalente;
-- configurações de baixo risco somente do Host podem usar transação/invariante sem expor revisão ao usuário quando não houver edição concorrente real.
-
-## 11. Criações simultâneas
-
-Constraints do banco continuam sendo última linha de defesa.
-
-Exemplo: dois usuários tentam criar o mesmo `process.code`.
-
-Mesmo que os comandos sejam enfileirados:
-
-- primeiro válido pode commit;
-- segundo viola unicidade e recebe erro de validação/conflito de negócio;
-- nunca gerar dois processos com código duplicado.
-
-## 12. Arquivamento versus edição
-
-Arquivar/excluir logicamente um processo também exige `base_revision`.
-
-Se outro usuário alterou o processo antes do arquivamento:
-
-- operação antiga é rejeitada;
-- usuário precisa revisar o estado atual;
-- não arquivar silenciosamente uma revisão que o solicitante não viu.
-
-## 13. Leituras concorrentes
+## Leituras concorrentes
 
 Leituras não passam pela fila de escrita salvo necessidade específica.
 
-Com WAL:
-
 - consultas usam snapshots consistentes;
-- leitores não precisam aguardar toda escrita normal;
-- após receber evento de atualização, Client refaz consulta para obter estado commitado mais recente.
+- eventos sinalizam mudança e Client reconsulta;
+- consultas longas devem ser evitadas quando prejudicarem WAL/checkpoints;
+- geração documental captura snapshot consistente e renderiza depois, fora da transação de leitura.
 
-Consultas longas devem ser evitadas para não prejudicar checkpoints/WAL.
+## `busy_timeout`
 
-## 14. `busy_timeout`
+É defesa contra contenção transitória, não mecanismo principal de concorrência.
 
-Configurar timeout curto/moderado como defesa contra contenção transitória de SQLite.
+Valor numérico será definido por medição. `SQLITE_BUSY` recorrente dentro de um único Host coordenado deve ser tratado como sinal de diagnóstico/coordenação, não resolvido indefinidamente aumentando timeout.
 
-Ele não é mecanismo principal de concorrência.
+## Eventos
 
-Se `SQLITE_BUSY` ocorrer de forma recorrente dentro de um único Host coordenado, tratar como sinal de diagnóstico/bug de coordenação em vez de simplesmente aumentar timeout indefinidamente.
-
-## 15. Publicação de eventos
-
-Após commit bem-sucedido:
+Após commit:
 
 ```text
 commit SQLite
-   ↓
-construir evento
-   ↓
-broadcast para Clients autorizados/conectados
+→ construir evento
+→ broadcast para Clients autorizados
 ```
 
-Se um Client não receber o evento:
+Se Client perder evento:
 
-- o commit continua válido;
+- commit continua válido;
 - WebSocket reconecta;
 - Client refaz consultas relevantes;
-- banco permanece fonte de verdade.
+- banco permanece fonte oficial.
 
-Não reverter transação porque um socket falhou.
+Eventos de recurso versionado carregam revisão quando útil. Ordem global entre entidades diferentes não precisa simular transação distribuída.
 
-## 16. Ordem e revisão de eventos
+## Presença e locks
 
-Eventos relacionados a recurso versionado carregam `revision`.
-
-Client deve:
-
-- ignorar evento claramente mais antigo que seu estado conhecido;
-- atualizar/refazer consulta ao receber revisão mais nova;
-- não assumir que `event_id` substitui revisão de domínio.
-
-A ordem global entre eventos de entidades diferentes não precisa representar transação distribuída.
-
-## 17. Presença / soft lock
-
-**Não implementar soft lock/presença na primeira fundação.**
-
-Motivo:
+Não implementar presença/soft lock na primeira fundação.
 
 - revisão otimista já protege integridade;
-- presença adiciona heartbeat/TTL/UX sem necessidade comprovada;
-- usuário pode editar sem ser bloqueado por sessão abandonada.
+- presença futura, se existir, será apenas informativa;
+- não usar hard lock pessimista de longa duração para edição comum.
 
-Se futuramente houver benefício, presença será apenas informativa e nunca substituirá revisão no Host.
+## Desconexão durante mutação
 
-## 18. Hard lock
-
-Não usar lock pessimista de longa duração para edição de processo na primeira versão.
-
-Evitar cenário em que queda de Client deixe documentação bloqueada.
-
-## 19. Desconexão durante escrita
-
-Se o Client perder a conexão após enviar comando, é possível que o Host tenha commitado mesmo sem a resposta chegar.
+Se conexão cair após envio, o Host pode ter commitado sem a resposta chegar.
 
 Consequência:
 
 - Client não repete cegamente mutação não idempotente;
-- reconecta e consulta estado atual;
-- operações críticas podem usar `command_id`/idempotency key;
-- Host pode reconhecer comando já processado quando a operação justificar persistir idempotência.
+- reconecta e consulta estado;
+- operação crítica pode usar `command_id` quando justificado.
 
-## 20. Queda do Host
+## Queda do Host
 
-Transações SQLite fornecem atomicidade do commit.
+- transações SQLite protegem atomicidade do commit;
+- ao reiniciar, Host valida schema/migrations e abre banco local;
+- não há fila persistente de comandos “aceitos mas não commitados” inicialmente;
+- request sem confirmação precisa ser reconciliado pelo Client.
 
-Ao reiniciar:
+## Proteção contra dois Hosts
 
-- Host abre banco local;
-- verifica schema/migrations;
-- WAL é tratado pelo SQLite;
-- não existe fila persistente de comandos “aceitos mas ainda não commitados” na primeira versão;
-- request sem resposta confirmada deve ser reconciliado pelo Client.
+Controller/Host deve impedir duas instâncias coordenando o mesmo diretório de dados.
 
-## 21. Proteção contra dois Hosts sobre o mesmo banco
+Usar exclusão mútua local por implantação. Segunda instância válida não compete pelo SQLite e informa que o Host já está ativo.
 
-O Controller/Host deve impedir duas instâncias StepFlow Host coordenando o mesmo diretório de dados.
+## Operações administrativas e longas
 
-Usar exclusão mútua local por implantação, por exemplo mutex/lock de processo apropriado ao Windows.
+Backup/Restore e outras operações críticas devem possuir coordenação explícita com mutações normais.
 
-Se outra instância válida já possui o banco:
+O Bloco 11 definirá:
 
-- segunda instância não inicia operação normal;
-- não tenta competir pelo SQLite;
-- informa claramente que o Host já está ativo.
+- serialização/lock administrativo necessário;
+- janela de manutenção ou convivência com mutações durante backup;
+- comportamento durante Restore;
+- reconexão e resultado após operação crítica.
 
-O mecanismo não é serviço e desaparece quando o processo termina.
+Não criar paralelismo destrutivo por inferência.
 
-## 22. Shutdown coordenado
+## Shutdown coordenado
 
 Ao encerrar Host:
 
 1. parar de aceitar novas mutações;
-2. aguardar comando atualmente em commit dentro de limite seguro;
-3. rejeitar/encerrar fila ainda não iniciada de forma explícita;
-4. fechar WebSockets;
-5. fechar conexões SQLite;
-6. checkpoint quando apropriado;
-7. encerrar processo.
+2. concluir/abortar transacionalmente trabalho em andamento;
+3. tratar fila não iniciada explicitamente;
+4. coordenar operação administrativa ativa conforme contrato;
+5. encerrar WebSockets;
+6. fechar SQLite/conexões;
+7. checkpoint quando apropriado;
+8. encerrar processo.
 
-Nenhuma mutação pode ficar com resposta de sucesso sem commit correspondente.
+Nenhuma mutação pode receber sucesso sem commit correspondente.
 
-## 23. Cenários obrigatórios de teste futuro
+## Cenários de teste futuros
 
-Na Fase de implementação, validar mecanicamente pelo menos:
+Validar mecanicamente, entre outros:
 
-1. dois Clients editam mesma revisão;
-2. dois Clients editam processos diferentes;
-3. criação simultânea com mesmo código;
-4. editar enquanto outro arquiva;
-5. atualização de usuário concorrente;
-6. evento chega após commit;
-7. WebSocket cai e Client reconcilia;
-8. timeout após comando potencialmente commitado;
-9. tentativa de segundo Host no mesmo data dir;
-10. shutdown durante fila/escrita;
-11. múltiplas leituras enquanto há escrita.
+- dois Clients editando mesmo recurso;
+- Clients editando recursos independentes;
+- criação simultânea com unicidade;
+- editar versus arquivar;
+- checklist/observações concorrentes;
+- evento somente após commit;
+- perda/reconexão de WebSocket;
+- timeout após mutação potencialmente commitada;
+- tentativa de segundo Host;
+- shutdown com fila/escrita;
+- leituras durante escrita;
+- saturação e `SERVER_BUSY`;
+- coordenação de Backup/Restore após contrato do Bloco 11.
 
-## 24. Gate do Bloco 7
+## Gate arquitetural preservado
 
-Bloco 7 arquiteturalmente fechado com:
+A direção consolidada exige:
 
 1. SQLite local em WAL;
-2. um único writer lógico no Host;
-3. fila bounded e backpressure;
-4. revisão otimista obrigatória para processos;
-5. conflitos retornados sem sobrescrita automática;
-6. constraints SQLite como última defesa;
+2. writer lógico coordenado;
+3. fila bounded + backpressure;
+4. revisão otimista;
+5. conflitos sem sobrescrita automática;
+6. constraints como última defesa;
 7. eventos somente pós-commit;
-8. reconciliação após perda de eventos/conexão;
-9. sem soft/hard lock inicial de edição;
-10. proteção contra dois Hosts no mesmo banco.
-
-Próximo bloco: **Bloco 8 — especificação das telas críticas e contrato de UI/UX**.
+8. reconciliação após perda de conexão/eventos;
+9. sem soft/hard lock de edição comum inicialmente;
+10. proteção contra dois Hosts sobre os mesmos dados.

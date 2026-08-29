@@ -1,57 +1,55 @@
-# Categorização, Atendimentos e Equipamentos — StepFlow
+# Categorização, Atendimentos e Equipamentos — StepFlow Pocket
 
-**Status:** CONSOLIDADO, INCLUINDO REGRAS OPERACIONAIS DO BLOCO 9  
-**Atualização:** 2026-08-25
+**Status:** CONSOLIDADO  
+**Atualização:** 2026-08-29
 
 ## 1. Objetivo
 
-O StepFlow separa documentação reutilizável de trabalho real executado, preservando simplicidade operacional e uso amplo em manutenção, TI, Service Desk, Help Desk, infraestrutura, redes e procedimentos internos.
+Separar documentação reutilizável de trabalho real executado, preservando simplicidade operacional e uso amplo em manutenção, TI, Service Desk, Help Desk, infraestrutura, redes e outros procedimentos internos.
 
 ## 2. Modelo de domínio
-
-Existem três conceitos distintos:
-
-1. **Procedimento** — documentação/modelo oficial reutilizável;
-2. **Atendimento/Execução** — ocorrência concreta de trabalho;
-3. **Equipamento** — ativo físico opcional relacionado ao Atendimento quando aplicável.
 
 ```text
 Procedimento oficial
         ↓ usado em
-Atendimento/Execução
-        ↓ relacionado opcionalmente a
+Atendimento / Execução
+        ↓ opcionalmente relacionado a
 Equipamento
 ```
 
-Alterações futuras do Procedimento ou do cadastro global do Equipamento não devem reescrever silenciosamente o histórico já consolidado de um Atendimento concluído.
+- **Procedimento** — documentação/modelo oficial reutilizável;
+- **Atendimento/Execução** — ocorrência concreta de trabalho;
+- **Equipamento** — ativo físico opcional e reutilizável.
+
+Alterações futuras do Procedimento ou do cadastro global do Equipamento não devem reescrever silenciosamente o histórico consolidado de um Atendimento.
 
 ## 3. Categorias de Procedimentos
 
 - configuráveis pela empresa, não hardcoded;
-- um Procedimento pode ter múltiplas categorias simples;
+- um Procedimento pode possuir múltiplas categorias simples;
 - pesquisáveis/filtráveis;
 - sem árvore hierárquica complexa inicialmente;
 - podem ser arquivadas preservando histórico;
-- categorias arquivadas deixam de ser opção normal para novas associações;
+- categoria arquivada deixa de ser opção normal para nova associação;
 - nomes equivalentes após normalização não devem ser duplicados;
 - gestão por preset: ADM e Gerência; Funcionário não;
 - autorização real continua granular e Host-side.
 
-Exemplos como `Manutenção`, `TI`, `Service Desk`, `Help Desk`, `Infraestrutura`, `Redes` e `Guias` são apenas exemplos.
+Exemplos de categoria servem apenas como ilustração e não viram taxonomia hardcoded.
 
-Permanece pendente para fechamento antes da implementação editorial: regra exata de uma nova revisão de Procedimento que ainda carregue categoria arquivada.
+Pendente antes da implementação editorial: regra exata ao criar nova revisão de Procedimento que ainda carregue categoria arquivada.
 
 ## 4. Equipamento
 
 Equipamento é opcional e reutilizável entre Atendimentos.
 
-Para equipamentos de computação, o tipo deve suportar pelo menos:
+Para equipamentos de computação, tipos mínimos iniciais:
 
-- `Servidor`;
-- `Desktop`;
-- `Notebook`.
+- Servidor;
+- Desktop;
+- Notebook.
 
-Esses valores não formam enum global rígida para todos os tipos futuros de equipamento.
+Esses valores não formam enum global rígida para todos os tipos futuros.
 
 Campos conforme aplicabilidade:
 
@@ -70,10 +68,10 @@ Campos conforme aplicabilidade:
 
 Regras:
 
-- bateria é opcional/contextual e, quando informada como percentual, fica entre 0 e 100;
+- bateria é opcional/contextual e, quando percentual, fica entre 0 e 100;
 - campos vazios/não aplicáveis não viram burocracia visual;
-- observações possuem limite explícito; valor numérico final será fechado no Bloco 10 junto da ficha A4;
-- CPU/RAM/armazenamento são inicialmente resumos textuais, sem inventário automático.
+- CPU/RAM/armazenamento são resumos textuais inicialmente, sem inventário automático;
+- observação do Equipamento possui soft limit recomendado de 300 caracteres para favorecer a Ficha, sem virar hard limit de domínio por causa do layout.
 
 ## 5. Identidade e busca do Equipamento
 
@@ -82,16 +80,19 @@ Identidade canônica:
 - `equipment_id` interno estável;
 - código legível operacional gerado pelo Host.
 
-Código inicial consolidado:
+Formato inicial:
 
 ```text
 EQP-000001
 ```
 
-- seis dígitos;
-- sequência simples por implantação/banco ativo;
+Regras:
+
+- seis dígitos com zero à esquerda;
+- sequência numérica simples por implantação/banco ativo;
 - gaps permitidos;
-- não editável pelo usuário.
+- não editável pelo usuário;
+- não substitui o ID interno estável.
 
 Atributos pesquisáveis, mas não identidade canônica exclusiva:
 
@@ -102,11 +103,11 @@ Atributos pesquisáveis, mas não identidade canônica exclusiva:
 - MAC normalizado;
 - cliente/solicitante relacionado.
 
-Múltiplos MACs podem existir para o mesmo Equipamento.
+Múltiplos MACs podem existir no mesmo Equipamento, com label opcional quando útil. MAC, serial e patrimônio não são chaves canônicas por inferência.
 
 ## 6. Lifecycle do Atendimento
 
-Estados iniciais consolidados:
+Estados iniciais:
 
 ```text
 Em andamento
@@ -117,7 +118,7 @@ Cancelado
 Fluxo:
 
 ```text
-novo Atendimento
+rascunho somente no Client
       ↓ primeiro save aceito
 Em andamento
    ├─→ Concluído
@@ -128,7 +129,7 @@ Concluído/Cancelado
 Em andamento
 ```
 
-Não criar workflow de chamados com SLA, prioridade, aprovação, pausa ou estados adicionais sem novo requisito.
+Não criar workflow de chamados com SLA, prioridade, pausa, aprovação ou estados adicionais sem novo requisito.
 
 ## 7. Criação e identidade do Atendimento
 
@@ -142,41 +143,53 @@ No primeiro save aceito pelo Host:
 - define `started_at`;
 - registra criador e responsável.
 
-Código inicial:
+Formato inicial:
 
 ```text
 AT-000001
 ```
 
-- seis dígitos;
-- sequência simples por implantação/banco ativo;
+Regras:
+
+- seis dígitos com zero à esquerda;
+- sequência numérica simples por implantação/banco ativo;
 - gaps permitidos;
 - não editável;
-- cancelamento não libera/reutiliza código.
+- cancelamento não libera/reutiliza código;
+- não substitui o ID interno estável.
 
 ## 8. Conteúdo do Atendimento
 
 Pode conter:
 
-- ID interno estável;
-- código legível;
+- código legível e ID interno;
 - OS/referência externa opcional;
 - cliente/solicitante opcional;
 - Equipamento opcional;
 - responsável/técnico;
-- `started_at` e datas de lifecycle aplicáveis;
-- resumo do trabalho;
-- observações;
+- `started_at` e demais datas de lifecycle aplicáveis;
+- `Resumo do trabalho`;
+- observação geral;
 - zero, um ou vários Procedimentos/revisões utilizados;
-- checklist/progresso quando existirem itens de checklist nas revisões vinculadas.
+- checklist/progresso quando existirem itens de checklist;
+- observações de serviço por Etapa.
+
+Soft limits orientativos ligados à Ficha:
+
+- `Resumo do trabalho`: 600 caracteres;
+- observação geral do Atendimento: 400;
+- observação do Equipamento: 300;
+- observação de serviço por Etapa: 280.
+
+Esses valores orientam densidade; não bloqueiam save/conclusão nem truncam dados.
 
 ## 9. Responsável
 
 - Atendimento precisa de responsável antes de concluir;
-- Funcionário cria por padrão para si mesmo;
+- Funcionário cria por padrão para si;
 - Funcionário padrão não reatribui para outro usuário;
 - ADM/Gerência podem atribuir/reatribuir;
-- usuário desativado permanece no histórico, mas não é escolha normal para nova atribuição;
+- usuário desativado permanece no histórico, mas não é opção normal para nova atribuição;
 - alteração de responsável é auditável.
 
 ## 10. Conclusão, cancelamento e reabertura
@@ -189,33 +202,27 @@ Para concluir:
 - sessão precisa de capacidade;
 - responsável deve estar definido;
 - `Resumo do trabalho` é obrigatório;
-- conflitos/alterações não confirmadas precisam ser resolvidos.
+- conflitos/alterações não confirmadas precisam estar resolvidos.
 
-Não são obrigatórios por si só:
+Não são obrigatórios por si só: OS, cliente, Equipamento ou Procedimento vinculado.
 
-- OS;
-- cliente;
-- Equipamento;
-- Procedimento vinculado.
+Checklist incompleto gera confirmação, não bloqueio automático, pois os itens documentais não possuem semântica obrigatório/opcional na primeira versão.
 
-Checklist incompleto gera confirmação, mas não bloqueia automaticamente porque os itens documentais não possuem semântica obrigatório/opcional na primeira versão.
+Ao concluir, o Host:
 
-Ao concluir:
-
-- status vira `Concluído`;
-- Host define `completed_at`;
+- grava `Concluído` e `completed_at`;
 - preserva revisões utilizadas e checklist final;
+- preserva observações de serviço aplicáveis;
 - congela projeção histórica relevante do Equipamento;
-- registra evento de conclusão.
+- registra evento/auditoria correspondente.
 
 ### Cancelamento
 
 - somente em `Em andamento`;
-- exige capacidade própria;
-- exige motivo curto;
+- exige capacidade e motivo curto;
 - não exclui o Atendimento;
 - preserva código e histórico;
-- bloqueia edição operacional direta.
+- bloqueia edição direta após commit.
 
 ### Reabertura
 
@@ -223,7 +230,7 @@ Ao concluir:
 - explícita e auditável;
 - preset: ADM/Gerência sim; Funcionário não;
 - não apaga lifecycle anterior;
-- nova conclusão gera novo evento/estado final.
+- nova conclusão gera novo estado final aplicável sem destruir o anterior.
 
 ## 11. Procedimentos utilizados
 
@@ -238,103 +245,103 @@ Cada vínculo preserva a revisão exata realmente utilizada:
 Seleção por preset:
 
 - Funcionário: revisão publicada que possa ler;
-- ADM/Gerência: publicada por padrão; podem selecionar explicitamente outra revisão histórica/não publicada que já possam ler;
-- nenhuma revisão histórica/não publicada é escolhida silenciosamente;
+- ADM/Gerência: publicada por padrão; podem selecionar explicitamente outra revisão histórica/não publicada já autorizada;
+- revisão histórica/não publicada nunca é escolhida silenciosamente;
 - publicação futura não substitui vínculo existente.
 
-Vínculo pode ser adicionado/removido apenas enquanto Atendimento estiver editável. Remoção com checklist já marcado exige confirmação explícita.
+Vínculo só é alterado enquanto Atendimento estiver editável. Remoção com checklist/observação operacional existente exige confirmação proporcional e preservação do histórico necessário.
 
 ## 12. Checklist operacional
 
-O checklist documental do Procedimento continua imutável. Estado operacional existe somente no contexto de um Atendimento.
+O checklist documental do Procedimento permanece imutável. Estado operacional existe somente em Atendimento.
 
 ```text
-Processos → Leitor
+Processos → Reader
 → checklist documental, sem persistência operacional
 
 Atendimento → revisão vinculada → Executar
 → checklist persistente daquele Atendimento
 ```
 
-Cada item operacional preserva conceitualmente:
+Cada item operacional preserva identidade/vínculo de origem suficiente, estado marcado/desmarcado, autoria/data quando aplicável e controle concorrente por item/equivalente.
 
-- identidade própria;
-- vínculo Atendimento × revisão;
-- referência ao item de origem;
-- texto snapshot quando necessário;
-- marcado/desmarcado;
-- data/usuário da marcação quando aplicável;
-- revisão/controle concorrente próprio ou equivalente.
+Regras:
 
-Em `Em andamento`, usuário autorizado pode marcar/desmarcar. Em `Concluído`/`Cancelado`, fica somente leitura até reabertura.
-
-## 13. Progresso
-
-Progresso deriva apenas dos itens persistentes de checklist:
-
-```text
-PR-001        4 de 6 itens
-PR-022        2 de 2 itens
-Atendimento   6 de 8 itens
-```
-
-- etapas visitadas não contam;
-- `Etapa X de Y` continua sendo navegação;
+- marcação/desmarcação somente em estado editável e com capacidade;
+- concorrência granular por item/equivalente;
+- `Concluído`/`Cancelado` ficam somente leitura até reabertura;
+- progresso deriva de itens marcados / total;
+- Etapas visitadas não contam;
 - revisão sem checklist não mostra `0%` artificial;
 - 100% não conclui Atendimento automaticamente.
 
+## 13. Observação do serviço por Etapa
+
+- opcional;
+- pertence ao Atendimento + vínculo da revisão + Etapa;
+- não altera Procedimento oficial;
+- concorrência granular por Etapa/equivalente;
+- evento remoto não sobrescreve texto local silenciosamente;
+- editável somente enquanto Atendimento estiver editável/autorizado;
+- somente leitura em `Concluído`/`Cancelado` até reabertura;
+- participa da reprodução histórica da Ficha;
+- sem autosave por inferência;
+- não é comentário social, chat, bloco documental ou checklist.
+
 ## 14. Equipamento e histórico
 
-Preset de capacidades:
+Preset:
 
 - criar/editar Equipamento: ADM, Gerência e Funcionário;
-- arquivar/reativar Equipamento: ADM e Gerência;
-- Funcionário pode vincular/trocar/desvincular em Atendimento editável quando for responsável.
+- arquivar/reativar: ADM e Gerência;
+- Funcionário pode vincular/trocar/desvincular em Atendimento editável quando responsável.
 
 Equipamento arquivado não aparece para novos vínculos normais.
 
-Não arquivar Equipamento enquanto estiver vinculado a Atendimento `Em andamento`; antes, o Atendimento deve ser concluído/cancelado ou o vínculo removido.
+Não arquivar Equipamento enquanto estiver vinculado a Atendimento `Em andamento`; antes disso, o Atendimento deve ser concluído/cancelado ou o vínculo removido.
 
-Ao concluir um Atendimento, a projeção relevante do Equipamento fica congelada para reprodução histórica. Mudanças posteriores no cadastro global não reescrevem a ficha final daquele estado concluído.
+Conclusão congela a projeção relevante do Equipamento para reprodução histórica. Alteração posterior do cadastro global não reescreve a Ficha daquele estado final.
 
 ## 15. Ficha compacta
 
-A ficha pertence ao Atendimento e pode existir com ou sem Equipamento.
+A Ficha pertence ao Atendimento e pode existir com ou sem Equipamento.
 
-Regras operacionais consolidadas:
+Lifecycle:
 
-- `Em andamento`: pode ser gerada para acompanhamento, usando somente estado confirmado do Host;
-- `Concluído`: pode ser reimpressa a partir do estado histórico congelado aplicável;
-- `Cancelado`: quando gerada/reimpressa, identifica inequivocamente o estado;
-- alterações não salvas/conflitos bloqueiam geração;
+- `Em andamento`: gera estado confirmado atual;
+- `Concluído`: reimprime estado histórico aplicável;
+- `Cancelado`: saída identifica claramente o estado;
+- alterações locais não salvas/conflitos bloqueiam geração;
 - preset de gerar/reimprimir: ADM, Gerência e Funcionário para Atendimentos acessíveis.
 
-Requisitos físicos já consolidados:
+Contrato físico/documental:
 
-- documento próprio, não screenshot;
-- máximo uma página A4;
-- pode ser menor que A4;
-- não gera segunda página como comportamento normal;
-- sem redução tipográfica excessiva;
-- conteúdo que não caiba de forma legível bloqueia a saída;
-- não truncar silenciosamente informação importante;
+- prestação de contas resumida ao cliente;
+- documento próprio, nunca screenshot da UI;
+- PDF canônico + preview do mesmo `PagedDocument`;
+- exatamente uma página A4, margens 15 mm;
+- `2+ páginas` = `SHEET_OVERFLOW`;
+- nenhuma truncagem, segunda página, resumo automático ou redução dinâmica para caber;
 - campos vazios/não aplicáveis são omitidos;
-- cabeçalho usa logo/nome/contato/site/e-mail configurados.
+- identidade central da empresa é utilizada;
+- Procedimentos vinculados não são listados por padrão;
+- checklist/progresso/timeline não são impressos por padrão;
+- MACs: 0 omite; 1–2 exibem valores; 3+ exibem somente a quantidade cadastrada;
+- observações legítimas não recebem descarte automático.
 
-A impressão é requisito. DOCX específico da ficha não é requisito inicial. PDF específico permanece para decisão do Bloco 10.
+A impressão é requisito. DOCX específico da Ficha não é requisito inicial.
 
-## 16. Lista/Pesquisa de Atendimentos
+Detalhes: `../02-telas/14-exportacao-impressao-ficha.md`.
 
-Com o lifecycle consolidado:
+## 16. Lista e busca de Atendimentos
 
-- lista mostra `Em andamento`, `Concluído` ou `Cancelado`;
-- existe filtro por Status;
-- `Data` representa `started_at`;
-- filtro `Período` usa `started_at`;
-- ordenação padrão: mais recente por `started_at`;
-- busca operacional permanece separada da busca de Processos.
+- Status visível: Em andamento / Concluído / Cancelado;
+- filtro por Responsável, Status e Período;
+- período usa `started_at`;
+- ordenação padrão: mais recente primeiro;
+- busca operacional separada de Processos.
 
-Busca pode usar:
+Pode pesquisar por:
 
 - código do Atendimento;
 - OS/referência;
@@ -362,65 +369,38 @@ Busca pode usar:
 | Adicionar/remover Procedimento | sim | sim | sim, quando responsável |
 | Selecionar revisão não publicada/histórica | sim | sim | não |
 | Marcar/desmarcar checklist | sim | sim | sim, quando responsável |
-| Gerar/reimprimir ficha acessível | sim | sim | sim |
+| Registrar/editar observação de serviço por Etapa | sim | sim | sim, quando responsável |
+| Gerar/reimprimir Ficha acessível | sim | sim | sim |
 | Gerir categorias | sim | sim | não |
 
 Presets não substituem capacidades granulares nem autorização Host-side.
 
 Gerência × configuração da empresa e Gerência × Backup permanecem pendentes.
 
-## 18. Concorrência e eventos
+## 18. Concorrência e histórico
 
-- Atendimento usa revisão otimista por recurso;
+- Atendimento usa revisão otimista;
 - concluir/cancelar/reabrir também são mutações versionadas;
 - Equipamento possui revisão própria;
-- checklist usa controle granular por item/equivalente para evitar conflito global desnecessário;
-- evento pós-commit sinaliza mudança e Client reconsulta;
-- evento nunca sobrescreve edição local;
+- checklist usa granularidade por item;
+- observação de serviço usa granularidade por Etapa;
+- eventos pós-commit sinalizam mudança e Client reconsulta;
+- evento remoto não sobrescreve edição local silenciosamente;
 - timeout/desconexão após mutação exige reconciliação, não retry cego.
 
-## 19. Histórico operacional
-
-Preservar eventos de alto valor:
-
-- criação;
-- mudança de responsável;
-- vínculo/troca/desvínculo de Equipamento;
-- Procedimento adicionado/removido;
-- conclusão;
-- cancelamento + motivo;
-- reabertura;
-- alterações administrativas relevantes.
+Preservar eventos de alto valor: criação, mudança de responsável, vínculo de Equipamento/Procedimento, conclusão, cancelamento + motivo, reabertura e alterações administrativas relevantes.
 
 Não criar timeline burocrática de cada campo/checkbox por padrão.
 
-## 20. Pendências remanescentes
+## 19. Pendências remanescentes
 
-### Bloco 10
-
-- template físico final A4;
-- margens, tipografia e densidade;
-- limites numéricos de textos destinados à ficha;
-- regras finais de resumo/truncamento controlado;
-- muitos MACs/procedimentos;
-- preview;
-- impressão Windows;
-- PDF específico da ficha;
-- QR/barcode se houver valor.
-
-### Editorial/categorias
-
-- comportamento exato ao criar nova revisão de Procedimento ainda referenciando categoria arquivada.
-
-### Autenticação/configuração
-
-- parâmetros finais de Argon2/senha/sessão;
+- regra editorial de nova revisão ainda associada a categoria arquivada;
+- parâmetros finais de autenticação/sessão;
 - Gerência × configuração da empresa;
-- Gerência × Backup.
+- Gerência × Backup;
+- formas físicas finais de schema/migrations, somente no gate correspondente.
 
-## 21. Fora do escopo inicial
-
-Não transformar o StepFlow automaticamente em:
+## 20. Fora do escopo inicial
 
 - CRM;
 - financeiro/faturamento;
@@ -430,6 +410,4 @@ Não transformar o StepFlow automaticamente em:
 - sistema completo de chamados/SLA;
 - workflow customizável;
 - taxonomia hierárquica complexa;
-- DOCX específico da ficha.
-
-Esses itens exigem requisito futuro explícito.
+- DOCX específico da Ficha.

@@ -1,38 +1,50 @@
 # Visão Geral do Produto — StepFlow Pocket
 
-**Status:** CONSOLIDADO
+**Status:** CONSOLIDADO  
+**Atualização:** 2026-08-29
 
 ## Propósito
 
-O StepFlow é uma aplicação interna para centralizar documentação de procedimentos técnicos, transformar documentos estáticos em guias operacionais fáceis de consultar/executar e, quando o trabalho exigir rastreabilidade, registrar as informações reais do serviço realizado.
+O StepFlow é uma aplicação interna para centralizar Procedimentos técnicos, transformá-los em guias fáceis de consultar/executar e, quando necessário, registrar o trabalho real realizado.
 
-O produto não é restrito à manutenção de computadores. Deve acomodar manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias técnicos e outros procedimentos internos.
-
-O objetivo é reduzir atrito para o técnico, não criar um portal burocrático.
+O produto deve acomodar manutenção, TI, Service Desk, Help Desk, infraestrutura/servidores, redes, guias técnicos e outros procedimentos internos sem se transformar em um portal burocrático.
 
 ## Usuários
 
-- **ADM:** controle total, configurações, usuários, permissões e documentações;
-- **Gerência:** manutenção das documentações e gestão delegada de usuários não-ADM;
+- **ADM:** controle amplo, configurações, usuários, permissões e documentação;
+- **Gerência:** gestão delegada conforme capacidades;
 - **Funcionário/Técnico:** consulta e execução; por padrão não altera conteúdo oficial.
+
+Autorização efetiva é sempre Host-side e granular.
 
 ## Experiência principal
 
 ```text
-ponto de entrada interno
-→ duplo clique
-→ Client local preparado/atualizado
+pasta StepFlow publicada no servidor Windows
+→ usuário acessa o compartilhamento
+→ executa StepFlowLauncher.exe
+→ Client local é preparado/validado automaticamente
 → login
-→ consulta/execução
+→ consulta / execução / registro
 ```
 
-O técnico não instala dependências nem informa banco/servidor manualmente no uso normal.
+O usuário não instala o StepFlow nem prepara dependências manualmente no uso normal.
 
-Infraestrutura corporativa real ainda é pendente; exemplos de path continuam apenas conceituais.
+## Domínio
 
-## Procedimentos
+```text
+Procedimento
+   ↓ usado em
+Atendimento / Execução
+   ↓ opcionalmente relacionado a
+Equipamento
+```
 
-Campos principais consolidados:
+### Procedimento
+
+Documentação/modelo oficial reutilizável e versionado.
+
+Campos principais:
 
 - Código;
 - Título;
@@ -47,102 +59,118 @@ Campos principais consolidados:
 - Etapas;
 - Histórico.
 
-Categorias são configuráveis pela empresa, pesquisáveis/filtráveis e um procedimento pode possuir uma ou mais categorias simples. Taxonomia hierárquica complexa não faz parte da primeira versão.
+Categorias são configuráveis, pesquisáveis/filtráveis, podem ser múltiplas e não usam taxonomia hierárquica complexa inicialmente.
 
-Não adicionar campos burocráticos sem valor operacional aprovado.
+### Atendimento / Execução
 
-## Etapas como páginas de manual
+Ocorrência concreta de trabalho.
 
-Cada etapa funciona como página navegável e pode conter título, introdução, passos/subpassos, checklist documental, observações, alertas, comandos/blocos copiáveis, navegação anterior/próxima e indicação de progresso.
+- lifecycle inicial: `Em andamento / Concluído / Cancelado`;
+- primeiro save aceito cria o registro e código `AT-000001`;
+- responsável + `Resumo do trabalho` são obrigatórios para concluir;
+- checklist incompleto gera confirmação, não bloqueio automático;
+- revisão exata de cada Procedimento utilizado é preservada;
+- checklist persistente existe somente em Atendimento;
+- cada Etapa pode receber `Observação do serviço` opcional;
+- progresso deriva somente do checklist;
+- conclusão/reabertura preserva histórico suficiente para reprodução do estado aplicável.
 
-Controle de cópia é discreto, somente por ícone, com feedback curto.
+### Equipamento
 
-## Registro do serviço/equipamento
+Ativo opcional e reutilizável.
 
-O domínio aprovado distingue:
+- código legível `EQP-000001`;
+- identidade interna própria;
+- serial, patrimônio e MAC são atributos de busca, não identidade canônica;
+- múltiplos MACs são permitidos;
+- pode registrar, conforme aplicabilidade, tipo, processador, RAM, armazenamento, SO, bateria e observações;
+- mudanças futuras no cadastro global não reescrevem silenciosamente a projeção histórica de Atendimento concluído.
 
-- **Procedimento** — modelo/documentação oficial reutilizável;
-- **Atendimento/Execução** — ocorrência concreta do serviço realizado;
-- **Equipamento** — ativo físico opcional relacionado ao atendimento quando aplicável.
+Detalhes: `categorizacao-atendimentos-equipamentos.md`.
 
-Para cenários como manutenção de computadores/notebooks, o sistema deve permitir registrar, quando aplicável:
+## Reader — Etapas como páginas de manual
 
-- nome do equipamento;
-- processador;
-- RAM;
-- armazenamento;
-- sistema operacional/versão;
-- um ou mais MACs e outros identificadores úteis;
-- serial/patrimônio;
-- saúde da bateria;
-- observações;
-- cliente e/ou ordem de serviço/referência para facilitar busca;
-- resumo do que foi feito/procedimentos realizados.
+- `Visão geral` precede Etapa 1;
+- cada Etapa é uma página lógica própria;
+- Anterior/Próxima, Sumário e stepper permitem navegação;
+- stepper compacto representa posição/percurso, nunca conclusão operacional;
+- comandos/código preservam whitespace e usam ação de copiar discreta/icon-only acessível;
+- Reader standalone não persiste checklist nem observação operacional;
+- Reader em Atendimento persiste checklist e `Observação do serviço` conforme lifecycle/autorização.
 
-Equipamento possui identidade interna estável própria. MAC, serial, patrimônio, cliente e OS/referência são atributos pesquisáveis e não identidade canônica exclusiva.
+## Busca
 
-Um Atendimento pode usar múltiplos procedimentos e deve preservar vínculo com a revisão efetivamente utilizada.
+`Processos` e `Atendimentos` possuem buscas separadas.
 
-O sistema deve permitir extrair/gerar uma ficha compacta imprimível para anexação física ao equipamento.
+Procedimentos: código, título/termos, área e categoria.
 
-Detalhes operacionais de lifecycle, checklist/progresso, permissões e códigos legíveis serão fechados no Bloco 9.
+Atendimentos/Equipamentos: código, OS/referência, cliente/solicitante, Equipamento, serial, patrimônio e MAC quando aplicável.
 
-## Busca operacional
+Não criar pesquisa global que misture os domínios sem requisito explícito.
 
-`Processos` e `Atendimentos` possuem buscas separadas por domínio.
+## Exportação, impressão e Ficha compacta
 
-Procedimentos são localizados por código, título, termo, área e categoria conforme contratos aprovados.
+Procedimentos suportam:
 
-Atendimentos/equipamentos devem ser localizáveis pelas informações operacionais disponíveis, incluindo código, OS/referência, cliente/solicitante, nome do equipamento, serial, patrimônio e MAC normalizado quando aplicável.
+- PDF;
+- DOCX;
+- impressão Windows;
+- identidade central da empresa.
 
-Índices/normalização finais pertencem à implementação técnica; não introduzir motor externo sem necessidade demonstrada.
+A saída é documento próprio, nunca screenshot da UI.
+
+Ficha compacta de Atendimento:
+
+- prestação de contas resumida ao cliente;
+- pode existir com ou sem Equipamento;
+- PDF canônico + preview derivam do mesmo layout;
+- deve ocupar exatamente uma A4 quando válida;
+- `2+` páginas geram `SHEET_OVERFLOW`;
+- não usa truncamento, segunda página ou redução automática para “caber”;
+- checklist/progresso/timeline não são conteúdo padrão da Ficha;
+- Procedimentos vinculados não são listados por padrão;
+- MACs: 0 omite, 1–2 valores, 3+ quantidade cadastrada.
+
+Detalhes: `../02-telas/14-exportacao-impressao-ficha.md` e documentos do Bloco 10.
+
+## Backup / Restore
+
+Backup/Restore simples é requisito do produto e pertence a Configurações.
+
+UX consolidada:
+
+- operação coordenada pelo Host;
+- Client não escolhe SQLite/path;
+- Restore normal exige backup elegível, confirmação reforçada e safety backup confirmado;
+- disaster recovery sem Host funcional é fluxo técnico/local.
+
+Mecanismo técnico final será fechado no Bloco 11.
 
 ## Multiusuário
 
 - Clients nunca acessam SQLite diretamente;
 - escritas são coordenadas pelo Host;
-- edições antigas não sobrescrevem alterações recentes;
-- mudanças relevantes chegam por eventos/reconsulta;
-- fila de escrita não substitui revisão otimista;
-- categorias, equipamentos e atendimentos seguem os mesmos princípios quando houver alteração concorrente relevante.
-
-## Usuários e permissões
-
-Conta possui identificador estável, login, nome de exibição, cargo, hash de senha, avatar, perfil e permissões.
-
-Usuário pode editar nome, cargo, avatar e senha dentro das regras. Autorização é sempre Host-side.
-
-A matriz operacional de permissões para categorias, equipamentos e atendimentos será fechada no Bloco 9 antes da implementação correspondente.
-
-## Exportação e backup
-
-Documentação exige:
-
-- PDF;
-- DOCX;
-- impressão;
-- identidade da empresa;
-- backup/restauração simples.
-
-Exportação usa documento próprio, não screenshot.
-
-A ficha compacta imprimível de atendimento/equipamento também é requisito. Formato físico, PDF específico e tecnologia serão fechados no Bloco 10.
-
-Backup/restore deve incluir os dados operacionais aprovados.
+- revisão otimista impede sobrescrita silenciosa;
+- eventos sinalizam mudanças e Clients reconsultam;
+- fila de escrita não substitui controle de revisão;
+- checklist/observações operacionais usam granularidade apropriada.
 
 ## Requisitos não funcionais
 
 ### Pocket
 
-- implantação central por pasta pronta;
-- nenhuma toolchain de desenvolvimento no servidor;
-- nenhum processo StepFlow após encerramento do ciclo central;
-- Client sem instalador tradicional obrigatório;
-- uso normal sem dependência da Internet.
+- pasta pronta no servidor;
+- zero instalador tradicional por estação;
+- preparação local automática;
+- zero toolchain de desenvolvimento em produção;
+- zero elevação administrativa no uso normal;
+- nenhuma Internet obrigatória no uso normal;
+- nenhum processo StepFlow após encerramento completo do ciclo central;
+- sem serviço persistente como baseline.
 
 ### Compatibilidade
 
-Baseline inicial: Windows 10/11 x64 com WebView2. Ambiente corporativo real ainda será validado.
+Baseline: Windows 10/11 x64 + WebView2. Validação do parque corporativo permanece gate de ambiente real.
 
 ### Manutenibilidade
 
@@ -167,21 +195,19 @@ Baseline inicial: Windows 10/11 x64 com WebView2. Ambiente corporativo real aind
 - estoque de peças;
 - RMM/inventário automatizado;
 - help desk completo com SLA;
-- MFA complexo/recuperação por email;
-- edição colaborativa caractere a caractere;
-- chat corporativo;
 - workflow burocrático complexo;
+- chat corporativo;
+- edição colaborativa caractere a caractere;
 - infraestrutura distribuída de grande porte.
 
-## Pendências atuais
+## Pendências de produto ainda reais
 
-- fechar lifecycle/status de Atendimento;
-- fechar checklist/progresso e regras de conclusão/reabertura;
-- fechar matriz operacional de permissões;
-- fechar formato dos códigos legíveis;
-- fechar ficha compacta no Bloco 10;
-- concluir especificação/aprovação das telas do Bloco 8.
+- Gerência × configuração da empresa;
+- Gerência × Backup;
+- regra editorial de nova revisão ainda referenciando categoria arquivada.
+
+Parâmetros técnicos e gates de ambiente pertencem às fontes arquiteturais/planejamento.
 
 ## Critério de sucesso
 
-Um técnico deve conseguir localizar o procedimento adequado, executar o trabalho com baixo atrito e, quando o cenário exigir registro do serviço/equipamento, produzir um resumo útil e imprimível sem depender de controles paralelos dispersos.
+Um técnico deve localizar o Procedimento correto, executar o trabalho com baixo atrito e, quando houver necessidade de registro, manter um Atendimento útil e produzir uma prestação de contas compacta sem depender de controles paralelos dispersos.

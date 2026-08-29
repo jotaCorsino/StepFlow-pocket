@@ -1,7 +1,7 @@
 # Comunicação StepFlow Client ↔ Host
 
 **Status:** CONSOLIDADO PARA A FASE 1  
-**Atualização:** 2026-08-20
+**Atualização:** 2026-08-29
 
 ## Tecnologias
 
@@ -10,7 +10,7 @@
 - contratos versionados, inicialmente `/api/v1`;
 - Host em Rust/Axum/Tokio.
 
-O WebSocket sinaliza mudanças; o estado oficial continua sendo obtido/confirmado pela API e pelo banco coordenado pelo Host.
+O WebSocket sinaliza mudanças; o estado oficial continua sendo confirmado pela API e pelo banco coordenado pelo Host.
 
 ## Descoberta/configuração
 
@@ -26,13 +26,13 @@ O Client recebe `deployment.json` junto da distribuição local. Ele contém som
 
 Endereço/porta reais são configuração da implantação, não hardcode do build. Credenciais/tokens não entram nesse arquivo.
 
-## Fluxo de inicialização
+## Inicialização
 
 ```text
 Client inicia
 → lê deployment.json
-→ consulta /api/v1/system/compatibility
-→ valida Host/contrato/versão
+→ consulta compatibilidade do Host
+→ valida contrato/versão
 → login
 → sessão autenticada
 → HTTP/JSON + WebSocket
@@ -40,13 +40,16 @@ Client inicia
 
 ## Contrato HTTP
 
-- JSON UTF-8;
+- JSON UTF-8 para contratos estruturados;
+- artefato binário pode usar body binário quando apropriado;
 - autorização sempre no Host;
 - escrita só retorna sucesso após commit;
 - mutações versionadas carregam revisão/base esperada;
-- retries automáticos não podem duplicar comandos não idempotentes.
+- retries automáticos não podem duplicar comando não idempotente;
+- requests relevantes podem carregar `request_id`;
+- operações críticas podem usar `command_id`/idempotency key quando justificadas.
 
-Categorias mínimas de erro:
+Categorias base de erro:
 
 - `SESSION_REQUIRED` / `SESSION_EXPIRED`;
 - `PERMISSION_DENIED`;
@@ -57,6 +60,8 @@ Categorias mínimas de erro:
 - `SERVER_BUSY`;
 - `PERSISTENCE_ERROR`;
 - `INTERNAL_ERROR`.
+
+Códigos específicos de domínio podem estender essa taxonomia.
 
 Envelope conceitual:
 
@@ -75,13 +80,13 @@ Não expor stack trace, SQL, paths internos ou segredos ao Client.
 
 ## Compatibilidade Client ↔ Host
 
-Antes do login, o Host informa versão, `api_contract_major`, versão mínima/máxima compatível do Client quando aplicável e identificador da instância.
+Antes do login, o Host informa versão/contrato compatível e identificador da implantação quando aplicável.
 
-Incompatibilidade de contrato bloqueia o uso e orienta reinício pelo launcher para obter versão compatível.
+Incompatibilidade bloqueia uso normal e orienta reabertura pelo Launcher para obter versão compatível.
 
 ## Eventos WebSocket
 
-Envelope mínimo:
+Envelope conceitual:
 
 ```json
 {
@@ -97,9 +102,10 @@ Princípios:
 
 - eventos somente após commit;
 - evitar payload sensível/desnecessário;
-- Client normalmente invalida/reconsulta o recurso;
+- Client normalmente invalida/reconsulta recurso;
 - revisão ajuda a ignorar evento antigo;
-- autorização do canal segue a sessão.
+- autorização do canal segue sessão;
+- evento não substitui resposta/estado oficial.
 
 ## Reconexão
 
@@ -107,27 +113,47 @@ Ao perder WebSocket:
 
 1. Client tenta reconectar com backoff limitado;
 2. ao reconectar, revalida/reconsulta estado relevante;
-3. não presume replay completo dos eventos perdidos;
-4. nenhuma escrita é considerada confirmada sem resposta/estado reconciliado.
+3. não presume replay completo de eventos perdidos;
+4. nenhuma escrita é considerada confirmada sem resposta ou reconciliação.
 
-## Timeouts e repetição
+## Timeouts e backoff
 
-Valores iniciais aproximados podem ser ajustados por medição:
+Valores numéricos não são congelados na Fase 1 sem medição.
 
-- conexão: 3–5 s;
-- operações comuns: ~15 s;
-- operações longas terão política própria.
+A implementação deve definir por benchmark/fixtures:
 
-Após timeout de mutação, não repetir cegamente. Reconciliar o estado; operações críticas podem usar `command_id`/idempotency key.
+- timeout de conexão;
+- timeout de operação comum;
+- timeout/política própria de operações longas;
+- backoff de reconexão;
+- limites coerentes com LAN real e experiência do usuário.
+
+Após timeout de mutação, não repetir cegamente. Reconciliar estado primeiro.
+
+## Operações longas
+
+Geração documental e Backup/Restore podem usar contratos próprios de operação.
+
+- não inventar percentual quando não houver progresso real;
+- fechar um Client não implica automaticamente cancelar operação Host-side já aceita;
+- operação persistente/administrativa deve permitir reconsulta do estado quando seu contrato exigir;
+- `SERVER_BUSY`/backpressure é preferível a fila ilimitada.
 
 ## Sem modo offline de edição
 
-Na primeira versão, Host indisponível significa sistema oficial indisponível para login/dados/mutações. Não enfileirar alterações locais para sincronizar depois nem tratar cache como fonte oficial.
+Na primeira versão, Host indisponível significa sistema oficial indisponível para login/dados/mutações.
+
+Não enfileirar alterações locais para sincronização posterior nem tratar cache como fonte oficial.
 
 ## Transporte
 
-A escolha final entre HTTP controlado, HTTPS/certificado interno, reverse proxy corporativo existente ou equivalente depende da infraestrutura real. Não instalar stack pesada apenas para o StepFlow e não hardcodar PKI/domínio antes da validação corporativa.
+A escolha final entre HTTP controlado, HTTPS/certificado interno, reverse proxy corporativo existente ou equivalente depende da infraestrutura real.
+
+Não instalar stack pesada apenas para o StepFlow e não hardcodar PKI/domínio antes da validação corporativa.
 
 ## Diagnóstico
 
-Requisições relevantes podem usar `request_id` para correlação com logs. Mensagens ao usuário são simples; detalhes técnicos seguros ficam no Host.
+- `request_id` pode correlacionar Client e logs do Host;
+- mensagens ao usuário permanecem operacionais e simples;
+- detalhes técnicos seguros ficam nos logs;
+- segredo, senha, token reutilizável e conteúdo sensível não entram em diagnóstico por conveniência.
