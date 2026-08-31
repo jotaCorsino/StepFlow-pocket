@@ -252,13 +252,28 @@ Catálogo/retenção/coordenação:
 - safety/pre-migration backup reutilizam a pipeline como suboperações do lease raiz;
 - `uncertain` suspende cleanup destrutivo/retenção.
 
-Restore normal, compatibilidade, sessões, disaster recovery e capacidades ainda estão sendo fechados. A Análise 4 propõe preparar `data-next/`, validar `integrity_check + foreign_key_check`, permitir somente migrations forward completas em staging, criar safety backup confirmado e ativar o conjunto `data/` por troca controlada same-volume; essa proposta ainda não é contrato.
+Restore/compatibilidade:
+
+- Restore revalida integralmente envelope, hashes e SQLite antes de ativar qualquer estado;
+- candidato é preparado em `data-next/` same-volume, nunca sobre `data/` ativo;
+- pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio;
+- compatibilidade é `format_version + schema/migration path`;
+- schema antigo somente com cadeia completa de migrations forward aplicada e revalidada no staging;
+- schema mais novo ou cadeia incompleta/ambígua é incompatível;
+- down migration automática é proibida;
+- safety backup confirmado é obrigatório antes da fase destrutiva;
+- cancelamento termina antes da primeira alteração física do `data/`;
+- ativação usa `data → .restore-old-<id>` e `data-next → data`, same-volume/no-replace;
+- `old` permanece até validação do novo estado;
+- falha reversível volta ao estado anterior; estado não comprovável/reversível = `uncertain`.
+
+Restart, sessões, reconexão, disaster recovery e capacidades ainda estão sendo fechados. A Análise 5 está em revisão e não é contrato enquanto não aprovada.
 
 Fontes:
 
 - `../04-planejamento/bloco-11-backup-restauracao.md`;
 - `../04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
-- `../04-planejamento/bloco-11-analise-4-restore-safety-compatibilidade.md` — proposta em revisão.
+- `../04-planejamento/bloco-11-analise-4-restore-safety-compatibilidade.md`.
 
 ## Pendências arquiteturais ainda abertas
 
@@ -266,7 +281,7 @@ Fontes:
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- restante do contrato técnico do Bloco 11: Restore/compatibilidade, restart/sessões/falhas, disaster recovery, capacidades/auditoria e validação final;
+- restante do contrato técnico do Bloco 11: restart/sessões/falhas, disaster recovery, capacidades/auditoria e validação final;
 - estrutura oficial da implementação e plano da Fase 2;
 - gates de ambiente real: Windows/WebView2, Launcher/SMB, Word, impressoras e EDR.
 
