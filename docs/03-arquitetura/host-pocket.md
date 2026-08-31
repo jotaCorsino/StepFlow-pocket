@@ -1,7 +1,7 @@
 # StepFlow Host Pocket
 
 **Status:** CONSOLIDADO PARA A FASE 1  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-08-31
 
 ## Tecnologia
 
@@ -60,9 +60,12 @@ Responsabilidades:
 6. aguardar readiness verificável;
 7. registrar falhas de startup;
 8. coordenar shutdown gracioso;
-9. garantir ausência de processo iniciado por ele após encerramento normal.
+9. garantir ausência de processo iniciado por ele após encerramento normal;
+10. coordenar relaunch **bounded** quando o contrato de Restore exigir fresh Host para recovery/finalização.
 
 O Controller não instala serviço, altera PATH/registro, cria auto-start nem mantém watchdog residente.
+
+Relaunch de Restore é uma transição limitada da operação administrativa; não autoriza restart automático ilimitado para crashes normais.
 
 ## Propriedade do ciclo de vida
 
@@ -98,10 +101,28 @@ Enquanto ativo:
 O Host só fica pronto quando, no mínimo:
 
 - configuração foi carregada;
+- exclusividade da implantação foi obtida;
+- recovery pendente de Restore foi reconciliado para estado conhecido;
 - data dir está acessível;
 - schema/migrations foram validados;
 - SQLite abriu corretamente;
 - listener está disponível.
+
+Ordem consolidada quando existir `restore-active.json`/artefato relevante:
+
+```text
+resolver deployment + exclusividade
+→ reconciliar Restore pendente
+→ somente após estado conhecido seguir migrations/readiness normais
+```
+
+Enquanto `uncertain/RECOVERY_REQUIRED`:
+
+- não anunciar readiness normal;
+- não aceitar mutações de negócio;
+- não iniciar nova operação destrutiva normal;
+- não executar retenção/cleanup destrutivo;
+- preservar source/safety backup, journal, old e staging relevantes.
 
 Duas instâncias não podem coordenar o mesmo `data/`. Usar exclusão mútua local por implantação, além de verificação de readiness/processo.
 
@@ -124,9 +145,12 @@ Registrar pelo menos:
 - falha de startup;
 - shutdown solicitado/concluído;
 - erro fatal;
-- operações administrativas críticas quando aplicável.
+- operações administrativas críticas quando aplicável;
+- entrada/resultado de reconciliação de Restore quando aplicável.
 
 Nunca registrar senha, token reutilizável ou conteúdo sensível desnecessário.
+
+A trilha administrativa específica que precisa atravessar Restore está em análise na Análise 6 do Bloco 11 e ainda não é contrato.
 
 ## Shutdown técnico
 
@@ -144,17 +168,44 @@ Fluxo normal:
 
 `kill` forçado não é mecanismo normal.
 
+### Restart controlado após Restore
+
+Se Restore entrou na fase destrutiva e terminou com candidato aplicado ou rollback conhecido:
+
+```text
+estado físico escolhido validado
+→ persistir RESTART_REQUIRED
+→ encerrar listeners/WebSockets
+→ fechar SQLite/handles
+→ Host sai com motivo controlado
+→ Controller relança um Host fresco de forma bounded
+→ fresh Host reconcilia journal
+→ somente então readiness normal
+```
+
+Uma tentativa de recovery que também falhe deve falhar fechado e exigir intervenção local/controlada; não virar watchdog geral.
+
 ## Backup / Restore
 
-Backup/Restore pertence ao Host e será fechado tecnicamente no Bloco 11.
+Backup/Restore pertence ao Host e está sendo fechado tecnicamente no Bloco 11.
 
 Invariantes já aprovadas:
 
 - Client não copia SQLite diretamente;
-- backup precisa representar conjunto coerente de banco + arquivos administrados;
-- Restore normal exige safety backup confirmado antes da etapa destrutiva;
-- disaster recovery quando Host não inicia é fluxo local/controlado;
-- operações administrativas críticas não podem ser executadas concorrentemente sem coordenação explícita.
+- backup representa conjunto coerente de banco + arquivos administrados;
+- Restore normal revalida pacote e exige safety backup confirmado antes da etapa destrutiva;
+- ativação usa troca lógica do `data/`, com staging/old controlados, não overwrite arquivo a arquivo;
+- compatibilidade permite somente schema igual ou migration forward completa conhecida; sem down migration automática;
+- Restore usa journal fora de `data/` e fresh Host para reconciliar/finalizar após fase destrutiva;
+- qualquer Restore destrutivo invalida sessões anteriores;
+- `uncertain` bloqueia readiness normal até recuperação controlada;
+- disaster recovery quando Host não inicia é fluxo local/controlado; detalhes finais estão na Análise 6 em revisão;
+- operações administrativas críticas não executam concorrentemente sem coordenação explícita.
+
+Fontes:
+
+- `../04-planejamento/bloco-11-backup-restauracao.md`;
+- `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
 
 ## Atualização e rollback
 
@@ -181,8 +232,9 @@ Sem componente residente, o Controller precisa ser iniciado na máquina central 
 - execução por pasta sem instalador/runtime global;
 - sem privilégio administrativo no uso normal;
 - instância única;
-- readiness verificável;
+- readiness verificável e recovery anterior à readiness quando necessário;
 - shutdown gracioso;
+- fresh Host/relaunch de Restore bounded e não-watchdog;
 - fechar Client individual não encerra ciclo central;
 - nenhum processo residual após encerramento central;
 - dados preservados ao substituir binários;
