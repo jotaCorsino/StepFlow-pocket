@@ -1,7 +1,7 @@
 # Comunicação StepFlow Client ↔ Host
 
 **Status:** CONSOLIDADO PARA A FASE 1  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-08-31
 
 ## Tecnologias
 
@@ -61,7 +61,7 @@ Categorias base de erro:
 - `PERSISTENCE_ERROR`;
 - `INTERNAL_ERROR`.
 
-Códigos específicos de domínio podem estender essa taxonomia.
+Códigos específicos de domínio, manutenção e recovery podem estender essa taxonomia.
 
 Envelope conceitual:
 
@@ -116,6 +116,20 @@ Ao perder WebSocket:
 3. não presume replay completo de eventos perdidos;
 4. nenhuma escrita é considerada confirmada sem resposta ou reconciliação.
 
+### Manutenção/Restore
+
+Consolidado no Bloco 11:
+
+- aviso/evento de manutenção antes da troca física é best-effort; a segurança não depende de todos os Clients recebê-lo;
+- queda da conexão durante Restore não significa sucesso nem falha;
+- Restore aplicado ou rollback depois da fase destrutiva passa por fresh Host antes de readiness normal;
+- enquanto recovery estiver pendente, normal readiness e uso autenticado permanecem indisponíveis;
+- depois do fresh Host, token pré-Restore é rejeitado e o usuário precisa autenticar novamente;
+- após novo login, Client refaz consultas do estado atual;
+- resultado do Restore é reconsultado por estado confirmado; não é inferido da desconexão.
+
+Fonte: `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+
 ## Timeouts e backoff
 
 Valores numéricos não são congelados na Fase 1 sem medição.
@@ -137,7 +151,8 @@ Geração documental e Backup/Restore podem usar contratos próprios de operaç�
 - não inventar percentual quando não houver progresso real;
 - fechar um Client não implica automaticamente cancelar operação Host-side já aceita;
 - operação persistente/administrativa deve permitir reconsulta do estado quando seu contrato exigir;
-- `SERVER_BUSY`/backpressure é preferível a fila ilimitada.
+- `SERVER_BUSY`/backpressure é preferível a fila ilimitada;
+- `uncertain/RECOVERY_REQUIRED` de Restore não é convertido em sucesso por timeout nem por retorno parcial da API.
 
 ## Sem modo offline de edição
 
