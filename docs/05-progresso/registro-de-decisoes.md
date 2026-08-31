@@ -279,15 +279,32 @@ Fonte: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
 - Backup mantém lease completo, mas barrier de mutações somente durante `BACKUP_CAPTURE`;
 - resultado `uncertain` suspende retenção/cleanup destrutivo.
 
+### Decisões aprovadas — Restore, safety backup e compatibilidade
+
+- Restore sempre revalida integralmente envelope, paths, tamanhos e SHA-256;
+- candidato é extraído para `data-next/` same-volume e nunca sobre `data/` ativo;
+- pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio;
+- compatibilidade usa `format_version + schema/migration path`;
+- schema igual é elegível; schema antigo exige cadeia completa de migrations forward aplicada e revalidada no staging;
+- schema mais novo ou cadeia incompleta/ambígua é incompatível;
+- nenhuma down migration automática;
+- safety backup é obrigatório e precisa estar confirmado antes da fase destrutiva;
+- cancelamento só existe até antes da primeira alteração física do `data/`;
+- ativação troca o conjunto `data/` como unidade lógica;
+- baseline de troca: `data → .restore-old-<id>` e `data-next → data`, same-volume/no-replace;
+- `.restore-old-<id>` permanece até validação final;
+- falha reversível restaura e valida o estado anterior; estado não comprovável/reversível = `uncertain`.
+
 Fontes:
 
 - `docs/04-planejamento/bloco-11-backup-restauracao.md`;
-- `docs/04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md`.
+- `docs/04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
+- `docs/04-planejamento/bloco-11-analise-4-restore-safety-compatibilidade.md`.
 
 ## 11. Estado da Fase 1
 
 - Blocos 0–10: encerrados nos respectivos escopos documentais;
-- Bloco 11: Backup/Restore técnico em análise; Análises 1–3 aprovadas, Análise 4 em revisão;
+- Bloco 11: Backup/Restore técnico em análise; Análises 1–4 aprovadas, Análise 5 em revisão;
 - Bloco 12: estrutura oficial + Fase 2 pendente.
 
 ## 12. Pendências vigentes
@@ -310,8 +327,7 @@ Fontes:
 
 ### Bloco 11
 
-- Restore/safety backup/compatibilidade — proposta em revisão na Análise 4;
-- restart/reconexão/sessões e falhas;
+- restart/reconexão/sessões e falhas — proposta em revisão na Análise 5;
 - disaster recovery local;
 - capacidades/auditoria;
 - validação técnica final.
