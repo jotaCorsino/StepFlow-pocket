@@ -8,7 +8,7 @@
 
 Transformar requisitos e arquitetura conceitual em decisões implementáveis antes da fundação executável do StepFlow.
 
-A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quando necessárias. Não autoriza scaffold/runtime oficial nem código de negócio definitivo antes do gate correspondente do Bloco 12/Fase 2.
+A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quando necessárias. Não autoriza scaffold/runtime oficial, migrations oficiais ou código de negócio definitivo antes do gate do Bloco 12/Fase 2.
 
 ## Estado dos blocos
 
@@ -25,33 +25,8 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 8 | UI/UX | CONCLUÍDO | `../02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
-| 11 | Backup/restauração técnico | EM ANÁLISE | `bloco-11-backup-restauracao.md` |
+| 11 | Backup/restauração técnico | EM ANÁLISE — ANÁLISE 6 | `bloco-11-backup-restauracao.md` |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | a abrir |
-
-## Extensão de produto consolidada
-
-Fazem parte do contrato atual:
-
-- categorias configuráveis/múltiplas;
-- domínio `Procedimento × Atendimento/Execução × Equipamento`;
-- Atendimentos como área operacional própria;
-- Equipamento opcional/reutilizável;
-- múltiplos Procedimentos por Atendimento;
-- revisão exata utilizada preservada;
-- checklist persistente em contexto de execução;
-- `Observação do serviço` opcional por Etapa;
-- reprodução histórica após conclusão/reabertura;
-- Ficha compacta com ou sem Equipamento;
-- identidade central da empresa;
-- PDF/DOCX/impressão de Procedimentos;
-- PDF + preview + impressão da Ficha;
-- template físico e política de overflow;
-- naming persistente e temporários;
-- estados transversais;
-- matriz operacional de capacidades;
-- códigos `AT-000001` / `EQP-000001`;
-- clareza e baixa densidade textual como princípio visual;
-- contrato Pocket sem instalação/preparação manual por estação.
 
 ## Contrato Pocket da Fase 1
 
@@ -73,69 +48,21 @@ Não é aceitável como baseline:
 - exigir configuração manual de dependência;
 - executar permanentemente o Client pelo SMB.
 
-WebView2 Evergreen existente é preferível quando compatível. Fixed Version não roda por UNC/SMB; fallback local só pode ser adotado após PoC provar preparação automática sem instalação/elevação/manualidade.
+WebView2 Evergreen existente é preferível quando compatível. Fixed Version não roda por UNC/SMB; fallback local só entra após PoC provar preparação automática sem instalação/elevação/manualidade.
 
-## Bloco 8 — UI/UX
+## Blocos 8–10 — fechados
 
-**CONCLUÍDO.**
+### Bloco 8 — UI/UX
 
-Telas 01–15 estão consolidadas/aprovadas. Nenhuma UI de produção foi criada.
+Telas 01–15 consolidadas. Reader em formato livro/manual, `Visão geral`, uma Etapa por página lógica, stepper de navegação e baixa densidade textual.
 
-Direção transversal:
+### Bloco 9 — execução operacional
 
-- Reader em formato livro/manual;
-- `Visão geral` como primeira página lógica;
-- uma Etapa por página lógica;
-- stepper horizontal compacto e navegável;
-- stepper representa navegação, não conclusão operacional;
-- informação secundária sob demanda e baixa densidade textual.
+Lifecycle `Em andamento / Concluído / Cancelado`, reabertura explícita, checklist persistente, observação de serviço por Etapa, Equipamento opcional, revisão exata e reprodução histórica.
 
-## Bloco 9 — Execução operacional / Atendimentos
+### Bloco 10 — geração documental
 
-**CONCLUÍDO.**
-
-Consolidado:
-
-- lifecycle `Em andamento / Concluído / Cancelado`, com reabertura explícita;
-- primeiro save cria Atendimento;
-- responsável + resumo obrigatórios para concluir;
-- checklist incompleto avisa, não bloqueia automaticamente;
-- Funcionário opera por responsabilidade;
-- revisão exata preservada;
-- checklist persistente somente em Atendimento;
-- observação de serviço opcional/persistente por Etapa;
-- progresso deriva somente do checklist;
-- Equipamento opcional/reutilizável;
-- reprodução histórica do estado relevante;
-- códigos legíveis Host-only;
-- Ficha disponível conforme lifecycle/capacidade.
-
-## Bloco 10 — Exportação / impressão / Ficha compacta
-
-**CONCLUÍDO.**
-
-Fontes:
-
-- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico;
-- `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz final;
-- `../02-telas/14-exportacao-impressao-ficha.md` — UX;
-- documentos Pocket/Windows — distribuição e compatibilidade.
-
-Resultado:
-
-- geração Host-side por snapshot consistente + `DocumentModel`;
-- PDF via Typst embutido;
-- DOCX OOXML direto em Rust;
-- impressão Windows pelo mesmo PDF oficial via WebView2;
-- Procedimento físico A4 multipágina;
-- Ficha PDF + preview do mesmo `PagedDocument`, exatamente uma A4;
-- `SHEET_OVERFLOW` sem truncamento/segunda página/redução automática;
-- soft limits 600/400/300/280 orientativos;
-- naming e temporários consolidados;
-- nenhum bloqueador arquitetural identificado na validação final;
-- Word, impressoras, SMB, Windows/WebView2 e EDR mantidos como gates de ambiente real;
-- limites de performance definidos por benchmark na fase executável;
-- contrato Pocket preservado como gate superior.
+Geração Host-side, PDF Typst, DOCX OOXML Rust, impressão pelo mesmo PDF, Procedimento A4 multipágina, Ficha de exatamente uma A4, `SHEET_OVERFLOW`, naming/temporários e gates corporativos consolidados.
 
 ## Bloco 11 — Backup / Restore técnico
 
@@ -143,46 +70,45 @@ Resultado:
 
 Fontes:
 
-- `bloco-11-backup-restauracao.md` — mapa principal e decisões aprovadas;
-- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — Análise 3 aprovada;
-- `bloco-11-analise-4-restore-safety-compatibilidade.md` — Análise 4 aprovada;
-- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — proposta atual;
+- `bloco-11-backup-restauracao.md` — mapa principal;
+- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — aprovada;
+- `bloco-11-analise-4-restore-safety-compatibilidade.md` — aprovada;
+- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — aprovada;
+- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — proposta atual;
 - `../02-telas/13-backup-restauracao.md` — UX consolidada.
 
-Estado:
+Estado das análises:
 
 - Análise 1 — estado recuperável + envelope: **APROVADA**;
 - Análise 2 — consistência + escrita/promoção/verificação: **APROVADA**;
-- Análise 3 — catálogo + retenção + coordenação administrativa: **APROVADA**;
+- Análise 3 — catálogo + retenção + coordenação: **APROVADA**;
 - Análise 4 — Restore + safety backup + compatibilidade: **APROVADA**;
-- Análise 5 — restart + sessões + reconexão + falhas: **EM REVISÃO**;
-- Análises 6–7: pendentes.
+- Análise 5 — restart + sessões + reconexão + falhas: **APROVADA**;
+- Análise 6 — disaster recovery + capacidades + auditoria: **EM REVISÃO**;
+- Análise 7 — validação técnica final: **PENDENTE**.
 
-Já consolidado:
+Já consolidado até D11.82:
 
-- Backup normal protege `stepflow.sqlite + company/** + avatars/**`;
-- pacote único `.stepflow-backup`, ZIP `Stored` + manifesto versionado + SHA-256;
-- SQLite via Online Backup API;
-- barrier curto sobre mutações para capturar SQLite + arquivos no mesmo ponto lógico;
-- staging privado; `-wal`/`-shm` fora do pacote;
-- verificação antes da promoção;
-- promoção final same-volume/no-replace;
-- catálogo reconstruível e retenção por quantidade sem scheduler;
-- coordinator administrativo exclusivo de Backup/Restore/Migration;
-- Restore revalida pacote e usa `data-next/` same-volume;
-- compatibilidade usa `format_version + schema/migration path`, sem down migration;
-- safety backup confirmado é obrigatório;
-- ativação troca o conjunto `data/` como unidade lógica, preservando `old` até validação;
-- estado não comprovável/reversível é `uncertain`.
+- backup protege `stepflow.sqlite + company/** + avatars/**`;
+- pacote `.stepflow-backup`, manifesto, hashes e Online Backup API;
+- consistência conjunta de banco + arquivos e barrier curto de mutações;
+- staging/verificação/promoção same-volume/no-replace;
+- catálogo reconstruível e retenção sem scheduler/por quantidade;
+- coordinator administrativo para Backup/Restore/migration;
+- Restore revalidado em `data-next/`, migrations somente forward e safety backup obrigatório;
+- troca lógica de `data/`, rollback conhecido ou `uncertain`;
+- journal fora de `data/`, recovery antes de readiness e fresh Host após fase destrutiva;
+- sessões anteriores invalidadas após Restore destrutivo;
+- `uncertain` bloqueia readiness/mutações/cleanup destrutivo.
 
-Ainda a fechar:
+Em revisão P11.83–P11.103:
 
-- restart/reconexão/sessões e recovery após falha — proposta na Análise 5;
-- disaster recovery local;
-- capacidades/auditoria;
-- validação técnica final.
+- disaster recovery local do Controller;
+- autoridade local/ACL quando banco não autentica;
+- Gerência × Backup;
+- auditoria administrativa fora de `data/`.
 
-Não reabrir UX sem bloqueador técnico concreto.
+Aprovação da Análise 6 não encerra o bloco: ainda é obrigatória a Análise 7 de validação técnica final.
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
@@ -194,35 +120,42 @@ Fechará:
 - migrations/scripts/testes iniciais;
 - parâmetros finais ainda abertos;
 - plano da Fase 2;
-- sincronização segura do checkout local antes do primeiro Codex de implementação.
+- sincronização segura do checkout local antes do primeiro trabalho de implementação.
 
 ## Pendências restantes da Fase 1
 
 ### Segurança/configuração
 
-- Argon2id exato;
+- custo Argon2id final;
 - senha mínima final;
-- duração de sessão;
+- duração/expiração de sessão;
 - entropia/tamanho final do token;
 - Gerência × configuração da empresa;
-- Gerência × Backup;
+- Gerência × Backup — proposta em revisão na Análise 6;
 - regra editorial de categoria arquivada;
-- valor/default final do parâmetro de retenção de backups.
+- valor/default final de `retention_max_confirmed_backups`.
+
+### Bloco 11
+
+- revisão P11.83–P11.103;
+- validação técnica final;
+- sincronização documental final do bloco.
 
 ### Ambiente real
 
 - Windows/WebView2 nas estações reais;
 - PoC do fallback Pocket WebView2;
-- execução do Launcher pelo share corporativo;
+- Launcher pelo share corporativo;
 - Word/impressoras;
 - SMB real;
+- ACL/filesystem de recovery;
 - EDR/firewall/políticas.
 
 ## Regras finais
 
-- não criar scaffold/runtime definitivo ou código de negócio durante a Fase 1 sem gate explícito;
+- não criar scaffold/runtime definitivo, migration oficial ou código de negócio durante a Fase 1 sem gate explícito;
 - toda tarefa Codex que altere arquivos informa base Git esperada e pré-flight;
 - preservar alterações locais preexistentes do PO;
 - nenhuma pendência vira decisão por inferência;
 - requisito Pocket não pode ser enfraquecido para acomodar dependência técnica sem retorno explícito ao PO;
-- gates Git já consumidos não permanecem como “estado atual” em documentos técnicos estáveis.
+- gates Git consumidos não permanecem como estado em documentos técnicos estáveis.
