@@ -4,10 +4,10 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 ## Painel de acompanhamento
 
-**Atualização:** 2026-08-29  
+**Atualização:** 2026-08-31  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Checkpoint atual:** Bloco 11 — Análise 3: catálogo, retenção e coordenação administrativa  
-**Próximo passo:** revisar P11.26–P11.42; depois Análise 4 — Restore + safety backup + compatibilidade  
+**Checkpoint atual:** Bloco 11 — Análise 4: Restore, safety backup e compatibilidade  
+**Próximo passo:** revisar P11.43–P11.61; depois Análise 5 — restart, sessões, reconexão e falhas  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
