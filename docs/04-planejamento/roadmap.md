@@ -32,40 +32,36 @@ Consolidado até aqui:
 - códigos `AT-000001` / `EQP-000001`;
 - geração documental, exportação, impressão, Ficha compacta, naming e temporários;
 - validação técnica final do Bloco 10;
-- contrato Pocket reforçado como gate superior.
+- Backup/Restore consolidado até D11.82: envelope, consistência, catálogo/retenção, Restore/safety/compatibilidade e recovery de restart/sessões;
+- contrato Pocket preservado como gate superior.
 
 ### Bloco 11 — Backup / Restore técnico
 
-**EM ANÁLISE.**
+**EM ANÁLISE — Análise 6.**
 
 Já aprovados:
 
-- fronteira do estado recuperável;
-- pacote `.stepflow-backup` + manifesto + hashes;
+- estado recuperável e pacote `.stepflow-backup`;
 - snapshot SQLite via Online Backup API;
-- consistência conjunta entre SQLite e arquivos administrados;
-- barrier curto sobre mutações;
+- consistência conjunta entre banco e arquivos administrados;
 - staging/verificação/promoção no-replace;
-- catálogo reconstruível e retenção por quantidade sem scheduler;
-- coordenação administrativa exclusiva de Backup/Restore/migration;
-- Restore com revalidação integral e `data-next/` same-volume;
-- compatibilidade por `format_version + schema/migration path`, sem down migration;
-- safety backup confirmado antes da fase destrutiva;
-- troca lógica de `data/` com rollback conhecido ou `uncertain`.
+- catálogo reconstruível e retenção sem scheduler/por quantidade;
+- coordenação administrativa de Backup/Restore/migration;
+- Restore com revalidação integral, migrations forward, safety backup e troca lógica de `data/`;
+- journal de Restore, reconciliação antes de readiness, rollback conhecido/`uncertain`;
+- fresh Host e invalidação de sessões após fase destrutiva.
 
-Em análise agora:
+Em revisão:
 
-- journal de Restore e recovery após restart;
-- reinicialização controlada do Host;
-- invalidação de sessões e reconexão dos Clients;
-- taxonomia de falhas/resultado incerto.
+- disaster recovery local/controlado;
+- capacidades finais de Backup/Restore;
+- auditoria administrativa que atravesse Restore.
 
 Depois:
 
-- disaster recovery + capacidades/auditoria;
-- validação técnica final.
+- validação técnica final do Bloco 11.
 
-Fontes: `bloco-11-backup-restauracao.md`, `bloco-11-analise-4-restore-safety-compatibilidade.md` e `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+Fontes: `bloco-11-backup-restauracao.md` e análises específicas 3–6.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
@@ -98,72 +94,31 @@ Gate: Client abre sem instalação manual, Host inicia sob demanda, comunicaçã
 
 **PENDENTE.**
 
-- login/logout/sessão;
-- bootstrap ADM;
-- usuários/permissões;
-- perfil/avatar;
-- shell/sidebar;
-- configuração básica da empresa;
-- autorização Host-side.
+Login/logout/sessão, bootstrap ADM, usuários/permissões, perfil/avatar, shell/sidebar, configuração básica da empresa e autorização Host-side.
 
 ## Fase 4 — Núcleo documental de Procedimentos
 
 **PENDENTE.**
 
-- lista/pesquisa;
-- categorização;
-- criação/edição/arquivamento;
-- Etapas/blocos;
-- histórico/revisões;
-- permissões;
-- conflitos de revisão.
+Lista/pesquisa, categorização, criação/edição/arquivamento, Etapas/blocos, histórico/revisões, permissões e conflitos de revisão.
 
 ## Fase 5 — Execução e registro operacional
 
 **PENDENTE.**
 
-- Reader em páginas/Etapas;
-- passos/alertas/blocos copiáveis;
-- Atendimento;
-- checklist persistente;
-- observação de serviço por Etapa;
-- progresso por checklist;
-- lifecycle de três estados;
-- Equipamento opcional;
-- busca/lista operacional;
-- resumo do trabalho;
-- revisão exata utilizada;
-- reprodução histórica;
-- Ficha compacta;
-- estados transversais.
+Reader, Atendimento, checklist persistente, observação de serviço, lifecycle, Equipamento opcional, busca/lista, resumo, revisão exata, reprodução histórica, Ficha e estados transversais.
 
 ## Fase 6 — Multiusuário em ambiente real
 
 **PENDENTE.**
 
-- múltiplos Clients;
-- conflitos/fila;
-- concorrência granular;
-- eventos/reconexão;
-- Host indisponível;
-- stress/tuning;
-- validação LAN corporativa.
+Múltiplos Clients, conflitos/fila, concorrência granular, eventos/reconexão, Host indisponível, stress/tuning e validação LAN corporativa.
 
 ## Fase 7 — Exportação e identidade
 
 **PENDENTE.**
 
-Implementará os contratos do Bloco 10:
-
-- geração Host-side;
-- PDF/DOCX de Procedimentos;
-- impressão Windows;
-- identidade central da empresa;
-- Ficha PDF/preview/impressão;
-- reprodução histórica;
-- naming/save/temporários;
-- fixtures de overflow;
-- gates reais de Word/impressoras/SMB/EDR.
+Implementará os contratos do Bloco 10: PDF/DOCX, impressão Windows, identidade, Ficha, naming/save/temporários e gates reais de Word/impressoras/SMB/EDR.
 
 DOCX específico da Ficha não é requisito inicial.
 
@@ -177,7 +132,8 @@ DOCX específico da Ficha não é requisito inicial.
 - zero instalação/manualidade por estação;
 - Backup/Restore;
 - disaster recovery local;
-- logs e documentação de implantação;
+- logs/auditoria operacional;
+- documentação de implantação;
 - validação sem Internet e em PCs corporativos.
 
 Não inclui serviço StepFlow persistente.
@@ -186,26 +142,18 @@ Não inclui serviço StepFlow persistente.
 
 **PENDENTE.**
 
-- segurança/autorização;
-- recuperação de falha/banco;
-- Backup/Restore;
-- concorrência/performance;
-- logs;
-- distribuição/update;
-- smoke tests end-to-end;
-- revisão documental;
-- validação final do contrato Pocket no parque corporativo.
+Segurança/autorização, recuperação de falha/banco, Backup/Restore, concorrência/performance, logs, distribuição/update, smoke tests end-to-end, revisão documental e validação final do contrato Pocket no parque corporativo.
 
 ## Pendências transversais
 
 - parâmetros finais Argon2/senha/sessão/token;
 - Gerência × configuração da empresa;
-- Gerência × Backup;
+- Gerência × Backup — em revisão no Bloco 11;
 - regra editorial de categoria arquivada;
 - valor/default final de retenção de backups;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
-- SMB/impressoras/EDR corporativos.
+- SMB/impressoras/ACL/EDR corporativos.
 
 ## Regra do roadmap
 
