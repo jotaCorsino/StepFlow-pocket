@@ -81,7 +81,8 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `bloco-11-backup-restauracao.md` — mapa principal do Bloco 11 em análise;
 - `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — Análise 3 aprovada: catálogo, retenção e coordenação;
 - `bloco-11-analise-4-restore-safety-compatibilidade.md` — Análise 4 aprovada: Restore, safety backup e compatibilidade;
-- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — proposta da Análise 5: restart, sessões, reconexão e falhas;
+- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — Análise 5 aprovada: restart, sessões, reconexão e falhas;
+- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — proposta da Análise 6: disaster recovery, capacidades e auditoria;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -99,6 +100,6 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 ## Estado atual
 
-A **Fase 1 permanece em andamento**. Blocos 0–10 estão documentalmente encerrados; no Bloco 11, Análises 1–4 estão aprovadas e a Análise 5 está em revisão. O Bloco 12 fecha estrutura oficial e plano da Fase 2.
+A **Fase 1 permanece em andamento**. Blocos 0–10 estão documentalmente encerrados; no Bloco 11, Análises 1–5 estão aprovadas e a Análise 6 está em revisão. A Análise 7 fará a validação técnica final antes do Bloco 12.
 
 Nenhuma implementação funcional oficial foi iniciada.
