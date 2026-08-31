@@ -45,6 +45,8 @@ Fonte: `launcher-distribuicao-client.md`.
 
 O Controller inicia/controla o Host sob demanda na máquina central. O Host concentra autenticação/autorização, API, WebSocket, SQLite, concorrência, domínio, auditoria, Backup/Restore e geração documental.
 
+O Controller também pode coordenar um relaunch **bounded** do Host quando um Restore já entrou na fase destrutiva e exige fresh Host para recovery/finalização; isso não é watchdog geral.
+
 Fonte: `host-pocket.md`.
 
 ## Contrato Pocket
@@ -150,7 +152,9 @@ Princípios:
 - constraints SQLite como última defesa;
 - eventos pós-commit;
 - checklist e observações usam granularidade própria;
-- timeout após mutação exige reconciliação, não retry cego.
+- timeout após mutação exige reconciliação, não retry cego;
+- manutenção de Restore pode encerrar WebSockets; desconexão nunca prova resultado;
+- após fresh Host de Restore, Client precisa autenticar novamente e reconsultar estado.
 
 Fontes: `comunicacao-client-host.md` e `concorrencia-fila-conflitos-eventos.md`.
 
@@ -163,7 +167,10 @@ Fontes: `comunicacao-client-host.md` e `concorrencia-fila-conflitos-eventos.md`.
 - ADM/Gerência/Funcionário como presets;
 - bootstrap do primeiro ADM local/controlado;
 - sessão expirada exige nova autenticação;
-- parâmetros numéricos finais permanecem pendentes.
+- Restore que entra na fase destrutiva invalida todas as sessões/tokens anteriores, inclusive se houver rollback;
+- conteúdo restaurado nunca ressuscita token antigo;
+- parâmetros numéricos finais permanecem pendentes;
+- Gerência × Backup continua pendente até aprovação da Análise 6.
 
 Fonte: `autenticacao-sessao-autorizacao.md`.
 
@@ -201,88 +208,81 @@ Fontes:
 
 UX continua em `../02-telas/13-backup-restauracao.md`.
 
-Estado recuperável inicial:
+### Estado, envelope e consistência
 
-```text
-stepflow.sqlite
-company/**
-avatars/**
-```
-
-Ficam fora do Backup normal: binários, configuração de implantação, logs, backups anteriores, exportações e temporários.
-
-Envelope:
-
-- um pacote imutável `.stepflow-backup`;
-- ZIP `Stored` no baseline;
-- `manifest.json` versionado;
-- SHA-256 por entrada;
-- paths lógicos allowlisted;
-- staging antes de promoção;
-- pacote parcial nunca é válido.
-
-Consistência:
-
-```text
-Host entra em BACKUP_CAPTURE
-→ drena mutações aceitas
-→ ponto quiescente
-→ Online Backup API para SQLite novo em staging
-→ copia company/** + avatars/** no mesmo barrier
-→ libera mutações
-→ hash/ZIP/verificação/promoção fora do barrier
-```
-
+- estado recuperável = `stepflow.sqlite + company/** + avatars/**`;
+- binários/config/logs/backups/exportações/temporários ficam fora;
+- pacote único imutável `.stepflow-backup`, ZIP `Stored`, manifesto versionado e SHA-256;
+- SQLite via Online Backup API;
+- barrier curto sobre mutações captura banco + arquivos no mesmo ponto lógico;
 - `-wal`/`-shm` não entram no pacote;
-- criação exige `quick_check = ok` e `foreign_key_check` vazio;
-- candidato recebe flush explícito;
-- promoção final é same-volume e no-replace;
-- sucesso somente após arquivo final reaberto/confirmado;
-- crash/falha nunca transforma staging/parcial em válido.
+- criação exige `quick_check = ok` + `foreign_key_check` vazio;
+- hash/ZIP/verificação/promoção ficam fora do barrier;
+- promoção final same-volume/no-replace;
+- parcial/crash nunca vira backup válido.
 
-Catálogo/retenção/coordenação:
+### Catálogo, retenção e coordenação
 
-- catálogo é reconstruído dos pacotes finais e não depende do banco ativo;
+- catálogo reconstruído dos pacotes finais e independente do banco ativo;
 - `backup_id` é identidade canônica;
-- cache de verificação é somente em memória e Restore sempre revalida o pacote;
-- retenção não usa scheduler e é inicialmente por quantidade;
+- cache de verificação somente em memória; Restore sempre revalida;
+- retenção sem scheduler e por quantidade;
 - source/safety/pre-migration em uso ou resultado incerto ficam protegidos;
-- pacote inválido/corrompido não é apagado silenciosamente pela retenção;
-- Host possui lease administrativo exclusivo para `BACKUP`, `RESTORE` e `MIGRATION`;
-- safety/pre-migration backup reutilizam a pipeline como suboperações do lease raiz;
+- pacote inválido/corrompido não é apagado silenciosamente;
+- lease exclusivo coordena `BACKUP`, `RESTORE`, `MIGRATION`;
+- safety/pre-migration backup são suboperações do lease raiz;
 - `uncertain` suspende cleanup destrutivo/retenção.
 
-Restore/compatibilidade:
+### Restore e compatibilidade
 
-- Restore revalida integralmente envelope, hashes e SQLite antes de ativar qualquer estado;
-- candidato é preparado em `data-next/` same-volume, nunca sobre `data/` ativo;
-- pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio;
-- compatibilidade é `format_version + schema/migration path`;
-- schema antigo somente com cadeia completa de migrations forward aplicada e revalidada no staging;
-- schema mais novo ou cadeia incompleta/ambígua é incompatível;
-- down migration automática é proibida;
-- safety backup confirmado é obrigatório antes da fase destrutiva;
+- Restore revalida envelope, hashes e SQLite;
+- prepara `data-next/` same-volume, nunca sobre `data/` ativo;
+- exige `integrity_check = ok` + `foreign_key_check` vazio;
+- compatibilidade = `format_version + schema/migration path`;
+- schema antigo somente com migrations forward completas no staging;
+- schema mais novo ou cadeia incompleta é incompatível;
+- sem down migration automática;
+- safety backup confirmado antes da fase destrutiva;
 - cancelamento termina antes da primeira alteração física do `data/`;
-- ativação usa `data → .restore-old-<id>` e `data-next → data`, same-volume/no-replace;
-- `old` permanece até validação do novo estado;
-- falha reversível volta ao estado anterior; estado não comprovável/reversível = `uncertain`.
+- ativação usa `data → .restore-old-<id>` e `data-next → data`;
+- `old` permanece até validação;
+- falha reversível retorna ao estado anterior; estado não comprovável = `uncertain`.
 
-Restart, sessões, reconexão, disaster recovery e capacidades ainda estão sendo fechados. A Análise 5 está em revisão e não é contrato enquanto não aprovada.
+### Restart, sessões, reconexão e falhas
+
+- journal de Restore vive fora de `data/`, baseline `backups/.operations/restore-active.json`;
+- journal registra fase/IDs/schema/digest sem segredos e é atualizado antes da ação física correspondente;
+- fresh Host reconcilia Restore **antes** de migrations/readiness normais;
+- digest determinístico identifica o candidato preparado;
+- queda antes da primeira troca preserva estado original;
+- queda entre `data→old` e `data-next→data` causa rollback para `old`;
+- combinação journal/filesystem não comprovável = `RECOVERY_REQUIRED/uncertain`;
+- Restore aplicado ou rollback após fase destrutiva exige fresh Host;
+- Controller pode executar relaunch bounded, sem watchdog geral;
+- fase destrutiva invalida sessões anteriores;
+- WebSocket de manutenção é best-effort e Clients fazem novo login após fresh Host;
+- `restore-last.json`/equivalente preserva resultado terminal mínimo;
+- `uncertain` bloqueia readiness, mutações, nova operação destrutiva, retenção e cleanup.
 
 Fontes:
 
 - `../04-planejamento/bloco-11-backup-restauracao.md`;
 - `../04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
-- `../04-planejamento/bloco-11-analise-4-restore-safety-compatibilidade.md`.
+- `../04-planejamento/bloco-11-analise-4-restore-safety-compatibilidade.md`;
+- `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+
+### Em análise — não contrato
+
+A Análise 6 propõe fechar disaster recovery local, Gerência × Backup e auditoria administrativa que atravesse Restore. Detalhe em `../04-planejamento/bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
 
 ## Pendências arquiteturais ainda abertas
 
 - parâmetros finais de autenticação;
 - Gerência × configuração da empresa;
-- Gerência × Backup;
+- Gerência × Backup — em revisão na Análise 6;
 - regra editorial de categoria arquivada;
-- restante do contrato técnico do Bloco 11: restart/sessões/falhas, disaster recovery, capacidades/auditoria e validação final;
+- restante do Bloco 11: disaster recovery, capacidades/auditoria e validação técnica final;
 - estrutura oficial da implementação e plano da Fase 2;
-- gates de ambiente real: Windows/WebView2, Launcher/SMB, Word, impressoras e EDR.
+- gates de ambiente real: Windows/WebView2, Launcher/SMB, Word, impressoras, ACL/filesystem e EDR.
 
 Nenhum runtime/código funcional oficial foi criado durante a Fase 1.
