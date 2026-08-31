@@ -6,8 +6,8 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-08-31  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Checkpoint atual:** Bloco 11 — Análise 4: Restore, safety backup e compatibilidade  
-**Próximo passo:** revisar P11.43–P11.61; depois Análise 5 — restart, sessões, reconexão e falhas  
+**Checkpoint atual:** Bloco 11 — Análise 5: restart, sessões, reconexão e falhas  
+**Próximo passo:** revisar P11.62–P11.82; depois Análise 6 — disaster recovery, capacidades e auditoria  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
