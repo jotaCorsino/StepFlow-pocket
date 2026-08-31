@@ -35,15 +35,16 @@ Este bloco não reabre, sem bloqueador técnico concreto:
 | 1 | Estado recuperável + envelope | ✅ Aprovada pelo PO |
 | 2 | Consistência + escrita/promoção/verificação | ✅ Aprovada pelo PO |
 | 3 | Catálogo + retenção + coordenação administrativa | ✅ Aprovada pelo PO |
-| 4 | Restore + safety backup + compatibilidade | ⏳ Proposta para revisão |
-| 5 | Restart + sessões + reconexão + falhas | Pendente |
+| 4 | Restore + safety backup + compatibilidade | ✅ Aprovada pelo PO |
+| 5 | Restart + sessões + reconexão + falhas | ⏳ Proposta para revisão |
 | 6 | Disaster recovery + capacidades + auditoria | Pendente |
 | 7 | Validação técnica final | Pendente |
 
 Detalhes:
 
 - Análise 3: `bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
-- Análise 4: `bloco-11-analise-4-restore-safety-compatibilidade.md`.
+- Análise 4: `bloco-11-analise-4-restore-safety-compatibilidade.md`;
+- Análise 5: `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
 
 ---
 
@@ -219,17 +220,17 @@ Decisões aprovadas: **D11.26–D11.42**.
 
 # Análise 4 — Restore normal, safety backup e compatibilidade
 
-**Status:** PROPOSTA PARA REVISÃO DO PO — NÃO CONSOLIDADA.
+**Status:** APROVADA PELO PO em 2026-08-31.
 
 Detalhe: `bloco-11-analise-4-restore-safety-compatibilidade.md`.
 
-Direção proposta:
+Contrato resumido:
 
-- revalidação integral do pacote antes de Restore;
+- Restore sempre revalida envelope, hashes e banco;
 - extração para `data-next/` same-volume, nunca sobre `data/` ativo;
-- `integrity_check` completo + `foreign_key_check` antes da fase destrutiva;
+- pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio;
 - compatibilidade por `format_version + schema/migration path`;
-- schema mais antigo somente com cadeia completa de migrations forward aplicada no staging;
+- schema mais antigo somente com cadeia completa de migrations forward aplicada e revalidada no staging;
 - schema mais novo ou sem cadeia completa = incompatível;
 - nenhuma down migration automática;
 - safety backup confirmado imediatamente antes da fase destrutiva;
@@ -238,7 +239,33 @@ Direção proposta:
 - `.restore-old-<id>` preservado até validação final;
 - falha reversível volta ao estado anterior; impossibilidade de provar/reverter = `uncertain`.
 
-Propostas numeradas: **P11.43–P11.61**.
+Decisões aprovadas: **D11.43–D11.61**.
+
+---
+
+# Análise 5 — Restart, sessões, reconexão e falhas
+
+**Status:** PROPOSTA PARA REVISÃO DO PO — NÃO CONSOLIDADA.
+
+Detalhe: `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+
+Direção proposta:
+
+- journal persistente fora de `data/` antes da troca física;
+- fresh Host reconcilia Restore antes de migrations/readiness normais;
+- digest determinístico identifica o candidato preparado após restart;
+- queda antes da primeira troca preserva estado original;
+- queda entre os dois renames causa rollback para `old`, não conclusão automática;
+- estado não comprovável = `RECOVERY_REQUIRED/uncertain`;
+- Restore aplicado ou rollback após fase destrutiva exige reinicialização controlada do Host;
+- Controller pode executar um relaunch bounded de recovery, sem watchdog/loop infinito;
+- fase destrutiva invalida todas as sessões/tokens anteriores;
+- conteúdo restaurado não ressuscita sessão antiga;
+- Clients reconectam, fazem novo login e reconsultam estado;
+- resultado terminal mínimo persiste fora de `data/` para atravessar restart;
+- cleanup só ocorre depois de estado conhecido; `uncertain` preserva todos os artefatos relevantes.
+
+Propostas numeradas: **P11.62–P11.82**.
 
 ---
 
@@ -268,4 +295,4 @@ O bloco só pode ser considerado concluído quando:
 
 ## Próxima análise
 
-Após aprovação de P11.43–P11.61, seguir para **Análise 5 — restart, sessões, reconexão, falhas e resultado incerto**.
+Após aprovação de P11.62–P11.82, seguir para **Análise 6 — disaster recovery, capacidades e auditoria**.
