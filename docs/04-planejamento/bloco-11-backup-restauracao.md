@@ -25,7 +25,7 @@ Este bloco não reabre, sem bloqueador técnico concreto:
 - sucesso somente após confirmação do Host;
 - Backup separado de exportação documental;
 - ausência de scheduler periódico por inferência;
-- Restore de Gerência não autorizado; Gerência × Backup permanece pendente;
+- Restore de Gerência não autorizado; Gerência × Backup permanece pendente até aprovação da Análise 6;
 - contrato Pocket como gate superior.
 
 ## Estado das análises
@@ -36,15 +36,16 @@ Este bloco não reabre, sem bloqueador técnico concreto:
 | 2 | Consistência + escrita/promoção/verificação | ✅ Aprovada pelo PO |
 | 3 | Catálogo + retenção + coordenação administrativa | ✅ Aprovada pelo PO |
 | 4 | Restore + safety backup + compatibilidade | ✅ Aprovada pelo PO |
-| 5 | Restart + sessões + reconexão + falhas | ⏳ Proposta para revisão |
-| 6 | Disaster recovery + capacidades + auditoria | Pendente |
+| 5 | Restart + sessões + reconexão + falhas | ✅ Aprovada pelo PO |
+| 6 | Disaster recovery + capacidades + auditoria | ⏳ Proposta para revisão |
 | 7 | Validação técnica final | Pendente |
 
 Detalhes:
 
 - Análise 3: `bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
 - Análise 4: `bloco-11-analise-4-restore-safety-compatibilidade.md`;
-- Análise 5: `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+- Análise 5: `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
+- Análise 6: `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
 
 ---
 
@@ -52,9 +53,7 @@ Detalhes:
 
 **Status:** APROVADA PELO PO em 2026-08-29.
 
-## Fronteira do estado recuperável
-
-O Backup normal protege **estado da aplicação**, não a implantação inteira.
+O Backup normal protege estado da aplicação, não a implantação inteira.
 
 Entram:
 
@@ -64,61 +63,13 @@ data\company\**
 data\avatars\**
 ```
 
-Ficam fora:
+Ficam fora `app/`, `config/`, `logs/`, `backups/`, exportações, temporários e Client local. Novo tipo persistente exige allowlist explícita.
 
-- `app/`;
-- `config/`;
-- `logs/`;
-- `backups/`;
-- exportações salvas pelo usuário;
-- temporários;
-- Client local em `%LOCALAPPDATA%`.
+Um backup confirmado é pacote imutável `.stepflow-backup`, ZIP padrão `Stored`, com `manifest.json`, payload controlado e SHA-256 por entrada. Paths são relativos/normalizados e não seguem reparse points/symlinks/junctions.
 
-Novo tipo de arquivo persistente só entra após allowlist/contrato explícito do Host.
+SQLite usa **Online Backup API** via `rusqlite`; cópia crua do banco ativo e `VACUUM INTO` não são baseline.
 
-## Envelope físico
-
-Um backup confirmado é um único arquivo imutável:
-
-```text
-backup-<utc>-<backup_id>.stepflow-backup
-
-manifest.json
-payload/
-├── stepflow.sqlite
-├── company/
-└── avatars/
-```
-
-Baseline:
-
-- ZIP padrão;
-- método `Stored` sem compressão;
-- extensão própria `.stepflow-backup`;
-- nenhuma ferramenta externa como dependência operacional.
-
-## Manifesto e paths
-
-`manifest.json` registra `format_version`, `backup_id`, data UTC, origem, ator/motivo quando aplicável, versão StepFlow, schema/migration de origem, entradas ordenadas, path lógico, tamanho e SHA-256 por entrada.
-
-SHA-256 verifica integridade/corrupção; não é assinatura. Paths são relativos/normalizados e Restore não segue reparse points/symlinks/junctions.
-
-## SQLite
-
-A **SQLite Online Backup API**, via `rusqlite` feature `backup`, é o mecanismo baseline. Não copiar `stepflow.sqlite` cru e não usar `VACUUM INTO` como baseline.
-
-## Decisões aprovadas — D11.1 a D11.10
-
-- **D11.1:** Backup normal protege estado da aplicação, não implantação inteira;
-- **D11.2:** payload = `stepflow.sqlite` + `company/**` + `avatars/**`;
-- **D11.3:** `app/`, `config/`, `logs/`, `backups/`, exportações, temporários e Client local ficam fora;
-- **D11.4:** novo arquivo persistente exige allowlist/contrato explícito;
-- **D11.5:** backup confirmado é pacote único imutável `.stepflow-backup`;
-- **D11.6:** container = ZIP padrão `Stored`;
-- **D11.7:** pacote contém `manifest.json` + `payload/` controlado;
-- **D11.8:** manifesto versionado registra origem, compatibilidade, tamanho e SHA-256 por entrada;
-- **D11.9:** staging precede promoção e parcial nunca é válido;
-- **D11.10:** Online Backup API é baseline do snapshot SQLite.
+Decisões aprovadas: **D11.1–D11.10**.
 
 ---
 
@@ -126,69 +77,13 @@ A **SQLite Online Backup API**, via `rusqlite` feature `backup`, é o mecanismo 
 
 **Status:** APROVADA PELO PO em 2026-08-29.
 
-## Consistência lógica
+Consistência é definida sobre **SQLite + arquivos administrados**. O Host aplica barrier curto sobre mutações, drena mutações aceitas, captura banco + `company/**` + `avatars/**` no mesmo ponto quiescente e libera mutações antes de hash/ZIP/verificação/promoção.
 
-Consistência é definida sobre **SQLite + arquivos administrados**. O Host usa barrier curto sobre mutações:
-
-```text
-Backup aceito
-→ BACKUP_CAPTURE
-→ parar novas mutações temporariamente
-→ drenar mutações já aceitas
-→ ponto quiescente
-→ capturar SQLite + arquivos em staging
-→ liberar mutações
-→ hash/ZIP/verificação/promoção fora do barrier
-```
-
-Consultas read-only podem continuar quando seguras.
-
-## Staging e WAL
-
-Baseline:
-
-```text
-backups/
-├── .staging/<backup_id>/
-│   ├── snapshot.sqlite
-│   ├── company/
-│   └── avatars/
-└── <backups confirmados>
-```
-
-`stepflow.sqlite-wal` e `stepflow.sqlite-shm` não entram no pacote.
-
-## Verificação e promoção
-
-Candidato exige:
-
-- envelope válido;
-- SHA-256 por entrada;
-- `PRAGMA quick_check = ok`;
-- `PRAGMA foreign_key_check` vazio;
-- flush explícito;
-- promoção same-volume/no-replace;
-- reabertura/confirmação antes de `BACKUP_CONFIRMED`.
+`-wal`/`-shm` não entram no pacote. Candidato exige envelope válido, SHA-256, `quick_check = ok`, `foreign_key_check` vazio, flush explícito, promoção same-volume/no-replace e reabertura antes de `BACKUP_CONFIRMED`.
 
 Crash/falha nunca transforma staging/parcial em backup válido.
 
-## Decisões aprovadas — D11.11 a D11.25
-
-- **D11.11:** consistência = SQLite + arquivos administrados;
-- **D11.12:** Host usa barrier de captura para mutações; leituras seguras podem continuar;
-- **D11.13:** mutações aceitas drenam; novas mutações no barrier recebem estado temporário/retryable;
-- **D11.14:** ponto quiescente inclui writer, transações e promoções de arquivos;
-- **D11.15:** captura bruta usa staging privado no mesmo volume de `backups/`;
-- **D11.16:** SQLite usa Online Backup API para banco novo; `-wal`/`-shm` ficam fora;
-- **D11.17:** `company/**` e `avatars/**` são capturados sob o mesmo barrier/allowlist;
-- **D11.18:** barrier termina após snapshot bruto; hash/ZIP/verificação/promoção ficam fora;
-- **D11.19:** candidato exige envelope válido + SHA-256 por entrada;
-- **D11.20:** criação exige `quick_check = ok` + `foreign_key_check` vazio; `integrity_check` fica para Restore;
-- **D11.21:** candidato recebe flush explícito antes da promoção;
-- **D11.22:** promoção final é same-volume e no-replace;
-- **D11.23:** sucesso só após reabertura/confirmação do arquivo final;
-- **D11.24:** crash/falha nunca transforma staging/parcial em válido;
-- **D11.25:** números de performance/timeout/tamanho ficam para benchmark.
+Decisões aprovadas: **D11.11–D11.25**.
 
 ---
 
@@ -202,8 +97,7 @@ Contrato resumido:
 
 - catálogo reconstruível dos pacotes finais, sem depender do SQLite ativo;
 - `backup_id` é identidade lógica; filename não é identidade canônica;
-- cache de verificação somente em memória;
-- Restore sempre revalida integralmente;
+- cache de verificação somente em memória; Restore sempre revalida integralmente;
 - retenção sem scheduler e por quantidade;
 - `retention_max_confirmed_backups` terá valor/default final no Bloco 12;
 - nunca remover backup antigo antes de confirmar o novo apenas para abrir espaço;
@@ -211,7 +105,6 @@ Contrato resumido:
 - pacote inválido/corrompido não é apagado silenciosamente pela retenção;
 - coordinator/lease exclusivo para `BACKUP`, `RESTORE` e `MIGRATION`;
 - safety/pre-migration backup são suboperações do lease raiz;
-- Backup mantém lease completo, mas barrier de mutações apenas durante captura;
 - `uncertain` suspende retenção e cleanup destrutivo.
 
 Decisões aprovadas: **D11.26–D11.42**.
@@ -245,27 +138,52 @@ Decisões aprovadas: **D11.43–D11.61**.
 
 # Análise 5 — Restart, sessões, reconexão e falhas
 
-**Status:** PROPOSTA PARA REVISÃO DO PO — NÃO CONSOLIDADA.
+**Status:** APROVADA PELO PO em 2026-08-31.
 
 Detalhe: `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
 
-Direção proposta:
+Contrato resumido:
 
 - journal persistente fora de `data/` antes da troca física;
+- `backups/.operations/restore-active.json` é baseline e não entra em catálogo/retenção/payload;
 - fresh Host reconcilia Restore antes de migrations/readiness normais;
 - digest determinístico identifica o candidato preparado após restart;
 - queda antes da primeira troca preserva estado original;
-- queda entre os dois renames causa rollback para `old`, não conclusão automática;
-- estado não comprovável = `RECOVERY_REQUIRED/uncertain`;
+- queda entre `data→old` e `data-next→data` causa rollback para `old`, não conclusão automática;
+- combinação filesystem/journal não comprovável = `RECOVERY_REQUIRED/uncertain`;
 - Restore aplicado ou rollback após fase destrutiva exige reinicialização controlada do Host;
-- Controller pode executar um relaunch bounded de recovery, sem watchdog/loop infinito;
+- Controller pode realizar relaunch bounded de recovery, sem watchdog/loop infinito;
 - fase destrutiva invalida todas as sessões/tokens anteriores;
-- conteúdo restaurado não ressuscita sessão antiga;
-- Clients reconectam, fazem novo login e reconsultam estado;
-- resultado terminal mínimo persiste fora de `data/` para atravessar restart;
-- cleanup só ocorre depois de estado conhecido; `uncertain` preserva todos os artefatos relevantes.
+- conteúdo restaurado nunca ressuscita token antigo;
+- WebSocket de manutenção é best-effort; Clients fazem novo login e reconsultam estado após fresh Host;
+- `restore-last.json`/equivalente preserva resultado terminal mínimo;
+- active journal só é removido após fresh Host provar estado conhecido;
+- `uncertain` bloqueia readiness normal, mutações, nova operação destrutiva, retenção e cleanup.
 
-Propostas numeradas: **P11.62–P11.82**.
+Decisões aprovadas: **D11.62–D11.82**.
+
+---
+
+# Análise 6 — Disaster recovery, capacidades e auditoria
+
+**Status:** PROPOSTA PARA REVISÃO DO PO — NÃO CONSOLIDADA.
+
+Detalhe: `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
+
+Direção proposta:
+
+- disaster recovery somente quando Restore normal seguro não está disponível;
+- Recovery local/transitório pelo Controller na máquina central, sem listener normal de rede;
+- exclusividade da implantação e autoridade baseada em acesso local/ACL, pois o banco pode não autenticar;
+- candidatos permanecem pacotes finais administrados em `backups/` e passam pela mesma validação/compatibilidade do Restore normal;
+- ausência de safety backup válido pode ser aceita somente no disaster recovery real;
+- preservar o estado ativo como `.recovery-old-<id>` quando possível, sem fingir que ele é backup íntegro;
+- reutilizar journal/staging/troca same-volume e recovery determinístico já aprovados;
+- Gerência × Backup proposta como **SIM** para consultar/criar; Restore continua **ADM-only**;
+- trilha administrativa estruturada fora de `data/` para sobreviver ao Restore;
+- journal, admin audit e logs técnicos permanecem mecanismos distintos.
+
+Propostas numeradas: **P11.83–P11.103**.
 
 ---
 
@@ -280,7 +198,9 @@ O bloco só pode ser considerado concluído quando:
 - nenhum backup parcial puder ser tratado como válido;
 - Restore tiver estados de falha e recuperação definidos;
 - disaster recovery possuir fronteira clara em relação ao Restore normal;
-- decisões aprovadas forem sincronizadas nas fontes específicas.
+- capacidades e auditoria estiverem fechadas;
+- decisões aprovadas forem sincronizadas nas fontes específicas;
+- validação técnica final não identificar bloqueador arquitetural.
 
 ## Fora do escopo
 
@@ -295,4 +215,4 @@ O bloco só pode ser considerado concluído quando:
 
 ## Próxima análise
 
-Após aprovação de P11.62–P11.82, seguir para **Análise 6 — disaster recovery, capacidades e auditoria**.
+Após aprovação de P11.83–P11.103, seguir para **Análise 7 — validação técnica final do Bloco 11**.
