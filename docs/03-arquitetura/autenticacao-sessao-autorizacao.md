@@ -1,7 +1,7 @@
 # Autenticação, Sessão e Autorização — StepFlow Pocket
 
 **Status:** NÚCLEO CONSOLIDADO PARA A FASE 1 / PARÂMETROS FINAIS PENDENTES  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-08-31
 
 ## Princípios
 
@@ -69,6 +69,19 @@ Consolidado:
 
 Duração de sessão, inatividade, validade absoluta e tamanho/entropia numérica do token permanecem pendentes.
 
+### Fronteira de sessão após Restore
+
+Consolidado no Bloco 11:
+
+- Restore que falha/cancela **antes** da fase destrutiva não exige revogação global apenas por ter preparado staging;
+- qualquer Restore que entra na fase destrutiva invalida todas as sessões/tokens anteriores;
+- a invalidação vale tanto para Restore concluído quanto para rollback após a fase destrutiva;
+- conteúdo de backup restaurado nunca pode ressuscitar token reutilizável antigo;
+- após o fresh Host atingir readiness, Clients precisam autenticar novamente;
+- se a implementação futura persistir metadados de sessão, deve existir epoch/revogação/runtime equivalente que preserve essa regra.
+
+Fonte: `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+
 ## Capacidades documentais/administrativas
 
 | Capacidade | ADM | Gerência | Funcionário |
@@ -84,7 +97,7 @@ Duração de sessão, inatividade, validade absoluta e tamanho/entropia numéric
 | Backup | sim | **PENDENTE** | não |
 | Restore | sim | não | não |
 
-`PENDENTE` não significa sim nem não.
+`PENDENTE` não significa sim nem não. A Análise 6 do Bloco 11 propõe fechar Gerência × Backup, mas essa proposta ainda não é contrato.
 
 ## Capacidades operacionais
 
@@ -214,6 +227,8 @@ Registrar proporcionalmente:
 
 Nunca registrar senha, token reutilizável ou segredo.
 
+A trilha administrativa específica que precisa atravessar Restore está em análise no Bloco 11 — Análise 6; ainda não é contrato até aprovação.
+
 ## Transporte
 
 Credenciais e sessão usam o canal Client↔Host vigente. Proteção final de transporte na LAN depende da infraestrutura corporativa real.
@@ -225,6 +240,6 @@ Credenciais e sessão usam o canal Client↔Host vigente. Proteção final de tr
 - duração/expiração de sessão;
 - entropia/tamanho numérico do token;
 - Gerência × configuração da empresa;
-- Gerência × Backup.
+- Gerência × Backup — proposta de fechamento na Análise 6 do Bloco 11.
 
 Nenhum valor marcado como pendente pode ser convertido silenciosamente em requisito definitivo pelo executor.
