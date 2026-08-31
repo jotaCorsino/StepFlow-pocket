@@ -1,6 +1,6 @@
 # Registro de Decisões — StepFlow Pocket
 
-**Atualização:** 2026-08-29
+**Atualização:** 2026-08-31
 
 Este arquivo registra **decisões vigentes, pendências reais e gates ativos**. Detalhes pertencem aos documentos específicos. Proposta não aprovada não é contrato.
 
@@ -262,12 +262,32 @@ Fonte: `docs/04-planejamento/bloco-10-etapa-11-validacao-tecnica-final.md`.
 - crash/falha nunca converte staging/parcial em backup válido;
 - números de timeout/tamanho/duração de barrier ficam para benchmark.
 
-Fonte: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
+### Decisões aprovadas — catálogo, retenção e coordenação
+
+- catálogo é reconstruído dos pacotes finais e não depende do banco ativo;
+- `backup_id` do manifesto é a identidade; filename não é identidade canônica;
+- `.staging` nunca entra no catálogo;
+- integridade e compatibilidade são estados distintos;
+- cache de verificação existe somente em memória; Restore sempre revalida o pacote;
+- retenção não usa scheduler e ocorre após backup confirmado ou startup seguro;
+- retenção inicial é por quantidade; `retention_max_confirmed_backups` terá valor/default final no Bloco 12;
+- backup antigo não é apagado antes da confirmação do novo apenas para abrir espaço;
+- source/safety/pre-migration em uso ou resultado incerto ficam protegidos;
+- pacote inválido/corrompido não é removido silenciosamente pela retenção automática;
+- Host usa coordinator/lease exclusivo para `BACKUP`, `RESTORE` e `MIGRATION`;
+- safety/pre-migration backup reutilizam a pipeline como suboperações do lease raiz;
+- Backup mantém lease completo, mas barrier de mutações somente durante `BACKUP_CAPTURE`;
+- resultado `uncertain` suspende retenção/cleanup destrutivo.
+
+Fontes:
+
+- `docs/04-planejamento/bloco-11-backup-restauracao.md`;
+- `docs/04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md`.
 
 ## 11. Estado da Fase 1
 
 - Blocos 0–10: encerrados nos respectivos escopos documentais;
-- Bloco 11: Backup/Restore técnico em análise;
+- Bloco 11: Backup/Restore técnico em análise; Análises 1–3 aprovadas, Análise 4 em revisão;
 - Bloco 12: estrutura oficial + Fase 2 pendente.
 
 ## 12. Pendências vigentes
@@ -290,8 +310,7 @@ Fonte: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
 
 ### Bloco 11
 
-- catálogo/retenção/coordenação administrativa;
-- Restore/safety backup/compatibilidade;
+- Restore/safety backup/compatibilidade — proposta em revisão na Análise 4;
 - restart/reconexão/sessões e falhas;
 - disaster recovery local;
 - capacidades/auditoria;
