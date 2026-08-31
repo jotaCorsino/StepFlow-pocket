@@ -1,6 +1,6 @@
 # Bloco 11 — Análise 5 — Restart, sessões, reconexão e falhas
 
-**Status:** PROPOSTA PARA REVISÃO DO PO — NÃO CONSOLIDADA  
+**Status:** APROVADA PELO PO EM 2026-08-31  
 **Bloco:** 11 — Backup / Restauração técnico  
 **Data:** 2026-08-31
 
@@ -429,29 +429,29 @@ Se Controller também for encerrado durante Restore:
 
 Isso preserva o contrato Pocket.
 
-## 5.22 Propostas resultantes — P11.62 a P11.82
+## 5.22 Decisões aprovadas — D11.62 a D11.82
 
-- **P11.62:** Restore persiste journal operacional fora de `data/` antes da troca física; memória do processo não é fonte suficiente de recovery;
-- **P11.63:** baseline do journal = `backups/.operations/restore-active.json`; ele não entra em catálogo, retenção ou payload;
-- **P11.64:** journal registra operation/source/safety IDs, fase sequencial, schema e digest do candidato, sem segredos;
-- **P11.65:** atualizações críticas do journal usam temp + flush/sync + promoção controlada antes da ação física correspondente;
-- **P11.66:** fresh Host reconcilia Restore antes de migrations/readiness normais;
-- **P11.67:** candidato preparado recebe digest determinístico do conjunto `data-next/` para identificação após restart;
-- **P11.68:** queda antes do primeiro rename preserva `data/` original e termina como falha conhecida;
-- **P11.69:** queda entre `data→old` e `data-next→data` causa rollback automático para `old`, não conclusão automática do Restore;
-- **P11.70:** se `data/` ativo corresponde ao digest do candidato e valida, fresh Host pode continuar finalização; caso contrário tenta rollback conhecido ou entra em `uncertain`;
-- **P11.71:** combinação de filesystem/journal não comprovável, journal inválido com artefatos relevantes ou interferência externa leva a `RECOVERY_REQUIRED/uncertain`;
-- **P11.72:** Restore aplicado ou rollback após fase destrutiva exige reinicialização controlada do Host antes de readiness normal;
-- **P11.73:** Controller pode relançar bounded um Host de recovery por saída controlada ou queda com journal ativo; isso não é watchdog geral nem loop infinito;
-- **P11.74:** qualquer Restore que entre na fase destrutiva invalida todas as sessões/tokens pré-existentes, inclusive quando termina em rollback;
-- **P11.75:** conteúdo restaurado nunca pode ressuscitar token reutilizável de sessão antiga;
-- **P11.76:** WebSocket/evento de manutenção é best-effort; desconexão não indica resultado e Clients reconsultam após reconexão;
-- **P11.77:** fresh Host rejeita tokens pré-Restore e exige novo login antes do uso normal;
-- **P11.78:** `restore-last.json`/equivalente preserva resultado terminal mínimo para reconsulta pós-restart, sem substituir auditoria;
-- **P11.79:** `restore-active.json` só é removido após fresh Host confirmar estado conhecido e resultado terminal consultável; em `uncertain`, permanece;
-- **P11.80:** cleanup de `old`/staging é posterior e best-effort; falha de cleanup não rebaixa `completed`, mas `uncertain` suspende cleanup;
-- **P11.81:** taxonomia mínima = `preparing`, `maintenance`, `completed`, `failed_pre_destructive`, `rolled_back`, `uncertain`;
-- **P11.82:** `uncertain/RECOVERY_REQUIRED` bloqueia readiness normal, mutações, nova operação destrutiva, retenção e cleanup até recuperação controlada.
+- **D11.62:** Restore persiste journal operacional fora de `data/` antes da troca física; memória do processo não é fonte suficiente de recovery;
+- **D11.63:** baseline do journal = `backups/.operations/restore-active.json`; ele não entra em catálogo, retenção ou payload;
+- **D11.64:** journal registra operation/source/safety IDs, fase sequencial, schema e digest do candidato, sem segredos;
+- **D11.65:** atualizações críticas do journal usam temp + flush/sync + promoção controlada antes da ação física correspondente;
+- **D11.66:** fresh Host reconcilia Restore antes de migrations/readiness normais;
+- **D11.67:** candidato preparado recebe digest determinístico do conjunto `data-next/` para identificação após restart;
+- **D11.68:** queda antes do primeiro rename preserva `data/` original e termina como falha conhecida;
+- **D11.69:** queda entre `data→old` e `data-next→data` causa rollback automático para `old`, não conclusão automática do Restore;
+- **D11.70:** se `data/` ativo corresponde ao digest do candidato e valida, fresh Host pode continuar finalização; caso contrário tenta rollback conhecido ou entra em `uncertain`;
+- **D11.71:** combinação de filesystem/journal não comprovável, journal inválido com artefatos relevantes ou interferência externa leva a `RECOVERY_REQUIRED/uncertain`;
+- **D11.72:** Restore aplicado ou rollback após fase destrutiva exige reinicialização controlada do Host antes de readiness normal;
+- **D11.73:** Controller pode relançar bounded um Host de recovery por saída controlada ou queda com journal ativo; isso não é watchdog geral nem loop infinito;
+- **D11.74:** qualquer Restore que entre na fase destrutiva invalida todas as sessões/tokens pré-existentes, inclusive quando termina em rollback;
+- **D11.75:** conteúdo restaurado nunca pode ressuscitar token reutilizável de sessão antiga;
+- **D11.76:** WebSocket/evento de manutenção é best-effort; desconexão não indica resultado e Clients reconsultam após reconexão;
+- **D11.77:** fresh Host rejeita tokens pré-Restore e exige novo login antes do uso normal;
+- **D11.78:** `restore-last.json`/equivalente preserva resultado terminal mínimo para reconsulta pós-restart, sem substituir auditoria;
+- **D11.79:** `restore-active.json` só é removido após fresh Host confirmar estado conhecido e resultado terminal consultável; em `uncertain`, permanece;
+- **D11.80:** cleanup de `old`/staging é posterior e best-effort; falha de cleanup não rebaixa `completed`, mas `uncertain` suspende cleanup;
+- **D11.81:** taxonomia mínima = `preparing`, `maintenance`, `completed`, `failed_pre_destructive`, `rolled_back`, `uncertain`;
+- **D11.82:** `uncertain/RECOVERY_REQUIRED` bloqueia readiness normal, mutações, nova operação destrutiva, retenção e cleanup até recuperação controlada.
 
 ## Pendências para Análise 6
 
@@ -464,4 +464,4 @@ Isso preserva o contrato Pocket.
 
 ## Próximo passo
 
-Após aprovação de P11.62–P11.82, seguir para **Análise 6 — disaster recovery, capacidades e auditoria**.
+Seguir para **Análise 6 — disaster recovery, capacidades e auditoria**.
