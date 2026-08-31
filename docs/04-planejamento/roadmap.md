@@ -1,7 +1,7 @@
 # Roadmap — StepFlow Pocket
 
 **Status:** FASE 1 EM ANDAMENTO  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-08-31
 
 O roadmap descreve **fases e resultados**, não PRs ou branches específicas. Gates operacionais correntes ficam no plano da fase e no `README.md`.
 
@@ -45,22 +45,27 @@ Já aprovados:
 - snapshot SQLite via Online Backup API;
 - consistência conjunta entre SQLite e arquivos administrados;
 - barrier curto sobre mutações;
-- staging/verificação/promoção no-replace.
+- staging/verificação/promoção no-replace;
+- catálogo reconstruível e retenção por quantidade sem scheduler;
+- coordenação administrativa exclusiva de Backup/Restore/migration;
+- Restore com revalidação integral e `data-next/` same-volume;
+- compatibilidade por `format_version + schema/migration path`, sem down migration;
+- safety backup confirmado antes da fase destrutiva;
+- troca lógica de `data/` com rollback conhecido ou `uncertain`.
 
 Em análise agora:
 
-- catálogo reconstruível;
-- retenção sem scheduler;
-- coordenação administrativa de Backup/Restore/migration.
+- journal de Restore e recovery após restart;
+- reinicialização controlada do Host;
+- invalidação de sessões e reconexão dos Clients;
+- taxonomia de falhas/resultado incerto.
 
 Depois:
 
-- Restore + safety backup + compatibilidade;
-- restart/reconexão/sessões + falhas;
 - disaster recovery + capacidades/auditoria;
 - validação técnica final.
 
-Fontes: `bloco-11-backup-restauracao.md` e `bloco-11-analise-3-catalogo-retencao-coordenacao.md`.
+Fontes: `bloco-11-backup-restauracao.md`, `bloco-11-analise-4-restore-safety-compatibilidade.md` e `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
