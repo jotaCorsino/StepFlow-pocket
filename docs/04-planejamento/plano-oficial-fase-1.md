@@ -2,7 +2,7 @@
 
 **Status:** EM ANDAMENTO  
 **Início:** 2026-08-19  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-08-31
 
 ## Objetivo
 
@@ -144,15 +144,19 @@ Resultado:
 Fontes:
 
 - `bloco-11-backup-restauracao.md` — mapa principal e decisões aprovadas;
-- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — proposta atual;
+- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — Análise 3 aprovada;
+- `bloco-11-analise-4-restore-safety-compatibilidade.md` — Análise 4 aprovada;
+- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — proposta atual;
 - `../02-telas/13-backup-restauracao.md` — UX consolidada.
 
 Estado:
 
 - Análise 1 — estado recuperável + envelope: **APROVADA**;
 - Análise 2 — consistência + escrita/promoção/verificação: **APROVADA**;
-- Análise 3 — catálogo + retenção + coordenação administrativa: **EM REVISÃO**;
-- Análises 4–7: pendentes.
+- Análise 3 — catálogo + retenção + coordenação administrativa: **APROVADA**;
+- Análise 4 — Restore + safety backup + compatibilidade: **APROVADA**;
+- Análise 5 — restart + sessões + reconexão + falhas: **EM REVISÃO**;
+- Análises 6–7: pendentes.
 
 Já consolidado:
 
@@ -163,14 +167,17 @@ Já consolidado:
 - staging privado; `-wal`/`-shm` fora do pacote;
 - verificação antes da promoção;
 - promoção final same-volume/no-replace;
-- crash/parcial nunca vira backup confirmado.
+- catálogo reconstruível e retenção por quantidade sem scheduler;
+- coordinator administrativo exclusivo de Backup/Restore/Migration;
+- Restore revalida pacote e usa `data-next/` same-volume;
+- compatibilidade usa `format_version + schema/migration path`, sem down migration;
+- safety backup confirmado é obrigatório;
+- ativação troca o conjunto `data/` como unidade lógica, preservando `old` até validação;
+- estado não comprovável/reversível é `uncertain`.
 
 Ainda a fechar:
 
-- catálogo/retenção/coordenação administrativa;
-- Restore/safety backup/compatibilidade;
-- restart/reconexão/sessões;
-- falhas e resultado incerto;
+- restart/reconexão/sessões e recovery após falha — proposta na Análise 5;
 - disaster recovery local;
 - capacidades/auditoria;
 - validação técnica final.
