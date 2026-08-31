@@ -1,7 +1,7 @@
 # Arquitetura Vigente — StepFlow Pocket
 
 **Status:** CONSOLIDADA PARA A FASE 1 — BLOCO 11 EM ANÁLISE  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-08-31
 
 Este arquivo é o **mapa arquitetural**. Contratos detalhados pertencem aos documentos específicos e não devem ser duplicados integralmente aqui.
 
@@ -240,12 +240,25 @@ Host entra em BACKUP_CAPTURE
 - sucesso somente após arquivo final reaberto/confirmado;
 - crash/falha nunca transforma staging/parcial em válido.
 
-Catálogo, retenção, coordenação administrativa, Restore, sessões, disaster recovery e capacidades ainda estão sendo fechados.
+Catálogo/retenção/coordenação:
+
+- catálogo é reconstruído dos pacotes finais e não depende do banco ativo;
+- `backup_id` é identidade canônica;
+- cache de verificação é somente em memória e Restore sempre revalida o pacote;
+- retenção não usa scheduler e é inicialmente por quantidade;
+- source/safety/pre-migration em uso ou resultado incerto ficam protegidos;
+- pacote inválido/corrompido não é apagado silenciosamente pela retenção;
+- Host possui lease administrativo exclusivo para `BACKUP`, `RESTORE` e `MIGRATION`;
+- safety/pre-migration backup reutilizam a pipeline como suboperações do lease raiz;
+- `uncertain` suspende cleanup destrutivo/retenção.
+
+Restore normal, compatibilidade, sessões, disaster recovery e capacidades ainda estão sendo fechados. A Análise 4 propõe preparar `data-next/`, validar `integrity_check + foreign_key_check`, permitir somente migrations forward completas em staging, criar safety backup confirmado e ativar o conjunto `data/` por troca controlada same-volume; essa proposta ainda não é contrato.
 
 Fontes:
 
 - `../04-planejamento/bloco-11-backup-restauracao.md`;
-- `../04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md` — proposta ainda não aprovada.
+- `../04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
+- `../04-planejamento/bloco-11-analise-4-restore-safety-compatibilidade.md` — proposta em revisão.
 
 ## Pendências arquiteturais ainda abertas
 
@@ -253,7 +266,7 @@ Fontes:
 - Gerência × configuração da empresa;
 - Gerência × Backup;
 - regra editorial de categoria arquivada;
-- restante do contrato técnico do Bloco 11: catálogo/retenção/coordenação, Restore/compatibilidade, restart/sessões, disaster recovery, capacidades/auditoria e validação final;
+- restante do contrato técnico do Bloco 11: Restore/compatibilidade, restart/sessões/falhas, disaster recovery, capacidades/auditoria e validação final;
 - estrutura oficial da implementação e plano da Fase 2;
 - gates de ambiente real: Windows/WebView2, Launcher/SMB, Word, impressoras e EDR.
 
