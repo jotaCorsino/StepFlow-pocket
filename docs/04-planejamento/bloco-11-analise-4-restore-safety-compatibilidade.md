@@ -1,6 +1,6 @@
 # Bloco 11 — Análise 4 — Restore normal, safety backup e compatibilidade
 
-**Status:** PROPOSTA PARA REVISÃO DO PO — NÃO CONSOLIDADA  
+**Status:** APROVADA PELO PO em 2026-08-31  
 **Bloco:** 11 — Backup / Restauração técnico  
 **Data:** 2026-08-31
 
@@ -291,27 +291,27 @@ Baseline:
 - erro de rename interrompe a sequência e entra na classificação de falha correspondente;
 - gates de SMB/EDR/filesystem real permanecem para validação corporativa quando aplicáveis.
 
-## 4.16 Propostas resultantes — P11.43 a P11.61
+## 4.16 Decisões aprovadas — D11.43 a D11.61
 
-- **P11.43:** Restore sempre revalida integralmente envelope, paths, tamanhos e SHA-256, independentemente do cache do catálogo;
-- **P11.44:** Restore extrai para `data-next/` controlado e same-volume com `data/`, nunca diretamente sobre o estado ativo;
-- **P11.45:** pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio e coerência de schema com o manifesto;
-- **P11.46:** compatibilidade usa `format_version` suportado + integridade + schema/migration path; versão textual do app não decide sozinha;
-- **P11.47:** schema igual é elegível; schema mais antigo só é elegível com cadeia completa de migrations forward disponível;
-- **P11.48:** migrations necessárias ao Restore são aplicadas no staging e revalidadas antes da fase destrutiva;
-- **P11.49:** schema mais novo que o Host ou cadeia incompleta/ambígua é incompatível;
-- **P11.50:** Restore não executa down migration automática;
-- **P11.51:** safety backup é criado depois do candidato preparado e antes da fase destrutiva, reutilizando a pipeline sob o mesmo lease `RESTORE`;
-- **P11.52:** safety backup deve estar confirmado; qualquer falha bloqueia o Restore normal;
-- **P11.53:** safety backup permanece protegido durante Restore/uncertain e, após sucesso, vira backup `system` normal sujeito à retenção futura, sem exclusão imediata;
-- **P11.54:** fase destrutiva só inicia após drenar operações, fechar handles necessários e persistir marcador de Restore fora de `data/`;
-- **P11.55:** cancelamento é permitido até antes da primeira alteração física do `data/`; depois disso não existe cancelamento de usuário;
-- **P11.56:** ativação usa troca lógica do conjunto `data/`, não overwrite arquivo a arquivo;
-- **P11.57:** baseline de troca = `data → .restore-old-<id>` e `data-next → data`, no mesmo volume e sem replace silencioso;
-- **P11.58:** `.restore-old-<id>` permanece até validação final do novo estado e serve como rollback operacional curto;
-- **P11.59:** pós-ativação exige nova validação de SQLite/schema/files administrados antes de sucesso;
-- **P11.60:** se rollback local puder restaurar e validar o estado anterior, Restore falha de forma conhecida; se não puder, resultado é `uncertain`;
-- **P11.61:** detalhes de marcador persistente, restart, sessões, reconexão e resolução de `uncertain` ficam para Análises 5–6, sem reabrir as regras de segurança acima.
+- **D11.43:** Restore sempre revalida integralmente envelope, paths, tamanhos e SHA-256, independentemente do cache do catálogo;
+- **D11.44:** Restore extrai para `data-next/` controlado e same-volume com `data/`, nunca diretamente sobre o estado ativo;
+- **D11.45:** pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio e coerência de schema com o manifesto;
+- **D11.46:** compatibilidade usa `format_version` suportado + integridade + schema/migration path; versão textual do app não decide sozinha;
+- **D11.47:** schema igual é elegível; schema mais antigo só é elegível com cadeia completa de migrations forward disponível;
+- **D11.48:** migrations necessárias ao Restore são aplicadas no staging e revalidadas antes da fase destrutiva;
+- **D11.49:** schema mais novo que o Host ou cadeia incompleta/ambígua é incompatível;
+- **D11.50:** Restore não executa down migration automática;
+- **D11.51:** safety backup é criado depois do candidato preparado e antes da fase destrutiva, reutilizando a pipeline sob o mesmo lease `RESTORE`;
+- **D11.52:** safety backup deve estar confirmado; qualquer falha bloqueia o Restore normal;
+- **D11.53:** safety backup permanece protegido durante Restore/uncertain e, após sucesso, vira backup `system` normal sujeito à retenção futura, sem exclusão imediata;
+- **D11.54:** fase destrutiva só inicia após drenar operações, fechar handles necessários e persistir marcador de Restore fora de `data/`;
+- **D11.55:** cancelamento é permitido até antes da primeira alteração física do `data/`; depois disso não existe cancelamento de usuário;
+- **D11.56:** ativação usa troca lógica do conjunto `data/`, não overwrite arquivo a arquivo;
+- **D11.57:** baseline de troca = `data → .restore-old-<id>` e `data-next → data`, no mesmo volume e sem replace silencioso;
+- **D11.58:** `.restore-old-<id>` permanece até validação final do novo estado e serve como rollback operacional curto;
+- **D11.59:** pós-ativação exige nova validação de SQLite/schema/files administrados antes de sucesso;
+- **D11.60:** se rollback local puder restaurar e validar o estado anterior, Restore falha de forma conhecida; se não puder, resultado é `uncertain`;
+- **D11.61:** detalhes de marcador persistente, restart, sessões, reconexão e resolução de `uncertain` ficam para Análises 5–6, sem reabrir as regras de segurança acima.
 
 ## Referências técnicas
 
@@ -321,4 +321,4 @@ Baseline:
 
 ## Próximo passo
 
-Após aprovação de P11.43–P11.61, seguir para **Análise 5 — restart, sessões, reconexão, falhas e resultado incerto**.
+Análise 5 — **restart, sessões, reconexão, falhas e resultado incerto** está em revisão no documento `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
