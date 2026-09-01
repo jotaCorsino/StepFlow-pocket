@@ -54,6 +54,7 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 - `README.md` — índice das superfícies;
 - `01-login.md` a `15-estados-transversais.md` — contratos UX consolidados;
+- `12-configuracoes-categorias.md` — Empresa + Categorias, alinhada a D12.62–D12.65;
 - `13-backup-restauracao.md` — UX de Backup/Restore alinhada ao Bloco 11;
 - `14-exportacao-impressao-ficha.md` — UX documental e Ficha compacta.
 
@@ -67,7 +68,7 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `compatibilidade-windows-client.md` — Windows/WebView2;
 - `host-pocket.md` — Controller/Host;
 - `comunicacao-client-host.md` — HTTP/JSON/WebSocket;
-- `autenticacao-sessao-autorizacao.md` — autenticação/autorização.
+- `autenticacao-sessao-autorizacao.md` — autenticação/autorização e parâmetros D12.56–D12.62.
 
 ### Planejamento — `04-planejamento`
 
@@ -77,15 +78,11 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `bloco-10-exportacao-impressao-ficha.md` — mapa técnico consolidado do Bloco 10;
 - `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz técnica final do Bloco 10;
 - `bloco-11-backup-restauracao.md` — mapa técnico consolidado do Bloco 11, D11.1–D11.116;
-- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — catálogo, retenção e coordenação;
-- `bloco-11-analise-4-restore-safety-compatibilidade.md` — Restore, safety backup e compatibilidade;
-- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — restart, sessões, reconexão e falhas;
-- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — disaster recovery, capacidades e auditoria;
-- `bloco-11-analise-7-validacao-tecnica-final.md` — validação técnica final e D11.104–D11.116;
-- `bloco-12-estrutura-oficial-plano-fase-2.md` — mapa principal do Bloco 12; D12.1–D12.55 aprovadas e Análise 4 em revisão;
-- `bloco-12-analise-2-workspace-build-dependencias.md` — workspace, build, dependências e configuração consolidados em D12.19–D12.34;
-- `bloco-12-analise-3-migrations-testes-fixtures.md` — migrations, scripts, testes e fixtures consolidados em D12.35–D12.55;
-- `bloco-12-analise-4-parametros-finais.md` — proposta P12.56–P12.79 para parâmetros finais e pendências remanescentes;
+- `bloco-12-estrutura-oficial-plano-fase-2.md` — mapa principal do Bloco 12; D12.1–D12.79 aprovadas e Análise 5 em revisão;
+- `bloco-12-analise-2-workspace-build-dependencias.md` — D12.19–D12.34;
+- `bloco-12-analise-3-migrations-testes-fixtures.md` — D12.35–D12.55;
+- `bloco-12-analise-4-parametros-finais.md` — D12.56–D12.79;
+- `bloco-12-analise-5-plano-fase-2.md` — proposta P12.80–P12.98 para sequência executável da Fase 2;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -103,6 +100,6 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 ## Estado atual
 
-A **Fase 1 permanece em andamento**. Blocos 0–11 estão concluídos; o Bloco 12 está em análise. As Análises 1–3 estão aprovadas em D12.1–D12.55 e a Análise 4 está em revisão como P12.56–P12.79.
+A **Fase 1 permanece em andamento**. Blocos 0–11 estão concluídos; o Bloco 12 está em análise. As Análises 1–4 estão aprovadas em D12.1–D12.79 e a Análise 5 está em revisão como P12.80–P12.98.
 
 Nenhuma implementação funcional oficial foi iniciada.
