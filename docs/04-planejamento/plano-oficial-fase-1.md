@@ -1,6 +1,6 @@
 # Plano Oficial — Fase 1: Fechamento Arquitetural e Especificação
 
-**Status:** EM ANDAMENTO  
+**Status:** EM ANDAMENTO — BLOCO 12 EM ANÁLISE  
 **Início:** 2026-08-19  
 **Atualização:** 2026-09-01
 
@@ -8,7 +8,7 @@
 
 Transformar requisitos e arquitetura conceitual em decisões implementáveis antes da fundação executável do StepFlow.
 
-A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quando necessárias. Não autoriza scaffold/runtime oficial, migrations oficiais ou código de negócio definitivo antes do gate do Bloco 12/Fase 2.
+A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quando necessárias. Não autoriza scaffold/runtime oficial, migrations oficiais ou código de negócio definitivo antes do gate final do Bloco 12/Fase 2.
 
 ## Estado dos blocos
 
@@ -25,8 +25,8 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 8 | UI/UX | CONCLUÍDO | `../02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
-| 11 | Backup/restauração técnico | TECNICAMENTE CONCLUÍDO / GATE GIT PENDENTE | `bloco-11-backup-restauracao.md` |
-| 12 | Estrutura oficial + Fase 2 | PENDENTE | a abrir após gate remoto limpo |
+| 11 | Backup/restauração técnico | CONCLUÍDO | `bloco-11-backup-restauracao.md` |
+| 12 | Estrutura oficial + Fase 2 | EM ANÁLISE | `bloco-12-estrutura-oficial-plano-fase-2.md` |
 
 ## Contrato Pocket da Fase 1
 
@@ -42,7 +42,7 @@ Não é aceitável como baseline:
 
 - instalar StepFlow em cada estação;
 - exigir MSI/MSIX/NSIS;
-- exigir Rust/Node/npm/Cargo/Office/LibreOffice/Adobe;
+- exigir Rust/Node/npm/Cargo/Office/LibreOffice/Adobe em produção;
 - exigir Internet para uso normal;
 - exigir elevação administrativa;
 - exigir configuração manual de dependência;
@@ -50,67 +50,82 @@ Não é aceitável como baseline:
 
 WebView2 Evergreen existente é preferível quando compatível. Fixed Version não roda por UNC/SMB; fallback local só entra após PoC provar preparação automática sem instalação/elevação/manualidade.
 
-## Blocos 8–10 — fechados
+## Blocos 8–11 — fechados
 
-### Bloco 8 — UI/UX
+- **Bloco 8:** Telas 01–15 e experiência Reader/manual consolidadas;
+- **Bloco 9:** Atendimento/Execução, checklist, observações, Equipamento e histórico consolidados;
+- **Bloco 10:** PDF/DOCX/impressão/Ficha/naming/temporários consolidados;
+- **Bloco 11:** Backup/Restore, recovery, capacidades, auditoria e validação Windows consolidados em D11.1–D11.116.
 
-Telas 01–15 consolidadas. Reader em formato livro/manual, `Visão geral`, uma Etapa por página lógica, stepper de navegação e baixa densidade textual.
+Os gates Git desses blocos foram consumidos; não permanecem como pendência da Fase 1.
 
-### Bloco 9 — execução operacional
+## Bloco 12 — Estrutura oficial + plano da Fase 2
 
-Lifecycle `Em andamento / Concluído / Cancelado`, reabertura explícita, checklist persistente, observação de serviço por Etapa, Equipamento opcional, revisão exata e reprodução histórica.
+**EM ANÁLISE desde 2026-09-01.**
 
-### Bloco 10 — geração documental
+Fonte: `bloco-12-estrutura-oficial-plano-fase-2.md`.
 
-Geração Host-side, PDF Typst, DOCX OOXML Rust, impressão pelo mesmo PDF, Procedimento A4 multipágina, Ficha de exatamente uma A4, `SHEET_OVERFLOW`, naming/temporários e gates corporativos consolidados.
+O bloco fecha o último gate da Fase 1. Ele deve produzir decisões implementáveis, mas não antecipar implementação funcional no próprio PR documental.
 
-## Bloco 11 — Backup / Restore técnico
+### Trilhas obrigatórias
 
-**TECNICAMENTE CONCLUÍDO em 2026-09-01.** O PR #26 ainda precisa cumprir o gate Git antes da entrada em `main`.
+1. **Árvore oficial e ownership**
+   - source tree;
+   - executáveis e crates;
+   - separação entre source tree e pacote Pocket publicado;
+   - modularidade do frontend e fronteiras Rust.
 
-Fontes:
+2. **Workspace/build/configuração**
+   - workspace Rust/Tauri;
+   - versões pinadas e política de dependências;
+   - configuração de desenvolvimento e exemplos não secretos;
+   - outputs/build/package não versionados.
 
-- `bloco-11-backup-restauracao.md` — mapa principal consolidado;
-- `bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
-- `bloco-11-analise-4-restore-safety-compatibilidade.md`;
-- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
-- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`;
-- `bloco-11-analise-7-validacao-tecnica-final.md`;
-- `../02-telas/13-backup-restauracao.md`.
+3. **Migrations/scripts/testes/fixtures**
+   - localização/naming/imutabilidade das migrations;
+   - scripts apenas de tooling;
+   - testes unitários, integração e e2e;
+   - fixtures determinísticas sem dados reais.
 
-Decisões aprovadas: **D11.1–D11.116**.
+4. **Parâmetros finais**
+   - autenticação/sessão;
+   - Backup/Restore;
+   - configuração da empresa;
+   - categoria arquivada;
+   - limites/timeouts/backoff/log rotation e outros números ainda pendentes.
 
-Fechado:
+5. **Fase 2 e gate de implementação**
+   - sequência executável de fundação;
+   - critérios de aceite;
+   - tarefas Codex;
+   - sincronização segura do checkout local;
+   - autorização explícita do primeiro scaffold/runtime oficial.
 
-- estado recuperável + `.stepflow-backup`;
-- Online Backup API e consistência SQLite + arquivos;
-- staging, verificação e promoção no-replace;
-- catálogo reconstruível, retenção e coordenação administrativa;
-- Restore com revalidação, migrations forward, safety backup e troca lógica de `data/`;
-- journal/restart/rollback/`uncertain`;
-- invalidação de sessões após fase destrutiva;
-- disaster recovery local/transitório;
-- Backup ADM/Gerência e Restore ADM-only;
-- auditoria administrativa fora de `data/`;
-- safety barrier contínuo do `pre_restore`;
-- canonicalização Windows, `source_deployment_id` e parser bounded;
-- baseline sem criptografia/assinatura application-level;
-- gates Win32/filesystem/ACL/EDR/long paths/crash antes de produção.
+### Checkpoint atual — Análise 1
 
-Não existe bloqueador arquitetural conhecido para o Bloco 11.
+Proposta em revisão: **P12.1–P12.14 — árvore fonte e fronteiras de responsabilidade**.
 
-## Bloco 12 — Estrutura oficial + Fase 2
+Direção proposta:
 
-**PENDENTE.**
+```text
+StepFlow/
+├── Cargo.toml
+├── apps/
+│   ├── client/
+│   ├── launcher/
+│   ├── controller/
+│   └── host/
+├── crates/
+│   ├── protocol/
+│   ├── domain/
+│   ├── documents/
+│   └── platform-windows/
+├── scripts/
+├── tests/e2e/
+└── docs/
+```
 
-Fechará:
-
-- estrutura oficial do repositório;
-- migrations/scripts/testes iniciais;
-- parâmetros finais ainda abertos;
-- configuração/defaults/fixtures mensuráveis para limites técnicos;
-- plano da Fase 2;
-- sincronização segura do checkout local antes do primeiro trabalho de implementação.
+A aprovação da árvore não cria autorização automática para materializá-la antes do gate final do Bloco 12.
 
 ## Pendências restantes da Fase 1
 
@@ -144,18 +159,23 @@ Fechará:
 - filesystem/ACL/EDR/antivírus/long paths;
 - adapter Windows e crash injection de Backup/Restore.
 
+Esses gates de ambiente podem permanecer para execução/validação na fase apropriada, desde que o Bloco 12 deixe claro em qual etapa da Fase 2 eles são obrigatórios.
+
 ## Gate atual
 
-1. concluir revisão final do PR #26;
-2. tornar PR ready;
-3. squash merge em `main`;
-4. remover branch remota;
-5. verificar somente `main` e zero PRs abertos;
-6. somente então abrir Bloco 12.
+1. revisar/aprovar a arquitetura de source tree;
+2. fechar workspace/build/configuração;
+3. fechar migrations/scripts/testes/fixtures;
+4. fechar parâmetros finais ainda pendentes;
+5. aprovar plano executável da Fase 2;
+6. definir procedimento de sincronização segura do checkout local;
+7. executar validação cruzada final da Fase 1;
+8. cumprir gate Git do Bloco 12;
+9. somente então autorizar o primeiro scaffold/runtime oficial da Fase 2.
 
 ## Regras finais
 
-- não criar scaffold/runtime definitivo, migration oficial ou código de negócio durante a Fase 1 sem gate explícito;
+- não criar scaffold/runtime definitivo, migration oficial ou código de negócio antes do gate explícito;
 - toda tarefa Codex que altere arquivos informa base Git esperada e pré-flight;
 - preservar alterações locais preexistentes do PO;
 - nenhuma pendência vira decisão por inferência;
