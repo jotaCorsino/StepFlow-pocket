@@ -1,50 +1,54 @@
 # Bloco 11 — Análise 4 — Restore normal, safety backup e compatibilidade
 
-**Status:** APROVADA PELO PO em 2026-08-31  
+**Status:** APROVADA PELO PO / CONSOLIDADA  
 **Bloco:** 11 — Backup / Restauração técnico  
-**Data:** 2026-08-31
+**Aprovação original:** 2026-08-31  
+**Refinamento final:** 2026-09-01
 
 ## Objetivo
 
-Fechar o fluxo técnico do Restore normal pela UI: validação integral do pacote, regra de compatibilidade, preparação do estado restaurado, safety backup obrigatório e ponto exato em que a operação deixa de ser cancelável e passa a substituir o estado ativo.
+Fechar o Restore normal pela UI: revalidação integral do pacote, compatibilidade, preparação em staging, safety backup obrigatório, fronteira de cancelamento e troca controlada do estado ativo.
 
-Esta análise parte das Análises 1–3 aprovadas. Não altera a UX consolidada da Tela 13 nem o contrato Pocket.
+Os refinamentos D11.104–D11.116 da Análise 7 integram este contrato sem reabrir a UX da Tela 13.
 
-## 4.1 Pré-condições
+## Pré-condições
 
-Antes de preparar um Restore, o Host deve:
+Antes do Restore, o Host deve:
 
-- possuir o lease administrativo exclusivo `RESTORE`;
-- validar novamente sessão/capacidade aplicável;
-- proteger o backup de origem contra retenção durante a operação;
+- possuir lease administrativo exclusivo `RESTORE`;
+- revalidar sessão e capacidade;
+- proteger o backup de origem contra retenção;
 - não possuir Backup/Migration/Restore raiz concorrente;
-- tratar o pacote selecionado como candidato, nunca como elegível apenas por aparecer no catálogo.
+- tratar o item do catálogo como candidato, nunca como elegível apenas por estar listado.
 
-O catálogo pode acelerar a apresentação, mas **Restore sempre revalida integralmente o pacote**.
+Restore sempre revalida integralmente o pacote.
 
-## 4.2 Pipeline pré-destrutivo
-
-O estado ativo não é alterado durante esta fase.
+## Pipeline pré-destrutivo
 
 ```text
-Restore confirmado pelo usuário
-→ adquirir/confirmar lease RESTORE
-→ revalidar pacote de origem
-→ extrair para restore staging controlado
-→ validar SQLite integralmente
+Restore confirmado
+→ lease RESTORE
+→ revalidar pacote + source_deployment_id
+→ extrair para data-next/ controlado
+→ validar SQLite/integridade/foreign keys
 → avaliar compatibilidade
-→ aplicar migrations forward no staging, se necessárias e suportadas
+→ aplicar migrations forward no staging, quando necessárias
 → revalidar staging migrado
-→ criar safety backup do estado ativo
+→ entrar em RESTORE_PRE_DESTRUCTIVE_MAINTENANCE
+→ suspender e drenar mutações
+→ capturar safety backup
+→ manter barrier de mutações
+→ finalizar/verificar/promover safety backup
 → confirmar safety backup
-→ entrar em manutenção destrutiva
+→ revalidar digest/schema/root de data-next/
+→ persistir DESTRUCTIVE_STARTED
+→ fechar handles necessários
+→ primeiro rename
 ```
 
-Qualquer falha anterior à manutenção destrutiva encerra o Restore sem alterar `data/` ativo.
+Qualquer falha anterior ao primeiro rename encerra o Restore sem alterar `data/` ativo.
 
-## 4.3 Restore staging
-
-Restore usa staging próprio, diferente do staging de criação de backup.
+## Staging
 
 Baseline conceitual:
 
@@ -62,263 +66,218 @@ StepFlow\
 
 Regras:
 
-- `data-next/` representa o conjunto recuperável completo suportado pelo formato;
-- staging de ativação fica no **mesmo volume** do `data/` ativo;
-- não extrair diretamente sobre `data/`;
-- paths continuam allowlisted/normalizados;
-- não seguir reparse points, symlinks ou junctions;
-- não confiar em timestamps/permissões externas como prova de integridade;
-- staging nunca é servido aos Clients.
+- `data-next/` representa o conjunto recuperável completo;
+- staging de ativação fica no mesmo volume de `data/`;
+- nunca extrair diretamente sobre `data/`;
+- paths são lógicos, allowlisted e validados segundo a semântica Windows consolidada em D11.107–D11.108;
+- reparse points/symlinks/junctions/hardlinks e entradas não regulares não são aceitos;
+- staging não é servido aos Clients.
 
-A localização física final pode variar, mas a implementação deve preservar same-volume para a troca de diretórios.
+## Revalidação integral do pacote
 
-## 4.4 Revalidação integral do pacote
+Antes de usar o payload:
 
-Antes de usar qualquer payload:
-
-- ZIP/envelope deve abrir corretamente;
+- envelope/ZIP deve abrir corretamente;
 - `format_version` deve ser suportado;
-- `backup_id` e manifesto devem ser coerentes;
-- todas as entradas esperadas devem existir e nenhuma entrada não autorizada pode escapar do contrato da versão;
-- tamanho e SHA-256 de **cada entrada** devem conferir;
-- extração deve ser feita somente para paths controlados pelo Host.
+- `backup_id`, manifesto e `source_deployment_id` devem ser coerentes;
+- origem da implantação deve corresponder ao deployment atual no baseline;
+- todas as entradas esperadas devem respeitar o contrato da versão;
+- tamanho e SHA-256 de cada entrada devem conferir;
+- limites estruturais e preflight de espaço devem passar;
+- extração ocorre apenas sob roots controlados.
 
-Falha de envelope/hash torna o pacote `invalid_or_corrupt` e bloqueia Restore.
+Falha de hash/envelope/path/provenance/limite bloqueia Restore.
 
-## 4.5 Validação SQLite pré-Restore
+## Validação SQLite pré-Restore
 
-Sobre `data-next/stepflow.sqlite`, antes de qualquer troca destrutiva:
+Sobre `data-next/stepflow.sqlite`:
 
-- abrir o banco isoladamente;
-- confirmar identidade/schema esperado pelo StepFlow conforme mecanismo físico que o Bloco 12 materializar;
-- executar `PRAGMA integrity_check` e exigir resultado `ok`;
+- abrir isoladamente;
+- confirmar identidade/schema esperado;
+- executar `PRAGMA integrity_check` e exigir `ok`;
 - executar `PRAGMA foreign_key_check` e exigir zero violações;
-- confirmar que a versão de schema/migration observada no banco corresponde ao manifesto.
+- confirmar coerência schema/migration com o manifesto.
 
-`integrity_check` é deliberadamente mais forte aqui que o `quick_check` usado na criação do backup. O SQLite documenta que `integrity_check` não cobre erros de foreign key; por isso `foreign_key_check` é obrigatório separadamente.
+## Compatibilidade
 
-## 4.6 Regra de compatibilidade
+Compatibilidade é decidida pelo Host atual.
 
-Compatibilidade é decidida pelo **Host atual**, não pelo filename nem somente por `source_app_version`.
+Um pacote é elegível somente quando:
 
-Um pacote é elegível somente se:
+1. `format_version` é suportado;
+2. `source_deployment_id` é compatível com a implantação atual;
+3. o pacote/banco são íntegros;
+4. existe caminho de schema suportado.
 
-1. o `format_version` do envelope é suportado pelo leitor atual; e
-2. o banco é íntegro; e
-3. existe compatibilidade de schema.
-
-### Schema igual ao schema corrente
+### Schema igual
 
 Elegível sem migration de Restore.
 
-### Schema mais antigo
+### Schema antigo
 
-Elegível somente se o Host atual possuir uma **cadeia completa e determinística de migrations forward** desde o schema do backup até o schema corrente.
+Elegível somente com cadeia completa, determinística e conhecida de migrations forward até o schema corrente.
 
-Nesse caso:
+Migrations rodam no `data-next/`, nunca no banco ativo, e o staging é revalidado depois.
 
-```text
-extrair data-next
-→ validar banco de origem
-→ aplicar migrations forward em data-next
-→ validar schema final
-→ integrity_check
-→ foreign_key_check
-→ somente então permitir etapa destrutiva
-```
+### Schema mais novo ou cadeia incompleta
 
-Migration de Restore ocorre no staging, nunca no banco ativo.
+Incompatível. Não executar down migration automática nem interpretação parcial.
 
-Se uma migration futura também transformar arquivos administrados, ela deve operar sobre o `data-next/` inteiro e permanecer compatível com essa pipeline.
+`source_app_version` permanece metadado de diagnóstico; não substitui `format_version + schema/migration path`.
 
-### Schema mais novo que o Host
+## Safety backup obrigatório
 
-**Incompatível.** O Host não tenta downgrade, down migration ou interpretação parcial.
+O safety backup é criado depois que o candidato está preparado e antes da fase destrutiva.
 
-### Cadeia incompleta/ambígua
+Regras consolidadas:
 
-**Incompatível.** Ausência de migration conhecida não autoriza improvisação.
-
-### Versão StepFlow de origem
-
-`source_app_version` é metadado importante para diagnóstico e regras explícitas de formato/capacidade, mas não substitui `format_version + schema/migration path` como critério técnico principal.
-
-## 4.7 Proibição de down migration
-
-Restore não executa down migration automática.
-
-Se um backup possuir schema mais novo que o Host atual, as opções válidas são usar uma versão StepFlow capaz de compreendê-lo ou seguir procedimento controlado futuro. O Host atual não rebaixa o banco por conveniência.
-
-Isso preserva a regra já consolidada de migrations publicadas imutáveis e rollback por backup compatível.
-
-## 4.8 Safety backup obrigatório
-
-Depois que o candidato restaurado estiver totalmente preparado/validado em staging e imediatamente antes da fase destrutiva, o Restore cria o safety backup do **estado ativo atual**.
-
-```text
-RESTORE lease
-→ candidato preparado
-→ suboperação BACKUP origin=system
-→ reason=pre_restore
-→ safety backup confirmado
-→ somente então fase destrutiva
-```
-
-Regras:
-
-- reutiliza exatamente a pipeline de Backup aprovada;
-- não adquire segundo lease raiz;
+- usa a pipeline de Backup sob o mesmo lease `RESTORE`;
+- recebe `origin=system` e `reason=pre_restore`;
 - recebe `backup_id` próprio;
-- deve ser pacote final confirmado e verificável;
-- falha de captura, validação, promoção ou confirmação do safety backup bloqueia Restore;
-- nenhum modo “continuar mesmo assim” existe no Restore normal pela UI.
+- precisa ser pacote final confirmado/verificável;
+- qualquer falha bloqueia Restore normal;
+- não existe opção de “continuar mesmo assim” na UI normal.
 
-## 4.9 Lifecycle do safety backup
+### Continuidade do safety barrier — refinamento final
 
-O safety backup:
+D11.18 continua válido para Backup normal. Para `pre_restore`, porém:
 
-- fica protegido contra retenção enquanto o Restore está ativo;
-- permanece protegido se o resultado ficar `uncertain`;
-- após Restore concluído com sucesso e estado novo validado, perde a proteção operacional especial e permanece como backup `system` normal sujeito à retenção futura;
-- não é apagado imediatamente após sucesso;
-- falha do Restore antes da fase destrutiva pode deixar safety backup confirmado; ele continua sendo backup válido `system`, não resíduo parcial.
+- novas mutações são suspensas antes da captura;
+- mutações aceitas são drenadas;
+- o safety snapshot é capturado no ponto quiescente;
+- **o barrier permanece fechado até o primeiro rename de `data/`**;
+- nenhuma mutação de negócio ou mutação interna em `data/`, `company/**` ou `avatars/**` ocorre depois da captura;
+- journal/admin-audit externos a `data/` podem continuar;
+- se o safety backup falhar ou o usuário cancelar antes do primeiro rename, o barrier é liberado e `data/` permanece intacto.
 
-Isso preserva um ponto de retorno auditável sem criar categoria física de backup distinta.
+Assim, o safety backup representa efetivamente o último estado pré-destrutivo.
 
-## 4.10 Entrada em manutenção destrutiva
+## Revalidação final do candidato
 
-Depois de candidato preparado + safety backup confirmado, o Host entra no subestado destrutivo do Restore.
+Depois da confirmação do safety backup e antes de `DESTRUCTIVE_STARTED`:
 
-Antes da primeira troca física:
+- recalcular/verificar digest de `data-next/`;
+- confirmar correspondência byte-a-byte com o conjunto validado;
+- confirmar schema esperado;
+- confirmar root/volume controlado;
+- qualquer diferença aborta antes do primeiro rename e exige nova validação integral.
 
-- parar aceitação de novas mutações;
-- interromper/fechar novas operações read-only que dependam do estado ativo quando necessário;
-- drenar operações já aceitas até ponto seguro;
-- impedir novos artefatos/documentos baseados no estado antigo;
-- fechar conexões SQLite e handles administrados que impeçam a troca;
-- Clients recebem estado de manutenção/desconexão conforme contrato transversal;
-- persistir marcador de operação fora de `data/` suficiente para recuperação após restart.
+Se o digest permanecer idêntico, não é necessário repetir `integrity_check` completo apenas por passagem de tempo.
 
-O formato/persistência exata desse marcador e a reconciliação de restart serão fechados na Análise 5.
+## Lifecycle do safety backup
 
-## 4.11 Ponto de não cancelamento
+- protegido enquanto Restore estiver ativo;
+- protegido em `uncertain`;
+- após sucesso, permanece backup `system` normal sujeito à retenção futura;
+- nunca é apagado imediatamente por sucesso;
+- se Restore falhar/cancelar antes da fase destrutiva, safety backup já confirmado continua válido.
 
-O Restore permanece cancelável **até imediatamente antes da primeira alteração física do `data/` ativo**.
+## Ponto de não cancelamento
 
-Após o Host iniciar o primeiro rename/move que retira `data/` de sua posição ativa:
+Restore permanece cancelável até imediatamente antes do primeiro rename/move que retire `data/` da posição ativa.
+
+Depois disso:
 
 - não existe cancelamento pelo usuário;
-- a UI não oferece falso botão de cancelar;
-- a operação precisa concluir, reverter tecnicamente ou entrar em estado `uncertain`.
+- a operação deve concluir, reverter tecnicamente ou entrar em `uncertain`.
 
-Se o usuário cancelar antes desse ponto, `data/` permanece intocado. Safety backup já confirmado, se existir, permanece válido.
-
-## 4.12 Troca do conjunto recuperável
-
-Não copiar arquivos restaurados “por cima” do estado ativo.
-
-A proposta é ativar o conjunto recuperável como unidade lógica:
+## Troca do conjunto recuperável
 
 ```text
-estado inicial
-StepFlow\data\
-StepFlow\.restore-staging\<id>\data-next\
-
-fase destrutiva
 1. data\      → .restore-old-<id>\
 2. data-next\ → data\
 3. abrir/validar novo data\
-4. somente após confirmação, liberar cleanup do old
+4. liberar cleanup do old somente após confirmação
 ```
 
 Regras:
 
-- ambos os renames/moves ocorrem no mesmo volume;
-- destinos existentes não são sobrescritos silenciosamente;
-- `.restore-old-<id>/` permanece disponível durante a validação final;
-- nenhuma resposta de sucesso ocorre entre os passos 1 e 4;
-- configuração operacional, logs e `backups/` não participam dessa troca.
+- same-volume;
+- no-replace;
+- sem overwrite arquivo a arquivo;
+- nenhuma resposta de sucesso entre os passos intermediários;
+- `config/`, `logs/` e `backups/` não participam da troca;
+- a sequência de dois renames não é tratada como transação atômica mágica.
 
-A operação em múltiplos renames não é tratada como atomicidade mágica. O marcador de Restore + `.restore-old-<id>` existem justamente para permitir reconciliação controlada após falha.
+## Validação pós-ativação
 
-## 4.13 Validação pós-ativação
+Antes de sucesso:
 
-Depois que o novo `data/` estiver em posição ativa e antes de declarar sucesso:
+- abrir SQLite pelo path oficial;
+- confirmar schema corrente;
+- `integrity_check = ok`;
+- `foreign_key_check` vazio;
+- confirmar roots/arquivos administrados;
+- confirmar readiness mínima do estado persistente.
 
-- abrir `stepflow.sqlite` pelo caminho oficial;
-- confirmar schema corrente esperado;
-- executar `PRAGMA integrity_check` = `ok`;
-- executar `PRAGMA foreign_key_check` = vazio;
-- confirmar roots/arquivos administrados esperados;
-- confirmar readiness mínima do estado persistente;
-- confirmar que o Host consegue reconstruir projeções necessárias sem mutação inesperada.
+Depois da fase destrutiva, a fronteira de sessão/restart segue D11.62–D11.82.
 
-Somente após isso o Restore pode ser marcado como tecnicamente aplicado.
-
-Restart/sessões/reconexão e momento exato de voltar a aceitar Clients pertencem à Análise 5.
-
-## 4.14 Falha durante ativação
+## Falha e rollback
 
 ### Antes do primeiro rename
 
-- Restore falha/cancela;
-- estado ativo permanece intocado.
+Estado ativo permanece intocado.
 
-### Depois do primeiro rename, com `.restore-old-<id>` íntegro
+### Depois do primeiro rename, com old comprovável
 
-- Host tenta rollback local controlado para recolocar o `data/` anterior;
-- se rollback for concluído e validado, Restore termina como falha conhecida, não como sucesso.
+Tentar rollback local controlado e validar o estado anterior.
 
-### Estado que não pode ser comprovado/revertido
+### Estado não comprovável/reversível
 
-- resultado = `uncertain`;
-- não aceitar novas mutações;
-- proteger backup de origem + safety backup + roots de recuperação;
-- retenção/cleanup destrutivo permanece suspenso;
-- reconciliação pertence à Análise 5/6.
+Resultado `uncertain`; bloquear mutações/readiness e preservar artefatos para Recovery.
 
-Safety backup continua sendo a proteção durável; `.restore-old-<id>` é proteção operacional de curta duração para a própria troca.
+Safety backup é proteção durável; `.restore-old-<id>` é proteção operacional de curta duração.
 
-## 4.15 Relação com filesystem Windows
+## Filesystem Windows
 
-A implementação futura deve encapsular renames/moves em adapter Windows e validar comportamento real no volume corporativo.
+A implementação futura encapsula renames/moves em adapter Windows e deve validar:
 
-Baseline:
+- same-volume/no-replace;
+- canonicalização e nomes Windows;
+- long paths;
+- ACLs;
+- EDR/antivírus;
+- comportamento sob crash/reboot.
 
-- same-volume;
-- sem replace silencioso;
-- nenhum `MOVEFILE_COPY_ALLOWED` como forma de fingir atomicidade entre volumes;
-- erro de rename interrompe a sequência e entra na classificação de falha correspondente;
-- gates de SMB/EDR/filesystem real permanecem para validação corporativa quando aplicáveis.
+Falha desses gates retorna à revisão técnica; não autoriza relaxar o contrato Pocket.
 
-## 4.16 Decisões aprovadas — D11.43 a D11.61
+## Decisões aprovadas — D11.43 a D11.61
 
-- **D11.43:** Restore sempre revalida integralmente envelope, paths, tamanhos e SHA-256, independentemente do cache do catálogo;
-- **D11.44:** Restore extrai para `data-next/` controlado e same-volume com `data/`, nunca diretamente sobre o estado ativo;
-- **D11.45:** pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio e coerência de schema com o manifesto;
-- **D11.46:** compatibilidade usa `format_version` suportado + integridade + schema/migration path; versão textual do app não decide sozinha;
-- **D11.47:** schema igual é elegível; schema mais antigo só é elegível com cadeia completa de migrations forward disponível;
-- **D11.48:** migrations necessárias ao Restore são aplicadas no staging e revalidadas antes da fase destrutiva;
-- **D11.49:** schema mais novo que o Host ou cadeia incompleta/ambígua é incompatível;
+- **D11.43:** Restore revalida integralmente envelope, paths, tamanhos e SHA-256;
+- **D11.44:** Restore extrai para `data-next/` controlado/same-volume, nunca sobre `data/` ativo;
+- **D11.45:** pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio;
+- **D11.46:** compatibilidade usa formato suportado + integridade + schema/migration path;
+- **D11.47:** schema igual é elegível; schema antigo só com migrations forward completas;
+- **D11.48:** migrations de Restore rodam e são revalidadas no staging;
+- **D11.49:** schema mais novo ou cadeia incompleta/ambígua é incompatível;
 - **D11.50:** Restore não executa down migration automática;
-- **D11.51:** safety backup é criado depois do candidato preparado e antes da fase destrutiva, reutilizando a pipeline sob o mesmo lease `RESTORE`;
-- **D11.52:** safety backup deve estar confirmado; qualquer falha bloqueia o Restore normal;
-- **D11.53:** safety backup permanece protegido durante Restore/uncertain e, após sucesso, vira backup `system` normal sujeito à retenção futura, sem exclusão imediata;
-- **D11.54:** fase destrutiva só inicia após drenar operações, fechar handles necessários e persistir marcador de Restore fora de `data/`;
-- **D11.55:** cancelamento é permitido até antes da primeira alteração física do `data/`; depois disso não existe cancelamento de usuário;
-- **D11.56:** ativação usa troca lógica do conjunto `data/`, não overwrite arquivo a arquivo;
-- **D11.57:** baseline de troca = `data → .restore-old-<id>` e `data-next → data`, no mesmo volume e sem replace silencioso;
-- **D11.58:** `.restore-old-<id>` permanece até validação final do novo estado e serve como rollback operacional curto;
-- **D11.59:** pós-ativação exige nova validação de SQLite/schema/files administrados antes de sucesso;
-- **D11.60:** se rollback local puder restaurar e validar o estado anterior, Restore falha de forma conhecida; se não puder, resultado é `uncertain`;
-- **D11.61:** detalhes de marcador persistente, restart, sessões, reconexão e resolução de `uncertain` ficam para Análises 5–6, sem reabrir as regras de segurança acima.
+- **D11.51:** safety backup é criado após candidato preparado e antes da fase destrutiva sob o lease `RESTORE`;
+- **D11.52:** safety backup deve ser confirmado; qualquer falha bloqueia Restore normal;
+- **D11.53:** safety backup permanece protegido durante Restore/uncertain e depois vira backup `system` normal;
+- **D11.54:** fase destrutiva só inicia após coordenação de operações/handles e persistência do journal;
+- **D11.55:** cancelamento termina antes da primeira alteração física do `data/`;
+- **D11.56:** ativação usa troca lógica de `data/`, não overwrite arquivo a arquivo;
+- **D11.57:** baseline = `data → .restore-old-<id>` e `data-next → data`, same-volume/no-replace;
+- **D11.58:** `old` permanece até validação final;
+- **D11.59:** pós-ativação exige nova validação antes de sucesso;
+- **D11.60:** rollback conhecido restaura estado anterior; impossibilidade de provar/reverter = `uncertain`;
+- **D11.61:** restart/sessões/reconexão/recovery seguem decisões posteriores do Bloco 11.
 
-## Referências técnicas
+## Refinamentos finais aplicáveis
 
-- SQLite `PRAGMA integrity_check` / `foreign_key_check`: `https://www.sqlite.org/pragma.html`
+Aplicam-se integralmente **D11.104–D11.116**, especialmente:
+
+- safety barrier contínuo até o primeiro rename;
+- digest final de `data-next/`;
+- canonicalização Windows estrita;
+- `source_deployment_id`;
+- parser/extração bounded;
+- baseline sem criptografia/assinatura application-level;
+- gates Win32/ACL/EDR/long paths/crash.
+
+## Referências
+
+- SQLite PRAGMAs: `https://www.sqlite.org/pragma.html`
 - SQLite Online Backup API: `https://www.sqlite.org/backup.html`
 - Windows `MoveFileExW`: `https://learn.microsoft.com/windows/win32/api/winbase/nf-winbase-movefileexw`
-
-## Próximo passo
-
-Análise 5 — **restart, sessões, reconexão, falhas e resultado incerto** está em revisão no documento `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+- Windows naming/files/paths: `https://learn.microsoft.com/windows/win32/fileio/naming-a-file`
