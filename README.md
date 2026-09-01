@@ -7,7 +7,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 **Atualização:** 2026-09-01  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
 **Checkpoint atual:** Bloco 12 — Estrutura oficial + plano da Fase 2 em análise  
-**Próximo passo:** revisar a Análise 1 (P12.1–P12.18), incluindo árvore fonte modular e entrada única `StepFlow.exe` na publicação Pocket  
+**Próximo passo:** revisar a Análise 1 (P12.1–P12.18), incluindo árvore fonte modular e proposta de entrada única `StepFlow.exe` na publicação Pocket  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -55,6 +55,8 @@ Princípios centrais:
 
 O StepFlow deve ser publicado como **pasta pronta em um servidor Windows** e usado pelas estações autorizadas sem instalação individual do aplicativo.
 
+Contrato vigente:
+
 ```text
 pasta publicada no servidor
 → usuário acessa o compartilhamento
@@ -62,6 +64,8 @@ pasta publicada no servidor
 → Launcher prepara/valida o Client em %LOCALAPPDATA%
 → Client abre localmente
 ```
+
+O Bloco 12 está analisando apenas a **superfície de packaging** para expor esse mesmo Launcher como `StepFlow.exe` na raiz da pasta publicada e encapsular artefatos técnicos sob `_internal/`. Enquanto P12.15–P12.18 não forem aprovadas, o contrato vigente acima permanece a referência estável.
 
 É obrigatório no uso normal:
 
