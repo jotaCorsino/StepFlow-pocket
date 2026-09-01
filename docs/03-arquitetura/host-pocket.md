@@ -1,7 +1,7 @@
 # StepFlow Host Pocket
 
 **Status:** CONSOLIDADO PARA A FASE 1  
-**Atualização:** 2026-08-31
+**Atualização:** 2026-09-01
 
 ## Tecnologia
 
@@ -41,9 +41,13 @@ StepFlow\
 ├── config\
 │   └── stepflow-host.toml
 ├── data\
-│   └── stepflow.sqlite
+│   ├── stepflow.sqlite
+│   ├── company\
+│   └── avatars\
 ├── logs\
+│   └── admin-audit.jsonl      # equivalente permitido
 └── backups\
+    └── .operations\          # journal operacional, não catálogo
 ```
 
 Binários de `app/` são substituíveis sem sobrescrever `config/`, `data/`, `logs/` ou `backups/`.
@@ -61,11 +65,21 @@ Responsabilidades:
 7. registrar falhas de startup;
 8. coordenar shutdown gracioso;
 9. garantir ausência de processo iniciado por ele após encerramento normal;
-10. coordenar relaunch **bounded** quando o contrato de Restore exigir fresh Host para recovery/finalização.
+10. coordenar relaunch **bounded** quando o contrato de Restore exigir fresh Host para recovery/finalização;
+11. oferecer modo Recovery local/transitório quando o Host normal não consegue atingir readiness e o contrato de disaster recovery for aplicável.
 
 O Controller não instala serviço, altera PATH/registro, cria auto-start nem mantém watchdog residente.
 
 Relaunch de Restore é uma transição limitada da operação administrativa; não autoriza restart automático ilimitado para crashes normais.
+
+O modo Recovery:
+
+- executa somente na máquina central;
+- não abre listener HTTP/WebSocket normal;
+- exige exclusividade da implantação e ausência de Host normal concorrente;
+- usa acesso local/ACLs da implantação em vez de depender de login no banco corrompido/indisponível;
+- não autoeleva privilégios;
+- reutiliza módulos comuns de validação, compatibilidade, staging, journal e ativação em vez de duplicar algoritmo crítico.
 
 ## Propriedade do ciclo de vida
 
@@ -146,11 +160,22 @@ Registrar pelo menos:
 - shutdown solicitado/concluído;
 - erro fatal;
 - operações administrativas críticas quando aplicável;
-- entrada/resultado de reconciliação de Restore quando aplicável.
+- entrada/resultado de reconciliação de Restore/Recovery quando aplicável.
 
 Nunca registrar senha, token reutilizável ou conteúdo sensível desnecessário.
 
-A trilha administrativa específica que precisa atravessar Restore está em análise na Análise 6 do Bloco 11 e ainda não é contrato.
+### Auditoria administrativa de Backup/Restore
+
+Além da auditoria funcional quando o banco estiver disponível, Backup/Restore/retention/Recovery emitem trilha administrativa estruturada fora de `data/`, por exemplo `logs/admin-audit.jsonl`.
+
+- append-only pela aplicação no fluxo normal;
+- protegida pelas ACLs da implantação;
+- não restaurada junto com `data/`;
+- não é anunciada como tamper-proof criptográfica;
+- usa IDs lógicos, ator/origem, timestamps, resultado e códigos sanitizados;
+- não contém senha, token, dump SQL ou conteúdo integral do backup.
+
+Journal operacional, admin audit e log técnico têm funções/lifecycles distintos.
 
 ## Shutdown técnico
 
@@ -189,7 +214,7 @@ Uma tentativa de recovery que também falhe deve falhar fechado e exigir interve
 
 Backup/Restore pertence ao Host e está sendo fechado tecnicamente no Bloco 11.
 
-Invariantes já aprovadas:
+Invariantes aprovadas:
 
 - Client não copia SQLite diretamente;
 - backup representa conjunto coerente de banco + arquivos administrados;
@@ -199,13 +224,16 @@ Invariantes já aprovadas:
 - Restore usa journal fora de `data/` e fresh Host para reconciliar/finalizar após fase destrutiva;
 - qualquer Restore destrutivo invalida sessões anteriores;
 - `uncertain` bloqueia readiness normal até recuperação controlada;
-- disaster recovery quando Host não inicia é fluxo local/controlado; detalhes finais estão na Análise 6 em revisão;
+- disaster recovery é local/transitório pelo Controller, sem listener normal, com candidatos administrados e a mesma validação/compatibilidade do Restore normal;
+- ausência de safety backup pode ser aceita somente no disaster recovery real quando o estado ativo já é inelegível ao fluxo normal;
+- estado ativo danificado é preservado estruturalmente como `.recovery-old-<id>` quando possível, sem ser rotulado como backup íntegro;
 - operações administrativas críticas não executam concorrentemente sem coordenação explícita.
 
 Fontes:
 
 - `../04-planejamento/bloco-11-backup-restauracao.md`;
-- `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+- `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
+- `../04-planejamento/bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
 
 ## Atualização e rollback
 
@@ -235,6 +263,7 @@ Sem componente residente, o Controller precisa ser iniciado na máquina central 
 - readiness verificável e recovery anterior à readiness quando necessário;
 - shutdown gracioso;
 - fresh Host/relaunch de Restore bounded e não-watchdog;
+- Recovery local/transitório sem listener normal;
 - fechar Client individual não encerra ciclo central;
 - nenhum processo residual após encerramento central;
 - dados preservados ao substituir binários;
