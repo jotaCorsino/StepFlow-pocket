@@ -110,7 +110,7 @@ Disaster recovery local não é capability de sessão, pois precisa continuar di
 | Editar Atendimento próprio em andamento | sim | sim | sim |
 | Editar qualquer Atendimento em andamento | sim | sim | não |
 | Concluir Atendimento próprio | sim | sim | sim |
-| Concluir qualquer Atendimento em andamento | sim | sim | não |
+| Concluir qualquer Atendimento | sim | sim | não |
 | Cancelar Atendimento | sim | sim | não |
 | Reabrir Atendimento | sim | sim | não |
 | Vincular/trocar/desvincular Equipamento editável | sim | sim | sim, quando responsável |
@@ -179,7 +179,7 @@ Tecnologia, template e política de overflow estão consolidados na Tela 14 e no
 Presets são defaults. Capacidades podem ser personalizadas dentro das regras de delegação.
 
 - Gerência nunca administra ADM;
-- Gerência não cria/promove/rebaixa ADM;
+- Gerência não cria/promover/rebaixar ADM;
 - Gerência não pode conceder Restore a si ou a outro usuário;
 - usuário não eleva a própria autoridade;
 - pelo menos um ADM ativo deve existir;
