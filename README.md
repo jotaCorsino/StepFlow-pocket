@@ -6,8 +6,8 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-09-01  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Checkpoint atual:** Bloco 12 — Estrutura oficial + plano da Fase 2 em análise  
-**Próximo passo:** revisar a Análise 5 — plano detalhado da Fase 2 (P12.80–P12.98)  
+**Checkpoint atual:** Bloco 12 — validação técnica/documental final em revisão  
+**Próximo passo:** revisar P12.99–P12.108  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -19,14 +19,14 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 | 2 | Host Pocket | ✅ Concluído |
 | 3 | Launcher / distribuição | ✅ Concluído |
 | 4 | Comunicação Client ↔ Host | ✅ Concluído |
-| 5 | Autenticação / autorização | ✅ Consolidado, incluindo parâmetros D12.56–D12.62 |
-| 6 | Dados / schema / migrations | ✅ Núcleo conceitual + disciplina D12.35–D12.55 consolidada |
-| 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
+| 5 | Autenticação / autorização | ✅ Consolidado, incluindo D12.56–D12.62 |
+| 6 | Dados / schema / migrations | ✅ Núcleo + D12.35–D12.55 consolidados |
+| 7 | Concorrência / fila / eventos | ✅ Concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
 | 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
 | 11 | Backup / restauração | ✅ Concluído |
-| 12 | Estrutura oficial + plano da Fase 2 | 🟡 Em análise — Análises 1–4 aprovadas |
+| 12 | Estrutura oficial + plano da Fase 2 | 🟡 Validação final em revisão |
 
 ## Produto
 
@@ -38,63 +38,55 @@ Atendimento / Execução
 Equipamento
 ```
 
-Princípios centrais:
-
-- Procedimentos são documentação oficial versionada;
-- Atendimentos registram ocorrências reais de trabalho;
-- Equipamento é opcional e reutilizável;
-- Reader usa experiência de manual/livro, com uma Etapa por página lógica;
-- checklist persistente existe somente no contexto de Atendimento;
-- `Observação do serviço` por Etapa é opcional e operacional;
-- Ficha compacta é prestação de contas resumida ao cliente;
-- UI privilegia clareza e baixa densidade textual.
+Procedimentos são documentação oficial versionada; Atendimentos registram trabalho real; Equipamento é opcional/reutilizável. Reader usa experiência de manual/livro, checklist persistente existe somente em Atendimento e a Ficha é prestação de contas resumida ao cliente.
 
 ## Contrato Pocket
 
 ```text
 pasta publicada no servidor
-→ usuário acessa o compartilhamento
+→ usuário acessa compartilhamento
 → executa StepFlow.exe na raiz
-→ Launcher prepara/valida o Client em %LOCALAPPDATA%
+→ Launcher prepara/valida Client em %LOCALAPPDATA%
 → Client abre localmente
 → Launcher encerra
 ```
 
-`StepFlow.exe` é o Launcher com nome/ícone amigáveis e o único ponto de entrada normal. Artefatos técnicos publicados ficam encapsulados sob `_internal/`; `.lnk` não é requisito baseline.
-
-É obrigatório no uso normal: zero instalador por estação, zero preparação manual, zero elevação administrativa, nenhuma toolchain em produção, nenhuma Internet obrigatória e Client operacional local em vez de execução permanente por SMB.
+`StepFlow.exe` é o único ponto de entrada normal. A árvore técnica publicada fica sob `_internal/`. Uso normal exige zero instalador por estação, zero preparação manual/admin/toolchain/Internet obrigatória e Client local em vez de execução permanente por SMB.
 
 ## Bloco 12 — decisões vigentes
 
-Análises 1–4 aprovadas: **D12.1–D12.79**.
+**D12.1–D12.98 aprovadas.**
 
-- source tree modular por `apps/` e `crates/`;
-- `StepFlow.exe` como entrada única e `_internal/` como área técnica;
-- Rust 1.98.0, Edition 2024, resolver 3, toolchain + `Cargo.lock` versionados;
-- Client vanilla modular sem Node/npm/Vite/bundler/framework no baseline;
-- migrations Host-side imutáveis, embutidas e verificadas por checksum;
+- source tree modular `apps/`/`crates/`;
+- publicação `StepFlow.exe + _internal/`;
+- Rust 1.98.0 + Edition 2024 + resolver 3;
+- toolchain/lockfile versionados;
+- Client vanilla sem Node/bundler;
+- migrations Host-side imutáveis/embutidas com checksum;
 - testes em SQLite temporário real e fixtures sintéticas;
-- parâmetros finais de autenticação/sessão, empresa/categoria e Backup/Restore fechados em D12.56–D12.79;
+- parâmetros finais de autenticação, Empresa/Categorias e Backup/Restore fechados;
+- Fase 2 planejada em F2-T01…F2-T08, uma branch/PR por tarefa;
 - nenhuma dessas decisões autoriza scaffold antes do gate final da Fase 1.
 
-A Análise 5 está em revisão como **P12.80–P12.98** e propõe a sequência executável da Fase 2 em oito tarefas pequenas, de workspace/Host até packaging e smoke Pocket.
+A validação final está em revisão como **P12.99–P12.108**, cobrindo configuração inválida, ownership de parâmetros, `deployment.json`, sync local seguro e gates corporativos.
 
 ## Fontes de verdade
 
-- `AGENTS.md` — governança e regras de execução;
-- `docs/README.md` — índice e ownership documental;
-- `docs/05-progresso/registro-de-decisoes.md` — decisões vigentes e pendências;
-- `docs/04-planejamento/plano-oficial-fase-1.md` — estado da Fase 1;
-- `docs/04-planejamento/roadmap.md` — fases do projeto;
-- documentos específicos de Produto, Telas e Arquitetura — contratos detalhados.
+- `AGENTS.md` — governança;
+- `docs/README.md` — índice;
+- `docs/05-progresso/registro-de-decisoes.md` — decisões vigentes;
+- `docs/04-planejamento/plano-oficial-fase-1.md` — estado/gates;
+- `docs/04-planejamento/roadmap.md` — fases;
+- documentos específicos de Produto/Telas/Arquitetura — contratos detalhados.
 
 ## Pendências principais da Fase 1
 
-- decidir P12.80–P12.98 — plano detalhado da Fase 2;
-- validação final da Fase 1 + gate Git;
-- sincronização segura do checkout local antes do primeiro scaffold;
-- validações corporativas de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR no momento apropriado.
+- decidir P12.99–P12.108;
+- consolidação final e gate Git do PR #27;
+- sincronização segura do checkout local;
+- autorização explícita da F2-T01;
+- gates corporativos permanecem para as fases técnicas correspondentes.
 
 ## Regra deste painel
 
-O README mostra somente o estado executivo. Decisões detalhadas não devem ser duplicadas aqui; o painel aponta para a fonte específica vigente.
+O README mostra somente estado executivo. Decisões detalhadas pertencem às fontes específicas.
