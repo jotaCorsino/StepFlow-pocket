@@ -39,7 +39,7 @@ A Análise 1 propõe P12.1–P12.18:
 - frontend Client modular em ES modules;
 - crates compartilhados somente para responsabilidades concretas;
 - source tree separado da publicação Pocket;
-- publicação Pocket com um único `StepFlow.exe` visível na raiz como Launcher amigável;
+- como refinamento ainda não consolidado, publicação Pocket com um único `StepFlow.exe` visível na raiz como Launcher amigável;
 - artefatos Client/Server encapsulados sob `_internal/`;
 - `.lnk` não é requisito baseline;
 - aprovação estrutural não autoriza scaffold antes do gate final.
