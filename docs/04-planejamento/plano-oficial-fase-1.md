@@ -1,6 +1,6 @@
 # Plano Oficial — Fase 1: Fechamento Arquitetural e Especificação
 
-**Status:** EM ANDAMENTO  
+**Status:** EM ANDAMENTO — VALIDAÇÃO FINAL DO BLOCO 12  
 **Início:** 2026-08-19  
 **Atualização:** 2026-09-01
 
@@ -8,7 +8,7 @@
 
 Transformar requisitos e arquitetura conceitual em decisões implementáveis antes da fundação executável do StepFlow.
 
-A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quando necessárias. Não autoriza scaffold/runtime oficial, migrations oficiais ou código de negócio definitivo antes do gate do Bloco 12/Fase 2.
+A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quando necessárias. Não autoriza scaffold/runtime oficial, migration oficial ou código de negócio antes do gate final do Bloco 12/Fase 2.
 
 ## Estado dos blocos
 
@@ -19,103 +19,68 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 2 | Host Pocket | CONCLUÍDO | `../03-arquitetura/host-pocket.md` |
 | 3 | Launcher/distribuição | CONCLUÍDO | `../03-arquitetura/launcher-distribuicao-client.md` |
 | 4 | Comunicação Client↔Host | CONCLUÍDO | `../03-arquitetura/comunicacao-client-host.md` |
-| 5 | Autenticação/autorização | CONSOLIDADO, INCLUINDO D12.56–D12.62 | `../03-arquitetura/autenticacao-sessao-autorizacao.md` |
-| 6 | Dados/schema/migrations | NÚCLEO CONCEITUAL + DISCIPLINA D12.35–D12.55 CONSOLIDADOS | `../03-arquitetura/modelo-dados-schema-fase-1.md` |
-| 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `../03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
+| 5 | Autenticação/autorização | CONSOLIDADO | `../03-arquitetura/autenticacao-sessao-autorizacao.md` |
+| 6 | Dados/schema/migrations | CONSOLIDADO | `../03-arquitetura/modelo-dados-schema-fase-1.md` |
+| 7 | Concorrência/eventos | CONCLUÍDO | `../03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
 | 8 | UI/UX | CONCLUÍDO | `../02-telas/README.md` |
-| 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
-| 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
-| 11 | Backup/restauração técnico | CONCLUÍDO | `bloco-11-backup-restauracao.md` |
-| 12 | Estrutura oficial + Fase 2 | EM ANÁLISE — ANÁLISES 1–4 APROVADAS | `bloco-12-estrutura-oficial-plano-fase-2.md` |
+| 9 | Execução operacional | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
+| 10 | Exportação/impressão/Ficha | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
+| 11 | Backup/restauração | CONCLUÍDO | `bloco-11-backup-restauracao.md` |
+| 12 | Estrutura oficial + Fase 2 | VALIDAÇÃO FINAL — D12.1–D12.98 APROVADAS | `bloco-12-estrutura-oficial-plano-fase-2.md` |
 
-## Bloco 12 — Estrutura oficial + Fase 2
+## Bloco 12
 
-**EM ANÁLISE desde 2026-09-01.**
+### Aprovado — D12.1–D12.98
 
-### Análises 1–4 — aprovadas
-
-Decisões vigentes: **D12.1–D12.79**.
-
-Fechado:
-
-- source tree modular `apps/` + `crates/`;
-- `StepFlow.exe` como único ponto de entrada e `_internal/` técnico;
+- estrutura `apps/` + `crates/` e publicação `StepFlow.exe + _internal/`;
 - Rust 1.98.0, Edition 2024, resolver 3, Windows x64 MSVC;
 - toolchain/lockfile versionados e dependências lockfile-aware;
-- Client vanilla modular sem Node/npm/Vite/bundler/framework;
-- configuração build/dev × deployment × runtime e packaging separado de `target/`;
-- migrations Host-side imutáveis/embutidas, runner/checksum e testes em SQLite temporário real;
-- fixtures sintéticas e scripts finos `check/test/build/package.ps1`;
-- Argon2id/senha/blocklist/throttling/token/sessão fechados;
-- Gerência pode alterar configuração da empresa;
-- limites de identidade/logo e categoria arquivada fechados;
-- retenção/limites/espaço/timeouts de Backup/Restore, readiness/reconexão e rotação de logs fechados.
+- Client vanilla sem Node/bundler;
+- migrations Host-side imutáveis/embutidas + checksum/testes;
+- parâmetros finais de autenticação/sessão, Empresa/Categorias, Backup/Restore, comunicação e logs;
+- plano F2-T01…F2-T08, uma branch/PR por tarefa e pré-flight separado.
 
-Fontes:
+### Validação final — P12.99–P12.108 em revisão
 
-- `bloco-12-estrutura-oficial-plano-fase-2.md`;
-- `bloco-12-analise-2-workspace-build-dependencias.md`;
-- `bloco-12-analise-3-migrations-testes-fixtures.md`;
-- `bloco-12-analise-4-parametros-finais.md`.
+A proposta final fecha:
 
-### Análise 5 — em revisão
+- semântica de configuração inválida de retenção;
+- ownership único dos parâmetros;
+- materialização explícita de `deployment.json` real;
+- sincronização local segura por fast-forward somente quando o working tree estiver limpo;
+- classificação de gates corporativos;
+- autorização explícita de F2-T01 depois do merge/remoto limpo/sync local.
 
-Proposta **P12.80–P12.98** define a sequência da Fase 2:
+Fonte: `bloco-12-analise-6-validacao-final-fase-1.md`.
 
-```text
-Gate Fase 1 + sync local seguro
-→ F2-T01 workspace/tooling + Host mínimo
-→ F2-T02 Host runtime/readiness
-→ F2-T03 SQLite + migrations runner
-→ F2-T04 Controller lifecycle
-→ F2-T05 Client Tauri + compatibilidade
-→ F2-T06 Launcher Pocket
-→ F2-T07 packaging Pocket
-→ F2-T08 smoke integrado + gates Windows/Pocket
-→ Gate Fase 2
-```
+## Gates corporativos reservados
 
-Fonte: `bloco-12-analise-5-plano-fase-2.md`.
+Permanecem para as fases técnicas correspondentes:
 
-## O Bloco 12 ainda deve fechar
-
-1. decisão da Análise 5;
-2. validação técnica/documental final da Fase 1;
-3. gate Git do PR do Bloco 12;
-4. sincronização segura do checkout local;
-5. autorização explícita do primeiro scaffold/runtime da Fase 2.
-
-## Pendências restantes da Fase 1
-
-### Em decisão no Bloco 12
-
-- P12.80–P12.98;
-- validação final e gate do primeiro scaffold.
-
-### Ambiente real
-
-- Windows/WebView2 nas estações reais;
-- PoC do fallback Pocket WebView2 quando necessária;
-- Launcher pelo share corporativo;
+- Windows/WebView2 real e fallback Pocket quando necessário;
+- Launcher pelo share SMB;
 - Word/impressoras;
-- SMB real;
+- SMB/permissões/falhas;
 - filesystem/ACL/EDR/antivírus/long paths;
-- adapter Windows e crash injection de Backup/Restore.
+- adapter Win32 e crash injection de Backup/Restore;
+- transporte corporativo aplicável.
+
+Eles não bloqueiam o encerramento documental da Fase 1, mas podem bloquear a saída da etapa/produção quando forem requisito aplicável.
 
 ## Gate atual
 
-1. concluir Análise 5;
-2. realizar validação final da Fase 1;
-3. sincronizar documentação estável;
-4. cumprir gate Git do PR do Bloco 12;
-5. sincronizar explicitamente o checkout local preservando alterações preexistentes do PO;
-6. somente então criar o primeiro branch/prompt Codex de implementação da Fase 2.
+1. decidir P12.99–P12.108;
+2. consolidar documentação final;
+3. tornar PR #27 ready e revisar head/checks;
+4. squash merge em `main`;
+5. remover branch remota e verificar remoto limpo;
+6. inspecionar/sincronizar `C:\dev\StepFlow` sem perder alterações locais;
+7. PO autorizar F2-T01;
+8. somente então preparar pré-flight + prompt Codex e abrir `feat/f2-01-workspace-host`.
 
 ## Regras finais
 
-- não criar scaffold/runtime definitivo, migration oficial ou código de negócio durante a Fase 1 sem gate explícito;
-- toda tarefa Codex que altere arquivos informa base Git esperada e pré-flight;
-- preservar alterações locais preexistentes do PO;
 - nenhuma pendência vira decisão por inferência;
-- requisito Pocket não pode ser enfraquecido para acomodar dependência técnica sem retorno explícito ao PO;
-- gates Git consumidos não permanecem como estado em documentos técnicos estáveis.
+- requisito Pocket não pode ser enfraquecido para acomodar dependência;
+- toda tarefa Codex informa base Git e preserva working tree preexistente;
+- documento técnico estável não carrega gate histórico consumido.
