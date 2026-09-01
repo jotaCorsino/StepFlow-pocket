@@ -5,9 +5,9 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 ## Painel de acompanhamento
 
 **Atualização:** 2026-09-01  
-**Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Checkpoint atual:** Bloco 12 — validação técnica/documental final em revisão  
-**Próximo passo:** revisar P12.99–P12.108  
+**Fase atual:** Fase 1 — documental e tecnicamente concluída  
+**Checkpoint atual:** Bloco 12 consolidado — D12.1–D12.108  
+**Transição pendente:** gate Git → remoto limpo → sync local seguro → autorização F2-T01  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -19,14 +19,14 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 | 2 | Host Pocket | ✅ Concluído |
 | 3 | Launcher / distribuição | ✅ Concluído |
 | 4 | Comunicação Client ↔ Host | ✅ Concluído |
-| 5 | Autenticação / autorização | ✅ Consolidado, incluindo D12.56–D12.62 |
-| 6 | Dados / schema / migrations | ✅ Núcleo + D12.35–D12.55 consolidados |
+| 5 | Autenticação / autorização | ✅ Concluído |
+| 6 | Dados / schema / migrations | ✅ Concluído |
 | 7 | Concorrência / fila / eventos | ✅ Concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
 | 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
 | 11 | Backup / restauração | ✅ Concluído |
-| 12 | Estrutura oficial + plano da Fase 2 | 🟡 Validação final em revisão |
+| 12 | Estrutura oficial + plano da Fase 2 | ✅ Concluído — D12.1–D12.108 |
 
 ## Produto
 
@@ -53,9 +53,9 @@ pasta publicada no servidor
 
 `StepFlow.exe` é o único ponto de entrada normal. A árvore técnica publicada fica sob `_internal/`. Uso normal exige zero instalador por estação, zero preparação manual/admin/toolchain/Internet obrigatória e Client local em vez de execução permanente por SMB.
 
-## Bloco 12 — decisões vigentes
+## Bloco 12 — contrato final
 
-**D12.1–D12.98 aprovadas.**
+**D12.1–D12.108 aprovadas.**
 
 - source tree modular `apps/`/`crates/`;
 - publicação `StepFlow.exe + _internal/`;
@@ -66,26 +66,36 @@ pasta publicada no servidor
 - testes em SQLite temporário real e fixtures sintéticas;
 - parâmetros finais de autenticação, Empresa/Categorias e Backup/Restore fechados;
 - Fase 2 planejada em F2-T01…F2-T08, uma branch/PR por tarefa;
-- nenhuma dessas decisões autoriza scaffold antes do gate final da Fase 1.
+- `deployment.json` de produção exige input explícito;
+- sync local usa fast-forward seguro e nunca descarte automático;
+- gates corporativos ficam para as etapas executáveis aplicáveis;
+- nenhum merge documental autoriza scaffold automaticamente.
 
-A validação final está em revisão como **P12.99–P12.108**, cobrindo configuração inválida, ownership de parâmetros, `deployment.json`, sync local seguro e gates corporativos.
+## Transição para Fase 2
+
+```text
+fechar PR/branch do Bloco 12
+→ verificar remoto limpo
+→ sincronizar C:\dev\StepFlow com segurança
+→ PO autoriza F2-T01
+→ pré-flight + prompt Codex F2-T01
+```
 
 ## Fontes de verdade
 
 - `AGENTS.md` — governança;
 - `docs/README.md` — índice;
 - `docs/05-progresso/registro-de-decisoes.md` — decisões vigentes;
-- `docs/04-planejamento/plano-oficial-fase-1.md` — estado/gates;
+- `docs/04-planejamento/plano-oficial-fase-1.md` — encerramento/gates;
 - `docs/04-planejamento/roadmap.md` — fases;
 - documentos específicos de Produto/Telas/Arquitetura — contratos detalhados.
 
-## Pendências principais da Fase 1
+## Pendências operacionais
 
-- decidir P12.99–P12.108;
-- consolidação final e gate Git do PR #27;
+- gate Git do Bloco 12 e remoção da branch;
 - sincronização segura do checkout local;
 - autorização explícita da F2-T01;
-- gates corporativos permanecem para as fases técnicas correspondentes.
+- gates corporativos nas fases técnicas correspondentes.
 
 ## Regra deste painel
 
