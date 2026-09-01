@@ -4,8 +4,8 @@
 
 - código/nome da tela: Tela 12 — Configurações + Categorias;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
-- bloco: Fase 1 — Bloco 8 (UI/UX);
-- data da consolidação: 2026-08-25.
+- bloco: Fase 1 — Bloco 8 (UI/UX), sincronizado com D12.62–D12.65;
+- atualização: 2026-09-01.
 
 ## 2. Objetivo
 
@@ -29,40 +29,40 @@ Backup/restauração permanece na Tela 13. Exportação/impressão e template fi
 - categoria pode ser arquivada preservando histórico;
 - criação/arquivamento de categorias acontece fora do Editor de Processo;
 - não existe exclusão física normal de categoria como primeira opção;
-- parâmetros ainda marcados como `PENDENTE` não são convertidos silenciosamente em autorização.
+- limites e capacidades consolidados no Bloco 12 devem ser aplicados no Host, não inferidos pela UI.
 
 ## 4. Atores e autorização
 
 A Tela 12 é controlada por capacidades, não apenas pelo nome do preset.
 
-### ADM
+### Empresa — D12.62
 
-Possui capacidade para alterar configuração da empresa conforme matriz já consolidada.
-
-### Gerência
-
-A possibilidade de alterar configuração da empresa continua **PENDENTE** no contrato de autenticação/autorização.
-
-A Tela 12 não assume que Gerência pode nem que não pode editar a seção `Empresa` até essa decisão ser fechada.
+| Preset | Alterar configuração da empresa |
+|---|---:|
+| ADM | sim |
+| Gerência | sim |
+| Funcionário | não |
 
 ### Gestão de categorias
 
-A capacidade exata/preset responsável por criar, editar, arquivar e reativar categorias permanece pendente de fechamento da matriz correspondente.
+Conforme matriz consolidada de autenticação/autorização:
 
-A UX deve suportar:
+| Preset | Gerir categorias |
+|---|---:|
+| ADM | sim |
+| Gerência | sim |
+| Funcionário | não |
+
+A UX continua preparada para capacidades granulares/personalizadas:
 
 - sessão com acesso somente à seção `Empresa`;
 - sessão com acesso somente a `Categorias`;
 - sessão com acesso às duas seções;
 - sessão sem nenhuma dessas capacidades, caso em que `Configurações` não aparece na sidebar.
 
-Funcionário não recebe essas capacidades por padrão.
-
 Ocultar controles no Client não substitui validação Host-side.
 
 ## 5. Entrada e navegação
-
-Fluxo:
 
 ```text
 Shell/sidebar
@@ -70,7 +70,7 @@ Shell/sidebar
 → Tela 12
 ```
 
-A Tela 12 usa navegação local simples:
+Navegação local:
 
 ```text
 Configurações
@@ -81,8 +81,8 @@ Configurações
 Regras:
 
 - não criar nova sidebar global;
-- a aba/seção não autorizada fica oculta;
-- se a sessão possuir apenas uma das capacidades, abrir diretamente a seção disponível;
+- aba/seção não autorizada fica oculta;
+- se a sessão possuir apenas uma capacidade, abrir diretamente a seção disponível;
 - mudança de aba não salva automaticamente alterações.
 
 ## 6. Estrutura visual aprovada
@@ -146,9 +146,7 @@ Reativar
 
 ## 7. Seção Empresa
 
-A seção `Empresa` administra somente a identidade institucional necessária ao produto.
-
-Campos iniciais aprovados:
+Campos iniciais:
 
 - logo;
 - nome da empresa;
@@ -169,7 +167,7 @@ Não incluir sem requisito posterior:
 
 O StepFlow não deve crescer para ERP/CRM por conveniência da tela de configurações.
 
-## 8. Logo da empresa
+## 8. Logo da empresa — D12.64
 
 ### 8.1 Visualização
 
@@ -177,7 +175,7 @@ Mostrar preview preservando proporção e sem distorção.
 
 Na ausência de logo:
 
-- usar placeholder discreto na Tela 12;
+- usar placeholder discreto;
 - Shell/documentos continuam funcionais sem imagem quebrada.
 
 ### 8.2 Escolher ou substituir
@@ -194,55 +192,47 @@ Após escolha:
 
 Quando houver logo configurado, `Remover logo` marca a remoção para o próximo `Salvar alterações`.
 
-### 8.4 Segurança
+### 8.4 Segurança e limites
 
-- Host valida conteúdo/tipo real do arquivo;
-- não confiar apenas na extensão;
-- aceitar somente formatos explicitamente suportados;
-- limites de bytes/dimensões serão fechados antes da implementação;
+Baseline:
+
+- PNG ou JPEG;
+- máximo 2 MiB no upload;
+- máximo 2048 × 2048 pixels após decode;
+- Host valida magic/content, não apenas extensão;
+- Host decodifica e reencoda para arquivo administrado seguro, removendo metadata desnecessária;
+- rejeitar arquivo que não decodifica ou excede limites;
+- SVG/conteúdo ativo não entra no baseline;
 - não aceitar caminho arbitrário controlado pelo usuário como fonte persistente;
-- armazenar como arquivo controlado pelo Host;
-- não executar conteúdo ativo.
+- ausência de logo é válida.
 
-Editor avançado/cropper não é requisito da primeira versão.
+Editor avançado/cropper não é requisito inicial.
 
-## 9. Nome, contato, site e e-mail
+## 9. Nome, contato, site e e-mail — D12.63
 
-### Nome da empresa
+| Campo | Regra |
+|---|---|
+| Nome da empresa | obrigatório, trim, 1–120 caracteres |
+| Contato | opcional, trim, até 160 caracteres |
+| Site | opcional, trim, até 200 caracteres |
+| E-mail | opcional, trim, até 254 caracteres |
 
-Texto curto destinado à identidade visual e aos documentos.
+Regras:
 
-### Contato
-
-Campo curto para uma ou mais formas de contato operacionais, como telefone, ramal ou WhatsApp, sem criar cadastro complexo de canais na primeira versão.
-
-### Site
-
-Campo textual curto. Validação final de formato será definida antes da implementação.
-
-### E-mail
-
-Campo textual curto com validação de formato adequada antes da implementação.
-
-### Limites
-
-Limites numéricos finais devem ser fechados antes da implementação correspondente.
-
-Para campos que entram na ficha compacta, o Bloco 10 deve confirmar limites coerentes com o contrato de **no máximo uma página A4**.
+- nenhum campo é truncado silenciosamente;
+- `site` é identidade textual no baseline; se futuramente virar link, aceitar somente HTTP/HTTPS validado;
+- e-mail usa validação prática de formato, sem regex desnecessariamente complexa;
+- limites devem continuar coerentes com a Ficha compacta A4.
 
 ## 10. Uso centralizado da identidade
 
-A identidade confirmada pelo Host é a fonte única para as superfícies que a utilizam.
-
-Usos já aprovados:
+A identidade confirmada pelo Host é a fonte única para:
 
 - logo discreto no topo esquerdo do Shell;
 - cabeçalho da ficha compacta;
 - identidade de exportações/documentos quando aplicável.
 
-A Tela 12 não define o template de impressão. Ela administra os dados que serão consumidos pelo Bloco 10.
-
-Após save confirmado, o Shell pode refazer consulta e atualizar o logo sem reiniciar o Client quando tecnicamente aplicável.
+A Tela 12 não define o template de impressão. Após save confirmado, o Shell pode refazer consulta e atualizar o logo sem reiniciar o Client quando tecnicamente aplicável.
 
 ## 11. Salvamento da Empresa
 
@@ -258,16 +248,12 @@ editar identidade
 → UI confirma sucesso
 ```
 
-Regras:
-
 - botão habilitado somente com mudança válida;
 - sair com alteração não salva pede confirmação;
 - nenhuma alteração aparece como oficial antes do commit;
 - conflito concorrente não usa `last write wins` silencioso.
 
 ## 12. Gestão de Categorias
-
-Categorias permanecem entidades simples e configuráveis.
 
 A seção oferece:
 
@@ -283,41 +269,28 @@ Não incluir inicialmente:
 
 - árvore hierárquica;
 - categoria pai/filha;
-- cor obrigatória;
-- ícone obrigatório;
+- cor/ícone obrigatório;
 - regras automáticas de classificação;
 - exclusão física normal;
 - ações em massa.
 
 ## 13. Lista de Categorias
 
-Tabela/lista compacta, coerente com as demais superfícies administrativas.
-
 Colunas iniciais:
 
 - nome;
 - estado (`Ativa` / `Arquivada`).
 
-Busca:
+Busca por nome e filtro por estado. Direção inicial:
 
-- nome da categoria.
-
-Filtro inicial:
-
-- estado.
-
-Direção inicial de ordenação:
-
-- categorias ativas em ordem alfabética;
+- ativas em ordem alfabética;
 - arquivadas conforme filtro/estado selecionado.
 
-A ordenação exata é detalhe visual de baixa criticidade e pode ser ajustada na implementação sem alterar o modelo.
+Ordenação exata é detalhe visual de baixa criticidade.
 
 ## 14. Nova categoria
 
-Ação `Nova categoria` aparece somente com capacidade correspondente.
-
-Fluxo:
+`Nova categoria` aparece somente com capacidade correspondente.
 
 ```text
 Nova categoria
@@ -327,28 +300,24 @@ Nome  [ Infraestrutura                  ]
                      [ Cancelar ] [ Criar categoria ]
 ```
 
-Não criar categoria diretamente dentro do Editor de Processo.
-
-A categoria só aparece como disponível após commit confirmado pelo Host.
+Não criar categoria diretamente dentro do Editor de Processo. A categoria só aparece como disponível após commit confirmado pelo Host.
 
 ## 15. Editar categoria
 
-A edição inicial altera somente o nome da categoria.
+A edição inicial altera somente o nome.
 
-Não inventar descrição, cor, ícone ou taxonomia sem requisito.
-
-Validações consolidadas como princípio:
+Validações:
 
 - nome obrigatório;
 - trim/normalização pelo Host;
-- limite textual explícito antes da implementação;
-- impedir duplicidades equivalentes após normalização para evitar duas categorias visualmente indistinguíveis.
+- limite textual explícito conforme schema/tela proprietária;
+- impedir duplicidades equivalentes após normalização.
 
-A regra técnica exata de comparação/case-folding será fechada na implementação do modelo de dados, preservando o princípio de não criar duplicatas ambíguas.
+Não inventar descrição, cor, ícone ou taxonomia.
 
-## 16. Arquivar categoria
+## 16. Arquivar categoria e nova revisão — D12.65
 
-Arquivar é a ação normal para retirar uma categoria de uso futuro sem destruir histórico.
+Arquivar retira a categoria de uso futuro sem destruir histórico.
 
 Confirmação:
 
@@ -359,38 +328,31 @@ Regras:
 - não apagar revisões históricas;
 - não reescrever procedimentos antigos;
 - categoria arquivada continua consultável na gestão;
-- categoria arquivada não aparece como opção normal para nova associação;
-- histórico que já utiliza a categoria permanece legível.
-
-A regra exata para um procedimento atual que já carrega uma categoria posteriormente arquivada ao criar **nova revisão** deve ser fechada junto do contrato de dados/Editor antes da implementação. A Tela 12 não autoriza migração silenciosa nem remoção automática.
+- não aparece como opção para nova associação;
+- histórico que já utiliza a categoria permanece legível;
+- se a revisão-base de um Procedimento já utiliza categoria arquivada, a nova revisão **preserva a associação por default**;
+- Editor identifica `Arquivada` e informa que foi herdada;
+- isso não bloqueia salvar/publicar;
+- usuário autorizado pode remover a associação;
+- depois de removida, não pode ser adicionada novamente enquanto a categoria permanecer arquivada;
+- para voltar a associá-la, reativar primeiro;
+- nunca remover/substituir automaticamente por outra categoria.
 
 ## 17. Reativar categoria
 
-Categoria arquivada pode ser reativada quando a sessão possuir capacidade correspondente.
-
 Após commit:
 
-- volta ao estado `Ativa`;
-- torna-se novamente elegível para novas associações;
+- volta a `Ativa`;
+- torna-se elegível para novas associações;
 - histórico anterior permanece inalterado.
 
 ## 18. Exclusão física
 
-Não oferecer `Excluir categoria` como operação administrativa normal.
-
-Motivos:
-
-- preservar histórico;
-- evitar quebrar revisões e filtros antigos;
-- manter rastreabilidade.
-
-Qualquer manutenção física excepcional de dados, se algum dia necessária, não pertence à UX normal desta tela.
+Não oferecer `Excluir categoria` como operação administrativa normal. Arquivamento preserva histórico e rastreabilidade.
 
 ## 19. Concorrência
 
-Empresa e categorias são mutações oficiais do Host.
-
-Regras:
+Empresa e categorias são mutações oficiais do Host:
 
 - controle otimista equivalente quando aplicável;
 - sem overwrite silencioso;
@@ -398,47 +360,34 @@ Regras:
 - em conflito, preservar conteúdo local e oferecer reconsulta;
 - ações só confirmam sucesso após commit.
 
-Conflitos de identidade da empresa e conflitos de categoria são tratados como entidades/ações independentes.
-
 ## 20. Eventos em tempo real
 
 Eventos pós-commit podem sinalizar:
 
-- identidade da empresa alterada;
-- logo alterado/removido;
-- categoria criada;
-- categoria renomeada;
-- categoria arquivada/reativada.
+- identidade/logo alterado/removido;
+- categoria criada/renomeada/arquivada/reativada.
 
-Clients relevantes fazem refetch/reconciliação.
-
-Exemplos:
-
-- Shell atualiza logo confirmado;
-- Editor aberto pode atualizar a lista de categorias quando não houver conflito local;
-- lista de Processos pode refazer filtros sem substituir silenciosamente o contexto do usuário.
+Clients relevantes fazem refetch/reconciliação sem substituir silenciosamente edição local.
 
 ## 21. Auditoria
 
-Alterações administrativas devem ser auditáveis de forma proporcional:
+Auditar proporcionalmente:
 
-- mudança da identidade da empresa;
+- mudança de identidade;
 - alteração/remoção de logo;
-- criação de categoria;
-- renomeação;
-- arquivamento/reativação.
+- criação/renomeação/arquivamento/reativação de categoria.
 
-Auditoria não armazena conteúdo binário desnecessário nem dados secretos.
+Auditoria não armazena binário desnecessário nem segredo.
 
 ## 22. Estados da interface
 
 ### Carregando
 
-Preservar estrutura da seção enquanto os dados são consultados.
+Preservar estrutura da seção.
 
 ### Sem permissão
 
-A aba/seção correspondente fica oculta. Acesso direto manipulado retorna permissão negada sem expor dados administrativos.
+A aba/seção fica oculta; acesso direto manipulado retorna permissão negada sem expor dados.
 
 ### Host indisponível
 
@@ -460,86 +409,67 @@ Informar atualização e exigir reconciliação; não substituir formulário loc
 
 ## 23. Acessibilidade
 
-- abas/seções com semântica e foco corretos;
-- labels visíveis para campos da empresa;
+- abas/seções com semântica/foco corretos;
+- labels visíveis;
 - preview do logo com nome acessível;
-- ações de logo acionáveis por teclado;
-- tabela de categorias semanticamente identificada;
-- menu contextual acionável por teclado;
+- ações de logo e menu contextual acionáveis por teclado;
 - estado Ativa/Arquivada não depende apenas de cor;
-- erros ligados aos campos correspondentes;
+- erros ligados aos campos;
 - diálogos devolvem foco adequadamente.
 
 ## 24. Janelas menores
 
 Desktop Windows permanece alvo principal.
 
-Em janela menor suportada:
-
 - campos da empresa passam para uma coluna;
 - preview do logo permanece compacto;
-- lista de categorias preserva nome + estado;
+- lista preserva nome + estado;
 - ações podem migrar para menu contextual;
 - não criar experiência mobile/hamburger antecipadamente.
 
 ## 25. Fora do escopo
 
 - Backup/restauração — Tela 13;
-- exportação/impressão e preview da ficha — Tela 14/Bloco 10;
+- exportação/impressão/preview da ficha — Tela 14/Bloco 10;
 - template A4 final;
-- configuração de IP, porta, hostname ou caminho SMB pela UI comum;
-- configuração de banco SQLite;
-- configuração de fila/writer/WAL;
+- IP/porta/hostname/path SMB pela UI comum;
+- configuração de SQLite/fila/WAL;
 - start/stop técnico do Host;
 - parâmetros de autenticação/sessão;
 - dados fiscais/financeiros/CRM;
-- taxonomia hierárquica de categorias;
-- exclusão física normal de categorias;
+- taxonomia hierárquica;
+- exclusão física normal;
 - ações em massa;
-- implementação funcional.
+- implementação funcional neste checkpoint documental.
 
-## 26. Pendências preservadas
+## 26. Decisões vigentes
 
-A consolidação da Tela 12 **não resolve**:
+1. uma única Tela 12 com navegação `Empresa` + `Categorias`;
+2. somente seções autorizadas são exibidas;
+3. Empresa: ADM/Gerência sim, Funcionário não;
+4. Categorias: ADM/Gerência sim, Funcionário não no preset inicial;
+5. `Empresa` contém logo, nome, contato, site e e-mail;
+6. limites de campos/logo seguem D12.63–D12.64;
+7. logo pode ser escolhido/substituído/removido com preview antes do save;
+8. identidade salva alimenta Shell e documentos/ficha;
+9. salvamento explícito, sem autosave;
+10. categorias usam lista compacta, busca e filtro;
+11. categoria possui inicialmente nome + estado, sem cor/ícone/hierarquia;
+12. criar/editar categoria ocorre fora do Editor;
+13. arquivar substitui exclusão física normal e permite reativação;
+14. categoria arquivada herdada em nova revisão segue D12.65;
+15. duplicidades equivalentes após normalização são impedidas;
+16. Backup/Restore e Exportação/Impressão permanecem fora da Tela 12.
 
-- se Gerência pode alterar configuração da empresa;
-- preset exato autorizado a gerir categorias;
-- limites numéricos de logo/nome/contato/site/e-mail;
-- limite numérico dos textos que entram no template A4;
-- regra de nova revisão de procedimento que ainda referencia categoria arquivada;
-- template/tecnologia de exportação.
+## 27. Critérios de aceite documental
 
-Esses pontos devem ser fechados no bloco/documento apropriado antes da implementação correspondente.
-
-## 27. Decisões consolidadas pelo PO
-
-1. uma única Tela 12 com navegação local `Empresa` + `Categorias`;
-2. somente seções autorizadas pelas capacidades da sessão são exibidas;
-3. autorização da Gerência para configuração da empresa permanece `PENDENTE`;
-4. `Empresa` contém inicialmente logo, nome, contato, site e e-mail;
-5. logo pode ser escolhido, substituído ou removido, com preview antes do save;
-6. identidade salva alimenta Shell e documentos/ficha, sem duplicação manual;
-7. salvamento da identidade é explícito, sem autosave;
-8. categorias usam lista compacta com busca por nome e filtro por estado;
-9. categoria possui inicialmente somente nome + estado, sem cor/ícone/hierarquia;
-10. criar/editar categoria ocorre fora do Editor de Processo;
-11. arquivar substitui exclusão física normal e categoria pode ser reativada;
-12. categoria arquivada deixa de ser opção normal para novas associações, preservando histórico;
-13. categorias duplicadas/visualmente equivalentes após normalização devem ser impedidas;
-14. Backup/Restore e Exportação/Impressão permanecem fora da Tela 12.
-
-## 28. Critérios de aceite
-
-- [x] PO aprovou navegação local `Empresa` + `Categorias`;
-- [x] PO aprovou campos iniciais da identidade da empresa;
-- [x] PO aprovou fluxo de logo;
-- [x] PO aprovou uso centralizado da identidade;
-- [x] PO aprovou gestão simples de categorias;
-- [x] PO aprovou arquivar/reativar em vez de excluir;
-- [x] PO aprovou ausência de hierarquia/cor/ícone inicialmente;
-- [x] pendência de Gerência permanece pendente;
-- [x] permissão exata de categorias permanece pendente;
-- [x] Tela 13 não foi antecipada;
-- [x] Tela 14/Bloco 10 não foi antecipada;
+- [x] navegação local `Empresa` + `Categorias` aprovada;
+- [x] campos e fluxo de logo aprovados;
+- [x] uso centralizado da identidade aprovado;
+- [x] gestão simples e arquivamento/reativação de categorias aprovados;
+- [x] Gerência × Empresa fechada em D12.62;
+- [x] presets de gestão de categorias alinhados à matriz de autenticação;
+- [x] limites de identidade/logo fechados em D12.63–D12.64;
+- [x] regra de categoria arquivada em nova revisão fechada em D12.65;
 - [x] Host permanece autoridade final;
 - [x] nenhuma implementação funcional foi criada.
