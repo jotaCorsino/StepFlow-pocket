@@ -7,7 +7,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 **Atualização:** 2026-09-01  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
 **Checkpoint atual:** Bloco 12 — Estrutura oficial + plano da Fase 2 em análise  
-**Próximo passo:** revisar a Análise 1 (P12.1–P12.18), incluindo árvore fonte modular e proposta de entrada única na publicação Pocket  
+**Próximo passo:** revisar a Análise 2 — workspace/build/dependências/configuração (P12.19–P12.34)  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -26,7 +26,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
 | 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
 | 11 | Backup / restauração | ✅ Concluído |
-| 12 | Estrutura oficial + plano da Fase 2 | 🟡 Em análise |
+| 12 | Estrutura oficial + plano da Fase 2 | 🟡 Em análise — Análise 1 aprovada |
 
 ## Produto
 
@@ -55,17 +55,18 @@ Princípios centrais:
 
 O StepFlow deve ser publicado como **pasta pronta em um servidor Windows** e usado pelas estações autorizadas sem instalação individual do aplicativo.
 
-Contrato vigente:
+Contrato vigente após D12.1–D12.18:
 
 ```text
 pasta publicada no servidor
 → usuário acessa o compartilhamento
-→ executa StepFlowLauncher.exe
+→ executa StepFlow.exe na raiz
 → Launcher prepara/valida o Client em %LOCALAPPDATA%
 → Client abre localmente
+→ Launcher encerra
 ```
 
-O Bloco 12 está analisando somente a superfície de packaging para expor esse mesmo Launcher como entrada amigável na raiz e encapsular artefatos técnicos. Até aprovação, o contrato estável acima permanece vigente.
+`StepFlow.exe` é o Launcher com nome/ícone amigáveis e o único ponto de entrada normal. Artefatos técnicos da publicação ficam encapsulados sob `_internal/`; `.lnk` não é requisito baseline.
 
 É obrigatório no uso normal:
 
@@ -78,6 +79,21 @@ O Bloco 12 está analisando somente a superfície de packaging para expor esse m
 
 O Controller/Host continua sob demanda na máquina central. WebView2 não pode enfraquecer o contrato Pocket; detalhes ficam nos documentos de implantação, Launcher e compatibilidade Windows.
 
+## Bloco 12 — decisões vigentes
+
+A Análise 1 está aprovada como **D12.1–D12.18**:
+
+- source tree modular por `apps/` e `crates/`;
+- Client web modular em ES modules;
+- Launcher/Controller/Host com responsabilidades separadas;
+- source tree diferente da pasta publicada;
+- `StepFlow.exe` como entrada única na raiz;
+- `_internal/` encapsula Client/Server publicados;
+- `.lnk` não é requisito;
+- aprovação estrutural ainda não autoriza scaffold antes do gate final da Fase 1.
+
+A Análise 2 está em revisão como **P12.19–P12.34**.
+
 ## Fontes de verdade
 
 - `AGENTS.md` — governança e regras de execução;
@@ -89,10 +105,12 @@ O Controller/Host continua sob demanda na máquina central. WebView2 não pode e
 
 ## Pendências principais da Fase 1
 
-- parâmetros finais de autenticação/sessão;
+- Análise 2 do Bloco 12 — workspace/build/dependências/configuração;
+- migrations/scripts/testes iniciais e fixtures;
+- parâmetros finais de autenticação/sessão e Backup/Restore;
 - Gerência × configuração da empresa;
 - regra editorial de categoria arquivada;
-- Bloco 12 — estrutura oficial, parâmetros numéricos finais e plano da Fase 2;
+- plano detalhado da Fase 2 e gate do primeiro scaffold;
 - validações corporativas de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR no momento apropriado.
 
 ## Regra deste painel
