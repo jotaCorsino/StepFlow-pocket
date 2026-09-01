@@ -132,7 +132,7 @@ Se essa PoC demonstrar que uma estação suportada exige elevação, instalador 
 
 - nunca sobrescrever executável Client em uso;
 - versões lado a lado;
-- ativação somente após cóia completa e hash válido;
+- ativação somente após cópia completa e hash válido;
 - lock transitório para impedir duas atualizações simultâneas no mesmo perfil;
 - lock desaparece ao encerrar o launcher;
 - retenção deve evitar acúmulo indefinido de versões;
