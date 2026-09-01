@@ -9,12 +9,13 @@ Regras obrigatórias para agentes que atuem neste repositório. Este arquivo gov
 - GitHub é a fonte operacional principal de verdade.
 - Branch principal: `main`.
 - Checkout local previsto: `C:\dev\StepFlow`.
-- Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
-- Blocos 0–11 estão encerrados.
-- Bloco 12 está em validação final; D12.1–D12.98 estão aprovadas e P12.99–P12.108 permanecem em revisão.
+- **Fase 1 — Fechamento arquitetural e especificação: documental e tecnicamente concluída.**
+- Blocos 0–12 estão encerrados em seus contratos documentais/técnicos.
+- Decisões finais da Fase 1: D12.1–D12.108.
 - Nenhuma implementação funcional oficial foi iniciada.
+- A Fase 2 só começa após gate Git limpo, sincronização local segura e autorização explícita do PO para F2-T01.
 
-Estado executivo corrente pertence ao `README.md` e ao plano da fase, não a documentos técnicos estáveis.
+Estado executivo corrente pertence ao `README.md` e ao plano/roadmap, não a documentos técnicos estáveis.
 
 ## Precedência
 
@@ -25,25 +26,11 @@ Estado executivo corrente pertence ao `README.md` e ao plano da fase, não a doc
 5. tarefa, dentro das decisões vigentes;
 6. histórico Git.
 
-O enunciado não revoga silenciosamente decisão consolidada. Se houver conflito ou ambiguidade material, parar e retornar ao PO/Assistente.
+O enunciado não revoga silenciosamente decisão consolidada. Conflito ou ambiguidade material volta ao PO/Assistente.
 
 ## Leitura por camadas
 
-### Sempre
-
-1. `AGENTS.md`;
-2. enunciado da tarefa;
-3. `docs/README.md`;
-4. documento específico indicado.
-
-### Conforme impacto
-
-- `docs/05-progresso/registro-de-decisoes.md`;
-- plano/roadmap vigentes;
-- `docs/03-arquitetura/arquitetura-vigente.md`;
-- modelo de dados;
-- contexto de ambientes;
-- documento de Produto/Tela/Arquitetura afetado.
+Sempre: `AGENTS.md` → enunciado → `docs/README.md` → documento específico. Conforme impacto, consultar registro de decisões, plano/roadmap, arquitetura, modelo de dados, contexto de ambientes e documento de Produto/Tela afetado.
 
 ## Papéis
 
@@ -53,7 +40,7 @@ O enunciado não revoga silenciosamente decisão consolidada. Se houver conflito
 
 ## Pré-flight para Codex
 
-Antes de **cada nova tarefa Codex**, inclusive PoC:
+Antes de cada nova tarefa Codex, inclusive PoC:
 
 1. entregar `PRÉ-FLIGHT PARA O PO — NÃO ENVIAR AO CODEX`;
 2. entregar `PROMPT / ENUNCIADO PARA O CODEX` separado;
@@ -61,9 +48,7 @@ Antes de **cada nova tarefa Codex**, inclusive PoC:
 
 ## Base Git obrigatória
 
-Toda tarefa que permita alteração informa branch/base e commit SHA esperado.
-
-Antes de escrever:
+Toda tarefa que altere arquivos informa branch/base e commit SHA esperado. Antes de escrever:
 
 ```text
 git rev-parse HEAD
@@ -74,15 +59,7 @@ Se `HEAD` divergir, não fazer pull/merge/rebase/reset/checkout corretivo automa
 
 ## Proteção absoluta do working tree
 
-Alteração preexistente pertence ao PO/outro fluxo. Sem autorização explícita, é proibido:
-
-- `git reset --hard`;
-- `git clean`;
-- `git stash`;
-- descartar/restaurar alteração local;
-- sobrescrever arquivo modificado preexistente;
-- trocar branch descartando trabalho;
-- incluir alteração preexistente no commit da tarefa.
+Alteração preexistente pertence ao PO/outro fluxo. Sem autorização explícita, é proibido usar `git reset --hard`, `git clean`, `git stash`, descartar/restaurar alteração local, sobrescrever arquivo modificado, trocar branch descartando trabalho ou incluir alteração preexistente no commit da tarefa.
 
 Se arquivo necessário já estiver modificado, parar e reportar.
 
@@ -99,7 +76,7 @@ Se arquivo necessário já estiver modificado, parar e reportar.
 → próximo trabalho
 ```
 
-Branch mergeada não está encerrada enquanto permanecer no remoto. Cada tarefa da Fase 2 seguirá branch/PR próprios conforme D12.81.
+Branch mergeada não está encerrada enquanto permanecer no remoto. Cada tarefa da Fase 2 usa branch/PR próprios conforme D12.81.
 
 ## Regras operacionais
 
@@ -109,7 +86,6 @@ Branch mergeada não está encerrada enquanto permanecer no remoto. Cada tarefa 
 - não alterar UX/visual aprovado sem autorização;
 - não transformar proposta/exemplo/valor provisório em decisão;
 - manter documentação e implementação sincronizadas;
-- atualizar o painel quando houver mudança real de fase/bloco;
 - preservar modularidade e evitar monólito HTML/JS;
 - não versionar credenciais, segredos, banco real ou dados pessoais;
 - exemplos de IP/hostname/share/path nunca viram configuração oficial;
@@ -119,9 +95,7 @@ Branch mergeada não está encerrada enquanto permanecer no remoto. Cada tarefa 
 
 ## Ambiente Codex versus sessão normal do PO
 
-Limitação do sandbox não vira requisito do produto. Codex não altera ACL, Schannel, registro, PATH global, políticas de segurança ou reinstala ferramenta válida para “consertar” o sandbox.
-
-Operações que exijam credenciais, Internet confiável, elevação ou configuração global devem ser encaminhadas à sessão Windows normal do PO.
+Limitação do sandbox não vira requisito do produto. Codex não altera ACL, Schannel, registro, PATH global, políticas de segurança ou reinstala ferramenta válida para “consertar” o sandbox. Operações que exijam credenciais, Internet confiável, elevação ou configuração global vão para a sessão Windows normal do PO.
 
 ## Contrato Pocket obrigatório
 
@@ -136,25 +110,13 @@ pasta pronta publicada no servidor Windows
 
 `StepFlow.exe` é o Launcher amigável e único ponto de entrada normal. Artefatos publicados ficam sob `_internal/`; `.lnk` não é requisito baseline.
 
-Obrigatório no uso normal:
-
-- zero instalador tradicional por estação;
-- zero configuração manual de dependência;
-- zero privilégio administrativo;
-- zero toolchain em produção;
-- nenhuma Internet obrigatória;
-- Client operacional local, não permanente em SMB;
-- atualização central + versões locais validadas;
-- Host/Controller sob demanda;
-- fechar Client individual não encerra Host;
-- nenhum processo residual após encerramento central;
-- sem Service/auto-start/Task Scheduler/watchdog/tray/daemon baseline.
+Obrigatório no uso normal: zero instalador tradicional por estação; zero configuração manual de dependência; zero privilégio administrativo; zero toolchain em produção; nenhuma Internet obrigatória; Client operacional local; Controller/Host sob demanda; fechar Client individual não encerra Host; nenhum processo residual após encerramento central; sem Service/auto-start/Task Scheduler/watchdog/tray/daemon baseline.
 
 Se dependência exigir instalação/elevação/preparação manual por computador, a solução não atende ao Pocket e deve ser redesenhada ou tratada como blocker.
 
 ### WebView2
 
-Evergreen compatível já presente é preferível. Fixed Version não pode executar de UNC/SMB; fallback autocontido deve ser local e só entra após PoC sem instalação, elevação ou ação manual. Falha em estação suportada é blocker, não autorização para enfraquecer Pocket.
+Evergreen compatível já presente é preferível. Fixed Version não pode executar de UNC/SMB; fallback autocontido deve ser local e só entra após PoC sem instalação, elevação ou ação manual. Falha em estação suportada é blocker.
 
 ## Invariantes técnicas consolidadas
 
@@ -175,27 +137,32 @@ Evergreen compatível já presente é preferível. Fixed Version não pode execu
 - `uncertain` bloqueia readiness/mutações/cleanup;
 - safety backup mantém barrier até primeiro rename;
 - paths Backup/Restore usam semântica Windows estrita e provenance;
-- D12.1–D12.18: estrutura/publicação `StepFlow.exe + _internal/`;
-- D12.19–D12.34: toolchain/workspace/build/dependências;
-- D12.35–D12.55: migrations/testes/fixtures;
-- D12.56–D12.79: parâmetros iniciais;
-- D12.80–D12.98: sequência F2-T01…F2-T08 e gates da Fase 2.
+- D12.1–D12.108 definem estrutura, toolchain/build, migrations/testes, parâmetros, plano da Fase 2 e gates finais.
 
-Aprovação D12 não autoriza scaffold antes do gate final da Fase 1.
+## Gate de transição para implementação
+
+O primeiro scaffold não nasce automaticamente após o merge documental.
+
+```text
+fechar PR/branch do Bloco 12
+→ verificar main + zero PRs
+→ inspecionar C:\dev\StepFlow
+→ se main estiver limpa: git fetch --prune origin + git merge --ff-only origin/main
+→ confirmar HEAD/status
+→ PO autoriza F2-T01
+→ pré-flight F2-T01
+→ prompt Codex F2-T01
+→ branch feat/f2-01-workspace-host
+```
+
+Se houver alteração local, branch inesperada ou divergência deliberada, parar e reportar. Não usar reset/clean/stash/rebase para forçar alinhamento.
 
 ## Pendências ainda abertas
 
-- P12.99–P12.108 — validação final da Fase 1;
-- gate Git do Bloco 12;
+- gate Git do Bloco 12 e remoto limpo;
 - sincronização segura do checkout local;
-- autorização explícita de F2-T01;
-- gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR/adapters.
-
-## Gate de implementação
-
-Não criar scaffold oficial, módulos runtime definitivos, migration oficial ou código de negócio antes do Bloco 12/Fase 1 ser encerrado.
-
-Antes do primeiro trabalho de implementação, o checkout local deve ser sincronizado explicitamente sem apagar, sobrescrever, descartar ou incorporar indevidamente alterações preexistentes do PO. A semântica positiva de sincronização permanece em revisão em P12.103–P12.104.
+- autorização explícita da F2-T01;
+- gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR/adapters nas fases aplicáveis.
 
 ## Regra final
 
