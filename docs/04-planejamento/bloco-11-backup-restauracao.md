@@ -1,9 +1,9 @@
 # Bloco 11 — Backup / Restauração técnico
 
-**Status:** EM ANÁLISE — BLOCO NÃO CONSOLIDADO  
+**Status:** EM VALIDAÇÃO FINAL — BLOCO NÃO CONSOLIDADO  
 **Fase:** 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-08-29  
-**Atualização:** 2026-08-31
+**Atualização:** 2026-09-01
 
 ## Objetivo
 
@@ -25,7 +25,8 @@ Este bloco não reabre, sem bloqueador técnico concreto:
 - sucesso somente após confirmação do Host;
 - Backup separado de exportação documental;
 - ausência de scheduler periódico por inferência;
-- Restore de Gerência não autorizado; Gerência × Backup permanece pendente até aprovação da Análise 6;
+- Backup: ADM/Gerência = sim, Funcionário = não;
+- Restore: ADM = sim, Gerência/Funcionário = não;
 - contrato Pocket como gate superior.
 
 ## Estado das análises
@@ -37,15 +38,16 @@ Este bloco não reabre, sem bloqueador técnico concreto:
 | 3 | Catálogo + retenção + coordenação administrativa | ✅ Aprovada pelo PO |
 | 4 | Restore + safety backup + compatibilidade | ✅ Aprovada pelo PO |
 | 5 | Restart + sessões + reconexão + falhas | ✅ Aprovada pelo PO |
-| 6 | Disaster recovery + capacidades + auditoria | ⏳ Proposta para revisão |
-| 7 | Validação técnica final | Pendente |
+| 6 | Disaster recovery + capacidades + auditoria | ✅ Aprovada pelo PO |
+| 7 | Validação técnica final | 🔎 Em análise |
 
 Detalhes:
 
 - Análise 3: `bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
 - Análise 4: `bloco-11-analise-4-restore-safety-compatibilidade.md`;
 - Análise 5: `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
-- Análise 6: `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
+- Análise 6: `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`;
+- Análise 7: `bloco-11-analise-7-validacao-tecnica-final.md`.
 
 ---
 
@@ -77,7 +79,7 @@ Decisões aprovadas: **D11.1–D11.10**.
 
 **Status:** APROVADA PELO PO em 2026-08-29.
 
-Consistência é definida sobre **SQLite + arquivos administrados**. O Host aplica barrier curto sobre mutações, drena mutações aceitas, captura banco + `company/**` + `avatars/**` no mesmo ponto quiescente e libera mutações antes de hash/ZIP/verificação/promoção.
+Consistência é definida sobre **SQLite + arquivos administrados**. O Host aplica barrier curto sobre mutações, drena mutações aceitas, captura banco + `company/**` + `avatars/**` no mesmo ponto quiescente e libera mutações antes de hash/ZIP/verificação/promoção do Backup normal.
 
 `-wal`/`-shm` não entram no pacote. Candidato exige envelope válido, SHA-256, `quick_check = ok`, `foreign_key_check` vazio, flush explícito, promoção same-volume/no-replace e reabertura antes de `BACKUP_CONFIRMED`.
 
@@ -166,24 +168,42 @@ Decisões aprovadas: **D11.62–D11.82**.
 
 # Análise 6 — Disaster recovery, capacidades e auditoria
 
-**Status:** PROPOSTA PARA REVISÃO DO PO — NÃO CONSOLIDADA.
+**Status:** APROVADA PELO PO em 2026-09-01.
 
 Detalhe: `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
 
-Direção proposta:
+Contrato resumido:
 
 - disaster recovery somente quando Restore normal seguro não está disponível;
 - Recovery local/transitório pelo Controller na máquina central, sem listener normal de rede;
-- exclusividade da implantação e autoridade baseada em acesso local/ACL, pois o banco pode não autenticar;
-- candidatos permanecem pacotes finais administrados em `backups/` e passam pela mesma validação/compatibilidade do Restore normal;
-- ausência de safety backup válido pode ser aceita somente no disaster recovery real;
-- preservar o estado ativo como `.recovery-old-<id>` quando possível, sem fingir que ele é backup íntegro;
-- reutilizar journal/staging/troca same-volume e recovery determinístico já aprovados;
-- Gerência × Backup proposta como **SIM** para consultar/criar; Restore continua **ADM-only**;
-- trilha administrativa estruturada fora de `data/` para sobreviver ao Restore;
-- journal, admin audit e logs técnicos permanecem mecanismos distintos.
+- exclusividade da implantação e autoridade baseada em acesso local/ACL quando o banco não autentica;
+- candidatos baseline em `backups/*.stepflow-backup`, com a mesma validação/compatibilidade do Restore normal;
+- ausência de safety backup válido só pode ser aceita no disaster recovery real;
+- estado ativo preservado como `.recovery-old-<id>` quando possível, sem fingir que é backup íntegro;
+- Recovery reutiliza journal/staging/troca same-volume/no-replace e fresh Host;
+- ADM/Gerência podem consultar/criar Backup; Restore permanece ADM-only;
+- auditoria funcional quando disponível + trilha administrativa estruturada fora de `data/`;
+- `logs/admin-audit.jsonl`/equivalente é append-only pela aplicação, protegido por ACL, sem alegação de tamper-proof;
+- journal operacional, admin audit e logs técnicos permanecem mecanismos distintos.
 
-Propostas numeradas: **P11.83–P11.103**.
+Decisões aprovadas: **D11.83–D11.103**.
+
+---
+
+# Análise 7 — Validação técnica final
+
+**Status:** EM ANÁLISE — refinamentos finais ainda não aprovados.
+
+Detalhe: `bloco-11-analise-7-validacao-tecnica-final.md`.
+
+A validação final deve:
+
+- verificar coerência D11.1–D11.103;
+- fechar qualquer lacuna de consistência/segurança encontrada na revisão cruzada;
+- distinguir parâmetros deliberadamente reservados ao Bloco 12 de escolhas arquiteturais que precisam ser resolvidas agora;
+- confirmar gates reais de Windows/filesystem/ACL/EDR;
+- confirmar que o contrato Pocket permanece intacto;
+- decidir se existe ou não bloqueador arquitetural para encerrar o Bloco 11.
 
 ---
 
@@ -212,7 +232,3 @@ O bloco só pode ser considerado concluído quando:
 - integração com destino externo específico;
 - nova UX sem bloqueador técnico;
 - números finais de performance sem evidência.
-
-## Próxima análise
-
-Após aprovação de P11.83–P11.103, seguir para **Análise 7 — validação técnica final do Bloco 11**.
