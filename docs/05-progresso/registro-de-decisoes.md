@@ -1,6 +1,6 @@
 # Registro de Decisões — StepFlow Pocket
 
-**Atualização:** 2026-08-31
+**Atualização:** 2026-09-01
 
 Este arquivo é o **digest ativo de decisões, pendências reais e gates vigentes**. Detalhes técnicos pertencem aos documentos específicos. Proposta não aprovada não é contrato.
 
@@ -120,8 +120,8 @@ Concluído/Cancelado
 - pelo menos um ADM ativo;
 - bootstrap do primeiro ADM é local/controlado;
 - Gerência não administra ADM;
+- Backup = ADM sim, Gerência sim, Funcionário não;
 - Restore = ADM sim, Gerência não, Funcionário não;
-- Gerência × Backup permanece **PENDENTE** até aprovação da Análise 6;
 - Gerência × configuração da empresa permanece **PENDENTE**.
 
 Parâmetros finais pendentes: custo Argon2id, senha mínima, duração/expiração de sessão e tamanho/entropia numérica do token.
@@ -159,7 +159,7 @@ Parâmetros finais pendentes: custo Argon2id, senha mínima, duração/expiraç�
 - Word/impressoras/SMB/Windows/WebView2/EDR são gates de ambiente real;
 - limites de performance ficam para benchmark.
 
-## 10. Backup / Restore — Bloco 11 em análise
+## 10. Backup / Restore — Bloco 11 em validação final
 
 ### D11.1–D11.10 — estado e envelope
 
@@ -175,10 +175,10 @@ Parâmetros finais pendentes: custo Argon2id, senha mínima, duração/expiraç�
 ### D11.11–D11.25 — consistência e promoção
 
 - consistência = SQLite + arquivos administrados;
-- barrier curto sobre mutações até snapshot bruto completo;
+- barrier curto sobre mutações até snapshot bruto completo do Backup normal;
 - `-wal`/`-shm` fora do pacote;
 - `quick_check = ok` + `foreign_key_check` vazio na criação;
-- hash/ZIP/verificação/promoção fora do barrier;
+- hash/ZIP/verificação/promoção fora do barrier do Backup normal;
 - flush explícito;
 - promoção same-volume/no-replace;
 - sucesso só após reabertura/confirmação;
@@ -230,33 +230,51 @@ Parâmetros finais pendentes: custo Argon2id, senha mínima, duração/expiraç�
 - active journal só some depois de fresh Host provar estado conhecido;
 - `uncertain` bloqueia readiness, mutações, nova operação destrutiva, retenção e cleanup.
 
+### D11.83–D11.103 — disaster recovery, capacidades e auditoria
+
+- disaster recovery somente quando Restore normal seguro não está disponível;
+- Recovery é modo local/transitório do Controller na máquina central, sem listener normal da LAN;
+- Recovery exige exclusividade da implantação e usa acesso local/ACL quando o banco não autentica;
+- não há senha mestre paralela nem autoelevação silenciosa;
+- candidatos baseline vêm de `backups/*.stepflow-backup` e passam pela mesma validação/compatibilidade do Restore normal;
+- ausência de safety backup só é tolerada no disaster recovery real;
+- estado ativo é preservado como `.recovery-old-<id>` quando possível, sem ser declarado backup íntegro;
+- Recovery reutiliza staging/journal/troca same-volume/no-replace e fresh Host;
+- ADM/Gerência podem consultar/criar Backup; Restore continua ADM-only;
+- Backup/Restore/retention/Recovery registram trilha administrativa estruturada fora de `data/` quando aplicável;
+- `logs/admin-audit.jsonl`/equivalente é append-only pela aplicação e protegido por ACL, sem alegação de tamper-proof;
+- journal operacional, admin audit e log técnico são mecanismos distintos.
+
 Fontes detalhadas:
 
 - `docs/04-planejamento/bloco-11-backup-restauracao.md`;
 - `bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
 - `bloco-11-analise-4-restore-safety-compatibilidade.md`;
-- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
+- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
 
-### Análise 6 — proposta, não contrato
+### Análise 7 — proposta, não contrato
 
-P11.83–P11.103 propõem:
+P11.104–P11.116 propõem refinamentos finais de:
 
-- disaster recovery local/transitório do Controller, sem listener normal de rede;
-- autoridade local/ACL quando o banco não autentica;
-- mesma validação/compatibilidade do Restore normal;
-- Gerência × Backup = **SIM** para consultar/criar, mantendo Restore = ADM-only;
-- trilha administrativa fora de `data/` para atravessar Restore;
-- distinção entre journal, admin audit e logs técnicos.
+- continuidade do barrier do safety backup até o primeiro rename;
+- revalidação do digest de `data-next/` imediatamente antes da fase destrutiva;
+- canonicalização/validação de paths conforme semântica Windows;
+- `source_deployment_id` no manifesto;
+- limites estruturais de parser/extração;
+- baseline sem criptografia/assinatura application-level, com trust boundary em ACL/deployment/auditoria;
+- explicitação de que offsite/physical-site protection pertence à infraestrutura corporativa;
+- gates Win32/ACL/EDR/long paths/crash antes de produção.
 
-Nada deste subsection vira decisão antes de aprovação explícita do PO.
+Nada desta subseção vira decisão antes da aprovação explícita do PO.
 
 ## 11. Pendências vigentes
 
 ### Bloco 11
 
-- revisar P11.83–P11.103;
-- executar Análise 7 — validação técnica final;
-- sincronizar decisões finais nas fontes específicas.
+- revisar P11.104–P11.116;
+- se aprovadas, sincronizar os refinamentos e concluir a validação técnica final;
+- executar gate normal do PR #26 antes de merge.
 
 ### Bloco 12
 
@@ -266,6 +284,12 @@ Nada deste subsection vira decisão antes de aprovação explícita do PO.
 - plano da Fase 2;
 - sincronização segura do checkout local antes do primeiro trabalho de implementação.
 
+### Segurança/configuração fora do Bloco 11
+
+- Gerência × configuração da empresa;
+- parâmetros finais de Argon2id/senha/sessão/token;
+- regra editorial de categoria arquivada.
+
 ### Ambiente corporativo
 
 - Windows/WebView2 real e PoC do fallback Pocket;
@@ -273,7 +297,8 @@ Nada deste subsection vira decisão antes de aprovação explícita do PO.
 - Word/impressoras;
 - SMB/permissões/falhas;
 - EDR/firewall/políticas;
-- long paths quando aplicável.
+- long paths quando aplicável;
+- gates específicos de filesystem/ACL/crash para Backup/Restore.
 
 ## 12. Precedência
 
