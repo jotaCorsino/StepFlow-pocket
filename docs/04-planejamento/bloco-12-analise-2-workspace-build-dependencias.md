@@ -1,6 +1,6 @@
 # Bloco 12 — Análise 2 — Workspace, build, dependências e configuração
 
-**Status:** PROPOSTA PARA REVISÃO DO PO  
+**Status:** APROVADA PELO PO — D12.19–D12.34  
 **Bloco:** 12 — Estrutura oficial + plano da Fase 2  
 **Data:** 2026-09-01
 
@@ -24,7 +24,7 @@ A fundação deve ser reproduzível e simples:
 
 ## Toolchain e workspace
 
-Baseline proposto:
+Baseline aprovado:
 
 ```text
 Rust 1.98.0
@@ -66,7 +66,7 @@ Não usar dependência por branch Git flutuante, `*`, `latest` ou referência n�
 
 Dependências diretas que mais de um package realmente usar devem ser declaradas em `[workspace.dependencies]` e herdadas pelos packages. Isso evita versões divergentes sem criar um “Cargo.toml global” com crates ainda não utilizadas.
 
-A regra de pinning proposta é:
+A regra de pinning aprovada é:
 
 - requisito direto usa uma versão concreta compatível com SemVer;
 - `Cargo.lock` registra a resolução exata;
@@ -78,9 +78,9 @@ Isso evita congelar em setembro de 2026 uma versão de Typst/ZIP/Argon2 que só 
 
 ## Baseline de dependências da fundação
 
-Versões atuais verificadas para a fundação inicial:
+Versões aprovadas para a fundação inicial:
 
-| Responsabilidade | Baseline proposto | Observação |
+| Responsabilidade | Baseline aprovado | Observação |
 |---|---:|---|
 | Tauri runtime | `tauri 2.11.x` | Client desktop |
 | Tauri build | `tauri-build 2.6.x` | build script do Client |
@@ -115,7 +115,7 @@ apps/client/web/
 
 Tauri funciona como host de assets estáticos e pode incorporar o diretório do frontend diretamente via `frontendDist`.
 
-Portanto, baseline:
+Baseline:
 
 - sem `package.json`;
 - sem `node_modules/`;
@@ -191,24 +191,24 @@ Regras:
 - build/test/package usam lockfile;
 - nenhum script de desenvolvimento vira requisito para o usuário final iniciar o StepFlow.
 
-## Propostas P12.19–P12.34
+## Decisões D12.19–D12.34
 
-- **P12.19:** toolchain oficial inicial = Rust `1.98.0`, target `x86_64-pc-windows-msvc`, perfil rustup `minimal`, com `rustfmt` e `clippy`;
-- **P12.20:** workspace usa Edition 2024 e `resolver = "3"`, com manifest virtual na raiz e packages reais apenas sob `apps/`/`crates/`;
-- **P12.21:** `rust-toolchain.toml` é versionado e fixa a toolchain usada pelo projeto;
-- **P12.22:** `Cargo.lock` é versionado desde o primeiro scaffold e build/test/package oficiais usam `--locked` quando a resolução não pode mudar;
-- **P12.23:** atualização de dependência é mudança explícita/revisada; `cargo update` incidental, wildcard e branch Git flutuante não são baseline;
-- **P12.24:** dependências realmente compartilhadas ficam em `[workspace.dependencies]`; crate sem uso concreto não entra antecipadamente;
-- **P12.25:** pinning usa requisito direto concreto + resolução exata no `Cargo.lock`; dependência de fase futura é pinada quando for efetivamente adotada em tarefa revisada;
-- **P12.26:** fundação inicial adota Tauri `2.11.x`, `tauri-build 2.6.x`, Tauri CLI `2.11.x`, Tokio `~1.51`, Axum `0.8.9`, rusqlite `0.40.2`, Serde `1.0.229`, serde_json `1.0.151`, tracing `0.1.44` e tower-http `0.6.8`, somente onde houver uso real;
-- **P12.27:** rusqlite usa feature `bundled`; features adicionais, inclusive `backup`, só entram no package proprietário quando o recurso correspondente for implementado;
-- **P12.28:** Client vanilla modular não usa Node/npm/pnpm/yarn/Vite/bundler/framework no baseline; Tauri incorpora HTML/CSS/JS estático diretamente;
-- **P12.29:** adicionar bundler/framework futuramente exige decisão explícita baseada em necessidade concreta, não preferência do executor;
-- **P12.30:** Tauri CLI é dependência de desenvolvimento verificada pelo bootstrap de dev e nunca runtime/requisito de produção;
-- **P12.31:** configuração separa build/dev, deployment e runtime central; nenhum endpoint/segredo corporativo fica hardcoded ou versionado;
-- **P12.32:** `target/` e `dist/` são descartáveis; produção é montada por packaging, não executada diretamente de `target/release`;
-- **P12.33:** profiles não recebem LTO/strip/panic/codegen tuning obrigatório antes de benchmark; otimização prematura não é baseline;
-- **P12.34:** scripts oficiais de desenvolvimento/build/test/package podem ser PowerShell finos, lockfile-aware e sem criar dependência operacional para o usuário final.
+- **D12.19:** toolchain oficial inicial = Rust `1.98.0`, target `x86_64-pc-windows-msvc`, perfil rustup `minimal`, com `rustfmt` e `clippy`;
+- **D12.20:** workspace usa Edition 2024 e `resolver = "3"`, com manifest virtual na raiz e packages reais apenas sob `apps/`/`crates/`;
+- **D12.21:** `rust-toolchain.toml` é versionado e fixa a toolchain usada pelo projeto;
+- **D12.22:** `Cargo.lock` é versionado desde o primeiro scaffold e build/test/package oficiais usam `--locked` quando a resolução não pode mudar;
+- **D12.23:** atualização de dependência é mudança explícita/revisada; `cargo update` incidental, wildcard e branch Git flutuante não são baseline;
+- **D12.24:** dependências realmente compartilhadas ficam em `[workspace.dependencies]`; crate sem uso concreto não entra antecipadamente;
+- **D12.25:** pinning usa requisito direto concreto + resolução exata no `Cargo.lock`; dependência de fase futura é pinada quando for efetivamente adotada em tarefa revisada;
+- **D12.26:** fundação inicial adota Tauri `2.11.x`, `tauri-build 2.6.x`, Tauri CLI `2.11.x`, Tokio `~1.51`, Axum `0.8.9`, rusqlite `0.40.2`, Serde `1.0.229`, serde_json `1.0.151`, tracing `0.1.44` e tower-http `0.6.8`, somente onde houver uso real;
+- **D12.27:** rusqlite usa feature `bundled`; features adicionais, inclusive `backup`, só entram no package proprietário quando o recurso correspondente for implementado;
+- **D12.28:** Client vanilla modular não usa Node/npm/pnpm/yarn/Vite/bundler/framework no baseline; Tauri incorpora HTML/CSS/JS estático diretamente;
+- **D12.29:** adicionar bundler/framework futuramente exige decisão explícita baseada em necessidade concreta, não preferência do executor;
+- **D12.30:** Tauri CLI é dependência de desenvolvimento verificada pelo bootstrap de dev e nunca runtime/requisito de produção;
+- **D12.31:** configuração separa build/dev, deployment e runtime central; nenhum endpoint/segredo corporativo fica hardcoded ou versionado;
+- **D12.32:** `target/` e `dist/` são descartáveis; produção é montada por packaging, não executada diretamente de `target/release`;
+- **D12.33:** profiles não recebem LTO/strip/panic/codegen tuning obrigatório antes de benchmark; otimização prematura não é baseline;
+- **D12.34:** scripts oficiais de desenvolvimento/build/test/package podem ser PowerShell finos, lockfile-aware e sem criar dependência operacional para o usuário final.
 
 ## Evidência técnica consultada
 
