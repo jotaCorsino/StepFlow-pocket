@@ -4,10 +4,10 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 ## Painel de acompanhamento
 
-**Atualização:** 2026-08-29  
+**Atualização:** 2026-09-01  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Checkpoint atual:** auditoria e higiene documental pós-Bloco 10  
-**Próximo bloco:** Bloco 11 — Backup / restauração técnico  
+**Checkpoint atual:** Bloco 11 — Backup / Restauração técnico consolidado na proposta do PR #26  
+**Próximo passo:** gate final do PR #26; após remoto limpo, abrir Bloco 12 — Estrutura oficial + plano da Fase 2  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -25,7 +25,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
 | 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
-| 11 | Backup / restauração | ⏳ Pendente |
+| 11 | Backup / restauração | ✅ Tecnicamente consolidado; gate Git pendente |
 | 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
 
 ## Produto
@@ -74,6 +74,27 @@ pasta publicada no servidor
 
 O Controller/Host continua sob demanda na máquina central. WebView2 não pode enfraquecer o contrato Pocket; detalhes ficam nos documentos de implantação, Launcher e compatibilidade Windows.
 
+## Bloco 11 — contrato técnico consolidado
+
+Decisões vigentes na branch do PR #26: **D11.1–D11.116**.
+
+Fechado:
+
+- pacote `.stepflow-backup` e estado recuperável;
+- Online Backup API + consistência com arquivos administrados;
+- catálogo, retenção e lease administrativo;
+- Restore com safety backup, staging, migrations forward e rollback/`uncertain`;
+- journal, fresh Host, invalidação de sessões e recovery após crash;
+- disaster recovery local/transitório pelo Controller;
+- Backup para ADM/Gerência e Restore ADM-only;
+- auditoria administrativa externa ao `data/`;
+- safety barrier contínuo no `pre_restore`;
+- canonicalização Windows, provenance por `source_deployment_id` e parser bounded;
+- baseline sem criptografia/assinatura application-level;
+- gates de filesystem/ACL/EDR/long paths/crash antes de produção.
+
+Fonte: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
+
 ## Fontes de verdade
 
 - `AGENTS.md` — governança e regras de execução;
@@ -87,11 +108,9 @@ O Controller/Host continua sob demanda na máquina central. WebView2 não pode e
 
 - parâmetros finais de autenticação/sessão;
 - Gerência × configuração da empresa;
-- Gerência × Backup;
 - regra editorial de categoria arquivada;
-- Bloco 11 — mecanismo técnico de Backup/Restore;
-- Bloco 12 — estrutura oficial, parâmetros finais e plano da Fase 2;
-- validações corporativas de Windows/WebView2/Launcher/SMB/Word/impressoras/EDR no momento apropriado.
+- Bloco 12 — estrutura oficial, parâmetros numéricos finais e plano da Fase 2;
+- validações corporativas de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR no momento apropriado.
 
 ## Regra deste painel
 

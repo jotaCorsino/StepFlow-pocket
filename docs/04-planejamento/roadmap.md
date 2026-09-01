@@ -1,7 +1,7 @@
 # Roadmap — StepFlow Pocket
 
 **Status:** FASE 1 EM ANDAMENTO  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-09-01
 
 O roadmap descreve **fases e resultados**, não PRs ou branches específicas. Gates operacionais correntes ficam no plano da fase e no `README.md`.
 
@@ -32,22 +32,37 @@ Consolidado até aqui:
 - códigos `AT-000001` / `EQP-000001`;
 - geração documental, exportação, impressão, Ficha compacta, naming e temporários;
 - validação técnica final do Bloco 10;
-- contrato Pocket reforçado como gate superior.
+- Backup/Restore técnico consolidado em D11.1–D11.116;
+- contrato Pocket preservado como gate superior.
 
 ### Bloco 11 — Backup / Restore técnico
 
-**PENDENTE.**
+**TECNICAMENTE CONCLUÍDO em 2026-09-01.**
 
-Fechará:
+Resultados:
 
-- pacote/formato administrado;
-- consistência e checksums;
-- atomicidade e safety backup;
-- retenção;
-- coordenação com mutações e operações administrativas;
-- restart/reconexão/sessões durante Restore;
-- disaster recovery local quando Host não inicia;
-- compatibilidade de backup entre versões/schema.
+- estado recuperável e pacote `.stepflow-backup`;
+- snapshot SQLite via Online Backup API;
+- consistência conjunta entre banco e arquivos administrados;
+- staging/verificação/promoção no-replace;
+- catálogo reconstruível e retenção sem scheduler/por quantidade;
+- coordenação administrativa de Backup/Restore/migration;
+- Restore com revalidação integral, migrations forward, safety backup e troca lógica de `data/`;
+- safety barrier contínuo até o primeiro rename no `pre_restore`;
+- journal de Restore, reconciliação antes de readiness, rollback conhecido/`uncertain`;
+- fresh Host e invalidação de sessões após fase destrutiva;
+- disaster recovery local/transitório pelo Controller;
+- Backup permitido a ADM/Gerência e Restore restrito a ADM;
+- auditoria administrativa que atravessa Restore;
+- canonicalização Windows e bloqueio de paths ambíguos/perigosos;
+- provenance por `source_deployment_id`;
+- parser/extração bounded;
+- baseline sem criptografia ou assinatura application-level;
+- gates Win32/filesystem/ACL/EDR/long paths/crash antes de produção.
+
+Não há bloqueador arquitetural conhecido para o mecanismo. Parâmetros numéricos finais ficam no Bloco 12.
+
+Fonte: `bloco-11-backup-restauracao.md` e análises específicas 3–7.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
@@ -58,6 +73,7 @@ Fechará:
 - parâmetros técnicos finais ainda abertos;
 - estrutura oficial do repositório;
 - migrations/scripts/testes iniciais;
+- configuração/defaults/fixtures mensuráveis;
 - sincronização segura do checkout local;
 - plano executável da Fase 2.
 
@@ -80,72 +96,31 @@ Gate: Client abre sem instalação manual, Host inicia sob demanda, comunicaçã
 
 **PENDENTE.**
 
-- login/logout/sessão;
-- bootstrap ADM;
-- usuários/permissões;
-- perfil/avatar;
-- shell/sidebar;
-- configuração básica da empresa;
-- autorização Host-side.
+Login/logout/sessão, bootstrap ADM, usuários/permissões, perfil/avatar, shell/sidebar, configuração básica da empresa e autorização Host-side.
 
 ## Fase 4 — Núcleo documental de Procedimentos
 
 **PENDENTE.**
 
-- lista/pesquisa;
-- categorização;
-- criação/edição/arquivamento;
-- Etapas/blocos;
-- histórico/revisões;
-- permissões;
-- conflitos de revisão.
+Lista/pesquisa, categorização, criação/edição/arquivamento, Etapas/blocos, histórico/revisões, permissões e conflitos de revisão.
 
 ## Fase 5 — Execução e registro operacional
 
 **PENDENTE.**
 
-- Reader em páginas/Etapas;
-- passos/alertas/blocos copiáveis;
-- Atendimento;
-- checklist persistente;
-- observação de serviço por Etapa;
-- progresso por checklist;
-- lifecycle de três estados;
-- Equipamento opcional;
-- busca/lista operacional;
-- resumo do trabalho;
-- revisão exata utilizada;
-- reprodução histórica;
-- Ficha compacta;
-- estados transversais.
+Reader, Atendimento, checklist persistente, observação de serviço, lifecycle, Equipamento opcional, busca/lista, resumo, revisão exata, reprodução histórica, Ficha e estados transversais.
 
 ## Fase 6 — Multiusuário em ambiente real
 
 **PENDENTE.**
 
-- múltiplos Clients;
-- conflitos/fila;
-- concorrência granular;
-- eventos/reconexão;
-- Host indisponível;
-- stress/tuning;
-- validação LAN corporativa.
+Múltiplos Clients, conflitos/fila, concorrência granular, eventos/reconexão, Host indisponível, stress/tuning e validação LAN corporativa.
 
 ## Fase 7 — Exportação e identidade
 
 **PENDENTE.**
 
-Implementará os contratos do Bloco 10:
-
-- geração Host-side;
-- PDF/DOCX de Procedimentos;
-- impressão Windows;
-- identidade central da empresa;
-- Ficha PDF/preview/impressão;
-- reprodução histórica;
-- naming/save/temporários;
-- fixtures de overflow;
-- gates reais de Word/impressoras/SMB/EDR.
+Implementará os contratos do Bloco 10: PDF/DOCX, impressão Windows, identidade, Ficha, naming/save/temporários e gates reais de Word/impressoras/SMB/EDR.
 
 DOCX específico da Ficha não é requisito inicial.
 
@@ -157,9 +132,10 @@ DOCX específico da Ficha não é requisito inicial.
 - Controller/Host sob demanda;
 - Launcher no share + Client local versionado;
 - zero instalação/manualidade por estação;
-- Backup/Restore;
+- implementação dos contratos D11.1–D11.116 de Backup/Restore;
 - disaster recovery local;
-- logs e documentação de implantação;
+- logs/auditoria operacional;
+- documentação de implantação;
 - validação sem Internet e em PCs corporativos.
 
 Não inclui serviço StepFlow persistente.
@@ -168,25 +144,18 @@ Não inclui serviço StepFlow persistente.
 
 **PENDENTE.**
 
-- segurança/autorização;
-- recuperação de falha/banco;
-- Backup/Restore;
-- concorrência/performance;
-- logs;
-- distribuição/update;
-- smoke tests end-to-end;
-- revisão documental;
-- validação final do contrato Pocket no parque corporativo.
+Segurança/autorização, recuperação de falha/banco, Backup/Restore, concorrência/performance, logs, distribuição/update, smoke tests end-to-end, revisão documental e validação final do contrato Pocket no parque corporativo.
 
 ## Pendências transversais
 
 - parâmetros finais Argon2/senha/sessão/token;
 - Gerência × configuração da empresa;
-- Gerência × Backup;
 - regra editorial de categoria arquivada;
+- parâmetros numéricos de retenção/tamanho/espaço/timeouts;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
-- SMB/impressoras/EDR corporativos.
+- SMB/impressoras/filesystem/ACL/EDR corporativos;
+- adapter Win32 e crash injection de Backup/Restore.
 
 ## Regra do roadmap
 

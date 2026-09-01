@@ -1,7 +1,7 @@
 # Autenticação, Sessão e Autorização — StepFlow Pocket
 
 **Status:** NÚCLEO CONSOLIDADO PARA A FASE 1 / PARÂMETROS FINAIS PENDENTES  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-09-01
 
 ## Princípios
 
@@ -69,6 +69,19 @@ Consolidado:
 
 Duração de sessão, inatividade, validade absoluta e tamanho/entropia numérica do token permanecem pendentes.
 
+### Fronteira de sessão após Restore
+
+Consolidado no Bloco 11:
+
+- Restore que falha/cancela **antes** da fase destrutiva não exige revogação global apenas por ter preparado staging;
+- qualquer Restore que entra na fase destrutiva invalida todas as sessões/tokens anteriores;
+- a invalidação vale tanto para Restore concluído quanto para rollback após a fase destrutiva;
+- conteúdo de backup restaurado nunca pode ressuscitar token reutilizável antigo;
+- após o fresh Host atingir readiness, Clients precisam autenticar novamente;
+- se a implementação futura persistir metadados de sessão, deve existir epoch/revogação/runtime equivalente que preserve essa regra.
+
+Fonte: `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+
 ## Capacidades documentais/administrativas
 
 | Capacidade | ADM | Gerência | Funcionário |
@@ -81,10 +94,12 @@ Duração de sessão, inatividade, validade absoluta e tamanho/entropia numéric
 | Criar/promover/rebaixar ADM | sim | não | não |
 | Gerir categorias | sim | sim | não |
 | Alterar configuração da empresa | sim | **PENDENTE** | não |
-| Backup | sim | **PENDENTE** | não |
+| Backup | sim | sim | não |
 | Restore | sim | não | não |
 
-`PENDENTE` não significa sim nem não.
+No Bloco 11, Backup foi fechado de forma granular: ADM e Gerência podem consultar catálogo/detalhes e criar Backup manual; Restore permanece ADM-only e nunca é concedido por consequência de Backup.
+
+Disaster recovery local não é capability de sessão, pois precisa continuar disponível quando o próprio banco não consegue autenticar. Ele é procedimento central/transitório protegido por acesso local, ACLs e exclusividade da implantação.
 
 ## Capacidades operacionais
 
@@ -165,6 +180,7 @@ Presets são defaults. Capacidades podem ser personalizadas dentro das regras de
 
 - Gerência nunca administra ADM;
 - Gerência não cria/promove/rebaixa ADM;
+- Gerência não pode conceder Restore a si ou a outro usuário;
 - usuário não eleva a própria autoridade;
 - pelo menos um ADM ativo deve existir;
 - `is_primary_admin` não é toggle comum;
@@ -214,6 +230,8 @@ Registrar proporcionalmente:
 
 Nunca registrar senha, token reutilizável ou segredo.
 
+Para Backup/Restore/Recovery, o Bloco 11 acrescenta uma trilha administrativa estruturada fora de `data/`, além da auditoria funcional quando o banco estiver disponível. Essa trilha não substitui autorização nem vira fonte de dados do produto.
+
 ## Transporte
 
 Credenciais e sessão usam o canal Client↔Host vigente. Proteção final de transporte na LAN depende da infraestrutura corporativa real.
@@ -224,7 +242,6 @@ Credenciais e sessão usam o canal Client↔Host vigente. Proteção final de tr
 - senha mínima final;
 - duração/expiração de sessão;
 - entropia/tamanho numérico do token;
-- Gerência × configuração da empresa;
-- Gerência × Backup.
+- Gerência × configuração da empresa.
 
 Nenhum valor marcado como pendente pode ser convertido silenciosamente em requisito definitivo pelo executor.

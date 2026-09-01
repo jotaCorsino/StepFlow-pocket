@@ -2,13 +2,13 @@
 
 **Status:** EM ANDAMENTO  
 **Início:** 2026-08-19  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-09-01
 
 ## Objetivo
 
 Transformar requisitos e arquitetura conceitual em decisões implementáveis antes da fundação executável do StepFlow.
 
-A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quando necessárias. Não autoriza scaffold/runtime oficial nem código de negócio definitivo antes do gate correspondente do Bloco 12/Fase 2.
+A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quando necessárias. Não autoriza scaffold/runtime oficial, migrations oficiais ou código de negócio definitivo antes do gate do Bloco 12/Fase 2.
 
 ## Estado dos blocos
 
@@ -25,33 +25,8 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 8 | UI/UX | CONCLUÍDO | `../02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
-| 11 | Backup/restauração técnico | PENDENTE | a abrir |
-| 12 | Estrutura oficial + Fase 2 | PENDENTE | a abrir |
-
-## Extensão de produto consolidada
-
-Fazem parte do contrato atual:
-
-- categorias configuráveis/múltiplas;
-- domínio `Procedimento × Atendimento/Execução × Equipamento`;
-- Atendimentos como área operacional própria;
-- Equipamento opcional/reutilizável;
-- múltiplos Procedimentos por Atendimento;
-- revisão exata utilizada preservada;
-- checklist persistente em contexto de execução;
-- `Observação do serviço` opcional por Etapa;
-- reprodução histórica após conclusão/reabertura;
-- Ficha compacta com ou sem Equipamento;
-- identidade central da empresa;
-- PDF/DOCX/impressão de Procedimentos;
-- PDF + preview + impressão da Ficha;
-- template físico e política de overflow;
-- naming persistente e temporários;
-- estados transversais;
-- matriz operacional de capacidades;
-- códigos `AT-000001` / `EQP-000001`;
-- clareza e baixa densidade textual como princípio visual;
-- contrato Pocket sem instalação/preparação manual por estação.
+| 11 | Backup/restauração técnico | TECNICAMENTE CONCLUÍDO / GATE GIT PENDENTE | `bloco-11-backup-restauracao.md` |
+| 12 | Estrutura oficial + Fase 2 | PENDENTE | a abrir após gate remoto limpo |
 
 ## Contrato Pocket da Fase 1
 
@@ -73,90 +48,56 @@ Não é aceitável como baseline:
 - exigir configuração manual de dependência;
 - executar permanentemente o Client pelo SMB.
 
-WebView2 Evergreen existente é preferível quando compatível. Fixed Version não roda por UNC/SMB; fallback local só pode ser adotado após PoC provar preparação automática sem instalação/elevação/manualidade.
+WebView2 Evergreen existente é preferível quando compatível. Fixed Version não roda por UNC/SMB; fallback local só entra após PoC provar preparação automática sem instalação/elevação/manualidade.
 
-## Bloco 8 — UI/UX
+## Blocos 8–10 — fechados
 
-**CONCLUÍDO.**
+### Bloco 8 — UI/UX
 
-Telas 01–15 estão consolidadas/aprovadas. Nenhuma UI de produção foi criada.
+Telas 01–15 consolidadas. Reader em formato livro/manual, `Visão geral`, uma Etapa por página lógica, stepper de navegação e baixa densidade textual.
 
-Direção transversal:
+### Bloco 9 — execução operacional
 
-- Reader em formato livro/manual;
-- `Visão geral` como primeira página lógica;
-- uma Etapa por página lógica;
-- stepper horizontal compacto e navegável;
-- stepper representa navegação, não conclusão operacional;
-- informação secundária sob demanda e baixa densidade textual.
+Lifecycle `Em andamento / Concluído / Cancelado`, reabertura explícita, checklist persistente, observação de serviço por Etapa, Equipamento opcional, revisão exata e reprodução histórica.
 
-## Bloco 9 — Execução operacional / Atendimentos
+### Bloco 10 — geração documental
 
-**CONCLUÍDO.**
-
-Consolidado:
-
-- lifecycle `Em andamento / Concluído / Cancelado`, com reabertura explícita;
-- primeiro save cria Atendimento;
-- responsável + resumo obrigatórios para concluir;
-- checklist incompleto avisa, não bloqueia automaticamente;
-- Funcionário opera por responsabilidade;
-- revisão exata preservada;
-- checklist persistente somente em Atendimento;
-- observação de serviço opcional/persistente por Etapa;
-- progresso deriva somente do checklist;
-- Equipamento opcional/reutilizável;
-- reprodução histórica do estado relevante;
-- códigos legíveis Host-only;
-- Ficha disponível conforme lifecycle/capacidade.
-
-## Bloco 10 — Exportação / impressão / Ficha compacta
-
-**CONCLUÍDO.**
-
-Fontes:
-
-- `bloco-10-exportacao-impressao-ficha.md` — mapa técnico;
-- `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz final;
-- `../02-telas/14-exportacao-impressao-ficha.md` — UX;
-- documentos Pocket/Windows — distribuição e compatibilidade.
-
-Resultado:
-
-- geração Host-side por snapshot consistente + `DocumentModel`;
-- PDF via Typst embutido;
-- DOCX OOXML direto em Rust;
-- impressão Windows pelo mesmo PDF oficial via WebView2;
-- Procedimento físico A4 multipágina;
-- Ficha PDF + preview do mesmo `PagedDocument`, exatamente uma A4;
-- `SHEET_OVERFLOW` sem truncamento/segunda página/redução automática;
-- soft limits 600/400/300/280 orientativos;
-- naming e temporários consolidados;
-- nenhum bloqueador arquitetural identificado na validação final;
-- Word, impressoras, SMB, Windows/WebView2 e EDR mantidos como gates de ambiente real;
-- limites de performance definidos por benchmark na fase executável;
-- contrato Pocket preservado como gate superior.
+Geração Host-side, PDF Typst, DOCX OOXML Rust, impressão pelo mesmo PDF, Procedimento A4 multipágina, Ficha de exatamente uma A4, `SHEET_OVERFLOW`, naming/temporários e gates corporativos consolidados.
 
 ## Bloco 11 — Backup / Restore técnico
 
-**PENDENTE.**
+**TECNICAMENTE CONCLUÍDO em 2026-09-01.** O PR #26 ainda precisa cumprir o gate Git antes da entrada em `main`.
 
-A UX já está consolidada em `../02-telas/13-backup-restauracao.md`.
+Fontes:
 
-O Bloco 11 deve fechar tecnicamente:
+- `bloco-11-backup-restauracao.md` — mapa principal consolidado;
+- `bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
+- `bloco-11-analise-4-restore-safety-compatibilidade.md`;
+- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
+- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`;
+- `bloco-11-analise-7-validacao-tecnica-final.md`;
+- `../02-telas/13-backup-restauracao.md`.
 
-- conteúdo exato do pacote administrado;
-- snapshot consistente de SQLite + arquivos administrados;
-- manifesto/checksums/compatibilidade;
-- estratégia de escrita/promoção/atomicidade possível;
-- safety backup antes do Restore normal;
-- retenção;
-- coordenação com operações e mutações;
-- restart/reconexão/sessões;
-- disaster recovery local quando Host não inicia;
-- comportamento de falhas parciais/resultado incerto.
+Decisões aprovadas: **D11.1–D11.116**.
 
-Não reabrir a UX sem bloqueador técnico concreto.
+Fechado:
+
+- estado recuperável + `.stepflow-backup`;
+- Online Backup API e consistência SQLite + arquivos;
+- staging, verificação e promoção no-replace;
+- catálogo reconstruível, retenção e coordenação administrativa;
+- Restore com revalidação, migrations forward, safety backup e troca lógica de `data/`;
+- journal/restart/rollback/`uncertain`;
+- invalidação de sessões após fase destrutiva;
+- disaster recovery local/transitório;
+- Backup ADM/Gerência e Restore ADM-only;
+- auditoria administrativa fora de `data/`;
+- safety barrier contínuo do `pre_restore`;
+- canonicalização Windows, `source_deployment_id` e parser bounded;
+- baseline sem criptografia/assinatura application-level;
+- gates Win32/filesystem/ACL/EDR/long paths/crash antes de produção.
+
+Não existe bloqueador arquitetural conhecido para o Bloco 11.
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
@@ -167,35 +108,56 @@ Fechará:
 - estrutura oficial do repositório;
 - migrations/scripts/testes iniciais;
 - parâmetros finais ainda abertos;
+- configuração/defaults/fixtures mensuráveis para limites técnicos;
 - plano da Fase 2;
-- sincronização segura do checkout local antes do primeiro Codex de implementação.
+- sincronização segura do checkout local antes do primeiro trabalho de implementação.
 
 ## Pendências restantes da Fase 1
 
 ### Segurança/configuração
 
-- Argon2id exato;
+- custo Argon2id final;
 - senha mínima final;
-- duração de sessão;
+- duração/expiração de sessão;
 - entropia/tamanho final do token;
 - Gerência × configuração da empresa;
-- Gerência × Backup;
 - regra editorial de categoria arquivada.
+
+### Parâmetros técnicos para Bloco 12
+
+- `retention_max_confirmed_backups`;
+- limites de pacote/entradas/path;
+- margem mínima de espaço;
+- timeouts;
+- duração alvo de barrier/manutenção;
+- backoff/reconexão;
+- rotação física de logs/admin audit;
+- versões pinadas de crates/adapters.
 
 ### Ambiente real
 
 - Windows/WebView2 nas estações reais;
 - PoC do fallback Pocket WebView2;
-- execução do Launcher pelo share corporativo;
+- Launcher pelo share corporativo;
 - Word/impressoras;
 - SMB real;
-- EDR/firewall/políticas.
+- filesystem/ACL/EDR/antivírus/long paths;
+- adapter Windows e crash injection de Backup/Restore.
+
+## Gate atual
+
+1. concluir revisão final do PR #26;
+2. tornar PR ready;
+3. squash merge em `main`;
+4. remover branch remota;
+5. verificar somente `main` e zero PRs abertos;
+6. somente então abrir Bloco 12.
 
 ## Regras finais
 
-- não criar scaffold/runtime definitivo ou código de negócio durante a Fase 1 sem gate explícito;
+- não criar scaffold/runtime definitivo, migration oficial ou código de negócio durante a Fase 1 sem gate explícito;
 - toda tarefa Codex que altere arquivos informa base Git esperada e pré-flight;
 - preservar alterações locais preexistentes do PO;
 - nenhuma pendência vira decisão por inferência;
 - requisito Pocket não pode ser enfraquecido para acomodar dependência técnica sem retorno explícito ao PO;
-- gates Git já consumidos não permanecem como “estado atual” em documentos técnicos estáveis.
+- gates Git consumidos não permanecem como estado em documentos técnicos estáveis.

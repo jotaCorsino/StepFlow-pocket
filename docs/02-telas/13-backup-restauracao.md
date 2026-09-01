@@ -5,7 +5,8 @@
 - código/nome da tela: Tela 13 — Backup / Restauração — UX;
 - status: **CONSOLIDADO / APROVADO PELO PO**;
 - bloco: Fase 1 — Bloco 8 (UI/UX);
-- data da consolidação: 2026-08-25.
+- data da consolidação: 2026-08-25;
+- atualização técnica: 2026-09-01.
 
 ## 2. Objetivo
 
@@ -21,14 +22,14 @@ A Tela 13 fecha:
 - estados de carregamento, execução, sucesso e falha;
 - limite entre operação normal e recuperação técnica de desastre.
 
-A estratégia técnica de consistência, empacotamento, atomicidade, retenção, compatibilidade, storage e recuperação quando o Host não consegue iniciar permanece para o **Bloco 11 — Backup/Restauração**.
+A estratégia técnica de consistência, empacotamento, atomicidade, retenção, compatibilidade, storage e recuperação quando o Host não consegue iniciar pertence ao **Bloco 11 — Backup/Restauração**. Esta tela apenas reflete os efeitos UX das decisões técnicas já aprovadas.
 
 ## 3. Princípios consolidados
 
 - backup/restore é coordenado pelo Host;
 - Client nunca copia `stepflow.sqlite` diretamente;
 - autorização real é Host-side e baseada em capacidades;
-- `Backup`: ADM = sim; Gerência = **PENDENTE**; Funcionário = não;
+- `Backup`: ADM = sim; Gerência = sim; Funcionário = não;
 - `Restore`: ADM = sim; Gerência = não; Funcionário = não;
 - conceder Backup nunca concede Restore por consequência;
 - dados persistentes e arquivos administrados devem ser tratados como conjunto coerente;
@@ -69,13 +70,13 @@ Pode, conforme matriz vigente:
 
 ### Gerência
 
-A capacidade de **Backup permanece PENDENTE**.
+Pode:
 
-Portanto:
+- criar backup;
+- consultar backups disponíveis;
+- abrir detalhes.
 
-- não assumir `sim` nem `não` antes da decisão final;
-- Restore permanece não autorizado para Gerência;
-- futura autorização de Backup, se aprovada, não autoriza Restore.
+Restore permanece não autorizado para Gerência. A autorização de Backup não autoriza Restore por consequência.
 
 ### Funcionário
 
@@ -115,7 +116,7 @@ Direção visual:
 
 ## 7. Conteúdo protegido — comunicação ao usuário
 
-A UX pode informar de forma resumida que o backup protege o estado persistente do StepFlow, incluindo, conforme contrato técnico final:
+A UX pode informar de forma resumida que o backup protege o estado persistente do StepFlow, incluindo:
 
 - procedimentos e revisões;
 - usuários/permissões;
@@ -126,9 +127,9 @@ A UX pode informar de forma resumida que o backup protege o estado persistente d
 - avatares;
 - demais arquivos administrados necessários à restauração coerente.
 
-A lista técnica definitiva pertence ao Bloco 11.
+O contrato técnico vigente do Bloco 11 protege `stepflow.sqlite + company/** + avatars/**` como conjunto lógico.
 
-Não prometer que binários, logs ou configuração operacional de rede fazem parte do pacote sem decisão técnica explícita.
+Binários, logs, configuração operacional de rede, backups anteriores, exportações e temporários não fazem parte do pacote normal.
 
 ## 8. Lista de backups
 
@@ -202,7 +203,7 @@ A UX deve representar pelo menos:
 
 `Restaurar` permanece indisponível se o Host não considerar o backup seguro/elegível.
 
-Checksums, manifesto, schema e algoritmo de compatibilidade pertencem ao Bloco 11.
+Checksums, manifesto, schema e algoritmo de compatibilidade pertencem ao contrato técnico do Bloco 11.
 
 ## 12. Criar backup agora
 
@@ -247,12 +248,9 @@ Se o Host já aceitou a operação, fechar um Client **não significa cancelamen
 
 ## 14. Uso do sistema durante backup
 
-A Tela 13 não fixa se mutações comuns continuam disponíveis durante toda a criação.
+O Bloco 11 definiu pequena janela coordenada em que novas mutações podem ser temporariamente suspensas para capturar SQLite + arquivos administrados no mesmo ponto lógico. Leituras seguras podem continuar quando o Host permitir.
 
-A UX deve suportar o mecanismo que o Bloco 11 aprovar:
-
-- backup sem bloquear uso normal; ou
-- pequena janela de indisponibilidade/mutações suspensas, se tecnicamente necessária.
+Fora dessa janela, geração/hash/verificação/promoção do backup normal não deve manter o sistema bloqueado apenas por conveniência.
 
 Se houver restrição temporária, os Clients recebem estado compreensível, não erro técnico bruto.
 
@@ -308,11 +306,12 @@ selecionar backup
 → Host entra na etapa destrutiva
 → Clients recebem estado de manutenção/desconexão quando necessário
 → Host conclui e valida estado restaurado
-→ Client reconecta/refaz sessão conforme regra técnica
+→ fresh Host
+→ Client reconecta e autentica novamente
 → UI apresenta resultado confirmado
 ```
 
-Restart do Host, troca de arquivos, fechamento de conexões e demais detalhes internos pertencem ao Bloco 11.
+Troca de arquivos, journal, recovery e demais detalhes internos pertencem ao contrato técnico do Bloco 11 e não são expostos pela UX normal.
 
 ## 18. Safety backup pré-restauração — consolidado
 
@@ -361,17 +360,15 @@ Regras:
 
 ## 20. Usuários conectados durante Restore
 
-A UX informa antecipadamente que o uso pode ser interrompido temporariamente.
+A UX informa antecipadamente que o uso será interrompido temporariamente quando o Restore entrar em manutenção.
 
-A Tela 13 não fixa:
+Contrato técnico vigente:
 
-- quantidade de Clients permitida;
-- timeout;
-- sequência técnica de desconexão;
-- necessidade de restart do Controller/Host;
-- invalidação/reuso exatos das sessões.
-
-Esses pontos pertencem ao Bloco 11 e ao contrato de autenticação quando aplicável.
+- evento/WebSocket de manutenção é best-effort;
+- a segurança não depende de todos os Clients receberem o aviso;
+- após a fase destrutiva, o Host passa por reinicialização controlada antes de readiness normal;
+- todas as sessões/tokens anteriores à fase destrutiva são invalidadas, inclusive se houver rollback conhecido;
+- ao retornar, os Clients precisam autenticar novamente e reconsultar o estado.
 
 A interrupção deve parecer **manutenção coordenada**, nunca falha aleatória de rede.
 
@@ -384,7 +381,7 @@ Restaurando backup…
 Não feche o ciclo central do StepFlow enquanto a operação estiver em andamento.
 ```
 
-O Client pode perder conexão conforme o mecanismo técnico final.
+O Client pode perder conexão durante manutenção/restart.
 
 Ao reconectar, consulta o resultado conhecido pelo Host; não infere sucesso ou falha apenas pela queda da conexão.
 
@@ -397,23 +394,21 @@ Sucesso confirmado:
 Backup restaurado: 24/08/2026 17:48
 ```
 
-Se a política final exigir novo login, encaminhar para Login com mensagem apropriada.
-
-Não prometer preservação da sessão atual antes do Bloco 11 fechar essa regra.
+Se o Restore entrou na fase destrutiva, encaminhar para Login após o fresh Host ficar ready. Isso também vale quando a operação termina em rollback conhecido.
 
 Falhas podem ser classificadas pelo Host como:
 
 - restauração não iniciada;
 - bloqueada por validação/compatibilidade;
 - falha antes da substituição;
-- falha durante operação crítica;
+- rollback conhecido após operação crítica;
 - resultado incerto exigindo intervenção administrativa.
 
 Em resultado incerto:
 
 - não declarar sucesso;
 - orientar a não continuar mutações;
-- encaminhar para procedimento de recuperação/diagnóstico do Bloco 11.
+- encaminhar para procedimento local/controlado de recuperação/diagnóstico do Bloco 11.
 
 ## 23. Concorrência de operações administrativas
 
@@ -455,6 +450,8 @@ Registrar de forma proporcional:
 
 Não registrar conteúdo completo do backup, senha, token reutilizável ou dados sensíveis desnecessários.
 
+O Bloco 11 acrescenta trilha administrativa estruturada fora de `data/` para Backup/Restore/Recovery, além da auditoria funcional quando disponível. Essa trilha não muda a superfície visual desta tela.
+
 ## 26. Backup × Exportação
 
 ```text
@@ -475,10 +472,11 @@ Quando a própria aplicação não consegue disponibilizar a Tela 13, por exempl
 - SQLite não abre;
 - schema não valida;
 - arquivos essenciais estão corrompidos;
+- Restore normal terminou em `RECOVERY_REQUIRED/uncertain`;
 
-a recuperação ocorre por fluxo **local/controlado na máquina central**, especificado no Bloco 11.
+a recuperação ocorre por **modo local/transitório do StepFlowController na máquina central**, sem listener HTTP/WebSocket normal, conforme contrato do Bloco 11.
 
-A Tela 13 não finge resolver um desastre que impede o próprio StepFlow de subir.
+A Tela 13 não oferece botão remoto de disaster recovery nem finge resolver um desastre que impede o próprio StepFlow de subir.
 
 ## 28. Caminhos e arquivos
 
@@ -490,7 +488,7 @@ A UX normal não oferece:
 - nome técnico do arquivo como requisito do usuário;
 - edição de `stepflow-host.toml`.
 
-Eventual exportação/importação de pacotes para armazenamento externo exige contrato futuro próprio.
+Eventual uso de pacote externo em disaster recovery é procedimento local/controlado de operação, não upload/importação genérica pelo Client.
 
 ## 29. Estados da interface
 
@@ -540,56 +538,52 @@ Em janela menor suportada:
 - ações permanecem em menu contextual acessível;
 - não criar experiência mobile/hamburger.
 
-## 31. Fora do escopo
+## 31. Fora do escopo desta tela
 
-- SQLite backup API/`VACUUM INTO`/cópia coordenada;
-- formato final do pacote;
-- algoritmo de checksum/manifesto;
-- compressão;
-- criptografia do pacote;
-- retenção automática;
+Mesmo quando já definidos tecnicamente em outro documento, permanecem fora da UX da Tela 13:
+
+- SQLite Online Backup API/algoritmo de captura;
+- formato físico do pacote;
+- checksum/manifesto;
+- compressão/criptografia;
+- política interna de retenção/cleanup;
 - agendamento periódico;
-- limpeza/exclusão de backups;
 - destino externo/nuvem;
 - upload/download genérico;
-- recovery quando Host não inicia;
-- política técnica de restart durante Restore;
+- algoritmo de recovery quando Host não inicia;
+- política técnica de restart/journal;
 - tempos máximos/timeouts;
 - espaço mínimo livre;
 - implementação funcional.
 
-## 32. Pendências preservadas
+## 32. Limites e pendências externas vigentes
 
-A consolidação **não resolve**:
+A Tela 13 não resolve:
 
-- se Gerência recebe capacidade de Backup;
-- formato/estrutura do pacote;
-- lista técnica exata de arquivos incluídos;
-- política de retenção;
-- necessidade de criptografia;
-- comportamento técnico durante mutações concorrentes;
-- restart/reconexão/sessões exatos após Restore;
-- estratégia de disaster recovery;
-- limites de tamanho/espaço/tempo;
-- política de backups automáticos além de safety backups exigidos por fluxos técnicos aprovados.
+- limites numéricos de tamanho/espaço/tempo e backoff, que dependem de benchmark;
+- valor/default final de retenção, reservado ao Bloco 12;
+- eventual proteção/cópia externa dos backups pela infraestrutura corporativa;
+- detalhes de implementação física do modo Recovery local.
+
+Esses pontos não reabrem a UX consolidada.
 
 ## 33. Decisões consolidadas
 
 1. Backup/Restauração permanece dentro de `Configurações` como terceira seção local autorizada;
 2. não existe novo item global na sidebar;
 3. `Criar backup agora` é a ação principal de criação;
-4. Gerência × Backup permanece `PENDENTE`; Restore de Gerência permanece não autorizado;
+4. ADM e Gerência podem consultar/criar Backup; Restore permanece ADM-only;
 5. lista compacta mostra data/hora, origem, autor, tamanho e verificação;
 6. `Detalhes` antecede qualquer Restore;
-7. não há delete, scheduler, retention, upload/download ou path editável inicialmente;
+7. não há delete, scheduler, retention configurável, upload/download ou path editável inicialmente;
 8. backup aceito pelo Host não é cancelado silenciosamente ao fechar Client;
 9. Restore só aparece para capacidade correspondente e backup elegível;
 10. Restore exige confirmação reforçada com ciência explícita + texto `RESTAURAR`;
 11. safety backup do estado atual é obrigatório antes da etapa destrutiva do Restore normal via UI;
 12. sem safety backup confirmado, o Restore normal não prossegue;
-13. Clients podem ser temporariamente interrompidos durante Restore, com mecanismo exato reservado ao Bloco 11;
-14. após queda/reconexão, o Client consulta o resultado do Host;
-15. disaster recovery sem Host funcional é local/controlado e pertence ao Bloco 11;
+13. Restore destrutivo coordena manutenção, fresh Host e invalidação das sessões anteriores;
+14. após queda/reconexão, o Client consulta o resultado confirmado e autentica novamente quando aplicável;
+15. disaster recovery sem Host funcional é local/controlado pelo Controller, fora da LAN normal;
 16. Backup permanece separado de Exportação/Impressão.
 
 ## 34. Critérios de aceite do checkpoint
@@ -598,13 +592,13 @@ A consolidação **não resolve**:
 - [x] PO aprovou lista compacta de backups;
 - [x] PO aprovou metadados iniciais;
 - [x] PO aprovou criação manual simples;
-- [x] PO aprovou ausência de scheduler/retention/delete/import/export inicialmente;
+- [x] PO aprovou ausência de scheduler/retention configurável/delete/import/export inicialmente;
 - [x] PO aprovou Restore somente após Detalhes + validação Host;
 - [x] PO aprovou confirmação reforçada de Restore;
 - [x] PO aprovou safety backup pré-restauração no fluxo normal;
-- [x] permissão de Gerência para Backup permanece pendente;
+- [x] PO aprovou Backup para Gerência, sem conceder Restore;
 - [x] Restore de Gerência permanece não autorizado;
-- [x] mecanismo técnico permanece para Bloco 11;
-- [x] recovery sem Host permanece para Bloco 11;
+- [x] mecanismo técnico foi fechado no Bloco 11;
+- [x] recovery sem Host foi fechado como fluxo local/controlado no Bloco 11;
 - [x] Tela 14 não foi antecipada;
 - [x] nenhuma implementação funcional foi criada.

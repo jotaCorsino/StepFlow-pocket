@@ -10,8 +10,7 @@ Regras obrigatórias para agentes que atuem neste repositório. Este arquivo gov
 - Branch principal: `main`.
 - Checkout local previsto: `C:\dev\StepFlow`.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
-- Blocos 0–10 estão encerrados em seus escopos documentais.
-- Bloco 11 fecha Backup/Restore técnico.
+- Blocos 0–11 estão encerrados em seus escopos documentais/técnicos; o Bloco 11 ainda precisa cumprir o gate Git do PR ativo para entrar em `main`.
 - Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 - Nenhuma implementação funcional oficial foi iniciada.
 
@@ -28,7 +27,7 @@ Em caso de conflito:
 5. tarefa, dentro das decisões vigentes;
 6. histórico Git.
 
-O enunciado autoriza trabalho, mas não revoga silenciosamente decisão consolidada. Se a tarefa contrariar uma decisão vigente, parar e retornar ao PO/Assistente até existir nova decisão explícita e sincronização documental. Ambiguidade nunca autoriza escolher a alternativa mais conveniente.
+O enunciado autoriza trabalho, mas não revoga silenciosamente decisão consolidada. Se a tarefa contrariar decisão vigente, parar e retornar ao PO/Assistente até existir nova decisão explícita e sincronização documental. Ambiguidade nunca autoriza escolher a alternativa mais conveniente.
 
 ## Leitura por camadas
 
@@ -134,8 +133,6 @@ Operações que realmente exijam credenciais, Internet confiável, elevação ou
 
 ## Contrato Pocket obrigatório
 
-A experiência suportada é:
-
 ```text
 pasta pronta publicada no servidor Windows
 → estação acessa o compartilhamento
@@ -194,7 +191,14 @@ Fontes: `docs/03-arquitetura/implantacao-pocket.md`, `launcher-distribuicao-clie
 - PDF de Procedimentos usa Typst embutido; DOCX usa OOXML direto em Rust;
 - impressão Windows usa o mesmo PDF oficial via WebView2;
 - Ficha válida possui exatamente uma A4; `2+` páginas geram `SHEET_OVERFLOW`;
-- artefatos persistentes e temporários têm lifecycles separados.
+- artefatos persistentes e temporários têm lifecycles separados;
+- Backup/Restore segue D11.1–D11.116 e não cria serviço/scheduler/watchdog;
+- Backup = ADM/Gerência; Restore = ADM-only;
+- disaster recovery é local/transitório pelo Controller;
+- Restore destrutivo invalida sessões anteriores;
+- `uncertain` bloqueia readiness/mutações/cleanup destrutivo;
+- safety backup `pre_restore` mantém barrier até o primeiro rename;
+- paths de backup/restore usam semântica Windows estrita e provenance por deployment.
 
 Detalhes ficam nas fontes específicas; não ampliar estas invariantes por inferência.
 
@@ -202,11 +206,10 @@ Detalhes ficam nas fontes específicas; não ampliar estas invariantes por infer
 
 - parâmetros finais de Argon2id/senha/sessão/token;
 - Gerência × configuração da empresa;
-- Gerência × Backup;
 - regra editorial de categoria arquivada;
-- mecanismo técnico do Bloco 11;
+- parâmetros numéricos de Backup/Restore reservados ao Bloco 12;
 - estrutura oficial e plano da Fase 2 no Bloco 12;
-- gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/EDR.
+- gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR.
 
 ## Gate de implementação
 

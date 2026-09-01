@@ -17,13 +17,11 @@ Proposta não aprovada não pode ser implementada como decisão.
 
 ## Ownership documental
 
-Cada camada possui uma função principal:
-
 - **Governança** — regras de trabalho, ambientes e execução assistida;
 - **Produto** — o que o StepFlow é, domínio, requisitos e limites;
 - **Telas** — comportamento e UX das superfícies;
 - **Arquitetura** — mecanismos, componentes, persistência, segurança e restrições técnicas;
-- **Planejamento** — fases, blocos, dependências e gates ainda ativos;
+- **Planejamento** — fases, blocos, dependências e gates ativos;
 - **Progresso** — decisões vigentes e marcos históricos.
 
 Regra de higiene: documento técnico estável não anuncia “próximo bloco”. Estado corrente pertence ao `README.md`, ao plano da fase e ao roadmap.
@@ -56,7 +54,7 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 - `README.md` — índice das superfícies;
 - `01-login.md` a `15-estados-transversais.md` — contratos UX consolidados;
-- `13-backup-restauracao.md` — UX de Backup/Restore;
+- `13-backup-restauracao.md` — UX de Backup/Restore alinhada ao Bloco 11;
 - `14-exportacao-impressao-ficha.md` — UX documental e Ficha compacta.
 
 ### Arquitetura — `03-arquitetura`
@@ -78,6 +76,12 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado;
 - `bloco-10-exportacao-impressao-ficha.md` — mapa técnico consolidado do Bloco 10;
 - `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz técnica final do Bloco 10;
+- `bloco-11-backup-restauracao.md` — mapa técnico consolidado do Bloco 11, D11.1–D11.116;
+- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — catálogo, retenção e coordenação;
+- `bloco-11-analise-4-restore-safety-compatibilidade.md` — Restore, safety backup e compatibilidade;
+- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — restart, sessões, reconexão e falhas;
+- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — disaster recovery, capacidades e auditoria;
+- `bloco-11-analise-7-validacao-tecnica-final.md` — validação técnica final e D11.104–D11.116;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -95,6 +99,6 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 ## Estado atual
 
-A **Fase 1 permanece em andamento**. Blocos 0–10 estão documentalmente encerrados nos respectivos escopos; Bloco 11 fecha Backup/Restore técnico e Bloco 12 fecha estrutura oficial e plano da Fase 2.
+A **Fase 1 permanece em andamento**. Blocos 0–11 estão tecnicamente/documentalmente concluídos em seus escopos; o Bloco 11 aguarda apenas o gate Git do PR #26 para entrar em `main`. O Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 
 Nenhuma implementação funcional oficial foi iniciada.
