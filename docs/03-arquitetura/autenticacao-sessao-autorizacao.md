@@ -179,7 +179,7 @@ Tecnologia, template e política de overflow estão consolidados na Tela 14 e no
 Presets são defaults. Capacidades podem ser personalizadas dentro das regras de delegação.
 
 - Gerência nunca administra ADM;
-- Gerência não cria/promover/rebaixar ADM;
+- Gerência não cria/promove/rebaixa ADM;
 - Gerência não pode conceder Restore a si ou a outro usuário;
 - usuário não eleva a própria autoridade;
 - pelo menos um ADM ativo deve existir;
