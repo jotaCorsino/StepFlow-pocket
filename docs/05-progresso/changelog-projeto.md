@@ -4,6 +4,22 @@ Este arquivo registra **marcos relevantes**, não cada commit ou conversa. O his
 
 ## 2026-09-01
 
+### Fase 1 concluída — Bloco 12
+
+- Fase 1 encerrada documental e tecnicamente com **D12.1–D12.108**;
+- source tree oficial planejada em `apps/` + `crates/`, sem abstrações vazias por antecipação;
+- publicação Pocket consolidada com **`StepFlow.exe` na raiz** como único ponto de entrada normal e `_internal/` para a árvore técnica; esse contrato substitui o nome externo anterior do Launcher nas fontes vigentes;
+- Rust 1.98.0, Edition 2024, resolver 3 e target Windows x64 MSVC definidos para a fundação executável;
+- Client vanilla modular preservado sem Node/npm/Vite/bundler/framework no baseline;
+- migrations Host-side imutáveis/embutidas, runner com checksum, testes em SQLite temporário real e fixtures sintéticas definidos;
+- parâmetros finais de autenticação/sessão, Empresa/Categorias, Backup/Restore, comunicação e logs fechados;
+- plano executável da Fase 2 dividido em F2-T01…F2-T08, cada tarefa com branch/PR próprios e pré-flight separado;
+- `deployment.json` real exige input explícito de implantação e packaging implantável falha sem configuração obrigatória;
+- sincronização local futura definida por fast-forward seguro, sem reset/clean/stash/rebase corretivo;
+- gates corporativos permanecem reservados às etapas executáveis correspondentes e nunca recebem PASS presumido fora do ambiente aplicável;
+- nenhum scaffold/runtime oficial, migration SQL ou código de negócio foi criado durante a Fase 1;
+- transição para F2-T01 permanece condicionada a gate Git limpo, sincronização local segura e autorização explícita do PO.
+
 ### Bloco 11 — Backup / Restauração técnico
 
 - contrato técnico consolidado em **D11.1–D11.116**;
@@ -17,13 +33,11 @@ Este arquivo registra **marcos relevantes**, não cada commit ou conversa. O his
 - disaster recovery local/transitório pelo Controller, sem listener normal da LAN;
 - Backup permitido a ADM/Gerência e Restore restrito a ADM;
 - auditoria administrativa estruturada fora de `data/`;
-- paths Windows endurecidos contra traversal/UNC/device/ADS/reserved names/case collision/reparse/non-regular;
-- manifesto passou a incluir `source_deployment_id` para provenance da implantação;
-- parser/extração definidos como bounded, com valores numéricos reservados ao Bloco 12;
+- paths Windows endurecidos e provenance por `source_deployment_id`;
+- parser/extração bounded;
 - baseline inicial sem criptografia ou assinatura application-level; SHA-256 permanece integridade, não autenticidade;
-- offsite/cópia corporativa de backups permanece responsabilidade operacional externa ao baseline;
-- adapter Win32, filesystem, ACLs, EDR/antivírus, long paths, espaço, performance e crash injection permanecem gates antes de produção;
-- validação técnica final concluiu **sem bloqueador arquitetural conhecido**.
+- gates Win32/filesystem/ACL/EDR/long paths/performance/crash permanecem antes de produção;
+- validação técnica final concluiu sem bloqueador arquitetural conhecido.
 
 ## 2026-08-29
 
@@ -40,13 +54,12 @@ Este arquivo registra **marcos relevantes**, não cada commit ou conversa. O his
 - soft limits orientativos 600/400/300/280;
 - naming persistente e política de temporários consolidados;
 - validação técnica final sem bloqueador arquitetural conhecido;
-- Word, impressoras, SMB, Windows/WebView2 e EDR mantidos como gates de ambiente real;
-- limites de performance ficaram para medição na fase executável.
+- Word, impressoras, SMB, Windows/WebView2 e EDR mantidos como gates de ambiente real.
 
 ### Contrato Pocket reforçado
 
 - pasta pronta publicada no servidor Windows;
-- entrada do usuário pelo `StepFlowLauncher.exe` no compartilhamento;
+- entrada do usuário então documentada pelo Launcher no compartilhamento;
 - Client preparado automaticamente em `%LOCALAPPDATA%`;
 - zero instalador tradicional, preparação manual ou elevação por estação no uso normal;
 - Client operacional não roda permanentemente do SMB;
@@ -55,10 +68,9 @@ Este arquivo registra **marcos relevantes**, não cada commit ou conversa. O his
 
 ### Higiene documental pós-Bloco 10
 
-- iniciado checkpoint para remover estados de transição consumidos e duplicações;
-- documentos de entrada passam a ter ownership mais estrito;
-- referências históricas a blocos já encerrados deixam de permanecer como pendências ativas;
-- histórico detalhado permanece no Git em vez de ser repetido em documentos técnicos.
+- ownership documental reforçado;
+- referências históricas consumidas removidas das fontes técnicas ativas;
+- histórico detalhado mantido no Git em vez de repetido em documentos estáveis.
 
 ## 2026-08-25 a 2026-08-28
 
@@ -119,4 +131,4 @@ Este arquivo registra **marcos relevantes**, não cada commit ou conversa. O his
 
 ### Código
 
-Nenhuma implementação funcional oficial foi criada durante esses marcos da Fase 1.
+Nenhuma implementação funcional oficial foi criada durante os marcos da Fase 1.
