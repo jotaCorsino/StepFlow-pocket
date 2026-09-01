@@ -32,14 +32,14 @@ Consolidado até aqui:
 - códigos `AT-000001` / `EQP-000001`;
 - geração documental, exportação, impressão, Ficha compacta, naming e temporários;
 - validação técnica final do Bloco 10;
-- Backup/Restore consolidado até D11.103: envelope, consistência, catálogo/retenção, Restore/safety/compatibilidade, restart/sessões, disaster recovery, capacidades e auditoria;
+- Backup/Restore técnico consolidado em D11.1–D11.116;
 - contrato Pocket preservado como gate superior.
 
 ### Bloco 11 — Backup / Restore técnico
 
-**EM VALIDAÇÃO FINAL — Análise 7.**
+**TECNICAMENTE CONCLUÍDO em 2026-09-01.**
 
-Já aprovados:
+Resultados:
 
 - estado recuperável e pacote `.stepflow-backup`;
 - snapshot SQLite via Online Backup API;
@@ -48,22 +48,19 @@ Já aprovados:
 - catálogo reconstruível e retenção sem scheduler/por quantidade;
 - coordenação administrativa de Backup/Restore/migration;
 - Restore com revalidação integral, migrations forward, safety backup e troca lógica de `data/`;
+- safety barrier contínuo até o primeiro rename no `pre_restore`;
 - journal de Restore, reconciliação antes de readiness, rollback conhecido/`uncertain`;
 - fresh Host e invalidação de sessões após fase destrutiva;
-- disaster recovery local/controlado pelo Controller sem listener normal;
-- Backup para ADM/Gerência e Restore ADM-only;
-- auditoria administrativa fora de `data/`.
-
-Em revisão final:
-
-- continuidade do safety barrier até o primeiro rename;
-- revalidação final do candidato;
-- canonicalização Windows dos paths;
+- disaster recovery local/transitório pelo Controller;
+- Backup permitido a ADM/Gerência e Restore restrito a ADM;
+- auditoria administrativa que atravessa Restore;
+- canonicalização Windows e bloqueio de paths ambíguos/perigosos;
 - provenance por `source_deployment_id`;
-- limites estruturais de parser/extração;
-- política explícita de criptografia/assinatura no baseline;
-- limite entre disaster recovery local e proteção offsite;
-- gates de adapter/filesystem/ACL/EDR/crash.
+- parser/extração bounded;
+- baseline sem criptografia ou assinatura application-level;
+- gates Win32/filesystem/ACL/EDR/long paths/crash antes de produção.
+
+Não há bloqueador arquitetural conhecido para o mecanismo. Parâmetros numéricos finais ficam no Bloco 12.
 
 Fonte: `bloco-11-backup-restauracao.md` e análises específicas 3–7.
 
@@ -76,6 +73,7 @@ Fechará:
 - parâmetros técnicos finais ainda abertos;
 - estrutura oficial do repositório;
 - migrations/scripts/testes iniciais;
+- configuração/defaults/fixtures mensuráveis;
 - sincronização segura do checkout local;
 - plano executável da Fase 2.
 
@@ -134,7 +132,7 @@ DOCX específico da Ficha não é requisito inicial.
 - Controller/Host sob demanda;
 - Launcher no share + Client local versionado;
 - zero instalação/manualidade por estação;
-- Backup/Restore;
+- implementação dos contratos D11.1–D11.116 de Backup/Restore;
 - disaster recovery local;
 - logs/auditoria operacional;
 - documentação de implantação;
@@ -153,11 +151,11 @@ Segurança/autorização, recuperação de falha/banco, Backup/Restore, concorr�
 - parâmetros finais Argon2/senha/sessão/token;
 - Gerência × configuração da empresa;
 - regra editorial de categoria arquivada;
-- valor/default final de retenção de backups;
+- parâmetros numéricos de retenção/tamanho/espaço/timeouts;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
-- SMB/impressoras/ACL/EDR corporativos;
-- gates de filesystem/rename/journal/crash do Bloco 11.
+- SMB/impressoras/filesystem/ACL/EDR corporativos;
+- adapter Win32 e crash injection de Backup/Restore.
 
 ## Regra do roadmap
 
