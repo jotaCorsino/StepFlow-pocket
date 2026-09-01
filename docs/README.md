@@ -56,7 +56,7 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 - `README.md` — índice das superfícies;
 - `01-login.md` a `15-estados-transversais.md` — contratos UX consolidados;
-- `13-backup-restauracao.md` — UX de Backup/Restore;
+- `13-backup-restauracao.md` — UX de Backup/Restore sincronizada com o Bloco 11;
 - `14-exportacao-impressao-ficha.md` — UX documental e Ficha compacta.
 
 ### Arquitetura — `03-arquitetura`
@@ -78,11 +78,12 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `bloco-9-atendimentos-execucao-checklist.md` — contrato operacional consolidado;
 - `bloco-10-exportacao-impressao-ficha.md` — mapa técnico consolidado do Bloco 10;
 - `bloco-10-etapa-11-validacao-tecnica-final.md` — matriz técnica final do Bloco 10;
-- `bloco-11-backup-restauracao.md` — mapa principal do Bloco 11 em análise;
+- `bloco-11-backup-restauracao.md` — mapa principal do Bloco 11 em validação final;
 - `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — Análise 3 aprovada: catálogo, retenção e coordenação;
 - `bloco-11-analise-4-restore-safety-compatibilidade.md` — Análise 4 aprovada: Restore, safety backup e compatibilidade;
 - `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — Análise 5 aprovada: restart, sessões, reconexão e falhas;
-- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — proposta da Análise 6: disaster recovery, capacidades e auditoria;
+- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — Análise 6 aprovada: disaster recovery, capacidades e auditoria;
+- `bloco-11-analise-7-validacao-tecnica-final.md` — proposta da validação técnica final;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -100,6 +101,6 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 ## Estado atual
 
-A **Fase 1 permanece em andamento**. Blocos 0–10 estão documentalmente encerrados; no Bloco 11, Análises 1–5 estão aprovadas e a Análise 6 está em revisão. A Análise 7 fará a validação técnica final antes do Bloco 12.
+A **Fase 1 permanece em andamento**. Blocos 0–10 estão documentalmente encerrados; no Bloco 11, Análises 1–6 estão aprovadas e a Análise 7 está em revisão com P11.104–P11.116. O Bloco 12 fecha estrutura oficial e plano da Fase 2.
 
 Nenhuma implementação funcional oficial foi iniciada.
