@@ -82,7 +82,7 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — restart, sessões, reconexão e falhas;
 - `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — disaster recovery, capacidades e auditoria;
 - `bloco-11-analise-7-validacao-tecnica-final.md` — validação técnica final e D11.104–D11.116;
-- `bloco-12-estrutura-oficial-plano-fase-2.md` — Bloco 12 em análise; estrutura oficial, publicação Pocket, parâmetros e plano da Fase 2;
+- `bloco-12-estrutura-oficial-plano-fase-2.md` — Bloco 12 em análise; estrutura oficial, proposta de publicação Pocket, parâmetros e plano da Fase 2;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
