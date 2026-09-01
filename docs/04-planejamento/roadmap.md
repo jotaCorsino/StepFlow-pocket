@@ -15,52 +15,58 @@ Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e
 
 **EM ANDAMENTO — Bloco 12 em análise.**
 
-Consolidado até aqui:
+Consolidado:
 
 - Client Windows/Tauri;
 - Host Pocket sob demanda;
 - Launcher/distribuição Pocket;
 - comunicação HTTP/JSON + WebSocket;
-- autenticação/sessão/autorização no núcleo;
+- autenticação/sessão/autorização, incluindo parâmetros D12.56–D12.62;
 - modelo de dados/migrations/histórico conceitual;
 - concorrência/fila/conflitos/eventos;
 - domínio `Procedimento × Atendimento/Execução × Equipamento`;
 - categorias configuráveis/múltiplas;
-- UI/UX das Telas 01–15;
+- UI/UX Telas 01–15;
 - lifecycle operacional de Atendimentos;
-- checklist persistente e observação de serviço por Etapa;
+- checklist persistente e observação por Etapa;
 - códigos `AT-000001` / `EQP-000001`;
-- geração documental, exportação, impressão, Ficha compacta, naming e temporários;
-- Backup/Restore técnico D11.1–D11.116;
+- geração documental, exportação, impressão, Ficha, naming e temporários;
+- Backup/Restore D11.1–D11.116;
 - estrutura/publicação D12.1–D12.18;
 - workspace/build/dependências D12.19–D12.34;
 - migrations/scripts/testes/fixtures D12.35–D12.55;
+- parâmetros finais D12.56–D12.79;
 - contrato Pocket preservado como gate superior.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
 **EM ANÁLISE.**
 
-Análises 1–3 aprovadas — D12.1–D12.55:
+Análises 1–4 aprovadas — D12.1–D12.79:
 
-- workspace Rust modular e publicação Pocket com `StepFlow.exe` como entrada única;
+- workspace Rust modular e publicação com `StepFlow.exe` na raiz + `_internal/` técnico;
 - Client em ES modules e sem Node/bundler no baseline;
 - toolchain/lockfile/dependências/configuração/packaging reproduzíveis;
-- migrations Host-side imutáveis, embutidas e verificadas por checksum;
-- `pre_migration` backup + lote transacional + validação de integridade/FKs;
+- migrations Host-side imutáveis/embutidas e verificadas;
 - testes em SQLite temporário real e fixtures sintéticas;
-- scripts finos de check/test/build/package;
+- parâmetros finais de senha/sessão, empresa/categoria, Backup/Restore, reconexão e logs fechados;
 - nenhuma autorização de scaffold antes do gate final do Bloco 12.
 
-Análise 4 em revisão — P12.56–P12.79:
+Análise 5 em revisão — P12.80–P12.98:
 
-- segurança de senha/sessão;
-- configuração da empresa e categoria arquivada;
-- parâmetros numéricos de Backup/Restore;
-- timeouts/reconexão/readiness;
-- rotação de logs/admin audit.
+```text
+Gate Fase 1 + sync local seguro
+→ F2-T01 workspace/tooling + Host mínimo
+→ F2-T02 Host runtime/readiness
+→ F2-T03 SQLite + migrations runner
+→ F2-T04 Controller lifecycle
+→ F2-T05 Client Tauri + compatibilidade
+→ F2-T06 Launcher Pocket
+→ F2-T07 packaging Pocket
+→ F2-T08 smoke integrado + gates Windows/Pocket
+```
 
-Depois dela, resta fechar o plano executável da Fase 2 e o gate final da Fase 1.
+Após a decisão da Análise 5, resta a validação final da Fase 1, gate Git, sincronização segura do checkout local e autorização do primeiro scaffold.
 
 ## Fase 2 — Fundação técnica executável
 
@@ -68,16 +74,17 @@ Depois dela, resta fechar o plano executável da Fase 2 e o gate final da Fase 1
 
 Resultados esperados:
 
-- árvore oficial Client/Launcher/Controller/Host;
-- builds reproduzíveis;
-- configuração de desenvolvimento;
-- comunicação mínima + health/readiness;
+- workspace/build/tooling oficiais;
+- Host mínimo com configuração/logging/health/readiness;
 - SQLite + runner de migrations determinístico;
-- logging mínimo;
-- testes de fundação;
-- PoCs/gates técnicos exigidos pela Fase 1, incluindo fallback WebView2 Pocket quando necessário.
+- Controller com lifecycle bounded e sem serviço/watchdog;
+- Client Tauri vanilla local e compatibilidade mínima com Host;
+- Launcher que prepara/executa Client em `%LOCALAPPDATA%` sem admin/instalador/Internet;
+- packaging `StepFlow.exe + _internal/`;
+- smoke integrado e gates Pocket/Windows da fundação;
+- PoC de fallback WebView2 somente se necessário.
 
-Gate: Client abre sem instalação manual, Host inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build limpo passa.
+Gate: Client abre pelo fluxo Pocket, Host inicia sob demanda, banco inicializa deterministicamente, Controller encerra sem processo residual, packaging é reproduzível e build/testes limpos passam.
 
 ## Fase 3 — Autenticação, usuários e shell
 
@@ -116,12 +123,8 @@ DOCX específico da Ficha não é requisito inicial.
 **PENDENTE.**
 
 - pacote central por pasta;
-- `StepFlow.exe` na raiz como Launcher amigável;
-- artefatos técnicos encapsulados sob `_internal/`;
-- Controller/Host sob demanda;
-- Client local versionado;
-- zero instalação/manualidade por estação;
-- implementação dos contratos D11.1–D11.116 de Backup/Restore;
+- evolução da distribuição Pocket além da fundação da Fase 2;
+- implementação completa D11.1–D11.116 de Backup/Restore;
 - disaster recovery local;
 - logs/auditoria operacional;
 - documentação de implantação;
@@ -137,7 +140,7 @@ Segurança/autorização, recuperação de falha/banco, Backup/Restore, concorr�
 
 ## Pendências transversais
 
-- P12.56–P12.79 até decisão do PO;
+- P12.80–P12.98 até decisão do PO;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
 - SMB/impressoras/filesystem/ACL/EDR corporativos;
