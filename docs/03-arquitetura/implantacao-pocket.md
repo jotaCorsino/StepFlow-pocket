@@ -1,7 +1,7 @@
 # Implantação Pocket — Máquina Central e Estações
 
 **Status:** REQUISITO ARQUITETURAL CONSOLIDADO  
-**Atualização:** 2026-08-29
+**Atualização:** 2026-09-01
 
 ## Princípio central
 
@@ -19,10 +19,13 @@ pacote StepFlow pronto
 
 estação autorizada
 → acessar compartilhamento
-→ executar StepFlowLauncher.exe
-→ preparação local automática
+→ executar StepFlow.exe na raiz
+→ Launcher prepara/valida o Client local
 → Client abre
+→ Launcher encerra
 ```
+
+`StepFlow.exe` é o Launcher empacotado com nome/ícone amigáveis e é o único ponto de entrada normal apresentado ao usuário.
 
 ## Contrato Pocket
 
@@ -34,7 +37,8 @@ Pocket significa, simultaneamente:
 - sem instalador tradicional obrigatório;
 - sem toolchain de desenvolvimento;
 - sem serviço StepFlow persistente;
-- ciclo central iniciado/encerrado sob demanda.
+- ciclo central iniciado/encerrado sob demanda;
+- artefatos centrais encapsulados na estrutura técnica da publicação.
 
 ### Nas estações
 
@@ -43,9 +47,10 @@ Pocket significa, simultaneamente:
 - sem configuração manual de runtime/dependência;
 - sem privilégio administrativo no uso normal;
 - sem Internet obrigatória durante o uso normal;
-- usuário entra no compartilhamento e executa o Launcher;
+- usuário entra no compartilhamento e executa `StepFlow.exe` na raiz;
 - Launcher prepara/atualiza o Client local automaticamente;
-- Client operacional roda localmente, não permanentemente do SMB.
+- Client operacional roda localmente, não permanentemente do SMB;
+- usuário não precisa navegar por executáveis/pastas técnicas para descobrir como iniciar.
 
 Qualquer solução que exija instalação, elevação ou preparação manual por estação não atende ao contrato Pocket e exige redesign ou decisão explícita do PO.
 
@@ -74,27 +79,40 @@ Regras:
 
 Qualquer exceção futura exige mudança explícita do requisito pelo PO.
 
-## Estrutura controlada da máquina central
+## Estrutura controlada da publicação
 
 ```text
 StepFlow\
-├── app\
-├── config\
-├── data\
-├── logs\
-└── backups\
+├── StepFlow.exe
+└── _internal\
+    ├── client\
+    │   ├── manifest.json
+    │   ├── deployment.json
+    │   └── releases\
+    └── server\
+        ├── app\
+        ├── config\
+        ├── data\
+        ├── logs\
+        └── backups\
 ```
+
+Na máquina central, o subdiretório `_internal/server/` é a raiz lógica dos artefatos e estado central:
 
 - `app/` contém artefatos substituíveis;
 - `config/`, `data/`, `logs/` e `backups/` são preservados entre atualizações;
 - paths reais ainda dependem do ambiente corporativo;
 - preferir caminhos relativos à raiz da implantação quando apropriado.
 
+`_internal/` é encapsulamento organizacional. Atributo Hidden/System pode ser aplicado pelo packaging apenas como acabamento visual, nunca como condição de segurança, integridade ou funcionamento.
+
+`.lnk` não é requisito baseline. A entrada portátil é o próprio `StepFlow.exe` da raiz.
+
 ## Host Pocket
 
 O Host é um papel/processo da arquitetura, não um serviço permanente.
 
-A direção vigente é `StepFlowController.exe` iniciar `StepFlowHost.exe` como processo-filho na máquina central, aguardar readiness, impedir segunda instância sobre os mesmos dados e coordenar shutdown gracioso.
+A direção vigente é `_internal/server/app/StepFlowController.exe` iniciar `_internal/server/app/StepFlowHost.exe` como processo-filho na máquina central, aguardar readiness, impedir segunda instância sobre os mesmos dados e coordenar shutdown gracioso.
 
 Detalhes em `host-pocket.md`.
 
@@ -110,12 +128,13 @@ Experiência do técnico:
 
 ```text
 share interno
-→ duplo clique em StepFlowLauncher.exe
-→ validar manifest/deployment
-→ validar/copy versão local
-→ validar recursos locais necessários
-→ iniciar Client local
-→ launcher encerra
+→ duplo clique em StepFlow.exe
+→ Launcher localiza _internal/client/ relativamente à própria pasta publicada
+→ valida manifest/deployment
+→ valida/copia versão local
+→ valida recursos locais necessários
+→ inicia Client local
+→ Launcher encerra
 ```
 
 Diretório operacional previsto:
@@ -148,8 +167,8 @@ Se uma estação que deva ser suportada não puder receber o fallback de modo au
 ```text
 encerrar processos StepFlow
 → backup quando necessário
-→ substituir/ativar artefatos de app/
-→ preservar dados/configuração
+→ substituir/ativar artefatos de _internal/server/app/
+→ preservar _internal/server/data|config|logs|backups
 → iniciar novamente
 → validar readiness
 ```
@@ -157,7 +176,7 @@ encerrar processos StepFlow
 ### Client
 
 ```text
-publicar nova versão na pasta central
+publicar nova versão em _internal/client/releases/
 → Launcher detecta versão
 → copia para nova pasta local
 → valida SHA-256
@@ -186,16 +205,17 @@ Quanto maior a interferência, menor a aderência ao Pocket.
 ## Validações de ambiente real
 
 - caminho/permissões SMB;
-- política de execução de Launcher vindo do share;
+- política de execução do `StepFlow.exe`/Launcher vindo do share;
 - Windows 10/11 reais;
 - WebView2 Evergreen;
 - PoC de fallback local WebView2 sem elevação/manualidade;
 - antivírus/EDR;
 - múltiplas estações;
-- comportamento sem Internet.
+- comportamento sem Internet;
+- comportamento opcional de ocultação de `_internal/`, se usado pelo packaging.
 
 Fora da LAN corporativa, registrar `NÃO APLICÁVEL NESTE AMBIENTE` em vez de inventar resultado.
 
 ## Regra final
 
-**O servidor existe antes do StepFlow e continuará existindo independentemente dele. O usuário deve poder acessar a pasta publicada e iniciar o StepFlow sem instalar ou preparar manualmente a estação. O StepFlow adapta-se ao ambiente; não remodela o ambiente para recebê-lo.**
+**O servidor existe antes do StepFlow e continuará existindo independentemente dele. O usuário deve poder acessar a pasta publicada, identificar imediatamente `StepFlow.exe` e iniciar o produto sem instalar, procurar executável técnico ou preparar manualmente a estação. O StepFlow adapta-se ao ambiente; não remodela o ambiente para recebê-lo.**

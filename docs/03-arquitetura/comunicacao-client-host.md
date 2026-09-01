@@ -1,7 +1,7 @@
 # Comunicação StepFlow Client ↔ Host
 
 **Status:** CONSOLIDADO PARA A FASE 1  
-**Atualização:** 2026-08-31
+**Atualização:** 2026-09-01
 
 ## Tecnologias
 
@@ -10,7 +10,7 @@
 - contratos versionados, inicialmente `/api/v1`;
 - Host em Rust/Axum/Tokio.
 
-O WebSocket sinaliza mudanças; o estado oficial continua sendo confirmado pela API e pelo banco coordenado pelo Host.
+O WebSocket sinaliza mudanças; o estado oficial continua confirmado pela API e pelo banco coordenado pelo Host.
 
 ## Descoberta/configuração
 
@@ -18,13 +18,15 @@ O Client recebe `deployment.json` junto da distribuição local. Ele contém som
 
 ```json
 {
-  "deployment_id": "empresa-interna",
+  "deployment_id": "<DEPLOYMENT-ID>",
   "host_base_url": "http://<HOST-INTERNO>:<PORTA>",
   "api_contract_major": 1
 }
 ```
 
-Endereço/porta reais são configuração da implantação, não hardcode do build. Credenciais/tokens não entram nesse arquivo.
+Endpoint real é configuração da implantação, não hardcode do build. Credenciais/tokens não entram nesse arquivo.
+
+Template/fixture versionado não deve virar configuração de produção silenciosamente. A materialização do `deployment.json` real de implantação está fechada na validação final do Bloco 12.
 
 ## Inicialização
 
@@ -33,10 +35,12 @@ Client inicia
 → lê deployment.json
 → consulta compatibilidade do Host
 → valida contrato/versão
-→ login
+→ login quando a fase de autenticação estiver implementada
 → sessão autenticada
 → HTTP/JSON + WebSocket
 ```
+
+Na fundação da Fase 2, o Client usa somente a consulta HTTP mínima de compatibilidade; WebSocket operacional autenticado entra junto da sessão/autorização apropriada.
 
 ## Contrato HTTP
 
@@ -45,7 +49,7 @@ Client inicia
 - autorização sempre no Host;
 - escrita só retorna sucesso após commit;
 - mutações versionadas carregam revisão/base esperada;
-- retries automáticos não podem duplicar comando não idempotente;
+- retries automáticos não duplicam comando não idempotente;
 - requests relevantes podem carregar `request_id`;
 - operações críticas podem usar `command_id`/idempotency key quando justificadas.
 
@@ -61,21 +65,6 @@ Categorias base de erro:
 - `PERSISTENCE_ERROR`;
 - `INTERNAL_ERROR`.
 
-Códigos específicos de domínio, manutenção e recovery podem estender essa taxonomia.
-
-Envelope conceitual:
-
-```json
-{
-  "error": {
-    "code": "REVISION_CONFLICT",
-    "message": "O recurso foi alterado por outro usuário.",
-    "request_id": "...",
-    "details": {}
-  }
-}
-```
-
 Não expor stack trace, SQL, paths internos ou segredos ao Client.
 
 ## Compatibilidade Client ↔ Host
@@ -86,22 +75,10 @@ Incompatibilidade bloqueia uso normal e orienta reabertura pelo Launcher para ob
 
 ## Eventos WebSocket
 
-Envelope conceitual:
-
-```json
-{
-  "event_id": "...",
-  "type": "process.updated",
-  "resource_id": "...",
-  "revision": 42,
-  "occurred_at": "..."
-}
-```
-
 Princípios:
 
 - eventos somente após commit;
-- evitar payload sensível/desnecessário;
+- payload mínimo e não sensível;
 - Client normalmente invalida/reconsulta recurso;
 - revisão ajuda a ignorar evento antigo;
 - autorização do canal segue sessão;
@@ -111,60 +88,52 @@ Princípios:
 
 Ao perder WebSocket:
 
-1. Client tenta reconectar com backoff limitado;
+1. Client tenta reconectar com backoff bounded;
 2. ao reconectar, revalida/reconsulta estado relevante;
 3. não presume replay completo de eventos perdidos;
 4. nenhuma escrita é considerada confirmada sem resposta ou reconciliação.
 
-### Manutenção/Restore
+Defaults D12.72–D12.73:
 
-Consolidado no Bloco 11:
+```text
+connect_timeout = 5 s
+common_request_timeout = 30 s
+websocket_reconnect = 1, 2, 4, 8, 15, 30 s (cap)
+jitter = ±20%
+backoff_reset_after_stable = 60 s
+```
 
-- aviso/evento de manutenção antes da troca física é best-effort; a segurança não depende de todos os Clients recebê-lo;
-- queda da conexão durante Restore não significa sucesso nem falha;
-- Restore aplicado ou rollback depois da fase destrutiva passa por fresh Host antes de readiness normal;
-- enquanto recovery estiver pendente, normal readiness e uso autenticado permanecem indisponíveis;
-- depois do fresh Host, token pré-Restore é rejeitado e o usuário precisa autenticar novamente;
-- após novo login, Client refaz consultas do estado atual;
-- resultado do Restore é reconsultado por estado confirmado; não é inferido da desconexão.
-
-Fonte: `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
-
-## Timeouts e backoff
-
-Valores numéricos não são congelados na Fase 1 sem medição.
-
-A implementação deve definir por benchmark/fixtures:
-
-- timeout de conexão;
-- timeout de operação comum;
-- timeout/política própria de operações longas;
-- backoff de reconexão;
-- limites coerentes com LAN real e experiência do usuário.
+Esses valores pertencem ao serviço de comunicação do Client e não ficam espalhados pela UI.
 
 Após timeout de mutação, não repetir cegamente. Reconciliar estado primeiro.
 
+### Manutenção/Restore
+
+- aviso/evento de manutenção antes da troca física é best-effort;
+- queda da conexão durante Restore não significa sucesso nem falha;
+- Restore aplicado ou rollback depois da fase destrutiva passa por fresh Host;
+- enquanto recovery estiver pendente, readiness normal fica indisponível;
+- depois do fresh Host, token pré-Restore é rejeitado;
+- após novo login, Client refaz consultas;
+- resultado do Restore é reconsultado, nunca inferido da desconexão.
+
 ## Operações longas
 
-Geração documental e Backup/Restore podem usar contratos próprios de operação.
+Geração documental e Backup/Restore usam contratos próprios:
 
-- não inventar percentual quando não houver progresso real;
-- fechar um Client não implica automaticamente cancelar operação Host-side já aceita;
-- operação persistente/administrativa deve permitir reconsulta do estado quando seu contrato exigir;
+- não inventar percentual sem progresso real;
+- fechar Client não cancela automaticamente operação Host-side já aceita;
+- operação persistente/administrativa permite reconsulta quando seu contrato exigir;
 - `SERVER_BUSY`/backpressure é preferível a fila ilimitada;
-- `uncertain/RECOVERY_REQUIRED` de Restore não é convertido em sucesso por timeout nem por retorno parcial da API.
+- `uncertain/RECOVERY_REQUIRED` não vira sucesso por timeout.
 
 ## Sem modo offline de edição
 
-Na primeira versão, Host indisponível significa sistema oficial indisponível para login/dados/mutações.
-
-Não enfileirar alterações locais para sincronização posterior nem tratar cache como fonte oficial.
+Host indisponível significa sistema oficial indisponível para login/dados/mutações. Não enfileirar alterações locais para sincronização posterior nem tratar cache como fonte oficial.
 
 ## Transporte
 
-A escolha final entre HTTP controlado, HTTPS/certificado interno, reverse proxy corporativo existente ou equivalente depende da infraestrutura real.
-
-Não instalar stack pesada apenas para o StepFlow e não hardcodar PKI/domínio antes da validação corporativa.
+A escolha entre HTTP controlado, HTTPS/certificado interno, reverse proxy corporativo existente ou equivalente depende da infraestrutura real. Não instalar stack pesada apenas para o StepFlow nem hardcodar PKI/domínio antes da validação corporativa.
 
 ## Diagnóstico
 

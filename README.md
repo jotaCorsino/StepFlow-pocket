@@ -5,9 +5,9 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 ## Painel de acompanhamento
 
 **Atualização:** 2026-09-01  
-**Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Checkpoint atual:** Bloco 11 — Backup / Restauração técnico consolidado na proposta do PR #26  
-**Próximo passo:** gate final do PR #26; após remoto limpo, abrir Bloco 12 — Estrutura oficial + plano da Fase 2  
+**Fase atual:** Fase 1 — documental e tecnicamente concluída  
+**Checkpoint atual:** Bloco 12 consolidado — D12.1–D12.108  
+**Transição pendente:** gate Git → remoto limpo → sync local seguro → autorização F2-T01  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -19,18 +19,16 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 | 2 | Host Pocket | ✅ Concluído |
 | 3 | Launcher / distribuição | ✅ Concluído |
 | 4 | Comunicação Client ↔ Host | ✅ Concluído |
-| 5 | Autenticação / autorização | ✅ Núcleo concluído; parâmetros finais pendentes |
-| 6 | Dados / schema / migrations | ✅ Núcleo + extensão operacional conceitual consolidados |
-| 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
+| 5 | Autenticação / autorização | ✅ Concluído |
+| 6 | Dados / schema / migrations | ✅ Concluído |
+| 7 | Concorrência / fila / eventos | ✅ Concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
 | 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
-| 11 | Backup / restauração | ✅ Tecnicamente consolidado; gate Git pendente |
-| 12 | Estrutura oficial + plano da Fase 2 | ⏳ Pendente |
+| 11 | Backup / restauração | ✅ Concluído |
+| 12 | Estrutura oficial + plano da Fase 2 | ✅ Concluído — D12.1–D12.108 |
 
 ## Produto
-
-O domínio separa:
 
 ```text
 Procedimento
@@ -40,78 +38,65 @@ Atendimento / Execução
 Equipamento
 ```
 
-Princípios centrais:
-
-- Procedimentos são documentação oficial versionada;
-- Atendimentos registram ocorrências reais de trabalho;
-- Equipamento é opcional e reutilizável;
-- Reader usa experiência de manual/livro, com uma Etapa por página lógica;
-- checklist persistente existe somente no contexto de Atendimento;
-- `Observação do serviço` por Etapa é opcional e operacional;
-- Ficha compacta é prestação de contas resumida ao cliente;
-- UI privilegia clareza e baixa densidade textual.
+Procedimentos são documentação oficial versionada; Atendimentos registram trabalho real; Equipamento é opcional/reutilizável. Reader usa experiência de manual/livro, checklist persistente existe somente em Atendimento e a Ficha é prestação de contas resumida ao cliente.
 
 ## Contrato Pocket
 
-O StepFlow deve ser publicado como **pasta pronta em um servidor Windows** e usado pelas estações autorizadas sem instalação individual do aplicativo.
-
 ```text
 pasta publicada no servidor
-→ usuário acessa o compartilhamento
-→ executa StepFlowLauncher.exe
-→ Launcher prepara/valida o Client em %LOCALAPPDATA%
+→ usuário acessa compartilhamento
+→ executa StepFlow.exe na raiz
+→ Launcher prepara/valida Client em %LOCALAPPDATA%
 → Client abre localmente
+→ Launcher encerra
 ```
 
-É obrigatório no uso normal:
+`StepFlow.exe` é o único ponto de entrada normal. A árvore técnica publicada fica sob `_internal/`. Uso normal exige zero instalador por estação, zero preparação manual/admin/toolchain/Internet obrigatória e Client local em vez de execução permanente por SMB.
 
-- zero instalador tradicional por estação;
-- zero preparação manual de dependências;
-- zero elevação administrativa;
-- nenhuma toolchain de desenvolvimento em produção;
-- nenhuma Internet obrigatória;
-- Client operacional local, não executado permanentemente pelo SMB.
+## Bloco 12 — contrato final
 
-O Controller/Host continua sob demanda na máquina central. WebView2 não pode enfraquecer o contrato Pocket; detalhes ficam nos documentos de implantação, Launcher e compatibilidade Windows.
+**D12.1–D12.108 aprovadas.**
 
-## Bloco 11 — contrato técnico consolidado
+- source tree modular `apps/`/`crates/`;
+- publicação `StepFlow.exe + _internal/`;
+- Rust 1.98.0 + Edition 2024 + resolver 3;
+- toolchain/lockfile versionados;
+- Client vanilla sem Node/bundler;
+- migrations Host-side imutáveis/embutidas com checksum;
+- testes em SQLite temporário real e fixtures sintéticas;
+- parâmetros finais de autenticação, Empresa/Categorias e Backup/Restore fechados;
+- Fase 2 planejada em F2-T01…F2-T08, uma branch/PR por tarefa;
+- `deployment.json` de produção exige input explícito;
+- sync local usa fast-forward seguro e nunca descarte automático;
+- gates corporativos ficam para as etapas executáveis aplicáveis;
+- nenhum merge documental autoriza scaffold automaticamente.
 
-Decisões vigentes na branch do PR #26: **D11.1–D11.116**.
+## Transição para Fase 2
 
-Fechado:
-
-- pacote `.stepflow-backup` e estado recuperável;
-- Online Backup API + consistência com arquivos administrados;
-- catálogo, retenção e lease administrativo;
-- Restore com safety backup, staging, migrations forward e rollback/`uncertain`;
-- journal, fresh Host, invalidação de sessões e recovery após crash;
-- disaster recovery local/transitório pelo Controller;
-- Backup para ADM/Gerência e Restore ADM-only;
-- auditoria administrativa externa ao `data/`;
-- safety barrier contínuo no `pre_restore`;
-- canonicalização Windows, provenance por `source_deployment_id` e parser bounded;
-- baseline sem criptografia/assinatura application-level;
-- gates de filesystem/ACL/EDR/long paths/crash antes de produção.
-
-Fonte: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
+```text
+fechar PR/branch do Bloco 12
+→ verificar remoto limpo
+→ sincronizar C:\dev\StepFlow com segurança
+→ PO autoriza F2-T01
+→ pré-flight + prompt Codex F2-T01
+```
 
 ## Fontes de verdade
 
-- `AGENTS.md` — governança e regras de execução;
-- `docs/README.md` — índice e ownership documental;
-- `docs/05-progresso/registro-de-decisoes.md` — decisões vigentes e pendências;
-- `docs/04-planejamento/plano-oficial-fase-1.md` — estado da Fase 1;
-- `docs/04-planejamento/roadmap.md` — fases do projeto;
-- documentos específicos de Produto, Telas e Arquitetura — contratos detalhados.
+- `AGENTS.md` — governança;
+- `docs/README.md` — índice;
+- `docs/05-progresso/registro-de-decisoes.md` — decisões vigentes;
+- `docs/04-planejamento/plano-oficial-fase-1.md` — encerramento/gates;
+- `docs/04-planejamento/roadmap.md` — fases;
+- documentos específicos de Produto/Telas/Arquitetura — contratos detalhados.
 
-## Pendências principais da Fase 1
+## Pendências operacionais
 
-- parâmetros finais de autenticação/sessão;
-- Gerência × configuração da empresa;
-- regra editorial de categoria arquivada;
-- Bloco 12 — estrutura oficial, parâmetros numéricos finais e plano da Fase 2;
-- validações corporativas de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR no momento apropriado.
+- gate Git do Bloco 12 e remoção da branch;
+- sincronização segura do checkout local;
+- autorização explícita da F2-T01;
+- gates corporativos nas fases técnicas correspondentes.
 
 ## Regra deste painel
 
-O README mostra somente o estado executivo. Decisões detalhadas não devem ser duplicadas aqui; o painel aponta para a fonte específica vigente.
+O README mostra somente estado executivo. Decisões detalhadas pertencem às fontes específicas.

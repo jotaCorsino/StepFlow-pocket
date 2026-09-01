@@ -7,276 +7,192 @@
 
 ## Objetivo
 
-Fechar o contrato técnico de Backup/Restore antes da estrutura oficial e da Fase 2, sem criar implementação funcional nesta etapa.
+Contrato técnico de Backup/Restore. A UX permanece em `../02-telas/13-backup-restauracao.md`.
 
-A UX permanece definida em `../02-telas/13-backup-restauracao.md`.
+Decisões vigentes: **D11.1–D11.116**. Parâmetros numéricos iniciais complementares: **D12.66–D12.75**.
 
-## Estado das análises
+## Estado recuperável e envelope — D11.1–D11.10
 
-| Análise | Tema | Estado |
-|---|---|---|
-| 1 | Estado recuperável + envelope | ✅ Aprovada |
-| 2 | Consistência + escrita/promoção/verificação | ✅ Aprovada |
-| 3 | Catálogo + retenção + coordenação administrativa | ✅ Aprovada |
-| 4 | Restore + safety backup + compatibilidade | ✅ Aprovada |
-| 5 | Restart + sessões + reconexão + falhas | ✅ Aprovada |
-| 6 | Disaster recovery + capacidades + auditoria | ✅ Aprovada |
-| 7 | Validação técnica final | ✅ Aprovada |
-
-Decisões vigentes: **D11.1–D11.116**.
-
-## 1. Estado recuperável e envelope — D11.1–D11.10
-
-Backup normal protege estado da aplicação, não a implantação inteira:
+Backup protege, relativamente à raiz central `data/`:
 
 ```text
-data\stepflow.sqlite
-data\company\**
-data\avatars\**
+stepflow.sqlite
+company/**
+avatars/**
 ```
 
-Ficam fora `app/`, `config/`, `logs/`, `backups/`, exportações, temporários e Client local.
+Ficam fora binários, config, logs, backups, exportações, temporários e Client local.
 
-Baseline:
-
-- pacote único imutável `.stepflow-backup`;
-- ZIP padrão `Stored`;
+- pacote único `.stepflow-backup`;
+- ZIP `Stored`;
 - `manifest.json` versionado;
 - payload allowlisted;
 - SHA-256 por entrada;
 - SQLite via Online Backup API;
-- staging precede promoção;
+- staging antes da promoção;
 - parcial nunca é backup válido.
 
-## 2. Consistência e promoção — D11.11–D11.25
-
-Consistência abrange SQLite + arquivos administrados.
-
-Backup normal:
+## Consistência e promoção — D11.11–D11.25
 
 ```text
 BACKUP_CAPTURE
 → suspender novas mutações
 → drenar mutações aceitas
-→ ponto quiescente
 → capturar SQLite + company/** + avatars/**
 → liberar mutações
-→ hash/ZIP/verificação/promoção fora do barrier
+→ hash/ZIP/verificação/promoção
 ```
 
 - leituras seguras podem continuar;
-- `-wal`/`-shm` não entram no pacote;
-- criação exige `quick_check = ok` + `foreign_key_check` vazio;
+- `-wal`/`-shm` não entram;
+- `quick_check = ok` + `foreign_key_check` vazio;
 - flush explícito;
 - promoção same-volume/no-replace;
-- sucesso somente após reabertura/confirmação do arquivo final;
 - crash/falha nunca promove parcial.
 
-## 3. Catálogo, retenção e coordenação — D11.26–D11.42
+## Catálogo, retenção e coordenação — D11.26–D11.42
 
-- catálogo reconstruível dos pacotes finais, independente do banco ativo;
+- catálogo reconstruível dos pacotes finais;
 - `backup_id` é identidade canônica;
-- Restore sempre revalida integralmente;
+- Restore revalida integralmente;
 - cache de verificação somente em memória;
 - retenção sem scheduler e por quantidade;
-- valor final de `retention_max_confirmed_backups` fica para Bloco 12;
-- não apagar backup antigo antes de confirmar o novo para “abrir espaço”;
+- não apagar backup antigo antes de confirmar o novo para abrir espaço;
 - source/safety/pre-migration protegidos enquanto necessários;
-- pacote inválido/corrompido não é removido silenciosamente;
 - lease exclusivo coordena `BACKUP`, `RESTORE` e `MIGRATION`;
-- safety/pre-migration backup são suboperações do lease raiz;
 - `uncertain` suspende retenção e cleanup destrutivo.
 
-## 4. Restore, safety backup e compatibilidade — D11.43–D11.61
+Parâmetro D12:
 
-- Restore revalida envelope, hashes, paths, provenance e SQLite;
-- candidato é preparado em `data-next/` same-volume;
-- pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio;
-- compatibilidade = formato suportado + schema/migration path;
-- schema antigo somente com migrations forward completas no staging;
+```text
+retention_max_confirmed_backups = 20
+faixa configurável = 5..100
+```
+
+Campo ausente usa 20. Valor explicitamente inválido/fora da faixa não sofre clamp/fallback silencioso; a validação final do Bloco 12 fecha erro explícito de configuração.
+
+## Restore, safety backup e compatibilidade — D11.43–D11.61
+
+- revalidar envelope, hashes, paths, provenance e SQLite;
+- preparar `data-next/` same-volume;
+- `integrity_check = ok` + `foreign_key_check` vazio;
+- schema antigo somente com migrations forward completas;
 - schema mais novo/cadeia incompleta = incompatível;
 - nenhuma down migration automática;
-- safety backup confirmado é obrigatório;
-- cancelamento só antes da primeira alteração física de `data/`;
-- ativação por troca lógica `data → old`, `data-next → data`;
-- `old` permanece até validação final;
-- rollback conhecido ou `uncertain` quando não for possível provar/reverter.
+- safety backup confirmado obrigatório;
+- ativação `data → old`, `data-next → data`;
+- `old` preservado até validação final;
+- rollback conhecido ou `uncertain`.
 
-### Safety barrier final
-
-D11.18 vale para Backup normal. No `pre_restore`:
+### Safety barrier
 
 ```text
 suspender/drain mutações
 → capturar safety backup
 → manter barrier
-→ finalizar/verificar/promover safety backup
+→ finalizar/verificar/promover
 → revalidar data-next
 → DESTRUCTIVE_STARTED
 → primeiro rename
 ```
 
-Nenhuma mutação em `data/` ocorre entre a captura do safety backup e o primeiro rename.
+Nenhuma mutação em `data/` entre a captura do safety backup e o primeiro rename.
 
-## 5. Restart, sessões, reconexão e falhas — D11.62–D11.82
+## Restart, sessões, reconexão e falhas — D11.62–D11.82
 
-- journal de Restore fica fora de `data/`;
-- baseline: `backups/.operations/restore-active.json`;
-- fresh Host reconcilia Restore antes de migrations/readiness;
-- digest determinístico identifica o candidato preparado;
-- queda antes da primeira troca preserva estado original;
-- queda entre os dois renames causa rollback para `old`;
+- journal fora de `data/`, baseline `backups/.operations/restore-active.json`;
+- fresh Host reconcilia antes de migrations/readiness;
+- queda entre renames retorna para `old` quando comprovável;
 - estado não comprovável = `RECOVERY_REQUIRED/uncertain`;
-- Restore aplicado ou rollback após fase destrutiva exige fresh Host;
-- Controller pode executar relaunch bounded, sem watchdog geral;
-- fase destrutiva invalida todas as sessões/tokens anteriores;
-- conteúdo restaurado não ressuscita token antigo;
-- Clients fazem novo login após fresh Host;
-- `restore-last.json`/equivalente preserva resultado terminal mínimo;
-- `uncertain` bloqueia readiness, mutações, nova operação destrutiva, retenção e cleanup.
+- relaunch bounded, sem watchdog geral;
+- fase destrutiva invalida sessões/tokens anteriores;
+- `restore-last.json`/equivalente preserva resultado terminal;
+- `uncertain` bloqueia readiness/mutações/cleanup.
 
-## 6. Disaster recovery, capacidades e auditoria — D11.83–D11.103
+## Disaster recovery, capacidades e auditoria — D11.83–D11.103
 
-Disaster recovery é excepcional: somente quando Restore normal seguro não está disponível.
-
-Baseline:
-
-```text
-Controller local na máquina central
-→ modo Recovery transitório
-→ exclusividade da implantação
-→ sem listener normal HTTP/WebSocket
-→ validar backup administrado
-→ preparar candidato
-→ confirmação local reforçada
-→ preservar estado antigo quando possível
-→ troca controlada
-→ fresh Host normal
-→ readiness
-```
-
-Regras:
-
-- autoridade vem de acesso local controlado + ACLs + exclusividade quando o banco não autentica;
-- sem autoelevação silenciosa;
-- candidatos baseline em `backups/*.stepflow-backup`;
+- Recovery excepcional, local/transitório pelo Controller;
+- sem listener normal HTTP/WebSocket;
+- autoridade por acesso local/ACL/exclusividade quando o banco não autentica;
 - mesma integridade/compatibilidade/migrations forward do Restore normal;
-- ausência de safety backup pode ser aceita somente em disaster recovery real;
-- estado antigo pode virar `.recovery-old-<id>`, sem ser rotulado como backup íntegro;
-- Gerência e ADM podem consultar/criar Backup;
-- Restore permanece ADM-only;
-- disaster recovery local não é capability de sessão;
+- ausência de safety backup somente em disaster recovery real;
+- Backup = ADM/Gerência; Restore = ADM-only;
 - auditoria funcional quando disponível + trilha administrativa fora de `data/`;
-- baseline `logs/admin-audit.jsonl`/equivalente append-only pela aplicação, protegido por ACL;
-- journal, admin audit e logs técnicos são mecanismos distintos.
+- journal, admin audit e logs técnicos têm funções distintas.
 
-## 7. Validação técnica final — D11.104–D11.116
+## Validação técnica final — D11.104–D11.116
 
-### Revalidação final do candidato
+### Revalidação
 
-Antes de `DESTRUCTIVE_STARTED`, recalcular/verificar digest de `data-next/`, schema e root/volume. Diferença aborta antes do primeiro rename.
+Antes de `DESTRUCTIVE_STARTED`, verificar novamente digest/schema/root/volume de `data-next/`.
 
 ### Paths Windows
 
-Materialização rejeita:
+Rejeitar path absoluto/drive/UNC/device, `.`/`..`, ADS/`:`, NUL/controles, nomes reservados, trailing dot/space, colisões Windows-equivalent, duplicidade pós-canonicalização, reparse/non-regular e escape do root.
 
-- path absoluto/drive/UNC/device namespace;
-- `.`/`..`;
-- ADS/`:`;
-- NUL/controles;
-- nomes reservados Win32;
-- trailing dot/space;
-- colisões case-insensitive/Windows-equivalent;
-- duplicidade pós-canonicalização;
-- symlink/hardlink/junction/reparse/non-regular;
-- escape do root.
-
-A criação do backup aplica a mesma disciplina a `company/**` e `avatars/**`.
+Criação do backup aplica a mesma disciplina a `company/**` e `avatars/**`.
 
 ### Provenance
 
-`manifest.json` inclui `source_deployment_id`.
+`manifest.json` inclui `source_deployment_id`; pacote de deployment diferente é `source_mismatch` no baseline.
 
-Restore/Recovery baseline bloqueiam pacote de implantação diferente com `source_mismatch`. Migração intencional entre implantações exige contrato futuro.
+### Limites estruturais — D12.67–D12.70
 
-### Limites estruturais
+```text
+max_entries = 10_000
+max_total_payload = 8 GiB
+max_managed_file = 16 MiB
+max_logical_path = 512 UTF-16 code units
+max_path_component = 120 UTF-16 code units
+max_path_depth = 8
+min_free_space_reserve = 1 GiB
+backup_capture_target <= 2 s
+backup_capture_hard_limit = 10 s
+pre_restore_no_progress = 120 s
+pre_restore_total_before_destructive = 10 min
+```
 
-Parser/extração são bounded por:
+Ultrapassar limite nunca trunca dados; a operação falha com diagnóstico apropriado. Depois de `DESTRUCTIVE_STARTED`, timeout genérico não mata Restore.
 
-- quantidade de entradas;
-- tamanho individual/total;
-- comprimento/profundidade de path;
-- overflow aritmético;
-- preflight de espaço;
-- estratégia de streaming/alocação.
+### Readiness/reconexão — D12.71–D12.73
 
-Valores numéricos ficam para Bloco 12.
+```text
+readiness_timeout_per_launch = 30 s
+restore_relaunch_attempts = 3
+connect_timeout = 5 s
+common_request_timeout = 30 s
+websocket_backoff = 1/2/4/8/15/30 s + jitter ±20%
+```
+
+### Logs — D12.74–D12.75
+
+```text
+log técnico = 20 MiB + 10 archives
+admin audit = 50 MiB + 20 archives
+```
 
 ### Criptografia/autenticidade
 
-Baseline inicial:
+- sem criptografia application-level baseline;
+- sem assinatura criptográfica application-level baseline;
+- SHA-256 = integridade/corrupção, não autenticidade;
+- trust boundary = root administrado + ACLs + infraestrutura de volume + deployment ID + auditoria.
 
-- sem criptografia application-level;
-- sem assinatura criptográfica application-level;
-- SHA-256 = integridade/corrupção, não autenticidade.
+## Limite operacional e gates
 
-Trust boundary: root administrado + ACLs + infraestrutura de volume + deployment ID + auditoria.
+Backup local não promete proteção contra perda física total, ransomware com acesso ao mesmo storage ou site loss. Offsite/cópia corporativa é responsabilidade operacional externa.
 
-### Limite operacional
-
-Backup local não promete proteção contra perda física total, ransomware com acesso ao mesmo storage ou desastre de site. Offsite/cópia corporativa de `backups/` é responsabilidade operacional externa ao baseline.
-
-### Gates obrigatórios antes de produção
-
-- adapter Win32 de rename/promoção/journal;
-- filesystem real;
-- ACLs;
-- EDR/antivírus;
-- long paths;
-- pressão de espaço;
-- performance representativa;
-- crash/restart injection.
-
-Após D11.104–D11.115, **não existe bloqueador arquitetural conhecido para o Bloco 11**.
-
-## Parâmetros deliberadamente reservados ao Bloco 12
-
-- `retention_max_confirmed_backups`;
-- limites numéricos de tamanho/entradas/path;
-- margem mínima de espaço;
-- timeouts;
-- duração alvo de barrier/manutenção;
-- backoff/reconexão;
-- limiares de warning;
-- rotação física de logs/admin audit;
-- versões pinadas das crates/adapters;
-- parâmetros finais de autenticação já abertos em suas fontes.
-
-Esses parâmetros não são escolhas livres do executor.
+Antes de produção, quando aplicável: adapter Win32, filesystem real, ACLs, EDR/antivírus, long paths, espaço, performance e crash/restart injection.
 
 ## Critérios de fechamento
 
-- [x] decisões permitem implementação sem escolhas arquiteturais críticas abertas;
+- [x] decisões D11 permitem implementação sem escolha arquitetural crítica aberta;
 - [x] UX da Tela 13 permanece coerente;
-- [x] modelo de dados/migrations conhece a integração aplicável;
-- [x] contrato Pocket permanece intacto;
-- [x] parcial nunca é backup válido;
-- [x] Restore possui estados de falha/recovery;
+- [x] Restore possui safety backup/recovery/uncertain;
 - [x] disaster recovery está separado do Restore normal;
 - [x] capacidades e auditoria estão fechadas;
-- [x] validação técnica final não identificou bloqueador arquitetural conhecido;
-- [x] parâmetros numéricos foram explicitamente reservados ao Bloco 12.
-
-## Fora do escopo
-
-- implementação funcional;
-- migrations oficiais;
-- scheduler periódico;
-- serviço persistente de backup;
-- backup em nuvem/NAS específico;
-- import/upload remoto genérico;
-- nova UX sem bloqueador técnico;
-- números finais sem benchmark/fixtures.
+- [x] parâmetros numéricos foram fechados em D12.66–D12.75;
+- [x] não existe bloqueador arquitetural conhecido no contrato de Backup/Restore.
 
 ## Fontes detalhadas
 
@@ -289,4 +205,4 @@ Esses parâmetros não são escolhas livres do executor.
 
 ## Conclusão
 
-**Bloco 11 tecnicamente consolidado em 2026-09-01.** O fechamento operacional ainda depende do gate Git normal do PR #26: revisão final, squash merge, remoção da branch e verificação remota limpa.
+**Bloco 11 consolidado e operacionalmente encerrado.** O PR #26 foi squash-merged, sua branch foi removida e o remoto foi verificado limpo antes da abertura do Bloco 12.

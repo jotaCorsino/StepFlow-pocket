@@ -20,73 +20,70 @@ StepFlow fechado
 Controller iniciado sob demanda
 → Host iniciado como processo-filho
 → Clients utilizam o Host
-→ encerramento do ciclo central
 → shutdown controlado
 → Host termina
 → Controller termina
 → nenhum processo residual
 ```
 
-## Estrutura conceitual
+## Estrutura publicada
 
 ```text
 StepFlow\
-├── app\
-│   ├── StepFlowController.exe
-│   └── StepFlowHost.exe
-├── config\
-│   └── stepflow-host.toml
-├── data\
-│   ├── stepflow.sqlite
-│   ├── company\
-│   └── avatars\
-├── logs\
-│   └── admin-audit.jsonl      # equivalente permitido
-└── backups\
-    └── .operations\          # journal operacional, não catálogo
+├── StepFlow.exe
+└── _internal\
+    ├── client\
+    └── server\
+        ├── app\
+        │   ├── StepFlowController.exe
+        │   └── StepFlowHost.exe
+        ├── config\
+        │   └── stepflow-host.toml
+        ├── data\
+        │   ├── stepflow.sqlite
+        │   ├── company\
+        │   └── avatars\
+        ├── logs\
+        │   └── admin-audit.jsonl
+        └── backups\
+            └── .operations\
 ```
 
-Binários de `app/` são substituíveis sem sobrescrever `config/`, `data/`, `logs/` ou `backups/`.
+`_internal/server/` é a raiz lógica central. `app/` é substituível; `config/`, `data/`, `logs/` e `backups/` são preservados entre atualizações.
 
 ## Controller
 
 Responsabilidades:
 
-1. resolver a raiz da implantação;
+1. resolver raiz da implantação;
 2. validar config/paths/permissões;
-3. detectar instância central existente;
-4. impedir segundo Host sobre os mesmos dados;
-5. iniciar o Host como processo-filho;
-6. aguardar readiness verificável;
-7. registrar falhas de startup;
-8. coordenar shutdown gracioso;
-9. garantir ausência de processo iniciado por ele após encerramento normal;
-10. coordenar relaunch **bounded** quando Restore exigir fresh Host;
-11. oferecer modo Recovery local/transitório quando o Host normal não consegue readiness e disaster recovery for aplicável.
+3. garantir exclusividade;
+4. iniciar Host como processo-filho;
+5. aguardar readiness;
+6. registrar falhas de startup;
+7. coordenar shutdown gracioso;
+8. confirmar saída do Host;
+9. coordenar relaunch bounded após Restore;
+10. oferecer Recovery local/transitório quando necessário.
 
 O Controller não instala serviço, altera PATH/registro, cria auto-start nem mantém watchdog residente.
 
-### Relaunch de Restore
+Defaults D12 do lifecycle:
 
-É uma transição limitada da operação administrativa. Não autoriza restart automático ilimitado para crashes normais.
+```text
+readiness_timeout_per_launch = 30 s
+restore_relaunch_attempts = 3 total
+restore_relaunch_backoff = 1 s, 3 s
+```
 
-### Modo Recovery
-
-- somente na máquina central;
-- sem listener HTTP/WebSocket normal;
-- exclusividade da implantação e ausência de Host normal concorrente;
-- acesso local/ACLs em vez de depender de login no banco indisponível;
-- sem autoelevação silenciosa;
-- reutiliza módulos comuns de validação, compatibilidade, staging, journal e ativação.
+Falha das tentativas bounded de recovery exige intervenção local/controlada; não vira watchdog geral.
 
 ## Propriedade do ciclo de vida
 
-O ciclo central pertence ao Controller na máquina central, não a um Client individual.
-
 - fechar Client não encerra Host;
-- vários Clients podem entrar/sair durante o mesmo ciclo;
+- vários Clients podem entrar/sair no mesmo ciclo;
 - encerramento central solicita shutdown gracioso;
-- Controller só termina normalmente após confirmar saída do Host;
+- Controller só termina após confirmar saída do Host;
 - nenhum processo StepFlow permanece após encerramento completo.
 
 Não está consolidado auto-shutdown por “último Client” ou inatividade.
@@ -94,7 +91,7 @@ Não está consolidado auto-shutdown por “último Client” ou inatividade.
 ## Responsabilidades do Host
 
 - autenticação/autorização;
-- API HTTP/JSON + WebSocket;
+- HTTP/JSON + WebSocket;
 - SQLite e migrations;
 - writer/fila/transações;
 - revisão e conflitos;
@@ -106,22 +103,20 @@ Não está consolidado auto-shutdown por “último Client” ou inatividade.
 
 ## Readiness e instância única
 
-O Host só fica ready quando, no mínimo:
+O Host só fica ready quando as pré-condições disponíveis na fase estiverem válidas. No produto completo isso inclui, no mínimo:
 
 - configuração carregada;
-- exclusividade da implantação obtida;
-- recovery pendente reconciliado para estado conhecido;
+- exclusividade da implantação;
+- recovery pendente reconciliado;
 - `data/` acessível;
 - schema/migrations válidos;
 - SQLite aberto;
 - listener disponível.
 
-Ordem quando houver journal/artefato de Restore:
-
 ```text
 resolver deployment + exclusividade
 → reconciliar Restore/Recovery pendente
-→ somente após estado conhecido seguir migrations/readiness normais
+→ seguir migrations/readiness normais
 ```
 
 Enquanto `uncertain/RECOVERY_REQUIRED`:
@@ -136,40 +131,35 @@ Duas instâncias não podem coordenar o mesmo `data/`.
 
 ## Configuração
 
-`config/stepflow-host.toml` contém parâmetros operacionais. Endereço corporativo real não é hardcoded e alterar configuração não deve exigir recompilar.
+`_internal/server/config/stepflow-host.toml` contém somente parâmetros operacionais explicitamente configuráveis. Endpoint corporativo real não é hardcoded e alterar configuração não deve exigir recompilar.
 
-Segredos reutilizáveis não ficam nesse arquivo em texto puro.
+Segredos reutilizáveis não ficam nesse arquivo em texto puro. Parâmetro de política que não foi declarado configurável não vira knob de operador por conveniência.
 
 ## Logs e diagnóstico
 
-Logs técnicos em `logs/` com timestamp, nível, componente, mensagem e contexto sanitizado.
+Logs técnicos em `_internal/server/logs/` com timestamp, nível, componente, mensagem e contexto sanitizado.
 
-Registrar pelo menos:
+Baseline D12:
 
-- início do Controller/Host;
-- configuração carregada/inválida;
-- data dir efetivo;
-- listener/readiness;
-- falha de startup;
-- shutdown solicitado/concluído;
-- erro fatal;
-- operações administrativas críticas;
-- entrada/resultado de reconciliação Restore/Recovery.
+```text
+log técnico: 20 MiB + 10 archives
+admin audit: 50 MiB + 20 archives
+```
 
-Nunca registrar senha, token reutilizável ou conteúdo sensível desnecessário.
+Registrar início, configuração, data root efetivo, listener/readiness, falha de startup, shutdown, erro fatal, operações administrativas críticas e recovery. Nunca registrar senha, token reutilizável ou conteúdo sensível desnecessário.
 
 ### Auditoria administrativa
 
-Backup/Restore/retention/Recovery também emitem trilha estruturada fora de `data/`, por exemplo `logs/admin-audit.jsonl`.
+Backup/Restore/retention/Recovery emitem trilha estruturada fora de `data/`, baseline `logs/admin-audit.jsonl`/equivalente.
 
 - append-only pela aplicação no fluxo normal;
-- protegida pelas ACLs;
-- não restaurada junto com `data/`;
-- não é anunciada como tamper-proof criptográfica;
-- usa IDs lógicos, ator/origem, timestamps, resultado e códigos sanitizados;
+- protegida por ACLs;
+- não restaurada com `data/`;
+- não declarada tamper-proof criptográfica;
+- IDs lógicos, ator/origem, timestamps, resultado e códigos sanitizados;
 - sem senha, token, dump SQL ou conteúdo integral do backup.
 
-Journal operacional, admin audit e log técnico têm funções/lifecycles distintos.
+Journal, admin audit e log técnico têm funções/lifecycles distintos.
 
 ## Shutdown técnico
 
@@ -185,102 +175,76 @@ Journal operacional, admin audit e log técnico têm funções/lifecycles distin
 
 `kill` forçado não é mecanismo normal.
 
-## Restart controlado após Restore
-
-Se Restore entrou na fase destrutiva e terminou com candidato aplicado ou rollback conhecido:
-
-```text
-estado físico escolhido validado
-→ persistir RESTART_REQUIRED
-→ encerrar listeners/WebSockets
-→ fechar SQLite/handles
-→ Host sai com motivo controlado
-→ Controller relança Host fresco de forma bounded
-→ fresh Host reconcilia journal
-→ somente então readiness normal
-```
-
-Falha da tentativa de recovery fecha o ciclo automático e exige intervenção local/controlada; não vira watchdog geral.
-
-## Backup / Restore — D11.1–D11.116
-
-Backup/Restore pertence ao Host e está tecnicamente consolidado no Bloco 11.
+## Backup / Restore — D11.1–D11.116 + D12.66–D12.75
 
 ### Invariantes
 
 - Client nunca copia SQLite diretamente;
 - backup representa SQLite + arquivos administrados como conjunto coerente;
-- pacote final = `.stepflow-backup`, ZIP `Stored`, manifesto versionado e SHA-256;
+- pacote `.stepflow-backup`, ZIP `Stored`, manifesto versionado e SHA-256;
 - SQLite usa Online Backup API;
-- Backup normal usa barrier curto de mutações para captura;
-- promoção é same-volume/no-replace;
-- Restore revalida pacote, provenance, paths, hashes e banco;
-- schema antigo somente com migrations forward completas no staging;
+- Backup normal usa barrier curto;
+- promoção same-volume/no-replace;
+- Restore revalida provenance, paths, hashes e banco;
+- schema antigo somente com migrations forward completas;
 - sem down migration automática;
-- safety backup confirmado é obrigatório no Restore normal;
+- safety backup confirmado obrigatório;
 - ativação troca logicamente `data/`, preservando `old`;
-- Restore usa journal fora de `data/` e fresh Host após fase destrutiva;
+- journal fora de `data/` e fresh Host após fase destrutiva;
 - Restore destrutivo invalida sessões anteriores;
-- `uncertain` bloqueia readiness até recuperação controlada;
-- disaster recovery é local/transitório pelo Controller;
-- operações administrativas críticas não executam concorrentemente sem coordenação explícita.
+- `uncertain` bloqueia readiness;
+- disaster recovery local/transitório;
+- operações administrativas críticas são coordenadas.
 
-### Safety barrier final
+### Parâmetros iniciais
 
-Para `pre_restore`:
+```text
+retention_max_confirmed_backups = 20
+configurável = 5..100
+max_entries = 10_000
+max_total_payload = 8 GiB
+max_managed_file = 16 MiB
+max_logical_path = 512 UTF-16
+max_path_component = 120 UTF-16
+max_path_depth = 8
+min_free_space_reserve = 1 GiB
+backup_capture_target <= 2 s
+backup_capture_hard_limit = 10 s
+pre_restore_no_progress = 120 s
+pre_restore_total_before_destructive = 10 min
+```
+
+Valor de retenção ausente usa 20; valor explicitamente inválido não deve sofrer clamp/fallback silencioso, conforme validação final do Bloco 12.
+
+### Safety barrier
 
 ```text
 suspender/drain mutações
 → capturar safety backup
 → manter barrier
-→ finalizar/verificar/promover safety backup
+→ finalizar/verificar/promover
 → revalidar data-next
 → DESTRUCTIVE_STARTED
 → primeiro rename
 ```
 
-Depois da captura:
-
-- nenhuma mutação em SQLite/company/avatars;
-- journal/admin-audit externos continuam permitidos;
-- falha/cancelamento antes do primeiro rename libera o barrier sem alterar `data/`.
-
-### Revalidação do candidato
-
-Antes de `DESTRUCTIVE_STARTED`, confirmar digest, schema e root/volume de `data-next/`. Mudança aborta antes do primeiro rename e exige nova validação.
+Depois da captura nenhuma mutação em SQLite/company/avatars é aceita até o primeiro rename ou abort seguro pré-destrutivo.
 
 ### Paths e provenance
 
 - canonicalização Windows estrita;
-- rejeitar drive/UNC/device/ADS/reserved names/trailing dot-space/case collision/reparse/non-regular/escape do root;
-- criação de Backup aplica a mesma disciplina aos arquivos administrados;
+- bloquear drive/UNC/device/ADS/reserved names/trailing dot-space/case collision/reparse/non-regular/escape;
 - `manifest.json` inclui `source_deployment_id`;
-- Restore/Recovery baseline bloqueiam deployment diferente com `source_mismatch`.
+- deployment diferente gera `source_mismatch` no baseline.
 
-### Limites e confiança
+### Confiança e limites
 
-- parser/extração bounded por entradas/tamanho/path/bytes e preflight de espaço;
-- números finais ficam no Bloco 12;
 - baseline sem criptografia application-level;
 - baseline sem assinatura criptográfica application-level;
 - SHA-256 é integridade, não autenticidade;
 - trust boundary = root administrado + ACLs + infraestrutura de volume + deployment ID + auditoria.
 
-### Limite operacional
-
-Backup local não promete proteção contra perda física total, ransomware com acesso ao mesmo storage ou site loss. Offsite/cópia corporativa de `backups/` é responsabilidade operacional externa.
-
-### Gates antes de produção
-
-- adapter Win32 de rename/promoção/journal;
-- filesystem real;
-- ACLs;
-- EDR/antivírus;
-- long paths;
-- espaço/performance;
-- crash/restart injection.
-
-Fonte principal: `../04-planejamento/bloco-11-backup-restauracao.md`.
+Backup local não promete proteção contra perda física total, ransomware com acesso ao mesmo storage ou site loss. Offsite/cópia corporativa é responsabilidade operacional externa.
 
 ## Atualização e rollback
 
@@ -288,31 +252,20 @@ Fonte principal: `../04-planejamento/bloco-11-backup-restauracao.md`.
 encerrar Controller/Host
 → confirmar ausência de processos
 → backup quando exigido
-→ substituir/ativar app/
+→ substituir _internal/server/app/
 → preservar config/data/logs/backups
 → iniciar Controller
 → validar readiness
 ```
 
-Rollback de binário só é permitido quando schema atual for compatível; caso contrário, exige Restore correspondente. Não usar down migration destrutiva por conveniência.
+Rollback de binário só quando schema atual for compatível; caso contrário exige Restore correspondente.
 
 ## Limitação deliberada
 
-Executar `.exe` armazenado em SMB a partir da estação executa-o na estação; não cria processo remoto na máquina central.
+Executar `.exe` por SMB na estação executa-o na estação; não cria processo remoto no servidor. Sem componente residente, o Controller precisa ser iniciado na máquina central ou por mecanismo corporativo já existente/aprovado.
 
-Sem componente residente, o Controller precisa ser iniciado na máquina central ou por mecanismo corporativo já existente/aprovado. Não instalar serviço para contornar essa limitação.
+## Fundação da Fase 2
 
-## Critérios para implementação futura
+D12.80–D12.98 implementam a fundação em tarefas separadas: Host mínimo, runtime/readiness, SQLite/migrations, Controller, Client, Launcher, packaging e smoke integrado.
 
-- execução por pasta sem instalador/runtime global;
-- sem privilégio administrativo no uso normal;
-- instância única;
-- readiness verificável e recovery anterior à readiness quando necessário;
-- shutdown gracioso;
-- fresh Host/relaunch de Restore bounded e não-watchdog;
-- Recovery local/transitório sem listener normal;
-- fechar Client individual não encerra ciclo central;
-- nenhum processo residual após encerramento central;
-- dados preservados ao substituir binários;
-- multiusuário durante ciclo ativo;
-- implementação conforme D11.1–D11.116 e gates corporativos correspondentes.
+Antes de produção permanecem gates reais de Windows/WebView2, SMB, filesystem/ACL/EDR/antivírus, long paths e crash/restart injection conforme fase aplicável.

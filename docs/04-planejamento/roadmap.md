@@ -1,9 +1,9 @@
 # Roadmap — StepFlow Pocket
 
-**Status:** FASE 1 EM ANDAMENTO  
+**Status:** FASE 1 CONCLUÍDA / TRANSIÇÃO PARA FASE 2 PENDENTE  
 **Atualização:** 2026-09-01
 
-O roadmap descreve **fases e resultados**, não PRs ou branches específicas. Gates operacionais correntes ficam no plano da fase e no `README.md`.
+O roadmap descreve fases e resultados. Gates operacionais correntes ficam no plano da fase e no README raiz.
 
 ## Fase 0 — Fundação documental e governança
 
@@ -13,145 +13,89 @@ Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e
 
 ## Fase 1 — Fechamento arquitetural e especificação
 
-**EM ANDAMENTO.**
+**CONCLUÍDA documental e tecnicamente em 2026-09-01.**
 
-Consolidado até aqui:
+Resultados consolidados:
 
 - Client Windows/Tauri;
 - Host Pocket sob demanda;
 - Launcher/distribuição Pocket;
 - comunicação HTTP/JSON + WebSocket;
-- autenticação/sessão/autorização no núcleo;
+- autenticação/sessão/autorização;
 - modelo de dados/migrations/histórico conceitual;
 - concorrência/fila/conflitos/eventos;
-- domínio `Procedimento × Atendimento/Execução × Equipamento`;
-- categorias configuráveis/múltiplas;
-- UI/UX das Telas 01–15;
-- lifecycle operacional de Atendimentos;
-- checklist persistente e observação de serviço por Etapa;
-- códigos `AT-000001` / `EQP-000001`;
-- geração documental, exportação, impressão, Ficha compacta, naming e temporários;
-- validação técnica final do Bloco 10;
-- Backup/Restore técnico consolidado em D11.1–D11.116;
+- domínio Procedimento × Atendimento × Equipamento;
+- Telas 01–15;
+- execução operacional/checklist;
+- geração documental/Ficha;
+- Backup/Restore D11.1–D11.116;
+- Bloco 12 D12.1–D12.108: estrutura/publicação, workspace/build, migrations/testes, parâmetros, plano da Fase 2 e validação final;
 - contrato Pocket preservado como gate superior.
 
-### Bloco 11 — Backup / Restore técnico
-
-**TECNICAMENTE CONCLUÍDO em 2026-09-01.**
-
-Resultados:
-
-- estado recuperável e pacote `.stepflow-backup`;
-- snapshot SQLite via Online Backup API;
-- consistência conjunta entre banco e arquivos administrados;
-- staging/verificação/promoção no-replace;
-- catálogo reconstruível e retenção sem scheduler/por quantidade;
-- coordenação administrativa de Backup/Restore/migration;
-- Restore com revalidação integral, migrations forward, safety backup e troca lógica de `data/`;
-- safety barrier contínuo até o primeiro rename no `pre_restore`;
-- journal de Restore, reconciliação antes de readiness, rollback conhecido/`uncertain`;
-- fresh Host e invalidação de sessões após fase destrutiva;
-- disaster recovery local/transitório pelo Controller;
-- Backup permitido a ADM/Gerência e Restore restrito a ADM;
-- auditoria administrativa que atravessa Restore;
-- canonicalização Windows e bloqueio de paths ambíguos/perigosos;
-- provenance por `source_deployment_id`;
-- parser/extração bounded;
-- baseline sem criptografia ou assinatura application-level;
-- gates Win32/filesystem/ACL/EDR/long paths/crash antes de produção.
-
-Não há bloqueador arquitetural conhecido para o mecanismo. Parâmetros numéricos finais ficam no Bloco 12.
-
-Fonte: `bloco-11-backup-restauracao.md` e análises específicas 3–7.
-
-### Bloco 12 — Estrutura oficial + Fase 2
-
-**PENDENTE.**
-
-Fechará:
-
-- parâmetros técnicos finais ainda abertos;
-- estrutura oficial do repositório;
-- migrations/scripts/testes iniciais;
-- configuração/defaults/fixtures mensuráveis;
-- sincronização segura do checkout local;
-- plano executável da Fase 2.
+Nenhum scaffold/runtime oficial, migration SQL ou código de negócio foi criado na Fase 1.
 
 ## Fase 2 — Fundação técnica executável
 
-**PENDENTE.**
+**PENDENTE — depende de fechamento Git do Bloco 12 + remoto limpo + sync local seguro + autorização explícita do PO.**
 
-- árvore oficial Client/Launcher/Controller/Host;
-- builds reproduzíveis;
-- configuração de desenvolvimento;
-- comunicação mínima + health/readiness;
-- SQLite + migrations iniciais;
-- logging mínimo;
-- testes de fundação;
-- PoCs/gates técnicos exigidos pela Fase 1, incluindo fallback WebView2 Pocket quando necessário.
+Sequência aprovada:
 
-Gate: Client abre sem instalação manual, Host inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build limpo passa.
+```text
+F2-T01 workspace/tooling + Host mínimo
+→ F2-T02 Host runtime/readiness
+→ F2-T03 SQLite + migrations runner
+→ F2-T04 Controller lifecycle
+→ F2-T05 Client Tauri + compatibilidade
+→ F2-T06 Launcher Pocket
+→ F2-T07 packaging Pocket
+→ F2-T08 smoke integrado + gates Windows/Pocket
+```
+
+Resultados esperados:
+
+- build reproduzível `--locked`;
+- Host com config/logging/readiness;
+- SQLite e migrations determinísticos;
+- Controller lifecycle bounded;
+- Client Tauri vanilla integrado ao Host;
+- Launcher preparando Client local;
+- packaging `StepFlow.exe + _internal/`;
+- smoke integrado;
+- gates Pocket corporativos registrados como PASS, `NÃO APLICÁVEL NESTE AMBIENTE` ou blocker real conforme contexto.
+
+Gate: nenhum processo residual, nenhuma dependência dev em produção e nenhum requisito Pocket enfraquecido.
 
 ## Fase 3 — Autenticação, usuários e shell
 
-**PENDENTE.**
-
-Login/logout/sessão, bootstrap ADM, usuários/permissões, perfil/avatar, shell/sidebar, configuração básica da empresa e autorização Host-side.
+**PENDENTE.** Login/logout/sessão, bootstrap ADM, usuários/permissões, perfil/avatar, shell/sidebar, configuração básica da empresa e autorização Host-side.
 
 ## Fase 4 — Núcleo documental de Procedimentos
 
-**PENDENTE.**
-
-Lista/pesquisa, categorização, criação/edição/arquivamento, Etapas/blocos, histórico/revisões, permissões e conflitos de revisão.
+**PENDENTE.** Lista/pesquisa, categorias, criação/edição/arquivamento, Etapas, histórico/revisões, permissões e conflitos.
 
 ## Fase 5 — Execução e registro operacional
 
-**PENDENTE.**
-
-Reader, Atendimento, checklist persistente, observação de serviço, lifecycle, Equipamento opcional, busca/lista, resumo, revisão exata, reprodução histórica, Ficha e estados transversais.
+**PENDENTE.** Reader, Atendimento, checklist, observação de serviço, lifecycle, Equipamento opcional, revisão exata, reprodução histórica, Ficha e estados transversais.
 
 ## Fase 6 — Multiusuário em ambiente real
 
-**PENDENTE.**
-
-Múltiplos Clients, conflitos/fila, concorrência granular, eventos/reconexão, Host indisponível, stress/tuning e validação LAN corporativa.
+**PENDENTE.** Múltiplos Clients, concorrência, eventos/reconexão, stress/tuning e validação LAN corporativa.
 
 ## Fase 7 — Exportação e identidade
 
-**PENDENTE.**
-
-Implementará os contratos do Bloco 10: PDF/DOCX, impressão Windows, identidade, Ficha, naming/save/temporários e gates reais de Word/impressoras/SMB/EDR.
-
-DOCX específico da Ficha não é requisito inicial.
+**PENDENTE.** PDF/DOCX, impressão Windows, identidade, Ficha, naming/save/temporários e gates reais de Word/impressoras/SMB/EDR.
 
 ## Fase 8 — Distribuição Pocket, backup e operação
 
-**PENDENTE.**
-
-- pacote central por pasta;
-- Controller/Host sob demanda;
-- Launcher no share + Client local versionado;
-- zero instalação/manualidade por estação;
-- implementação dos contratos D11.1–D11.116 de Backup/Restore;
-- disaster recovery local;
-- logs/auditoria operacional;
-- documentação de implantação;
-- validação sem Internet e em PCs corporativos.
-
-Não inclui serviço StepFlow persistente.
+**PENDENTE.** Pacote central, Launcher/Client local, Controller/Host sob demanda, implementação D11, disaster recovery, logs/auditoria e validação sem Internet em PCs corporativos. Não inclui serviço persistente.
 
 ## Fase 9 — Hardening e release interno
 
-**PENDENTE.**
-
-Segurança/autorização, recuperação de falha/banco, Backup/Restore, concorrência/performance, logs, distribuição/update, smoke tests end-to-end, revisão documental e validação final do contrato Pocket no parque corporativo.
+**PENDENTE.** Segurança, recuperação, Backup/Restore, concorrência/performance, distribuição/update, smoke E2E, revisão documental e validação final do Pocket no parque corporativo.
 
 ## Pendências transversais
 
-- parâmetros finais Argon2/senha/sessão/token;
-- Gerência × configuração da empresa;
-- regra editorial de categoria arquivada;
-- parâmetros numéricos de retenção/tamanho/espaço/timeouts;
+- gate operacional de entrada na Fase 2;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
 - SMB/impressoras/filesystem/ACL/EDR corporativos;
@@ -159,4 +103,4 @@ Segurança/autorização, recuperação de falha/banco, Backup/Restore, concorr�
 
 ## Regra do roadmap
 
-Fases dependem de gates, não de cronograma. Mudança de requisito atualiza a documentação vigente antes da implementação. Proposta só vira contrato após aprovação explícita do PO.
+Fases dependem de gates, não de cronograma. Mudança de requisito atualiza a documentação vigente antes da implementação. Conclusão de uma fase não autoriza automaticamente a próxima tarefa.
