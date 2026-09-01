@@ -2,17 +2,16 @@
 
 **Atualização:** 2026-09-01
 
-Este arquivo é o **digest ativo de decisões, pendências reais e gates vigentes**. Detalhes técnicos pertencem aos documentos específicos. Proposta não aprovada não é contrato.
+Este arquivo é o **digest ativo de decisões, pendências reais e gates vigentes**. Detalhes pertencem aos documentos específicos. Proposta não aprovada não é contrato.
 
 ## 1. Governança
 
-- GitHub é a fonte operacional de verdade durante a Fase 1;
+- GitHub é a fonte operacional de verdade;
 - fluxo: branch → draft PR → discussão/refino → aprovação PO → consolidação → validação → ready → squash merge → remover branch → verificar remoto limpo;
-- merge não encerra etapa/bloco sem remoção da branch e verificação do gate;
-- checkout local previsto em `C:\dev\StepFlow` só deve ser sincronizado antes da implementação, preservando alterações locais do PO;
-- Fase 1 não autoriza scaffold/runtime/migrations oficiais/código de negócio antes do gate final do Bloco 12/Fase 2;
-- `AGENTS.md` é a regra operacional superior;
-- documentos estáveis não carregam gates Git consumidos nem anunciam próximo bloco.
+- merge não encerra trabalho enquanto a branch remota existir;
+- checkout local previsto em `C:\dev\StepFlow` só é sincronizado antes da implementação, preservando alterações locais do PO;
+- Fase 1 não autoriza scaffold/runtime/migrations oficiais/código de negócio antes do gate final do Bloco 12;
+- `AGENTS.md` é a regra operacional superior.
 
 ## 2. Contrato Pocket
 
@@ -26,22 +25,11 @@ pasta publicada no servidor Windows
 → Client comunica com Host central
 ```
 
-`StepFlow.exe` é o Launcher com nome/ícone amigáveis e o único ponto de entrada normal. Artefatos técnicos ficam sob `_internal/`; `.lnk` não é requisito baseline.
+`StepFlow.exe` é o Launcher amigável e único ponto de entrada normal. Artefatos técnicos ficam sob `_internal/`; `.lnk` não é requisito baseline.
 
-Obrigatório:
+Obrigatório: sem instalador por estação, preparação manual, admin, toolchain em produção, Internet obrigatória ou Client permanente em SMB; Controller/Host sob demanda e sem Service/Task Scheduler/watchdog/tray/daemon baseline.
 
-- sem instalador tradicional por estação;
-- sem preparação manual de dependências;
-- sem elevação administrativa no uso normal;
-- sem toolchain em produção;
-- sem Office/LibreOffice/Adobe como dependência operacional;
-- sem Internet obrigatória;
-- Client não roda permanentemente do SMB;
-- Controller/Host sob demanda;
-- fechar Client individual não encerra Host;
-- sem Windows Service, Task Scheduler, watchdog, tray ou daemon baseline.
-
-WebView2 Evergreen compatível já presente é preferível. Fixed Version não roda por UNC/SMB; fallback local só entra após PoC provar preparação automática em `%LOCALAPPDATA%` sem instalação/admin/manualidade.
+WebView2 Evergreen compatível já presente é preferível. Fixed Version não roda por UNC/SMB; fallback local exige PoC automática em `%LOCALAPPDATA%` sem instalação/admin/manualidade.
 
 ## 3. Produto e domínio
 
@@ -54,190 +42,121 @@ Equipamento
 ```
 
 - Procedimento = documentação oficial versionada;
-- Atendimento = ocorrência real de trabalho;
+- Atendimento = ocorrência real;
 - Equipamento = ativo opcional/reutilizável;
 - Atendimento pode existir sem Equipamento e usar vários Procedimentos;
-- vínculo preserva revisão exata utilizada;
-- histórico concluído não é reescrito por alterações posteriores;
-- StepFlow não vira CRM, financeiro, estoque, RMM ou help desk/SLA completo por inferência.
+- vínculo preserva revisão exata;
+- histórico concluído não é reescrito;
+- StepFlow não vira CRM/financeiro/estoque/RMM/help desk completo por inferência.
 
 ## 4. Procedimentos, categorias e revisões
 
 Campos principais: Código, Título, Área/Departamento, Responsável, Status, Versão, Objetivo, Observações, Pré-requisitos, Categorias, Etapas e Histórico.
 
-- categorias configuráveis, múltiplas e sem árvore inicial;
-- arquivamento preserva histórico;
+- categorias configuráveis/múltiplas, sem árvore inicial;
 - salvamento explícito e revisões imutáveis;
-- controle otimista com conflito explícito;
-- publicar é separado de salvar;
-- `revision_no` técnico separado de `display_version` editorial;
-- categoria arquivada não pode ser adicionada como associação nova;
-- categoria arquivada já herdada pela revisão-base permanece na nova revisão com aviso, pode ser removida, mas não pode ser re-adicionada enquanto arquivada — D12.65.
+- controle otimista e publicação separada de save;
+- `revision_no` técnico separado de `display_version`;
+- categoria arquivada não entra em associação nova;
+- categoria arquivada herdada permanece com aviso, pode ser removida e não pode ser re-adicionada enquanto arquivada — D12.65.
 
 ## 5. Reader e direção visual
 
 - experiência livro/manual;
 - `Visão geral` antes da Etapa 1;
 - uma Etapa por página lógica;
-- stepper horizontal representa navegação, não conclusão;
+- stepper = navegação, nunca conclusão;
 - comandos preservam whitespace e usam copiar icon-only acessível;
-- baixa densidade textual e informação secundária sob demanda;
+- baixa densidade textual;
 - Reader standalone não persiste execução;
-- Reader em Atendimento persiste checklist e `Observação do serviço` por Etapa conforme lifecycle/autorização.
+- Reader em Atendimento persiste checklist e `Observação do serviço` conforme lifecycle/autorização.
 
 ## 6. Atendimentos e Equipamentos
 
-```text
-rascunho Client
-→ primeiro save
-→ Em andamento
-   ├─→ Concluído
-   └─→ Cancelado
-
-Concluído/Cancelado
-→ Reabrir
-→ Em andamento
-```
-
-- primeiro save cria `AT-000001`;
-- conclusão exige responsável + `Resumo do trabalho`;
-- checklist incompleto avisa, não bloqueia automaticamente;
-- progresso deriva somente do checklist;
-- 100% não conclui automaticamente;
-- observação por Etapa é opcional e operacional;
-- Equipamento usa `EQP-000001`, é opcional e reutilizável;
-- serial/MAC/patrimônio não são identidade canônica;
-- reprodução histórica suficiente é obrigatória.
+Lifecycle `Em andamento / Concluído / Cancelado`, com reabertura explícita. Primeiro save gera `AT-000001`; Equipamento usa `EQP-000001`. Checklist incompleto avisa, progresso deriva somente dele e 100% não conclui automaticamente. Equipamento é opcional/reutilizável; histórico relevante deve ser reproduzível.
 
 ## 7. Autenticação e capacidades
 
-- Argon2id em PHC;
-- baseline D12.56: 64 MiB, 3 passes, 4 lanes, salt 16 bytes, output 32 bytes;
-- senha D12.57: 15–128 caracteres Unicode após NFKC, sem composition rule/rotação periódica, sem truncamento;
+- Argon2id PHC: 64 MiB / 3 passes / 4 lanes, salt 16 bytes, output 32 bytes — D12.56;
+- senha 15–128 Unicode após NFKC, sem composition rule/rotação periódica — D12.57;
 - blocklist offline ≥10.000 — D12.58;
-- throttling progressivo e cooldown de 15 min na décima falha — D12.59;
-- token opaco CSPRNG de 32 bytes, Client-memory-only e digest server-side — D12.60;
-- sessão: 30 min idle / 8 h absoluta; heartbeat/background não renovam idle — D12.61;
-- autorização Host-side por capacidade;
-- `ADM`, `GERENCIA`, `FUNCIONARIO` são presets;
-- pelo menos um ADM ativo;
-- bootstrap do primeiro ADM é local/controlado;
+- throttling progressivo + cooldown temporário — D12.59;
+- token opaco CSPRNG 32 bytes, memória do Client + digest server-side — D12.60;
+- sessão 30 min idle / 8 h absoluta — D12.61;
+- autorização Host-side por capacidades;
+- ADM/Gerência/Funcionário são presets;
 - Gerência não administra ADM;
 - Backup = ADM/Gerência; Restore = ADM-only;
-- alterar configuração da empresa = ADM/Gerência; Funcionário não — D12.62.
-
-### Restore e sessões
-
-- Restore que entra na fase destrutiva invalida todas as sessões/tokens anteriores;
-- isso vale também em rollback;
-- backup restaurado nunca ressuscita token reutilizável antigo;
-- fresh Host exige novo login.
+- configuração da empresa = ADM/Gerência; Funcionário não — D12.62;
+- Restore destrutivo invalida sessões anteriores e exige novo login após fresh Host.
 
 ## 8. Arquitetura técnica
 
-- Client: Tauri 2 + HTML/CSS/JavaScript modular;
-- Host: Rust + Tokio/Axum + `rusqlite` bundled;
-- HTTP/JSON + WebSocket;
+- Client Tauri 2 + HTML/CSS/JavaScript modular;
+- Host Rust + Tokio/Axum + `rusqlite` bundled;
+- HTTP/JSON + WebSocket autenticado quando houver sessão;
 - SQLite somente pelo Host;
-- WAL + writer lógico coordenado + fila bounded + revisão otimista;
-- eventos pós-commit;
-- implantação central por pasta pronta;
+- WAL + writer lógico + fila bounded + revisão otimista;
 - dados/config/logs/backups separados de binários substituíveis;
-- nenhuma toolchain na produção.
+- publicação `StepFlow.exe + _internal/client|server`;
+- nenhuma toolchain em produção.
 
 ## 9. Geração documental — Bloco 10 concluído
 
-- geração Host-side por snapshot consistente + `DocumentModel`;
-- PDF via Typst embutido;
-- DOCX OOXML Transitional direto em Rust;
-- impressão Windows pelo mesmo PDF oficial via WebView2;
-- Procedimento A4 multipágina;
-- Ficha PDF + preview do mesmo `PagedDocument`, exatamente uma A4;
-- `SHEET_OVERFLOW` sem truncamento;
-- soft limits 600/400/300/280;
-- Word/impressoras/SMB/Windows/WebView2/EDR são gates de ambiente real.
+Host-side por snapshot consistente + `DocumentModel`; PDF Typst; DOCX OOXML Rust; impressão pelo mesmo PDF via WebView2; Procedimento A4 multipágina; Ficha exatamente uma A4 com `SHEET_OVERFLOW`; gates reais de Word/impressoras/SMB/Windows/WebView2/EDR permanecem para o ambiente apropriado.
 
 ## 10. Backup / Restore — Bloco 11 concluído
 
 Decisões vigentes: **D11.1–D11.116**.
 
-Resumo:
-
-- Backup protege `stepflow.sqlite + company/** + avatars/**`;
-- pacote único `.stepflow-backup`, ZIP `Stored`, manifesto + SHA-256;
+- estado recuperável = `stepflow.sqlite + company/** + avatars/**`;
+- `.stepflow-backup`, ZIP `Stored`, manifesto + SHA-256;
 - SQLite via Online Backup API;
-- consistência cobre banco + arquivos administrados;
-- staging, flush e promoção same-volume/no-replace;
-- catálogo reconstruível e retenção por quantidade sem scheduler;
-- lease coordena `BACKUP`, `RESTORE`, `MIGRATION`;
-- Restore revalida pacote/banco, aceita schema antigo somente com migrations forward completas e nunca usa down migration automática;
-- safety backup obrigatório no Restore normal;
-- journal fora de `data/`, fresh Host e invalidação de sessões após fase destrutiva;
-- disaster recovery é local/transitório pelo Controller;
-- paths Windows e provenance são validados estritamente;
-- `uncertain/RECOVERY_REQUIRED` bloqueia readiness/mutações/cleanup destrutivo.
+- consistency barrier + staging/flush/promoção no-replace;
+- catálogo reconstruível e retenção por quantidade;
+- lease coordena Backup/Restore/Migration;
+- Restore usa migrations forward no staging, safety backup obrigatório e nunca down migration automática;
+- journal fora de `data/`, fresh Host e invalidação de sessões;
+- disaster recovery local/transitório;
+- paths Windows/provenance estritos;
+- `uncertain` bloqueia readiness/mutações/cleanup.
 
-Parâmetros numéricos fechados no Bloco 12:
+Parâmetros D12:
 
-- retenção default 20, faixa 5–100 — D12.66;
-- envelope 10.000 entradas / 8 GiB / 16 MiB por managed file + limites de path — D12.67;
-- reserva final mínima 1 GiB — D12.68;
-- Backup capture alvo ≤2 s, hard limit 10 s — D12.69;
-- pre_restore 120 s sem progresso / 10 min antes da fase destrutiva — D12.70;
-- readiness 30 s e relaunch Restore 3 tentativas — D12.71;
-- Client connect 5 s / request comum 30 s — D12.72;
-- WebSocket backoff 1/2/4/8/15/30 s + jitter — D12.73;
-- log técnico 20 MiB + 10 archives — D12.74;
-- admin audit 50 MiB + 20 archives — D12.75.
+```text
+retention default 20; faixa 5–100
+10.000 entradas / 8 GiB / 16 MiB por managed file
+reserva mínima 1 GiB
+Backup capture alvo <=2 s; hard limit 10 s
+pre_restore 120 s sem progresso / 10 min pré-destrutivo
+readiness 30 s; relaunch Restore 3 tentativas
+Client connect 5 s; request comum 30 s
+WebSocket 1/2/4/8/15/30 s + jitter
+log técnico 20 MiB + 10 archives
+admin audit 50 MiB + 20 archives
+```
 
 ## 11. Estrutura oficial / Bloco 12
 
-Decisões vigentes: **D12.1–D12.79**.
+Decisões vigentes: **D12.1–D12.98**.
 
-### Estrutura e publicação — D12.1–D12.18
+### D12.1–D12.18 — estrutura/publicação
 
-- workspace Rust virtual na raiz;
-- `apps/` contém `client`, `launcher`, `controller`, `host`;
-- `crates/` somente para responsabilidades reutilizáveis concretas;
-- Client usa ES modules e `src-tauri` fino;
-- source tree e pasta publicada são distintos;
-- `StepFlow.exe` na raiz é Launcher amigável e único ponto de entrada;
-- `_internal/` encapsula artefatos técnicos;
-- `.lnk` não é requisito.
+Workspace `apps/`/`crates/`, Client modular, source tree distinta da publicação, `StepFlow.exe` na raiz e `_internal/` técnico; sem crates vazios por antecipação.
 
-### Workspace/build — D12.19–D12.34
+### D12.19–D12.34 — workspace/build
 
-- Rust 1.98.0, Edition 2024, resolver 3, Windows x64 MSVC;
-- toolchain e `Cargo.lock` versionados;
-- build/test/package lockfile-aware;
-- dependências só entram com uso real;
-- Client vanilla sem Node/npm/Vite/bundler;
-- configuração build/dev × deployment × runtime;
-- produção vem de packaging, não `target/release` direto;
-- scripts PowerShell finos.
+Rust 1.98.0, Edition 2024, resolver 3, Windows x64 MSVC, toolchain/lockfile versionados, build lockfile-aware, Client sem Node/bundler, configuração separada e packaging como fonte da produção.
 
-### Migrations/testes/fixtures — D12.35–D12.55
+### D12.35–D12.55 — migrations/testes/fixtures
 
-- migrations Host-side `NNNNNN_<slug>.sql`, imutáveis e embutidas;
-- runner próprio + `schema_migrations` com checksum;
-- lote transacional, sem down migration automática ou `writable_schema` como atalho;
-- `quick_check` + `foreign_key_check` antes de readiness;
-- testes em SQLite temporário real;
-- fixtures sintéticas, nunca seed de produção;
-- scripts `check/test/build/package.ps1` como wrappers finos.
+Migrations Host-side imutáveis/embutidas, `schema_migrations` com checksum, lote transacional, `quick_check` + `foreign_key_check`, sem down migration, testes em SQLite temporário real, fixtures sintéticas e scripts finos.
 
-### Parâmetros finais — D12.56–D12.79
+### D12.56–D12.79 — parâmetros finais
 
-- autenticação/senha/sessão/token conforme seção 7;
-- GERENCIA pode alterar configuração da empresa;
-- identidade da empresa 120/160/200/254 e logo PNG/JPEG até 2 MiB / 2048×2048;
-- categoria arquivada herdada segue D12.65;
-- Backup/Restore/reconexão/logs seguem os números da seção 10;
-- parâmetros ficam centralizados e configuração crítica inválida nunca cai silenciosamente em default inseguro.
+Autenticação/sessão, Gerência × Empresa, limites de identidade/logo, categoria arquivada, parâmetros de Backup/Restore, readiness/reconexão e rotação de logs estão fechados nas fontes específicas.
 
-### Em análise
-
-**P12.80–P12.98 — plano detalhado da Fase 2**, em `bloco-12-analise-5-plano-fase-2.md`:
+### D12.80–D12.98 — plano da Fase 2
 
 ```text
 Gate Fase 1 + sync local seguro
@@ -249,23 +168,35 @@ Gate Fase 1 + sync local seguro
 → F2-T06 Launcher Pocket
 → F2-T07 packaging Pocket
 → F2-T08 smoke integrado + gates Windows/Pocket
+→ Gate Fase 2
 ```
 
-P12.80–P12.98 ainda não são contrato.
+Cada tarefa usa branch/PR próprios, parte de `main` consolidada e recebe pré-flight separado. Não antecipar autenticação, domínio, documentos ou Backup/Restore funcional.
+
+### Em revisão — P12.99–P12.108
+
+Validação final em `bloco-12-analise-6-validacao-final-fase-1.md` propõe:
+
+- retenção ausente usa 20; valor explicitamente inválido gera erro, sem clamp/fallback;
+- owner único para cada parâmetro e somente knobs explicitamente configuráveis;
+- `deployment.json` real materializado por input de implantação, nunca por placeholder silencioso;
+- sync local limpo via `fetch --prune` + `merge --ff-only`, parando diante de alteração/divergência;
+- gates corporativos podem permanecer reservados ao encerrar Fase 1, mas bloqueiam a etapa/produção quando aplicáveis;
+- merge do Bloco 12 não autoriza scaffold automaticamente.
 
 ## 12. Pendências vigentes
 
 ### Bloco 12
 
-- decidir P12.80–P12.98;
-- validação final da Fase 1;
-- gate Git do Bloco 12;
+- decidir P12.99–P12.108;
+- consolidar validação final;
+- gate Git do PR #27;
 - sincronização segura do checkout local;
-- autorização explícita do primeiro scaffold/runtime da Fase 2.
+- autorização explícita da F2-T01.
 
 ### Ambiente corporativo
 
-- Windows/WebView2 real e fallback Pocket quando necessário;
+- Windows/WebView2 real e fallback quando necessário;
 - Launcher pelo compartilhamento;
 - Word/impressoras;
 - SMB/permissões/falhas;
@@ -273,8 +204,6 @@ P12.80–P12.98 ainda não são contrato.
 - adapter Win32 e crash injection para Backup/Restore.
 
 ## 13. Precedência
-
-Em divergência:
 
 1. `AGENTS.md`;
 2. este registro;
