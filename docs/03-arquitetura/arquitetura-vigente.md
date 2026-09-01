@@ -1,7 +1,7 @@
 # Arquitetura Vigente — StepFlow Pocket
 
-**Status:** CONSOLIDADA PARA A FASE 1 — BLOCO 11 EM ANÁLISE  
-**Atualização:** 2026-08-31
+**Status:** CONSOLIDADA PARA A FASE 1 — BLOCO 11 EM VALIDAÇÃO FINAL  
+**Atualização:** 2026-09-01
 
 Este arquivo é o **mapa arquitetural**. Contratos detalhados pertencem aos documentos específicos e não devem ser duplicados integralmente aqui.
 
@@ -45,7 +45,7 @@ Fonte: `launcher-distribuicao-client.md`.
 
 O Controller inicia/controla o Host sob demanda na máquina central. O Host concentra autenticação/autorização, API, WebSocket, SQLite, concorrência, domínio, auditoria, Backup/Restore e geração documental.
 
-O Controller também pode coordenar um relaunch **bounded** do Host quando um Restore já entrou na fase destrutiva e exige fresh Host para recovery/finalização; isso não é watchdog geral.
+O Controller também pode coordenar relaunch **bounded** quando Restore exige fresh Host e oferecer modo Recovery local/transitório quando o Host normal não consegue atingir readiness. Recovery não abre listener normal de rede e não vira watchdog geral.
 
 Fonte: `host-pocket.md`.
 
@@ -123,7 +123,9 @@ StepFlow\
 │   ├── company\
 │   └── avatars\
 ├── logs\
+│   └── admin-audit.jsonl      # equivalente permitido
 └── backups\
+    └── .operations\          # journal operacional, não catálogo
 ```
 
 Princípios:
@@ -134,6 +136,7 @@ Princípios:
 - revisões imutáveis;
 - `revision_no` separado de `display_version`;
 - auditoria proporcional/append-only;
+- trilha administrativa de Backup/Restore fora de `data/` para sobreviver a Restore;
 - dados/config não são substituídos com binários;
 - backups e arquivos administrados permanecem separados dos artefatos substituíveis.
 
@@ -167,10 +170,12 @@ Fontes: `comunicacao-client-host.md` e `concorrencia-fila-conflitos-eventos.md`.
 - ADM/Gerência/Funcionário como presets;
 - bootstrap do primeiro ADM local/controlado;
 - sessão expirada exige nova autenticação;
+- Backup: ADM = sim, Gerência = sim, Funcionário = não;
+- Restore: ADM = sim, Gerência = não, Funcionário = não;
 - Restore que entra na fase destrutiva invalida todas as sessões/tokens anteriores, inclusive se houver rollback;
 - conteúdo restaurado nunca ressuscita token antigo;
-- parâmetros numéricos finais permanecem pendentes;
-- Gerência × Backup continua pendente até aprovação da Análise 6.
+- Recovery local não é capability de sessão e usa fronteira local/ACL/exclusividade quando o banco não autentica;
+- parâmetros numéricos finais permanecem pendentes.
 
 Fonte: `autenticacao-sessao-autorizacao.md`.
 
@@ -264,24 +269,34 @@ UX continua em `../02-telas/13-backup-restauracao.md`.
 - `restore-last.json`/equivalente preserva resultado terminal mínimo;
 - `uncertain` bloqueia readiness, mutações, nova operação destrutiva, retenção e cleanup.
 
+### Disaster recovery, capacidades e auditoria
+
+- disaster recovery é excepcional e só entra quando Restore normal seguro não está disponível por falha/readiness/corrupção/`uncertain`;
+- Recovery é modo local/transitório do Controller na máquina central, sem listener HTTP/WebSocket normal;
+- exige exclusividade da implantação e ausência de Host normal concorrente;
+- autoridade usa acesso local/ACLs + confirmação reforçada quando o banco não autentica, sem senha mestre paralela ou autoelevação;
+- candidatos baseline vêm de `backups/*.stepflow-backup` e usam a mesma validação/compatibilidade/migrations forward do Restore normal;
+- ausência de safety backup pode ser aceita somente em disaster recovery real;
+- estado ativo é preservado como `.recovery-old-<id>` quando possível, sem ser declarado backup íntegro;
+- Recovery reutiliza staging, journal, troca same-volume/no-replace e fresh Host;
+- Gerência pode consultar/criar Backup; Restore permanece ADM-only;
+- Backup/Restore/retention/Recovery produzem trilha administrativa estruturada fora de `data/`;
+- journal, admin audit e logs técnicos são mecanismos distintos.
+
 Fontes:
 
 - `../04-planejamento/bloco-11-backup-restauracao.md`;
 - `../04-planejamento/bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
 - `../04-planejamento/bloco-11-analise-4-restore-safety-compatibilidade.md`;
-- `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
-
-### Em análise — não contrato
-
-A Análise 6 propõe fechar disaster recovery local, Gerência × Backup e auditoria administrativa que atravesse Restore. Detalhe em `../04-planejamento/bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
+- `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
+- `../04-planejamento/bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
 
 ## Pendências arquiteturais ainda abertas
 
 - parâmetros finais de autenticação;
 - Gerência × configuração da empresa;
-- Gerência × Backup — em revisão na Análise 6;
 - regra editorial de categoria arquivada;
-- restante do Bloco 11: disaster recovery, capacidades/auditoria e validação técnica final;
+- Análise 7 do Bloco 11 — validação técnica final e eventuais refinamentos de segurança/consistência;
 - estrutura oficial da implementação e plano da Fase 2;
 - gates de ambiente real: Windows/WebView2, Launcher/SMB, Word, impressoras, ACL/filesystem e EDR.
 
