@@ -1,205 +1,153 @@
 # Bloco 11 — Análise 6 — Disaster recovery, capacidades e auditoria
 
-**Status:** APROVADA PELO PO  
+**Status:** APROVADA PELO PO / CONSOLIDADA  
 **Bloco:** 11 — Backup / Restauração técnico  
-**Data:** 2026-08-31  
 **Aprovação:** 2026-09-01
 
 ## Objetivo
 
-Fechar a fronteira técnica de recuperação quando o Host normal não consegue atingir readiness, decidir a pendência de capacidades de Backup/Restore e especificar auditoria administrativa suficiente para Backup, Restore, retenção e disaster recovery.
+Fechar a recuperação quando o Host normal não atinge readiness, as capacidades finais de Backup/Restore e a auditoria administrativa necessária para Backup, retenção, Restore e disaster recovery.
 
-Esta análise parte das Análises 1–5 aprovadas. Não reabre a UX da Tela 13 e não enfraquece o contrato Pocket.
+## Fronteira do disaster recovery
 
----
+Disaster recovery é **excepcional, local e controlado**.
 
-## 6.1 Fronteira do disaster recovery
+Elegível quando:
 
-Disaster recovery é um fluxo **excepcional, local e controlado**. Ele existe quando o Restore normal pela UI não pode ser usado com segurança porque o Host não consegue iniciar/readiness sobre o estado ativo ou porque a recuperação normal terminou em `RECOVERY_REQUIRED/uncertain`.
-
-Exemplos elegíveis:
-
-- `data/stepflow.sqlite` não abre ou falha validação de startup;
-- estado persistente ativo está corrompido/incompleto e impede readiness;
-- journal de Restore indica resultado `uncertain` que o Host normal não pode resolver automaticamente;
+- SQLite ativo não abre/valida;
+- estado persistente está corrompido/incompleto e impede readiness;
+- Restore normal terminou em `RECOVERY_REQUIRED/uncertain`;
 - estado ativo não permite criar o safety backup obrigatório do Restore normal.
 
 Não é disaster recovery:
 
-- preferência do operador por “pular” o safety backup;
-- backup incompatível com a versão/schema atual;
-- erro comum de permissão do usuário;
+- preferência por pular safety backup;
+- pacote incompatível;
+- erro comum de permissão da sessão;
 - Host saudável com Restore normal disponível;
-- tentativa de importar pacote arbitrário pela rede.
+- importação remota arbitrária.
 
-Se o Host normal consegue atingir readiness e executar Restore seguro, deve-se usar o fluxo normal da Tela 13.
+Se o Host normal consegue readiness e Restore seguro, usa-se a Tela 13.
 
-## 6.2 Superfície operacional
+## Modo Recovery local
 
-Baseline aprovada: **modo de recuperação explícito do StepFlowController na máquina central**, reutilizando módulos de validação/restauração do Host sem iniciar a API normal.
-
-Conceito:
+Baseline:
 
 ```text
 operador na máquina central
-→ encerra ciclo StepFlow / confirma ausência de Host
-→ inicia StepFlowController em modo Recovery
-→ Controller adquire exclusividade da implantação
-→ Recovery não abre listener HTTP/WebSocket normal
-→ enumera backups administrados
-→ operador escolhe candidato
-→ valida e prepara recuperação
+→ encerrar/confirmar ausência de Host normal
+→ iniciar Controller em modo Recovery
+→ adquirir exclusividade da implantação
+→ sem listener HTTP/WebSocket normal
+→ enumerar backups administrados
+→ escolher candidato
+→ validar/preparar
 → confirmação local reforçada
+→ preservar estado antigo quando possível
 → troca controlada de data/
-→ valida estado recuperado
-→ encerra Recovery
-→ inicia ciclo normal
+→ validar
+→ encerrar Recovery
+→ iniciar fresh Host normal
+→ readiness/login
 ```
 
 Regras:
 
-- não criar Windows Service, Task Scheduler, watchdog, tray ou daemon;
-- não depender de Client remoto;
-- não expor endpoint de disaster recovery na LAN;
-- não iniciar Host normal em paralelo;
-- reutilizar biblioteca/módulo comum de envelope, compatibilidade, migrations, journal e ativação; não duplicar algoritmo crítico em executáveis independentes;
-- o detalhe de CLI/janela local fica para a fase executável, desde que continue transitório e local.
+- sem Windows Service, Task Scheduler, watchdog, tray ou daemon;
+- sem Client remoto;
+- sem endpoint de disaster recovery na LAN;
+- sem Host normal paralelo;
+- reutiliza módulos comuns de envelope, compatibilidade, migrations, journal e ativação;
+- detalhe futuro de CLI/janela local pode variar sem quebrar essa fronteira.
 
-## 6.3 Exclusividade e preflight local
+## Exclusividade, ACL e autoridade
 
-Antes de qualquer recovery destrutivo:
+Antes de recovery destrutivo:
 
-- confirmar implantação/paths esperados;
-- obter o mesmo mecanismo de instância única sobre os dados;
-- confirmar ausência de Host normal usando a implantação;
-- validar que `backups/`, staging e local do journal pertencem à raiz administrada;
-- verificar espaço/permissões necessárias;
-- não seguir reparse points/symlinks/junctions;
-- bloquear execução se outra operação/journal ativo puder ser reconciliado automaticamente primeiro.
+- validar implantação/roots;
+- adquirir o mesmo mecanismo de instância única;
+- confirmar ausência de Host normal;
+- verificar `backups/`, staging, journal e permissões;
+- não seguir reparse points;
+- reconciliar automaticamente journal conhecido antes de oferecer intervenção manual, quando possível.
 
-Recovery não força acesso sobre uma instância ativa.
+Recovery não depende de login no `stepflow.sqlite`, porque o banco pode estar indisponível.
 
-## 6.4 Autoridade quando o banco não funciona
+Autoridade baseline:
 
-Disaster recovery não pode depender de autenticação no `stepflow.sqlite`, porque o próprio banco pode estar indisponível.
+- execução local na máquina central;
+- acesso autorizado pelo Windows/ACL à implantação;
+- exclusividade StepFlow;
+- confirmação reforçada local.
 
-A fronteira inicial de autoridade é:
+Não existe senha mestre paralela. Principal Windows pode ser registrado para auditoria/diagnóstico, sem virar usuário StepFlow por inferência.
 
-- execução **local** na máquina central;
-- acesso já autorizado à pasta/arquivos da implantação pelo Windows;
-- exclusividade da instância StepFlow;
-- confirmação reforçada local antes da alteração destrutiva.
+Sem autoelevação: permissão insuficiente falha explicitamente.
 
-O StepFlow não tenta inventar uma segunda base de usuários ou senha mestre paralela apenas para Recovery.
+## Origem do candidato
 
-Quando disponível, registrar identidade do principal Windows do processo para auditoria/diagnóstico. Essa identidade não é convertida em usuário StepFlow por inferência.
-
-Recovery não exige elevação administrativa como requisito do produto se as ACLs da implantação já concederem os direitos necessários. Falha de permissão deve ser corrigida pela administração da máquina/ACL, não por autoelevação silenciosa.
-
-## 6.5 Origem do backup no Recovery
-
-O Recovery normaliza a mesma fronteira física aprovada para o catálogo:
+Baseline:
 
 ```text
 backups/*.stepflow-backup
 ```
 
-Baseline:
+- somente pacotes finais administrados;
+- `.staging` não é candidato;
+- parser seguro e validação integral;
+- `backup_id` do manifesto permanece identidade;
+- sem upload/importação pela rede;
+- sem path arbitrário fora do root administrado.
 
-- listar somente pacotes finais administrados da implantação;
-- `.staging` nunca é candidato;
-- pacote precisa passar pelo mesmo parser seguro;
-- `backup_id` do manifesto continua sendo identidade;
-- não há upload/importação pela rede;
-- não apontar para arquivo arbitrário fora do root administrado no baseline.
+Backup externo em desastre real pode ser copiado operacionalmente para o root administrado fora do app; depois ainda passa por todas as validações, incluindo `source_deployment_id`.
 
-Se um backup externo precisar ser utilizado em desastre real, a cópia para o diretório administrado é procedimento operacional local fora do app e o pacote ainda passa pela validação integral. Isso não vira feature de upload/importação do Client.
+## Validação/compatibilidade
 
-## 6.6 Validação e compatibilidade no Recovery
+Recovery não relaxa regras do Restore normal:
 
-Disaster recovery **não relaxa** integridade ou compatibilidade.
+- envelope/paths/tamanhos/SHA-256;
+- canonicalização Windows estrita;
+- `source_deployment_id`;
+- limites estruturais/preflight de espaço;
+- `integrity_check = ok`;
+- `foreign_key_check` vazio;
+- `format_version` suportado;
+- schema/migration path;
+- schema antigo somente com migrations forward completas;
+- schema novo = incompatível;
+- sem down migration automática.
 
-Antes da troca:
+## Estado ativo danificado
 
-- validar envelope, paths, tamanhos e SHA-256 integralmente;
-- extrair para staging same-volume controlado;
-- executar `PRAGMA integrity_check = ok`;
-- executar `PRAGMA foreign_key_check` e exigir zero violações;
-- validar `format_version`;
-- validar schema/migration path;
-- schema mais antigo só avança com cadeia completa de migrations forward;
-- schema mais novo que o runtime Recovery permanece incompatível;
-- nenhuma down migration automática.
-
-Se o runtime atual não entende o backup, Recovery não improvisa interpretação.
-
-## 6.7 Tratamento do estado ativo danificado
-
-No disaster recovery, safety backup válido pode ser impossível. Isso é precisamente uma das diferenças para o Restore normal.
-
-Antes de substituir `data/`, quando o filesystem permitir:
+Safety backup válido pode ser impossível. Nessa situação, antes da troca e quando o filesystem permitir:
 
 ```text
 data/ atual
-→ preservar como .recovery-old-<operation_id>/
-→ nunca sobrescrever silently
+→ .recovery-old-<operation_id>/
 ```
 
 Regras:
 
-- essa preservação é **best-effort estrutural**, não é declarada backup íntegro;
-- não empacotar/rotular estado corrompido como `.stepflow-backup` válido;
-- falha em produzir safety backup não bloqueia disaster recovery se o estado ativo já é inelegível ao Restore normal;
-- porém, se não for possível nem preservar/mover o estado antigo de forma controlada e o recovery não puder manter rollback operacional, a operação deve exigir diagnóstico adicional em vez de apagar por overwrite;
-- recovery nunca copia candidato por cima de arquivos ativos um a um.
+- preservação estrutural best-effort, não declaração de backup íntegro;
+- não empacotar estado corrompido como `.stepflow-backup` válido;
+- ausência de safety backup não bloqueia Recovery quando o estado já é inelegível ao Restore normal;
+- se nem a preservação controlada nem a troca segura forem possíveis, exigir diagnóstico em vez de overwrite.
 
-## 6.8 Ativação e journal
+## Ativação e pós-Recovery
 
-Recovery reutiliza a mesma estratégia de conjunto lógico e journal das Análises 4–5:
+Recovery reutiliza staging/journal/troca same-volume/no-replace das Análises 4–5.
 
-```text
-candidato validado
-→ journal Recovery persistido fora de data/
-→ data atual → .recovery-old-<id>
-→ data-next → data
-→ validar data ativo
-→ fresh startup normal
-```
+Depois de estado conhecido:
 
-- troca same-volume;
-- no-replace;
-- nenhuma conclusão entre os renames;
-- journal + realidade do filesystem definem recovery após crash;
-- resultado ambíguo permanece `RECOVERY_REQUIRED/uncertain`;
-- cleanup destrutivo fica suspenso enquanto o estado não for comprovado.
-
-O formato físico pode reutilizar a família `backups/.operations/`, distinguindo `operation_type = recovery` de `restore`.
-
-## 6.9 Pós-recovery
-
-Depois de ativar e validar o candidato:
-
-1. encerrar o modo Recovery;
-2. iniciar um fresh Host normal;
-3. processar qualquer journal terminal antes de readiness;
-4. abrir schema/migrations de forma normal;
+1. encerrar modo Recovery;
+2. iniciar fresh Host normal;
+3. processar journal terminal antes de readiness;
+4. abrir schema/migrations normalmente;
 5. reconstruir caches/projeções;
-6. não reutilizar sessão StepFlow anterior;
-7. somente então disponibilizar login e uso normal.
+6. não reutilizar sessão anterior;
+7. somente então disponibilizar login/uso.
 
-O Recovery não mantém Host/API normal rodando em paralelo após concluir.
-
-## 6.10 Capacidades — separação granular
-
-O contrato de autorização deve distinguir pelo menos:
-
-- consultar catálogo/detalhes de backups;
-- criar Backup manual;
-- executar Restore normal.
-
-Restore nunca é consequência automática da permissão de Backup.
-
-Baseline de presets aprovada:
+## Capacidades
 
 | Ação | ADM | Gerência | Funcionário |
 |---|---:|---:|---:|
@@ -207,192 +155,137 @@ Baseline de presets aprovada:
 | Criar backup manual | sim | sim | não |
 | Executar Restore normal | sim | não | não |
 
-Isso fecha a pendência histórica **Gerência × Backup = sim** para consulta/criação, mantendo **Restore = ADM somente**.
+Regras:
 
-Motivos:
+- Backup de Gerência não concede Restore;
+- Restore permanece restrito a ADM;
+- Gerência não concede Restore a si/outros;
+- disaster recovery local não é capability de sessão.
 
-- Backup é operação protetiva e não substitui o estado ativo;
-- Gerência já possui responsabilidades administrativas/operacionais amplas;
-- Restore é destrutivo e mantém fricção/autoridade superior;
-- conceder Backup a Gerência não amplia sua capacidade para Restore.
+## Auditoria em duas camadas
 
-## 6.11 Delegação e teto
+### Funcional no SQLite
 
-Na primeira versão:
+Quando o banco estiver saudável, registrar ação associada ao usuário StepFlow conforme o mecanismo de auditoria do produto.
 
-- capacidade de Restore permanece restrita a contas ADM;
-- Gerência não pode conceder Restore a si ou a outro usuário;
-- Funcionário não recebe Backup/Restore por preset;
-- customização futura continua sujeita ao teto de delegação Host-side;
-- ocultação Client-side é somente UX.
+### Administrativa fora de `data/`
 
-Disaster recovery local não é uma capacidade de sessão porque pode ocorrer sem banco/sessão. Ele é procedimento de operação central protegido pela fronteira local/ACL/exclusividade descrita acima.
-
-## 6.12 Auditoria em duas camadas
-
-Backup/Restore precisam de evidência administrativa que sobreviva a um Restore do próprio banco.
-
-Contrato:
-
-### Auditoria funcional no SQLite
-
-Quando o banco ativo estiver saudável, registrar no mecanismo de auditoria do produto ações associadas ao usuário StepFlow, conforme modelo conceitual vigente.
-
-### Trilha administrativa fora de `data/`
-
-Operações críticas também emitem registros estruturados em storage de logs administrado e **não restaurável**, por exemplo:
+Baseline conceitual:
 
 ```text
 logs/admin-audit.jsonl
 ```
 
-Características:
-
 - append-only pela aplicação no fluxo normal;
-- fora de `data/`, portanto não volta no tempo quando um Restore substitui o banco;
-- não é parte do pacote de Backup normal;
-- protegido pelas ACLs da implantação;
-- não é anunciado como log criptograficamente imutável/tamper-proof;
-- rotação/retention física de logs será operacional, sem apagar evidência necessária durante operação `uncertain`.
+- fora de `data/`, portanto não volta no tempo em Restore;
+- fora do pacote normal;
+- protegido por ACL;
+- não é anunciado como tamper-proof criptográfico;
+- rotação física fica para política operacional/Bloco 12 sem destruir evidência necessária em `uncertain`.
 
-## 6.13 Eventos mínimos de auditoria administrativa
-
-Registrar de forma proporcional pelo menos:
+## Eventos mínimos de auditoria
 
 ### Backup manual
 
-- `operation_id`;
+- operation ID;
 - ator StepFlow;
-- ação solicitada;
-- `backup_id` produzido quando houver;
-- horário de início/fim;
-- resultado real;
-- código de falha/warning sanitizado quando aplicável.
+- ação;
+- backup ID quando houver;
+- início/fim;
+- resultado;
+- código sanitizado.
 
 ### Backup de sistema
 
-- `backup_id`;
-- `origin = system`;
-- motivo (`pre_restore`, `pre_migration` ou equivalente);
+- backup ID;
+- `origin=system`;
+- motivo (`pre_restore`, `pre_migration` etc.);
 - operação pai;
 - resultado.
 
 ### Retenção
 
-- backup removido por `backup_id`;
+- backup ID removido;
 - motivo `retention`;
-- resultado da remoção;
-- warning se o limite não puder ser cumprido.
+- resultado/warning.
 
-### Restore normal
+### Restore
 
-- `operation_id`;
-- ator StepFlow;
-- source `backup_id`;
-- safety `backup_id`;
-- schema de origem/final quando útil;
+- operation ID;
+- ator;
+- source/safety backup IDs;
+- schema útil;
 - entrada em fase destrutiva;
-- resultado terminal `completed`, `rolled_back`, `failed_pre_destructive` ou `uncertain`;
-- restart/recovery associado quando houver.
+- resultado terminal;
+- restart/recovery associado.
 
 ### Disaster recovery
 
-- `operation_id`;
-- principal Windows local quando disponível;
-- source `backup_id`;
-- razão de entrada em Recovery;
-- preservação de estado antigo quando possível;
-- resultado terminal;
-- warnings/falhas de validação.
+- operation ID;
+- principal Windows quando disponível;
+- source backup ID;
+- razão de Recovery;
+- preservação do estado antigo;
+- resultado/warnings.
 
-## 6.14 Conteúdo proibido na auditoria
+## Conteúdo proibido
 
-Não registrar por conveniência:
+Não registrar:
 
 - senha;
 - token/sessão reutilizável;
-- conteúdo integral de backup;
-- conteúdo de documentos/Atendimentos;
-- hashes de senha;
+- conteúdo integral do backup;
+- conteúdo documental/Atendimento desnecessário;
+- password hash;
 - segredo de configuração;
 - dump SQL;
-- stack trace bruto para o Client;
-- path arbitrário fornecido por pacote.
+- path arbitrário do pacote.
 
-Paths técnicos locais só entram em log técnico sanitizado quando necessários ao diagnóstico; a auditoria administrativa prefere IDs lógicos.
+## Falha de auditoria
 
-## 6.15 Falha da auditoria
+Antes da fase destrutiva, impossibilidade de gravar journal/evidência mínima bloqueia Restore/Recovery.
 
-A impossibilidade de gravar evidência **antes de uma fase destrutiva** é tratada como falha de preflight para Restore/Recovery normal, pois a operação crítica precisa deixar trilha mínima e também depende de storage operacional gravável para journal.
+Depois que alteração física já ocorreu, falha de auditoria:
 
-Depois que uma alteração física já ocorreu, falha ao escrever um registro de auditoria não muda a realidade do dado:
+- não reescreve artificialmente o resultado físico;
+- gera warning/`AUDIT_WRITE_FAILED` quando possível;
+- preserva artefatos necessários;
+- expõe condição administrativa.
 
-- não declarar Restore fisicamente revertido apenas porque o log falhou;
-- registrar `AUDIT_WRITE_FAILED`/warning onde ainda for possível;
-- preservar journal/artefatos quando necessário;
-- expor condição administrativa para correção.
+Backup já confirmado não é apagado/inválido apenas por falha posterior da auditoria.
 
-Para Backup já confirmado, falha posterior de auditoria não apaga nem invalida fisicamente o pacote válido; o resultado técnico do backup e o warning de auditoria são reportados separadamente.
+## Journal × admin audit × log técnico
 
-## 6.16 Relação entre journal, logs e auditoria
-
-São mecanismos distintos:
-
-- **journal de Restore/Recovery**: estado operacional mínimo para permitir reconciliação determinística após crash;
-- **admin audit**: evidência cronológica da ação/ator/resultado;
-- **logs técnicos**: diagnóstico detalhado sanitizado.
+- **journal:** estado operacional para recovery determinístico;
+- **admin audit:** evidência cronológica de ação/ator/resultado;
+- **log técnico:** diagnóstico sanitizado.
 
 Nenhum substitui o outro.
 
-O journal pode ser removido após estado conhecido conforme Análise 5. A auditoria administrativa permanece conforme política de logs; logs técnicos podem ter rotação própria.
+## Decisões aprovadas — D11.83 a D11.103
 
-## 6.17 Exposição ao Client
+- **D11.83:** disaster recovery só quando Restore normal seguro não está disponível;
+- **D11.84:** Recovery baseline é modo local/transitório do Controller sem listener normal de rede;
+- **D11.85:** Recovery exige exclusividade e ausência de Host normal concorrente;
+- **D11.86:** Recovery não depende de login no banco; autoridade vem de acesso local/ACL/exclusividade/confirmação;
+- **D11.87:** Recovery não autoeleva; permissão insuficiente falha explicitamente;
+- **D11.88:** candidatos baseline vêm de `backups/*.stepflow-backup`; staging/arquivo arbitrário externo não são importados pela aplicação;
+- **D11.89:** Recovery usa mesma validação/compatibilidade/migrations forward do Restore normal;
+- **D11.90:** ausência de safety backup não bloqueia disaster recovery real quando estado ativo já é inelegível ao fluxo normal;
+- **D11.91:** estado ativo é preservado como `.recovery-old-<id>` quando possível, sem ser rotulado como backup íntegro;
+- **D11.92:** Recovery reutiliza staging, journal, troca same-volume/no-replace e reconciliação determinística;
+- **D11.93:** após Recovery conhecido, fresh Host normal deve atingir readiness antes do uso;
+- **D11.94:** ADM/Gerência podem consultar/criar Backup; Funcionário não;
+- **D11.95:** Restore normal permanece ADM-only e não decorre de Backup;
+- **D11.96:** Gerência × Backup = SIM para consulta/criação, Restore = NÃO;
+- **D11.97:** disaster recovery local não é capability de sessão;
+- **D11.98:** operações críticas registram auditoria funcional quando possível + trilha administrativa fora de `data/`;
+- **D11.99:** `logs/admin-audit.jsonl`/equivalente é append-only pela aplicação, protegido por ACL, sem alegação de tamper-proof;
+- **D11.100:** auditar Backup manual/system, retenção, Restore e disaster recovery com IDs/ator/origem/timestamps/resultado/códigos sanitizados;
+- **D11.101:** auditoria não registra senhas, tokens, conteúdo integral, dumps SQL ou conteúdo de negócio desnecessário;
+- **D11.102:** falha de auditoria/journal antes da fase destrutiva bloqueia Restore/Recovery; falha posterior vira warning sem falsificar resultado físico;
+- **D11.103:** journal, admin audit e log técnico são mecanismos distintos com lifecycles diferentes.
 
-A UX normal continua simples:
+## Relação com validação final
 
-- Gerência/ADM autorizados veem catálogo e criação de Backup;
-- somente ADM vê/aciona Restore;
-- disaster recovery não aparece como botão remoto;
-- detalhes de principal Windows, journal, paths, ACL e recovery interno não aparecem na Tela 13;
-- resultado normal da operação continua vindo do Host por estado confirmado.
-
-Nenhuma nova tela de produção é necessária para esta análise.
-
-## 6.18 Decisões aprovadas — D11.83 a D11.103
-
-- **D11.83:** disaster recovery é excepcional e somente quando Restore normal seguro não está disponível por falha/readiness/corrupção/`uncertain`;
-- **D11.84:** baseline de Recovery é modo local explícito do Controller na máquina central, transitório e sem listener normal de rede;
-- **D11.85:** Recovery exige exclusividade da implantação e ausência de Host normal concorrente;
-- **D11.86:** Recovery não depende de login no banco; autoridade vem de acesso local controlado + ACLs da implantação + confirmação reforçada;
-- **D11.87:** Recovery não exige elevação automática; permissões insuficientes falham explicitamente;
-- **D11.88:** candidatos baseline vêm de `backups/*.stepflow-backup`; `.staging` e arquivo arbitrário externo não são importados pela aplicação;
-- **D11.89:** Recovery usa a mesma validação integral e a mesma regra de compatibilidade/migrations forward do Restore normal, sem down migration;
-- **D11.90:** ausência de safety backup válido não bloqueia disaster recovery quando o estado ativo já é inelegível ao fluxo normal;
-- **D11.91:** estado ativo é preservado como `.recovery-old-<id>` quando possível, mas nunca rotulado como backup íntegro sem validação;
-- **D11.92:** Recovery reutiliza staging, journal, troca same-volume/no-replace e reconciliação determinística das Análises 4–5;
-- **D11.93:** após Recovery conhecido, um fresh Host normal deve atingir readiness antes do retorno ao uso;
-- **D11.94:** presets iniciais: ADM e Gerência podem consultar/criar Backup; Funcionário não;
-- **D11.95:** Restore normal permanece ADM-only e não é concedido por consequência de Backup;
-- **D11.96:** Gerência × Backup é fechado como **SIM** para consulta/criação, mantendo Restore = **NÃO**;
-- **D11.97:** disaster recovery local não é capability de sessão; é procedimento central protegido por acesso local/ACL/exclusividade;
-- **D11.98:** operações críticas registram auditoria funcional quando possível e trilha administrativa estruturada fora de `data/` para sobreviver a Restore;
-- **D11.99:** `logs/admin-audit.jsonl`/equivalente é append-only pela aplicação no baseline, protegido por ACL, sem alegação de tamper-proof criptográfico;
-- **D11.100:** auditar Backup manual/system, retenção, Restore e disaster recovery com IDs, ator/origem, timestamps, resultado e códigos sanitizados;
-- **D11.101:** auditoria não registra senhas, tokens, conteúdo integral do backup, dumps SQL ou conteúdo de negócio desnecessário;
-- **D11.102:** falha de auditoria/journal antes da fase destrutiva bloqueia Restore/Recovery; falha depois de alteração física não reescreve artificialmente o resultado real e vira warning/condição administrativa;
-- **D11.103:** journal operacional, admin audit e log técnico são mecanismos distintos com lifecycles diferentes.
-
-## Pendências para a validação final
-
-Depois desta análise resta verificar de forma cruzada:
-
-- coerência D11.1–D11.103;
-- ausência de escolha crítica não resolvida;
-- impactos documentais em autenticação, Host, comunicação, Tela 13 e modelo de dados;
-- parâmetros numéricos deliberadamente reservados ao Bloco 12;
-- gates reais de Windows/filesystem/ACL/EDR;
-- nenhuma quebra do contrato Pocket.
-
-## Próximo passo
-
-Seguir para **Análise 7 — validação técnica final do Bloco 11**.
+D11.104–D11.116 complementam esta análise com safety barrier contínuo, canonicalização Windows, `source_deployment_id`, limites estruturais, baseline de criptografia/assinatura e gates finais. Não permanece pendência arquitetural desta análise.
