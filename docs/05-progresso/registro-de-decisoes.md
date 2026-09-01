@@ -74,7 +74,7 @@ Campos principais: Código, Título, Área/Departamento, Responsável, Status, V
 - publicar é separado de salvar;
 - `revision_no` técnico separado de `display_version` editorial.
 
-Pendente: regra editorial de nova revisão ainda referenciando categoria arquivada.
+Pendente em Análise 4 do Bloco 12: regra editorial de nova revisão ainda referenciando categoria arquivada.
 
 ## 5. Reader e direção visual
 
@@ -124,10 +124,9 @@ Concluído/Cancelado
 - bootstrap do primeiro ADM é local/controlado;
 - Gerência não administra ADM;
 - Backup = ADM sim, Gerência sim, Funcionário não;
-- Restore = ADM sim, Gerência não, Funcionário não;
-- Gerência × configuração da empresa permanece **PENDENTE**.
+- Restore = ADM sim, Gerência não, Funcionário não.
 
-Parâmetros finais pendentes: custo Argon2id, senha mínima, duração/expiração de sessão e tamanho/entropia numérica do token.
+Parâmetros finais de Argon2id/senha/sessão/token e Gerência × configuração da empresa estão em revisão na Análise 4 do Bloco 12; P12.56–P12.79 ainda não são contrato.
 
 ### Restore e sessões
 
@@ -191,7 +190,7 @@ Decisões vigentes: **D11.1–D11.116**.
 - `backup_id` é identidade canônica;
 - Restore sempre revalida integralmente;
 - retenção sem scheduler e por quantidade;
-- `retention_max_confirmed_backups` terá valor final no Bloco 12;
+- valor final de `retention_max_confirmed_backups` está em revisão no Bloco 12;
 - backups em uso/resultado incerto ficam protegidos;
 - lease exclusivo coordena `BACKUP`, `RESTORE`, `MIGRATION`;
 - `uncertain` suspende retenção/cleanup destrutivo.
@@ -234,79 +233,66 @@ Decisões vigentes: **D11.1–D11.116**.
 - safety backup `pre_restore` mantém barrier desde a captura até o primeiro rename;
 - nenhuma mutação em `data/` ocorre após captura do safety snapshot;
 - digest de `data-next/` é revalidado antes de `DESTRUCTIVE_STARTED`;
-- paths seguem canonicalização Windows estrita e bloqueiam traversal/drive/UNC/device/ADS/reserved names/trailing dot-space/case collision/reparse/non-regular;
+- paths seguem canonicalização Windows estrita;
 - criação de Backup aplica a mesma disciplina aos arquivos administrados;
-- manifesto inclui `source_deployment_id` e bloqueia `source_mismatch` no baseline;
+- manifesto inclui `source_deployment_id`;
 - parser/extração são bounded e fazem preflight de espaço;
-- baseline sem criptografia nem assinatura application-level; SHA-256 é integridade, não autenticidade;
-- offsite/cópia corporativa é responsabilidade operacional externa ao baseline;
-- adapter Windows, ACL/EDR/long paths/crash injection são gates obrigatórios antes de produção;
-- não existe bloqueador arquitetural conhecido para o Bloco 11.
+- baseline sem criptografia/assinatura application-level; SHA-256 é integridade, não autenticidade;
+- adapter Windows, ACL/EDR/long paths/crash injection são gates obrigatórios antes de produção.
 
 Fonte principal: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
 
 ## 11. Estrutura oficial / Bloco 12
 
-Decisões vigentes: **D12.1–D12.34**.
+Decisões vigentes: **D12.1–D12.55**.
 
-### Source tree e publicação — D12.1–D12.18
+### Estrutura e publicação — D12.1–D12.18
 
 - workspace Rust virtual na raiz;
-- `apps/` contém os binários `client`, `launcher`, `controller`, `host`;
-- `crates/` contém somente responsabilidades reutilizáveis concretas;
-- Client em `apps/client/web/` usa ES modules por feature/componente/serviço/shared;
-- `src-tauri/` permanece shell fino;
-- migrations pertencem ao Host;
-- scripts são tooling de dev/build/test/package, nunca runtime de produção;
-- testes unit/integration ficam junto ao owner e `tests/e2e/` cobre fluxos entre componentes;
-- `target/`, `dist/`, dados reais e pacotes gerados não são versionados;
-- aprovação da estrutura não autoriza scaffold antes do gate final do Bloco 12;
-- publicação usa `StepFlow.exe` na raiz como Launcher amigável e único ponto de entrada normal;
-- artefatos técnicos ficam em `_internal/client` e `_internal/server`;
-- `.lnk` não é requisito baseline e Hidden/System é apenas acabamento opcional.
+- `apps/` contém `client`, `launcher`, `controller`, `host`;
+- `crates/` somente para responsabilidades reutilizáveis concretas;
+- Client usa ES modules e `src-tauri` fino;
+- source tree e pasta publicada são distintos;
+- `StepFlow.exe` na raiz é Launcher amigável e único ponto de entrada normal;
+- `_internal/` encapsula artefatos técnicos;
+- `.lnk` não é requisito baseline.
 
-### Workspace/build/dependências — D12.19–D12.34
+### Workspace/build — D12.19–D12.34
 
-- toolchain oficial inicial: Rust `1.98.0`, `x86_64-pc-windows-msvc`, rustup `minimal`, `rustfmt` e `clippy`;
-- Edition 2024 + Cargo resolver 3 em virtual workspace;
-- `rust-toolchain.toml` e `Cargo.lock` versionados;
-- build/test/package oficiais usam lockfile e não atualizam dependências incidentalmente;
-- dependências compartilhadas só entram em `[workspace.dependencies]` quando houver uso real;
-- baseline inicial: Tauri 2.11.x, tauri-build 2.6.x, Tauri CLI 2.11.x, Tokio ~1.51, Axum 0.8.9, rusqlite 0.40.2 bundled, Serde 1.0.229, serde_json 1.0.151, tracing 0.1.44 e tower-http 0.6.8, somente onde aplicável;
-- Client vanilla modular não usa Node/npm/pnpm/yarn/Vite/bundler/framework no baseline;
-- Tauri CLI é ferramenta de desenvolvimento, nunca runtime Pocket;
-- configuração separa build/dev, deployment e runtime central;
-- `target/` e `dist/` são descartáveis; produção nasce do packaging;
-- LTO/strip/panic/codegen tuning só entra por medição;
-- scripts PowerShell são wrappers finos e lockfile-aware.
+- Rust 1.98.0, Edition 2024, resolver 3, Windows x64 MSVC;
+- toolchain e `Cargo.lock` versionados;
+- build/test/package lockfile-aware;
+- dependências só entram com uso real;
+- Client vanilla sem Node/npm/Vite/bundler no baseline;
+- configuração build/dev × deployment × runtime;
+- produção vem de packaging, não `target/release` direto;
+- scripts PowerShell finos.
 
-Fontes principais:
+### Migrations/testes/fixtures — D12.35–D12.55
 
-- `docs/04-planejamento/bloco-12-estrutura-oficial-plano-fase-2.md`;
-- `docs/04-planejamento/bloco-12-analise-2-workspace-build-dependencias.md`.
+- migrations Host-side `NNNNNN_<slug>.sql`, imutáveis e embutidas no Host;
+- runner próprio + `schema_migrations` com checksum;
+- `pre_migration` backup antes de lote pendente em banco existente;
+- lote transacional, sem down migration automática ou `writable_schema` como atalho;
+- `quick_check` + `foreign_key_check` antes de readiness;
+- testes em SQLite temporário real e prefixes da cadeia;
+- fixtures sintéticas, nunca seed de produção;
+- scripts iniciais `check/test/build/package.ps1` como wrappers finos.
 
 ### Em análise
 
-- migrations/scripts/testes/fixtures — P12.35–P12.55;
-- parâmetros numéricos e decisões funcionais restantes;
-- plano da Fase 2;
+- parâmetros finais — P12.56–P12.79 em `bloco-12-analise-4-parametros-finais.md`;
+- plano detalhado da Fase 2;
 - sincronização segura do checkout local e gate explícito do primeiro scaffold.
 
 ## 12. Pendências vigentes
 
 ### Bloco 12
 
-- concluir Análises 3+;
-- aprovar disciplina de migrations/scripts/testes/fixtures;
-- parâmetros numéricos finais, inclusive retenção/limites/timeouts;
-- plano da Fase 2;
+- decidir P12.56–P12.79;
+- fechar plano detalhado da Fase 2 e sequência de tarefas Codex;
+- validação final da Fase 1;
 - sincronização segura do checkout local antes do primeiro trabalho de implementação.
-
-### Outras pendências funcionais/técnicas
-
-- parâmetros finais de Argon2id/senha/sessão/token;
-- Gerência × configuração da empresa;
-- regra editorial de categoria arquivada.
 
 ### Ambiente corporativo
 
