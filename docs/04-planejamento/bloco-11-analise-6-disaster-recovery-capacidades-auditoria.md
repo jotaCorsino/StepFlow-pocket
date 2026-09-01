@@ -1,8 +1,9 @@
 # Bloco 11 — Análise 6 — Disaster recovery, capacidades e auditoria
 
-**Status:** PROPOSTA PARA REVISÃO DO PO — NÃO CONSOLIDADA  
+**Status:** APROVADA PELO PO  
 **Bloco:** 11 — Backup / Restauração técnico  
-**Data:** 2026-08-31
+**Data:** 2026-08-31  
+**Aprovação:** 2026-09-01
 
 ## Objetivo
 
@@ -35,7 +36,7 @@ Se o Host normal consegue atingir readiness e executar Restore seguro, deve-se u
 
 ## 6.2 Superfície operacional
 
-Baseline proposta: **modo de recuperação explícito do StepFlowController na máquina central**, reutilizando módulos de validação/restauração do Host sem iniciar a API normal.
+Baseline aprovada: **modo de recuperação explícito do StepFlowController na máquina central**, reutilizando módulos de validação/restauração do Host sem iniciar a API normal.
 
 Conceito:
 
@@ -198,7 +199,7 @@ O contrato de autorização deve distinguir pelo menos:
 
 Restore nunca é consequência automática da permissão de Backup.
 
-Baseline de presets proposta:
+Baseline de presets aprovada:
 
 | Ação | ADM | Gerência | Funcionário |
 |---|---:|---:|---:|
@@ -231,7 +232,7 @@ Disaster recovery local não é uma capacidade de sessão porque pode ocorrer se
 
 Backup/Restore precisam de evidência administrativa que sobreviva a um Restore do próprio banco.
 
-Proposta:
+Contrato:
 
 ### Auditoria funcional no SQLite
 
@@ -357,33 +358,33 @@ A UX normal continua simples:
 
 Nenhuma nova tela de produção é necessária para esta análise.
 
-## 6.18 Propostas resultantes — P11.83 a P11.103
+## 6.18 Decisões aprovadas — D11.83 a D11.103
 
-- **P11.83:** disaster recovery é excepcional e somente quando Restore normal seguro não está disponível por falha/readiness/corrupção/`uncertain`;
-- **P11.84:** baseline de Recovery é modo local explícito do Controller na máquina central, transitório e sem listener normal de rede;
-- **P11.85:** Recovery exige exclusividade da implantação e ausência de Host normal concorrente;
-- **P11.86:** Recovery não depende de login no banco; autoridade vem de acesso local controlado + ACLs da implantação + confirmação reforçada;
-- **P11.87:** Recovery não exige elevação automática; permissões insuficientes falham explicitamente;
-- **P11.88:** candidatos baseline vêm de `backups/*.stepflow-backup`; `.staging` e arquivo arbitrário externo não são importados pela aplicação;
-- **P11.89:** Recovery usa a mesma validação integral e a mesma regra de compatibilidade/migrations forward do Restore normal, sem down migration;
-- **P11.90:** ausência de safety backup válido não bloqueia disaster recovery quando o estado ativo já é inelegível ao fluxo normal;
-- **P11.91:** estado ativo é preservado como `.recovery-old-<id>` quando possível, mas nunca rotulado como backup íntegro sem validação;
-- **P11.92:** Recovery reutiliza staging, journal, troca same-volume/no-replace e reconciliação determinística das Análises 4–5;
-- **P11.93:** após Recovery conhecido, um fresh Host normal deve atingir readiness antes do retorno ao uso;
-- **P11.94:** presets iniciais: ADM e Gerência podem consultar/criar Backup; Funcionário não;
-- **P11.95:** Restore normal permanece ADM-only e não é concedido por consequência de Backup;
-- **P11.96:** Gerência × Backup é fechado como **SIM** para consulta/criação, mantendo Restore = **NÃO**;
-- **P11.97:** disaster recovery local não é capability de sessão; é procedimento central protegido por acesso local/ACL/exclusividade;
-- **P11.98:** operações críticas registram auditoria funcional quando possível e trilha administrativa estruturada fora de `data/` para sobreviver a Restore;
-- **P11.99:** `logs/admin-audit.jsonl`/equivalente é append-only pela aplicação no baseline, protegido por ACL, sem alegação de tamper-proof criptográfico;
-- **P11.100:** auditar Backup manual/system, retenção, Restore e disaster recovery com IDs, ator/origem, timestamps, resultado e códigos sanitizados;
-- **P11.101:** auditoria não registra senhas, tokens, conteúdo integral do backup, dumps SQL ou conteúdo de negócio desnecessário;
-- **P11.102:** falha de auditoria/journal antes da fase destrutiva bloqueia Restore/Recovery; falha depois de alteração física não reescreve artificialmente o resultado real e vira warning/condição administrativa;
-- **P11.103:** journal operacional, admin audit e log técnico são mecanismos distintos com lifecycles diferentes.
+- **D11.83:** disaster recovery é excepcional e somente quando Restore normal seguro não está disponível por falha/readiness/corrupção/`uncertain`;
+- **D11.84:** baseline de Recovery é modo local explícito do Controller na máquina central, transitório e sem listener normal de rede;
+- **D11.85:** Recovery exige exclusividade da implantação e ausência de Host normal concorrente;
+- **D11.86:** Recovery não depende de login no banco; autoridade vem de acesso local controlado + ACLs da implantação + confirmação reforçada;
+- **D11.87:** Recovery não exige elevação automática; permissões insuficientes falham explicitamente;
+- **D11.88:** candidatos baseline vêm de `backups/*.stepflow-backup`; `.staging` e arquivo arbitrário externo não são importados pela aplicação;
+- **D11.89:** Recovery usa a mesma validação integral e a mesma regra de compatibilidade/migrations forward do Restore normal, sem down migration;
+- **D11.90:** ausência de safety backup válido não bloqueia disaster recovery quando o estado ativo já é inelegível ao fluxo normal;
+- **D11.91:** estado ativo é preservado como `.recovery-old-<id>` quando possível, mas nunca rotulado como backup íntegro sem validação;
+- **D11.92:** Recovery reutiliza staging, journal, troca same-volume/no-replace e reconciliação determinística das Análises 4–5;
+- **D11.93:** após Recovery conhecido, um fresh Host normal deve atingir readiness antes do retorno ao uso;
+- **D11.94:** presets iniciais: ADM e Gerência podem consultar/criar Backup; Funcionário não;
+- **D11.95:** Restore normal permanece ADM-only e não é concedido por consequência de Backup;
+- **D11.96:** Gerência × Backup é fechado como **SIM** para consulta/criação, mantendo Restore = **NÃO**;
+- **D11.97:** disaster recovery local não é capability de sessão; é procedimento central protegido por acesso local/ACL/exclusividade;
+- **D11.98:** operações críticas registram auditoria funcional quando possível e trilha administrativa estruturada fora de `data/` para sobreviver a Restore;
+- **D11.99:** `logs/admin-audit.jsonl`/equivalente é append-only pela aplicação no baseline, protegido por ACL, sem alegação de tamper-proof criptográfico;
+- **D11.100:** auditar Backup manual/system, retenção, Restore e disaster recovery com IDs, ator/origem, timestamps, resultado e códigos sanitizados;
+- **D11.101:** auditoria não registra senhas, tokens, conteúdo integral do backup, dumps SQL ou conteúdo de negócio desnecessário;
+- **D11.102:** falha de auditoria/journal antes da fase destrutiva bloqueia Restore/Recovery; falha depois de alteração física não reescreve artificialmente o resultado real e vira warning/condição administrativa;
+- **D11.103:** journal operacional, admin audit e log técnico são mecanismos distintos com lifecycles diferentes.
 
 ## Pendências para a validação final
 
-Depois desta análise restará verificar de forma cruzada:
+Depois desta análise resta verificar de forma cruzada:
 
 - coerência D11.1–D11.103;
 - ausência de escolha crítica não resolvida;
@@ -394,4 +395,4 @@ Depois desta análise restará verificar de forma cruzada:
 
 ## Próximo passo
 
-Após aprovação de P11.83–P11.103, seguir para **Análise 7 — validação técnica final do Bloco 11**.
+Seguir para **Análise 7 — validação técnica final do Bloco 11**.
