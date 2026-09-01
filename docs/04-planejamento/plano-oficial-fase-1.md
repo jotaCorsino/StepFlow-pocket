@@ -19,73 +19,83 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 2 | Host Pocket | CONCLUÍDO | `../03-arquitetura/host-pocket.md` |
 | 3 | Launcher/distribuição | CONCLUÍDO | `../03-arquitetura/launcher-distribuicao-client.md` |
 | 4 | Comunicação Client↔Host | CONCLUÍDO | `../03-arquitetura/comunicacao-client-host.md` |
-| 5 | Autenticação/autorização | NÚCLEO CONCLUÍDO / PARÂMETROS FINAIS EM REVISÃO NO BLOCO 12 | `../03-arquitetura/autenticacao-sessao-autorizacao.md` |
+| 5 | Autenticação/autorização | CONSOLIDADO, INCLUINDO D12.56–D12.62 | `../03-arquitetura/autenticacao-sessao-autorizacao.md` |
 | 6 | Dados/schema/migrations | NÚCLEO CONCEITUAL + DISCIPLINA D12.35–D12.55 CONSOLIDADOS | `../03-arquitetura/modelo-dados-schema-fase-1.md` |
 | 7 | Concorrência/eventos | NÚCLEO CONCLUÍDO | `../03-arquitetura/concorrencia-fila-conflitos-eventos.md` |
 | 8 | UI/UX | CONCLUÍDO | `../02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração técnico | CONCLUÍDO | `bloco-11-backup-restauracao.md` |
-| 12 | Estrutura oficial + Fase 2 | EM ANÁLISE — ANÁLISES 1–3 APROVADAS | `bloco-12-estrutura-oficial-plano-fase-2.md` |
+| 12 | Estrutura oficial + Fase 2 | EM ANÁLISE — ANÁLISES 1–4 APROVADAS | `bloco-12-estrutura-oficial-plano-fase-2.md` |
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
 **EM ANÁLISE desde 2026-09-01.**
 
-### Análises 1–3 — aprovadas
+### Análises 1–4 — aprovadas
 
-Decisões vigentes: **D12.1–D12.55**.
+Decisões vigentes: **D12.1–D12.79**.
 
-Fechado até aqui:
+Fechado:
 
 - source tree modular `apps/` + `crates/`;
-- `StepFlow.exe` na raiz publicada como único ponto de entrada e `_internal/` como área técnica;
+- `StepFlow.exe` como único ponto de entrada e `_internal/` técnico;
 - Rust 1.98.0, Edition 2024, resolver 3, Windows x64 MSVC;
-- `rust-toolchain.toml` e `Cargo.lock` versionados;
-- Client vanilla modular sem Node/npm/Vite/bundler/framework no baseline;
-- configuração build/dev × deployment × runtime central;
-- packaging como fonte da pasta de produção;
-- migrations Host-side `NNNNNN_<slug>.sql`, imutáveis e embutidas no Host;
-- `schema_migrations` com checksum;
-- `pre_migration` backup antes de lote pendente em banco existente;
-- migrations transacionais no baseline + `quick_check`/`foreign_key_check` antes de readiness;
-- sem down migration automática ou `writable_schema` como atalho;
-- testes em SQLite temporário real e fixtures sintéticas;
-- scripts iniciais finos `check/test/build/package.ps1`.
+- toolchain/lockfile versionados e dependências lockfile-aware;
+- Client vanilla modular sem Node/npm/Vite/bundler/framework;
+- configuração build/dev × deployment × runtime e packaging separado de `target/`;
+- migrations Host-side imutáveis/embutidas, runner/checksum e testes em SQLite temporário real;
+- fixtures sintéticas e scripts finos `check/test/build/package.ps1`;
+- Argon2id/senha/blocklist/throttling/token/sessão fechados;
+- Gerência pode alterar configuração da empresa;
+- limites de identidade/logo e categoria arquivada fechados;
+- retenção/limites/espaço/timeouts de Backup/Restore, readiness/reconexão e rotação de logs fechados.
 
-### Análise 4 — em revisão
+Fontes:
 
-Proposta **P12.56–P12.79** fecha:
+- `bloco-12-estrutura-oficial-plano-fase-2.md`;
+- `bloco-12-analise-2-workspace-build-dependencias.md`;
+- `bloco-12-analise-3-migrations-testes-fixtures.md`;
+- `bloco-12-analise-4-parametros-finais.md`.
 
-- Argon2id/senha/blocklist/throttling/token/sessão;
-- Gerência × configuração da empresa;
-- limites de identidade/logo;
-- categoria arquivada em nova revisão;
-- retenção/limites/espaço/timeouts de Backup/Restore;
-- readiness/relaunch/reconexão;
-- rotação inicial de logs/admin audit.
+### Análise 5 — em revisão
 
-Fonte: `bloco-12-analise-4-parametros-finais.md`.
+Proposta **P12.80–P12.98** define a sequência da Fase 2:
+
+```text
+Gate Fase 1 + sync local seguro
+→ F2-T01 workspace/tooling + Host mínimo
+→ F2-T02 Host runtime/readiness
+→ F2-T03 SQLite + migrations runner
+→ F2-T04 Controller lifecycle
+→ F2-T05 Client Tauri + compatibilidade
+→ F2-T06 Launcher Pocket
+→ F2-T07 packaging Pocket
+→ F2-T08 smoke integrado + gates Windows/Pocket
+→ Gate Fase 2
+```
+
+Fonte: `bloco-12-analise-5-plano-fase-2.md`.
 
 ## O Bloco 12 ainda deve fechar
 
-1. decisão da Análise 4;
-2. plano detalhado da Fase 2 e sequência de tarefas Codex;
-3. sincronização segura do checkout local;
-4. validação final da Fase 1 e autorização explícita do primeiro scaffold.
+1. decisão da Análise 5;
+2. validação técnica/documental final da Fase 1;
+3. gate Git do PR do Bloco 12;
+4. sincronização segura do checkout local;
+5. autorização explícita do primeiro scaffold/runtime da Fase 2.
 
 ## Pendências restantes da Fase 1
 
 ### Em decisão no Bloco 12
 
-- P12.56–P12.79;
-- plano da Fase 2;
-- gate do primeiro scaffold.
+- P12.80–P12.98;
+- validação final e gate do primeiro scaffold.
 
 ### Ambiente real
 
 - Windows/WebView2 nas estações reais;
-- PoC do fallback Pocket WebView2;
+- PoC do fallback Pocket WebView2 quando necessária;
 - Launcher pelo share corporativo;
 - Word/impressoras;
 - SMB real;
@@ -94,13 +104,12 @@ Fonte: `bloco-12-analise-4-parametros-finais.md`.
 
 ## Gate atual
 
-1. concluir Análises do Bloco 12;
-2. aprovar parâmetros/estrutura/plano;
+1. concluir Análise 5;
+2. realizar validação final da Fase 1;
 3. sincronizar documentação estável;
-4. realizar validação final da Fase 1;
-5. cumprir gate Git do PR do Bloco 12;
-6. sincronizar explicitamente o checkout local preservando alterações preexistentes do PO;
-7. somente então iniciar o primeiro scaffold/runtime oficial da Fase 2.
+4. cumprir gate Git do PR do Bloco 12;
+5. sincronizar explicitamente o checkout local preservando alterações preexistentes do PO;
+6. somente então criar o primeiro branch/prompt Codex de implementação da Fase 2.
 
 ## Regras finais
 
