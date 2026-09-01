@@ -1,6 +1,6 @@
 # Roadmap — StepFlow Pocket
 
-**Status:** FASE 1 EM ANDAMENTO — BLOCO 12  
+**Status:** FASE 1 EM ANDAMENTO  
 **Atualização:** 2026-09-01
 
 O roadmap descreve **fases e resultados**, não PRs ou branches específicas. Gates operacionais correntes ficam no plano da fase e no `README.md`.
@@ -13,9 +13,9 @@ Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e
 
 ## Fase 1 — Fechamento arquitetural e especificação
 
-**EM ANDAMENTO — ÚLTIMO BLOCO.**
+**EM ANDAMENTO — Bloco 12 em análise.**
 
-Consolidado:
+Consolidado até aqui:
 
 - Client Windows/Tauri;
 - Host Pocket sob demanda;
@@ -36,40 +36,35 @@ Consolidado:
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
-**EM ANÁLISE desde 2026-09-01.**
+**EM ANÁLISE.**
 
-Resultado esperado:
+A Análise 1 propõe:
 
-- árvore oficial do source tree e ownership dos componentes;
-- workspace/build/configuração de desenvolvimento;
-- disciplina inicial de migrations/scripts/testes/fixtures;
-- fechamento dos parâmetros ainda pendentes;
-- mapeamento explícito dos gates corporativos para etapas executáveis;
-- procedimento seguro de sincronização do checkout local;
-- plano executável da Fase 2;
-- gate inequívoco que encerra a Fase 1 e autoriza o primeiro scaffold/runtime oficial.
+- workspace Rust modular;
+- `apps/` para executáveis e `crates/` somente para responsabilidades reutilizáveis concretas;
+- frontend Client organizado em ES modules;
+- source tree separado da publicação Pocket;
+- pasta Pocket publicada com `StepFlow.exe` como único ponto de entrada normal e artefatos técnicos encapsulados sob `_internal/`;
+- nenhuma autorização de scaffold antes do gate final do Bloco 12.
 
-A Análise 1 propõe `apps/` para executáveis, `crates/` para bibliotecas com responsabilidade concreta, frontend Client modular em ES modules e separação formal entre source tree e pacote Pocket publicado.
-
-Fonte: `bloco-12-estrutura-oficial-plano-fase-2.md`.
+Ainda precisa fechar dependências/versões, migrations/scripts/testes, parâmetros finais, plano executável da Fase 2 e gate do primeiro scaffold.
 
 ## Fase 2 — Fundação técnica executável
 
-**PENDENTE — SERÁ DETALHADA/ORDENADA NO BLOCO 12.**
+**PENDENTE — depende do encerramento do Bloco 12/Fase 1.**
 
-Resultado de fase esperado:
+Resultados esperados:
 
-- árvore oficial materializada;
+- árvore oficial Client/Launcher/Controller/Host;
 - builds reproduzíveis;
 - configuração de desenvolvimento;
 - comunicação mínima + health/readiness;
 - SQLite + migrations iniciais;
 - logging mínimo;
 - testes de fundação;
-- packaging inicial coerente com o contrato Pocket;
-- PoCs/gates técnicos exigidos pela Fase 1 no momento correspondente.
+- PoCs/gates técnicos exigidos pela Fase 1, incluindo fallback WebView2 Pocket quando necessário.
 
-Gate esperado: Client abre sem instalação manual, Host inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build/testes limpos passam.
+Gate: Client abre sem instalação manual, Host inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build limpo passa.
 
 ## Fase 3 — Autenticação, usuários e shell
 
