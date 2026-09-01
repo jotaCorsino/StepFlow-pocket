@@ -44,7 +44,7 @@ A Análise 1 propõe:
 - `apps/` para executáveis e `crates/` somente para responsabilidades reutilizáveis concretas;
 - frontend Client organizado em ES modules;
 - source tree separado da publicação Pocket;
-- pasta Pocket publicada com `StepFlow.exe` como único ponto de entrada normal e artefatos técnicos encapsulados sob `_internal/`;
+- como refinamento ainda não consolidado, pasta Pocket publicada com `StepFlow.exe` como único ponto de entrada normal e artefatos técnicos encapsulados sob `_internal/`;
 - nenhuma autorização de scaffold antes do gate final do Bloco 12.
 
 Ainda precisa fechar dependências/versões, migrations/scripts/testes, parâmetros finais, plano executável da Fase 2 e gate do primeiro scaffold.
