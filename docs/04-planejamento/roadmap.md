@@ -1,7 +1,7 @@
 # Roadmap — StepFlow Pocket
 
 **Status:** FASE 1 EM ANDAMENTO  
-**Atualização:** 2026-08-31
+**Atualização:** 2026-09-01
 
 O roadmap descreve **fases e resultados**, não PRs ou branches específicas. Gates operacionais correntes ficam no plano da fase e no `README.md`.
 
@@ -32,12 +32,12 @@ Consolidado até aqui:
 - códigos `AT-000001` / `EQP-000001`;
 - geração documental, exportação, impressão, Ficha compacta, naming e temporários;
 - validação técnica final do Bloco 10;
-- Backup/Restore consolidado até D11.82: envelope, consistência, catálogo/retenção, Restore/safety/compatibilidade e recovery de restart/sessões;
+- Backup/Restore consolidado até D11.103: envelope, consistência, catálogo/retenção, Restore/safety/compatibilidade, restart/sessões, disaster recovery, capacidades e auditoria;
 - contrato Pocket preservado como gate superior.
 
 ### Bloco 11 — Backup / Restore técnico
 
-**EM ANÁLISE — Análise 6.**
+**EM VALIDAÇÃO FINAL — Análise 7.**
 
 Já aprovados:
 
@@ -49,19 +49,23 @@ Já aprovados:
 - coordenação administrativa de Backup/Restore/migration;
 - Restore com revalidação integral, migrations forward, safety backup e troca lógica de `data/`;
 - journal de Restore, reconciliação antes de readiness, rollback conhecido/`uncertain`;
-- fresh Host e invalidação de sessões após fase destrutiva.
+- fresh Host e invalidação de sessões após fase destrutiva;
+- disaster recovery local/controlado pelo Controller sem listener normal;
+- Backup para ADM/Gerência e Restore ADM-only;
+- auditoria administrativa fora de `data/`.
 
-Em revisão:
+Em revisão final:
 
-- disaster recovery local/controlado;
-- capacidades finais de Backup/Restore;
-- auditoria administrativa que atravesse Restore.
+- continuidade do safety barrier até o primeiro rename;
+- revalidação final do candidato;
+- canonicalização Windows dos paths;
+- provenance por `source_deployment_id`;
+- limites estruturais de parser/extração;
+- política explícita de criptografia/assinatura no baseline;
+- limite entre disaster recovery local e proteção offsite;
+- gates de adapter/filesystem/ACL/EDR/crash.
 
-Depois:
-
-- validação técnica final do Bloco 11.
-
-Fontes: `bloco-11-backup-restauracao.md` e análises específicas 3–6.
+Fonte: `bloco-11-backup-restauracao.md` e análises específicas 3–7.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
@@ -148,12 +152,12 @@ Segurança/autorização, recuperação de falha/banco, Backup/Restore, concorr�
 
 - parâmetros finais Argon2/senha/sessão/token;
 - Gerência × configuração da empresa;
-- Gerência × Backup — em revisão no Bloco 11;
 - regra editorial de categoria arquivada;
 - valor/default final de retenção de backups;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
-- SMB/impressoras/ACL/EDR corporativos.
+- SMB/impressoras/ACL/EDR corporativos;
+- gates de filesystem/rename/journal/crash do Bloco 11.
 
 ## Regra do roadmap
 
