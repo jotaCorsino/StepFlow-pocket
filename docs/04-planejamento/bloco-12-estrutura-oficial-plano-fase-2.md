@@ -1,37 +1,26 @@
 # Bloco 12 — Estrutura oficial + plano da Fase 2
 
-**Status:** EM ANÁLISE — ANÁLISES 1–5 APROVADAS / VALIDAÇÃO FINAL EM REVISÃO  
+**Status:** CONSOLIDADO / APROVADO PELO PO  
 **Fase:** 1 — Fechamento arquitetural e especificação  
-**Abertura:** 2026-09-01
+**Abertura:** 2026-09-01  
+**Consolidação técnica:** 2026-09-01
 
 ## Objetivo
 
-Fechar o último gate da Fase 1 e transformar os contratos aprovados em uma fundação executável planejada, sem iniciar implementação funcional neste PR.
+Fechar o último gate documental da Fase 1 e transformar os contratos aprovados em uma fundação executável planejada, sem iniciar implementação funcional neste PR.
 
-O Bloco 12 fecha:
+Decisões vigentes do Bloco 12: **D12.1–D12.108**.
 
-1. árvore oficial e fronteiras entre componentes;
-2. workspace/build/dependências/configuração;
-3. migrations, scripts, testes e fixtures;
-4. parâmetros finais que não podem ficar à escolha do executor;
-5. plano detalhado da Fase 2;
-6. sincronização segura do checkout local;
-7. gate explícito que autoriza o primeiro scaffold/runtime oficial.
-
-Restrições herdadas permanecem: Pocket sem instalador/manualidade/admin/Internet/toolchain em produção; Client Tauri 2 + HTML/CSS/JS modular; Host/Controller/Launcher Rust; SQLite Host-only; sem serviço/watchdog/daemon baseline; nenhuma implementação antes do gate final.
-
-## Análises aprovadas
-
-### Análise 1 — estrutura e publicação — D12.1–D12.18
+## Análise 1 — estrutura e publicação — D12.1–D12.18
 
 - workspace por `apps/`/`crates/`;
 - Client modular em ES modules e `src-tauri` fino;
 - source tree distinto da publicação;
 - `StepFlow.exe` como único ponto de entrada normal;
 - `_internal/` encapsula a árvore técnica;
-- não criar abstrações/crates vazios por antecipação.
+- sem `.lnk` obrigatório e sem crates vazios por antecipação.
 
-### Análise 2 — workspace/build/dependências — D12.19–D12.34
+## Análise 2 — workspace/build/dependências — D12.19–D12.34
 
 Fonte: `bloco-12-analise-2-workspace-build-dependencias.md`.
 
@@ -42,7 +31,7 @@ Fonte: `bloco-12-analise-2-workspace-build-dependencias.md`.
 - configuração build/dev × deployment × runtime;
 - produção montada por packaging.
 
-### Análise 3 — migrations/scripts/testes/fixtures — D12.35–D12.55
+## Análise 3 — migrations/scripts/testes/fixtures — D12.35–D12.55
 
 Fonte: `bloco-12-analise-3-migrations-testes-fixtures.md`.
 
@@ -54,7 +43,7 @@ Fonte: `bloco-12-analise-3-migrations-testes-fixtures.md`.
 - fixtures sintéticas;
 - scripts finos de check/test/build/package.
 
-### Análise 4 — parâmetros finais — D12.56–D12.79
+## Análise 4 — parâmetros finais — D12.56–D12.79
 
 Fonte: `bloco-12-analise-4-parametros-finais.md`.
 
@@ -67,7 +56,7 @@ Fonte: `bloco-12-analise-4-parametros-finais.md`.
 - rotação de logs/admin audit;
 - parâmetros centralizados, sem defaults inseguros silenciosos.
 
-### Análise 5 — plano detalhado da Fase 2 — D12.80–D12.98
+## Análise 5 — plano detalhado da Fase 2 — D12.80–D12.98
 
 Fonte: `bloco-12-analise-5-plano-fase-2.md`.
 
@@ -86,38 +75,42 @@ Gate Fase 1 + sync local seguro
 
 Cada tarefa usa branch/PR próprios, nasce de `main` consolidada, recebe pré-flight separado e não antecipa funcionalidades das fases posteriores.
 
-## Análise 6 — validação final da Fase 1
-
-**EM REVISÃO — P12.99–P12.108.**
+## Análise 6 — validação final — D12.99–D12.108
 
 Fonte: `bloco-12-analise-6-validacao-final-fase-1.md`.
 
-A validação encontrou apenas refinamentos operacionais/documentais:
-
-- configuração inválida de retenção deve falhar explicitamente;
-- cada parâmetro tem owner único e só vira knob quando documentado como configurável;
-- `deployment.json` real de produção precisa de input explícito, sem placeholder silencioso;
-- sync local limpo usa `fetch --prune` + `merge --ff-only` e para diante de qualquer alteração/divergência inesperada;
-- gates corporativos não bloqueiam o encerramento documental da Fase 1, mas podem bloquear a saída da Fase 2/produção;
-- merge do Bloco 12 não cria autorização automática de scaffold.
+- retenção ausente usa 20; valor explicitamente inválido/fora de 5–100 falha;
+- parâmetros possuem owner funcional único;
+- `deployment.json` de produção exige input explícito;
+- packaging implantável falha se faltar deployment obrigatório;
+- sync local limpo usa `fetch --prune` + `merge --ff-only` e para diante de alteração/divergência;
+- checkout fora de `main` não é trocado automaticamente com risco a trabalho local;
+- gates corporativos não impedem encerramento documental da Fase 1, mas podem bloquear etapas executáveis/produção;
+- validação impossível fora do ambiente correto é `NÃO APLICÁVEL NESTE AMBIENTE`;
+- merge do Bloco 12 não autoriza scaffold automaticamente;
+- não há bloqueador arquitetural/documental conhecido para encerrar a Fase 1.
 
 ## Estado das análises
 
-1. Estrutura + publicação — **APROVADA** — D12.1–D12.18;
-2. Workspace/build/dependências — **APROVADA** — D12.19–D12.34;
-3. Migrations/scripts/testes/fixtures — **APROVADA** — D12.35–D12.55;
-4. Parâmetros finais — **APROVADA** — D12.56–D12.79;
-5. Plano da Fase 2 — **APROVADA** — D12.80–D12.98;
-6. Validação final da Fase 1 — **EM REVISÃO** — P12.99–P12.108.
+1. Estrutura + publicação — ✅ D12.1–D12.18;
+2. Workspace/build/dependências — ✅ D12.19–D12.34;
+3. Migrations/scripts/testes/fixtures — ✅ D12.35–D12.55;
+4. Parâmetros finais — ✅ D12.56–D12.79;
+5. Plano da Fase 2 — ✅ D12.80–D12.98;
+6. Validação final da Fase 1 — ✅ D12.99–D12.108.
 
-## Gate vigente
+## Resultado da Fase 1
 
-Até a aprovação da validação final e o fechamento Git do Bloco 12 permanece proibido:
+A Fase 1 está **documental e tecnicamente concluída**. Nenhum scaffold/runtime oficial, migration SQL ou código de negócio foi criado.
 
-- criar workspace/toolchain/lockfile oficiais;
-- criar apps/crates/scaffold runtime;
-- criar migration SQL oficial;
-- criar scripts/fixtures executáveis;
-- implementar UI/Host/Launcher/Controller;
-- sincronizar ou alterar automaticamente o checkout local do PO;
-- iniciar tarefa Codex de implementação.
+A transição operacional para a Fase 2 continua condicionada a:
+
+```text
+fechar PR/branch do Bloco 12
+→ verificar remoto limpo
+→ sincronizar C:\dev\StepFlow com segurança
+→ autorização explícita do PO
+→ pré-flight + prompt F2-T01
+```
+
+Esses gates operacionais não alteram D12.1–D12.108.
