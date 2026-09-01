@@ -1,7 +1,7 @@
 # Autenticação, Sessão e Autorização — StepFlow Pocket
 
 **Status:** NÚCLEO CONSOLIDADO PARA A FASE 1 / PARÂMETROS FINAIS PENDENTES  
-**Atualização:** 2026-08-31
+**Atualização:** 2026-09-01
 
 ## Princípios
 
@@ -94,10 +94,12 @@ Fonte: `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.m
 | Criar/promover/rebaixar ADM | sim | não | não |
 | Gerir categorias | sim | sim | não |
 | Alterar configuração da empresa | sim | **PENDENTE** | não |
-| Backup | sim | **PENDENTE** | não |
+| Backup | sim | sim | não |
 | Restore | sim | não | não |
 
-`PENDENTE` não significa sim nem não. A Análise 6 do Bloco 11 propõe fechar Gerência × Backup, mas essa proposta ainda não é contrato.
+No Bloco 11, Backup foi fechado de forma granular: ADM e Gerência podem consultar catálogo/detalhes e criar Backup manual; Restore permanece ADM-only e nunca é concedido por consequência de Backup.
+
+Disaster recovery local não é capability de sessão, pois precisa continuar disponível quando o próprio banco não consegue autenticar. Ele é procedimento central/transitório protegido por acesso local, ACLs e exclusividade da implantação.
 
 ## Capacidades operacionais
 
@@ -108,7 +110,7 @@ Fonte: `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.m
 | Editar Atendimento próprio em andamento | sim | sim | sim |
 | Editar qualquer Atendimento em andamento | sim | sim | não |
 | Concluir Atendimento próprio | sim | sim | sim |
-| Concluir qualquer Atendimento | sim | sim | não |
+| Concluir qualquer Atendimento em andamento | sim | sim | não |
 | Cancelar Atendimento | sim | sim | não |
 | Reabrir Atendimento | sim | sim | não |
 | Vincular/trocar/desvincular Equipamento editável | sim | sim | sim, quando responsável |
@@ -178,6 +180,7 @@ Presets são defaults. Capacidades podem ser personalizadas dentro das regras de
 
 - Gerência nunca administra ADM;
 - Gerência não cria/promove/rebaixa ADM;
+- Gerência não pode conceder Restore a si ou a outro usuário;
 - usuário não eleva a própria autoridade;
 - pelo menos um ADM ativo deve existir;
 - `is_primary_admin` não é toggle comum;
@@ -227,7 +230,7 @@ Registrar proporcionalmente:
 
 Nunca registrar senha, token reutilizável ou segredo.
 
-A trilha administrativa específica que precisa atravessar Restore está em análise no Bloco 11 — Análise 6; ainda não é contrato até aprovação.
+Para Backup/Restore/Recovery, o Bloco 11 acrescenta uma trilha administrativa estruturada fora de `data/`, além da auditoria funcional quando o banco estiver disponível. Essa trilha não substitui autorização nem vira fonte de dados do produto.
 
 ## Transporte
 
@@ -239,7 +242,6 @@ Credenciais e sessão usam o canal Client↔Host vigente. Proteção final de tr
 - senha mínima final;
 - duração/expiração de sessão;
 - entropia/tamanho numérico do token;
-- Gerência × configuração da empresa;
-- Gerência × Backup — proposta de fechamento na Análise 6 do Bloco 11.
+- Gerência × configuração da empresa.
 
 Nenhum valor marcado como pendente pode ser convertido silenciosamente em requisito definitivo pelo executor.
