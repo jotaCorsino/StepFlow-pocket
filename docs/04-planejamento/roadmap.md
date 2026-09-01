@@ -1,6 +1,6 @@
 # Roadmap — StepFlow Pocket
 
-**Status:** FASE 1 EM VALIDAÇÃO FINAL  
+**Status:** FASE 1 CONCLUÍDA / TRANSIÇÃO PARA FASE 2 PENDENTE  
 **Atualização:** 2026-09-01
 
 O roadmap descreve fases e resultados. Gates operacionais correntes ficam no plano da fase e no README raiz.
@@ -13,9 +13,9 @@ Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e
 
 ## Fase 1 — Fechamento arquitetural e especificação
 
-**EM VALIDAÇÃO FINAL — Bloco 12.**
+**CONCLUÍDA documental e tecnicamente em 2026-09-01.**
 
-Consolidado:
+Resultados consolidados:
 
 - Client Windows/Tauri;
 - Host Pocket sob demanda;
@@ -26,21 +26,17 @@ Consolidado:
 - concorrência/fila/conflitos/eventos;
 - domínio Procedimento × Atendimento × Equipamento;
 - Telas 01–15;
-- execução operacional e checklist;
+- execução operacional/checklist;
 - geração documental/Ficha;
 - Backup/Restore D11.1–D11.116;
-- estrutura/publicação D12.1–D12.18;
-- workspace/build/dependências D12.19–D12.34;
-- migrations/scripts/testes/fixtures D12.35–D12.55;
-- parâmetros finais D12.56–D12.79;
-- plano da Fase 2 D12.80–D12.98;
+- Bloco 12 D12.1–D12.108: estrutura/publicação, workspace/build, migrations/testes, parâmetros, plano da Fase 2 e validação final;
 - contrato Pocket preservado como gate superior.
 
-Em revisão final: **P12.99–P12.108**, com semântica de configuração, ownership, deployment, sync local e gates corporativos.
+Nenhum scaffold/runtime oficial, migration SQL ou código de negócio foi criado na Fase 1.
 
 ## Fase 2 — Fundação técnica executável
 
-**PENDENTE — depende do encerramento Git da Fase 1 + sync local seguro + autorização do PO.**
+**PENDENTE — depende de fechamento Git do Bloco 12 + remoto limpo + sync local seguro + autorização explícita do PO.**
 
 Sequência aprovada:
 
@@ -65,55 +61,41 @@ Resultados esperados:
 - Launcher preparando Client local;
 - packaging `StepFlow.exe + _internal/`;
 - smoke integrado;
-- gates Pocket corporativos registrados como PASS ou blocker real.
+- gates Pocket corporativos registrados como PASS, `NÃO APLICÁVEL NESTE AMBIENTE` ou blocker real conforme contexto.
 
 Gate: nenhum processo residual, nenhuma dependência dev em produção e nenhum requisito Pocket enfraquecido.
 
 ## Fase 3 — Autenticação, usuários e shell
 
-**PENDENTE.**
-
-Login/logout/sessão, bootstrap ADM, usuários/permissões, perfil/avatar, shell/sidebar, configuração básica da empresa e autorização Host-side.
+**PENDENTE.** Login/logout/sessão, bootstrap ADM, usuários/permissões, perfil/avatar, shell/sidebar, configuração básica da empresa e autorização Host-side.
 
 ## Fase 4 — Núcleo documental de Procedimentos
 
-**PENDENTE.**
-
-Lista/pesquisa, categorias, criação/edição/arquivamento, Etapas, histórico/revisões, permissões e conflitos.
+**PENDENTE.** Lista/pesquisa, categorias, criação/edição/arquivamento, Etapas, histórico/revisões, permissões e conflitos.
 
 ## Fase 5 — Execução e registro operacional
 
-**PENDENTE.**
-
-Reader, Atendimento, checklist, observação de serviço, lifecycle, Equipamento opcional, revisão exata, reprodução histórica, Ficha e estados transversais.
+**PENDENTE.** Reader, Atendimento, checklist, observação de serviço, lifecycle, Equipamento opcional, revisão exata, reprodução histórica, Ficha e estados transversais.
 
 ## Fase 6 — Multiusuário em ambiente real
 
-**PENDENTE.**
-
-Múltiplos Clients, concorrência, eventos/reconexão, stress/tuning e validação LAN corporativa.
+**PENDENTE.** Múltiplos Clients, concorrência, eventos/reconexão, stress/tuning e validação LAN corporativa.
 
 ## Fase 7 — Exportação e identidade
 
-**PENDENTE.**
-
-PDF/DOCX, impressão Windows, identidade, Ficha, naming/save/temporários e gates reais de Word/impressoras/SMB/EDR.
+**PENDENTE.** PDF/DOCX, impressão Windows, identidade, Ficha, naming/save/temporários e gates reais de Word/impressoras/SMB/EDR.
 
 ## Fase 8 — Distribuição Pocket, backup e operação
 
-**PENDENTE.**
-
-Pacote central, Launcher/Client local, Controller/Host sob demanda, implementação D11, disaster recovery, logs/auditoria e validação sem Internet em PCs corporativos. Não inclui serviço persistente.
+**PENDENTE.** Pacote central, Launcher/Client local, Controller/Host sob demanda, implementação D11, disaster recovery, logs/auditoria e validação sem Internet em PCs corporativos. Não inclui serviço persistente.
 
 ## Fase 9 — Hardening e release interno
 
-**PENDENTE.**
-
-Segurança, recuperação, Backup/Restore, concorrência/performance, distribuição/update, smoke E2E, revisão documental e validação final do Pocket no parque corporativo.
+**PENDENTE.** Segurança, recuperação, Backup/Restore, concorrência/performance, distribuição/update, smoke E2E, revisão documental e validação final do Pocket no parque corporativo.
 
 ## Pendências transversais
 
-- P12.99–P12.108 até decisão do PO;
+- gate operacional de entrada na Fase 2;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
 - SMB/impressoras/filesystem/ACL/EDR corporativos;
@@ -121,4 +103,4 @@ Segurança, recuperação, Backup/Restore, concorrência/performance, distribui�
 
 ## Regra do roadmap
 
-Fases dependem de gates, não de cronograma. Mudança de requisito atualiza documentação vigente antes da implementação. Proposta só vira contrato após aprovação explícita do PO.
+Fases dependem de gates, não de cronograma. Mudança de requisito atualiza a documentação vigente antes da implementação. Conclusão de uma fase não autoriza automaticamente a próxima tarefa.
