@@ -10,7 +10,7 @@ Este arquivo é o **digest ativo de decisões, pendências reais e gates vigente
 - fluxo: branch → draft PR → discussão/refino → aprovação PO → consolidação → validação → ready → squash merge → remover branch → verificar remoto limpo;
 - merge não encerra etapa/bloco sem remoção da branch e verificação do gate;
 - checkout local previsto em `C:\dev\StepFlow` só deve ser sincronizado antes da implementação, preservando alterações locais do PO;
-- Fase 1 não autoriza scaffold/runtime/migrations oficiais/código de negócio antes do gate do Bloco 12/Fase 2;
+- Fase 1 não autoriza scaffold/runtime/migrations oficiais/código de negócio antes do gate final do Bloco 12/Fase 2;
 - `AGENTS.md` é a regra operacional superior;
 - documentos estáveis não carregam gates Git consumidos nem anunciam próximo bloco.
 
@@ -19,11 +19,14 @@ Este arquivo é o **digest ativo de decisões, pendências reais e gates vigente
 ```text
 pasta publicada no servidor Windows
 → usuário acessa compartilhamento
-→ executa StepFlowLauncher.exe
+→ executa StepFlow.exe na raiz
 → Launcher prepara/valida Client local em %LOCALAPPDATA%
 → Client abre localmente
+→ Launcher encerra
 → Client comunica com Host central
 ```
+
+`StepFlow.exe` é o Launcher com nome/ícone amigáveis e o único ponto de entrada normal do usuário. Artefatos técnicos da publicação ficam encapsulados sob `_internal/`; `.lnk` não é requisito baseline e atributo Hidden/System é apenas acabamento opcional.
 
 Obrigatório:
 
@@ -159,7 +162,7 @@ Parâmetros finais pendentes: custo Argon2id, senha mínima, duração/expiraç�
 - Word/impressoras/SMB/Windows/WebView2/EDR são gates de ambiente real;
 - limites de performance ficam para benchmark.
 
-## 10. Backup / Restore — Bloco 11 tecnicamente consolidado
+## 10. Backup / Restore — Bloco 11 concluído
 
 Decisões vigentes: **D11.1–D11.116**.
 
@@ -242,11 +245,54 @@ Decisões vigentes: **D11.1–D11.116**.
 
 Fonte principal: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
 
-## 11. Pendências vigentes
+## 11. Estrutura oficial / Bloco 12
+
+Decisões vigentes da Análise 1: **D12.1–D12.18**.
+
+### Source tree
+
+- workspace Rust virtual na raiz;
+- `apps/` contém os binários `client`, `launcher`, `controller`, `host`;
+- `crates/` contém somente responsabilidades reutilizáveis concretas;
+- Client em `apps/client/web/` usa ES modules por feature/componente/serviço/shared;
+- `src-tauri/` permanece shell fino;
+- migrations pertencem ao Host;
+- scripts são tooling de dev/build/test/package, nunca runtime de produção;
+- testes unit/integration ficam junto ao owner e `tests/e2e/` cobre fluxos entre componentes;
+- `target/`, `dist/`, dados reais e pacotes gerados não são versionados;
+- aprovação da estrutura não autoriza scaffold antes do gate final do Bloco 12.
+
+### Publicação Pocket
+
+```text
+StepFlow\
+├── StepFlow.exe
+└── _internal\
+    ├── client\...
+    └── server\...
+```
+
+- `StepFlow.exe` da raiz é o Launcher com nome/ícone amigáveis;
+- usuário comum não precisa navegar na árvore técnica;
+- `.lnk` não é requisito baseline;
+- Hidden/System em `_internal/` é acabamento opcional, nunca requisito funcional;
+- source tree e pasta publicada são estruturas distintas.
+
+Fonte principal: `docs/04-planejamento/bloco-12-estrutura-oficial-plano-fase-2.md`.
+
+### Em análise
+
+- workspace/build/dependências/configuração — P12.19–P12.34;
+- migrations/scripts/testes/fixtures;
+- parâmetros numéricos e decisões funcionais restantes;
+- plano da Fase 2;
+- sincronização segura do checkout local e gate explícito do primeiro scaffold.
+
+## 12. Pendências vigentes
 
 ### Bloco 12
 
-- estrutura oficial do repositório;
+- concluir Análises 2+;
 - migrations/scripts/testes iniciais;
 - parâmetros numéricos finais, inclusive retenção/limites/timeouts;
 - plano da Fase 2;
@@ -267,7 +313,7 @@ Fonte principal: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
 - filesystem/ACL/EDR/antivírus/long paths;
 - adapter Win32 e crash injection para Backup/Restore.
 
-## 12. Precedência
+## 13. Precedência
 
 Em divergência:
 
