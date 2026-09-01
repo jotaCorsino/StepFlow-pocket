@@ -6,8 +6,8 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 
 **Atualização:** 2026-09-01  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
-**Checkpoint atual:** Bloco 12 — Estrutura oficial + plano da Fase 2 — Análise 1  
-**Próximo passo:** revisar P12.1–P12.14 — árvore fonte e fronteiras de responsabilidade  
+**Checkpoint atual:** Bloco 12 — Estrutura oficial + plano da Fase 2 em análise  
+**Próximo passo:** revisar a Análise 1 (P12.1–P12.18), incluindo árvore fonte modular e entrada única `StepFlow.exe` na publicação Pocket  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -26,7 +26,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
 | 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
 | 11 | Backup / restauração | ✅ Concluído |
-| 12 | Estrutura oficial + plano da Fase 2 | 🔎 Em análise |
+| 12 | Estrutura oficial + plano da Fase 2 | 🟡 Em análise |
 
 ## Produto
 
@@ -81,7 +81,6 @@ O Controller/Host continua sob demanda na máquina central. WebView2 não pode e
 - `docs/05-progresso/registro-de-decisoes.md` — decisões vigentes e pendências;
 - `docs/04-planejamento/plano-oficial-fase-1.md` — estado da Fase 1;
 - `docs/04-planejamento/roadmap.md` — fases do projeto;
-- `docs/04-planejamento/bloco-12-estrutura-oficial-plano-fase-2.md` — proposta corrente do Bloco 12;
 - documentos específicos de Produto, Telas e Arquitetura — contratos detalhados.
 
 ## Pendências principais da Fase 1
