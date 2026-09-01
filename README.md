@@ -7,7 +7,7 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 **Atualização:** 2026-09-01  
 **Fase atual:** Fase 1 — Fechamento arquitetural e especificação  
 **Checkpoint atual:** Bloco 12 — Estrutura oficial + plano da Fase 2 em análise  
-**Próximo passo:** revisar a Análise 4 — parâmetros finais (P12.56–P12.79)  
+**Próximo passo:** revisar a Análise 5 — plano detalhado da Fase 2 (P12.80–P12.98)  
 **Implementação funcional oficial:** ainda não iniciada
 
 ### Fase 1
@@ -19,18 +19,16 @@ Aplicação interna para documentar, consultar, versionar e executar procediment
 | 2 | Host Pocket | ✅ Concluído |
 | 3 | Launcher / distribuição | ✅ Concluído |
 | 4 | Comunicação Client ↔ Host | ✅ Concluído |
-| 5 | Autenticação / autorização | ✅ Núcleo concluído; parâmetros finais em revisão no Bloco 12 |
+| 5 | Autenticação / autorização | ✅ Consolidado, incluindo parâmetros D12.56–D12.62 |
 | 6 | Dados / schema / migrations | ✅ Núcleo conceitual + disciplina D12.35–D12.55 consolidada |
 | 7 | Concorrência / fila / eventos | ✅ Núcleo concluído |
 | 8 | UI/UX | ✅ Concluído |
 | 9 | Atendimentos / execução / checklist | ✅ Concluído |
 | 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
 | 11 | Backup / restauração | ✅ Concluído |
-| 12 | Estrutura oficial + plano da Fase 2 | 🟡 Em análise — Análises 1–3 aprovadas |
+| 12 | Estrutura oficial + plano da Fase 2 | 🟡 Em análise — Análises 1–4 aprovadas |
 
 ## Produto
-
-O domínio separa:
 
 ```text
 Procedimento
@@ -68,20 +66,18 @@ pasta publicada no servidor
 
 ## Bloco 12 — decisões vigentes
 
-Análises 1–3 aprovadas: **D12.1–D12.55**.
+Análises 1–4 aprovadas: **D12.1–D12.79**.
 
 - source tree modular por `apps/` e `crates/`;
 - `StepFlow.exe` como entrada única e `_internal/` como área técnica;
 - Rust 1.98.0, Edition 2024, resolver 3, toolchain + `Cargo.lock` versionados;
 - Client vanilla modular sem Node/npm/Vite/bundler/framework no baseline;
-- dependências somente com uso real;
 - migrations Host-side imutáveis, embutidas e verificadas por checksum;
-- `pre_migration` backup antes de lote pendente em banco existente;
-- lote transacional com `quick_check` + `foreign_key_check` antes de readiness;
 - testes em SQLite temporário real e fixtures sintéticas;
+- parâmetros finais de autenticação/sessão, empresa/categoria e Backup/Restore fechados em D12.56–D12.79;
 - nenhuma dessas decisões autoriza scaffold antes do gate final da Fase 1.
 
-A Análise 4 está em revisão como **P12.56–P12.79**.
+A Análise 5 está em revisão como **P12.80–P12.98** e propõe a sequência executável da Fase 2 em oito tarefas pequenas, de workspace/Host até packaging e smoke Pocket.
 
 ## Fontes de verdade
 
@@ -94,8 +90,7 @@ A Análise 4 está em revisão como **P12.56–P12.79**.
 
 ## Pendências principais da Fase 1
 
-- decidir P12.56–P12.79 — autenticação/sessão, configuração da empresa/categoria e limites operacionais;
-- plano detalhado da Fase 2 e sequência de tarefas Codex;
+- decidir P12.80–P12.98 — plano detalhado da Fase 2;
 - validação final da Fase 1 + gate Git;
 - sincronização segura do checkout local antes do primeiro scaffold;
 - validações corporativas de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR no momento apropriado.
