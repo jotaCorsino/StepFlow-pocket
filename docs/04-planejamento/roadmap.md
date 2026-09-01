@@ -33,31 +33,35 @@ Consolidado até aqui:
 - geração documental, exportação, impressão, Ficha compacta, naming e temporários;
 - Backup/Restore técnico D11.1–D11.116;
 - estrutura/publicação do Bloco 12 D12.1–D12.18;
+- workspace/build/dependências D12.19–D12.34;
 - contrato Pocket preservado como gate superior.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
 **EM ANÁLISE.**
 
-Análise 1 aprovada — D12.1–D12.18:
+Análises 1–2 aprovadas — D12.1–D12.34:
 
 - workspace Rust modular;
 - `apps/` para executáveis e `crates/` somente para responsabilidades reutilizáveis concretas;
-- frontend Client organizado em ES modules;
+- frontend Client em ES modules e sem Node/bundler no baseline;
 - source tree separado da publicação Pocket;
-- pasta Pocket publicada com `StepFlow.exe` como único ponto de entrada normal e artefatos técnicos encapsulados sob `_internal/`;
+- `StepFlow.exe` como único ponto de entrada normal e `_internal/` como área técnica publicada;
+- Rust 1.98.0, Edition 2024, resolver 3 e lockfile/toolchain versionados;
+- política explícita de dependências, configuração e packaging;
 - nenhuma autorização de scaffold antes do gate final do Bloco 12.
 
-Análise 2 em revisão — P12.19–P12.34:
+Análise 3 em revisão — P12.35–P12.55:
 
-- toolchain/workspace/build reproduzível;
-- política de lockfile/dependências;
-- baseline de crates da fundação;
-- Client vanilla sem Node/bundler;
-- configuração e packaging;
-- scripts finos de desenvolvimento/build/test/package.
+- migrations Host-side versionadas/embutidas;
+- tracking/checksums e bloqueios de compatibilidade;
+- backup `pre_migration` em banco existente;
+- aplicação transacional e validação de integridade/FKs;
+- testes em SQLite temporário real;
+- fixtures sintéticas;
+- scripts finos de check/test/build/package.
 
-Ainda precisa fechar migrations/scripts/testes/fixtures, parâmetros finais, plano executável da Fase 2 e gate do primeiro scaffold.
+Ainda precisa fechar parâmetros finais, plano executável da Fase 2 e gate do primeiro scaffold.
 
 ## Fase 2 — Fundação técnica executável
 
@@ -69,7 +73,7 @@ Resultados esperados:
 - builds reproduzíveis;
 - configuração de desenvolvimento;
 - comunicação mínima + health/readiness;
-- SQLite + migrations iniciais;
+- SQLite + runner de migrations determinístico;
 - logging mínimo;
 - testes de fundação;
 - PoCs/gates técnicos exigidos pela Fase 1, incluindo fallback WebView2 Pocket quando necessário.
