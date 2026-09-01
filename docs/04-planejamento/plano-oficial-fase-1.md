@@ -26,53 +26,63 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração técnico | CONCLUÍDO | `bloco-11-backup-restauracao.md` |
-| 12 | Estrutura oficial + Fase 2 | EM ANÁLISE — ANÁLISE 1 APROVADA | `bloco-12-estrutura-oficial-plano-fase-2.md` |
+| 12 | Estrutura oficial + Fase 2 | EM ANÁLISE — ANÁLISES 1–2 APROVADAS | `bloco-12-estrutura-oficial-plano-fase-2.md` |
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
 **EM ANÁLISE desde 2026-09-01.**
 
-### Análise 1 — aprovada
+### Análises 1–2 — aprovadas
 
-Decisões **D12.1–D12.18**:
+Decisões vigentes: **D12.1–D12.34**.
 
-- workspace Rust na raiz;
+Fechado até aqui:
+
+- workspace Rust modular na raiz;
 - `apps/` para Client, Launcher, Controller e Host;
 - frontend Client modular em ES modules;
 - crates compartilhados somente para responsabilidades concretas;
 - source tree separado da publicação Pocket;
-- publicação com um único `StepFlow.exe` visível na raiz como Launcher amigável;
+- `StepFlow.exe` na raiz publicada como único ponto de entrada normal;
 - artefatos Client/Server encapsulados sob `_internal/`;
-- `.lnk` não é requisito baseline;
-- aprovação estrutural não autoriza scaffold antes do gate final.
+- Rust 1.98.0, Edition 2024, resolver 3 e target Windows x64 MSVC;
+- `rust-toolchain.toml` e `Cargo.lock` versionados;
+- política lockfile-aware para build/test/package e atualização explícita de dependências;
+- Client vanilla sem Node/npm/Vite/bundler/framework no baseline;
+- configuração separada entre build/dev, deployment e runtime central;
+- `target/`/`dist/` descartáveis e produção montada por packaging;
+- scripts PowerShell finos; sem LTO/strip/tuning prematuro.
 
-### Análise 2 — em revisão
+### Análise 3 — em revisão
 
-Proposta **P12.19–P12.34** cobre:
+Proposta **P12.35–P12.55** cobre:
 
-- Rust/toolchain/workspace;
-- Edition 2024 + Cargo resolver 3;
-- `Cargo.lock` versionado e builds `--locked`;
-- política de dependências e atualizações;
-- baseline de crates da fundação;
-- Client vanilla sem Node/npm/Vite/bundler;
-- configuração build/dev × deployment × runtime;
-- saída `target/` × packaging `dist/`;
-- scripts PowerShell finos de desenvolvimento/build/test/package.
+- migrations Host-side em `apps/host/migrations/` com IDs imutáveis;
+- registry compilado e SQL embutido no Host;
+- `schema_migrations` com checksum SHA-256;
+- bloqueio por checksum/schema incompatível;
+- `pre_migration` backup único antes de lote pendente em banco existente;
+- lote de migrations transacional no baseline;
+- `quick_check` + `foreign_key_check` antes de readiness;
+- sem down migration automática ou `writable_schema` como atalho;
+- testes de migration em SQLite temporário real;
+- fixtures sintéticas e sem dados/segredos reais;
+- scripts iniciais `check/test/build/package`;
+- baseline sem adicionar Node apenas por test runner frontend.
 
 Fontes:
 
 - `bloco-12-estrutura-oficial-plano-fase-2.md`;
-- `bloco-12-analise-2-workspace-build-dependencias.md`.
+- `bloco-12-analise-2-workspace-build-dependencias.md`;
+- `bloco-12-analise-3-migrations-testes-fixtures.md`.
 
 ## O Bloco 12 ainda deve fechar
 
-1. decisão da Análise 2;
-2. migrations/scripts/testes iniciais e fixtures;
-3. parâmetros finais ainda pendentes;
-4. plano detalhado da Fase 2 e sequência de tarefas Codex;
-5. sincronização segura do checkout local;
-6. validação final da Fase 1 e autorização explícita do primeiro scaffold.
+1. decisão da Análise 3;
+2. parâmetros finais ainda pendentes;
+3. plano detalhado da Fase 2 e sequência de tarefas Codex;
+4. sincronização segura do checkout local;
+5. validação final da Fase 1 e autorização explícita do primeiro scaffold.
 
 ## Pendências restantes da Fase 1
 
