@@ -247,9 +247,9 @@ Fonte principal: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
 
 ## 11. Estrutura oficial / Bloco 12
 
-Decisões vigentes da Análise 1: **D12.1–D12.18**.
+Decisões vigentes: **D12.1–D12.34**.
 
-### Source tree
+### Source tree e publicação — D12.1–D12.18
 
 - workspace Rust virtual na raiz;
 - `apps/` contém os binários `client`, `launcher`, `controller`, `host`;
@@ -260,30 +260,34 @@ Decisões vigentes da Análise 1: **D12.1–D12.18**.
 - scripts são tooling de dev/build/test/package, nunca runtime de produção;
 - testes unit/integration ficam junto ao owner e `tests/e2e/` cobre fluxos entre componentes;
 - `target/`, `dist/`, dados reais e pacotes gerados não são versionados;
-- aprovação da estrutura não autoriza scaffold antes do gate final do Bloco 12.
+- aprovação da estrutura não autoriza scaffold antes do gate final do Bloco 12;
+- publicação usa `StepFlow.exe` na raiz como Launcher amigável e único ponto de entrada normal;
+- artefatos técnicos ficam em `_internal/client` e `_internal/server`;
+- `.lnk` não é requisito baseline e Hidden/System é apenas acabamento opcional.
 
-### Publicação Pocket
+### Workspace/build/dependências — D12.19–D12.34
 
-```text
-StepFlow\
-├── StepFlow.exe
-└── _internal\
-    ├── client\...
-    └── server\...
-```
+- toolchain oficial inicial: Rust `1.98.0`, `x86_64-pc-windows-msvc`, rustup `minimal`, `rustfmt` e `clippy`;
+- Edition 2024 + Cargo resolver 3 em virtual workspace;
+- `rust-toolchain.toml` e `Cargo.lock` versionados;
+- build/test/package oficiais usam lockfile e não atualizam dependências incidentalmente;
+- dependências compartilhadas só entram em `[workspace.dependencies]` quando houver uso real;
+- baseline inicial: Tauri 2.11.x, tauri-build 2.6.x, Tauri CLI 2.11.x, Tokio ~1.51, Axum 0.8.9, rusqlite 0.40.2 bundled, Serde 1.0.229, serde_json 1.0.151, tracing 0.1.44 e tower-http 0.6.8, somente onde aplicável;
+- Client vanilla modular não usa Node/npm/pnpm/yarn/Vite/bundler/framework no baseline;
+- Tauri CLI é ferramenta de desenvolvimento, nunca runtime Pocket;
+- configuração separa build/dev, deployment e runtime central;
+- `target/` e `dist/` são descartáveis; produção nasce do packaging;
+- LTO/strip/panic/codegen tuning só entra por medição;
+- scripts PowerShell são wrappers finos e lockfile-aware.
 
-- `StepFlow.exe` da raiz é o Launcher com nome/ícone amigáveis;
-- usuário comum não precisa navegar na árvore técnica;
-- `.lnk` não é requisito baseline;
-- Hidden/System em `_internal/` é acabamento opcional, nunca requisito funcional;
-- source tree e pasta publicada são estruturas distintas.
+Fontes principais:
 
-Fonte principal: `docs/04-planejamento/bloco-12-estrutura-oficial-plano-fase-2.md`.
+- `docs/04-planejamento/bloco-12-estrutura-oficial-plano-fase-2.md`;
+- `docs/04-planejamento/bloco-12-analise-2-workspace-build-dependencias.md`.
 
 ### Em análise
 
-- workspace/build/dependências/configuração — P12.19–P12.34;
-- migrations/scripts/testes/fixtures;
+- migrations/scripts/testes/fixtures — P12.35–P12.55;
 - parâmetros numéricos e decisões funcionais restantes;
 - plano da Fase 2;
 - sincronização segura do checkout local e gate explícito do primeiro scaffold.
@@ -292,8 +296,8 @@ Fonte principal: `docs/04-planejamento/bloco-12-estrutura-oficial-plano-fase-2.m
 
 ### Bloco 12
 
-- concluir Análises 2+;
-- migrations/scripts/testes iniciais;
+- concluir Análises 3+;
+- aprovar disciplina de migrations/scripts/testes/fixtures;
 - parâmetros numéricos finais, inclusive retenção/limites/timeouts;
 - plano da Fase 2;
 - sincronização segura do checkout local antes do primeiro trabalho de implementação.
