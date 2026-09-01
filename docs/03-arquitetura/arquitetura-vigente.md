@@ -3,77 +3,84 @@
 **Status:** CONSOLIDADA PARA A FASE 1  
 **Atualização:** 2026-09-01
 
-Este arquivo é o **mapa arquitetural**. Contratos detalhados pertencem aos documentos específicos e não devem ser duplicados integralmente aqui.
+Este arquivo é o **mapa arquitetural**. Contratos detalhados pertencem aos documentos específicos.
 
 ## Visão geral
 
 ```text
 Pasta StepFlow publicada no servidor Windows
         ↓
-StepFlowLauncher.exe no compartilhamento
+StepFlow.exe na raiz do compartilhamento
         ↓
-preparação/validação local automática
+Launcher prepara/valida Client local automaticamente
         ↓
 Client Tauri local por usuário
-        ↓ HTTP/JSON + WebSocket
+        ↓ HTTP/JSON + WebSocket autenticado quando houver sessão
 StepFlow Host Pocket na máquina central
         ↓
 SQLite local + arquivos persistentes administrados
 ```
 
+Publicação aprovada:
+
+```text
+StepFlow\
+├── StepFlow.exe
+└── _internal\
+    ├── client\
+    │   ├── manifest.json
+    │   ├── deployment.json
+    │   └── releases\
+    └── server\
+        ├── app\
+        ├── config\
+        ├── data\
+        │   ├── stepflow.sqlite
+        │   ├── company\
+        │   └── avatars\
+        ├── logs\
+        └── backups\
+```
+
+`_internal/server/` é a raiz lógica do estado central. `StepFlow.exe` é o Launcher empacotado e o único ponto de entrada normal do usuário.
+
 ## Componentes
 
 ### Client
 
-**Tauri 2 + HTML/CSS/JavaScript modular.**
+**Tauri 2 + HTML/CSS/JavaScript modular em ES modules**, com `src-tauri` fino. Responsável por UI, sessão em memória, consumo da API, eventos/reconsulta, estados transversais, preview/save/impressão local e integrações Windows necessárias.
 
-Responsável por UI, sessão em memória, consumo da API, eventos/reconsulta, estados transversais, execução de Atendimento, preview/save/impressão local e integração Windows necessária.
-
-O Client nunca acessa SQLite diretamente.
+O Client nunca acessa SQLite diretamente e o baseline não usa Node/npm/Vite/bundler/framework.
 
 ### Launcher
 
-Executável Rust x64 pequeno/transitório no compartilhamento.
-
-Responsável por validar manifesto/deployment, preparar versão local em `%LOCALAPPDATA%`, validar hashes/recursos, iniciar o Client local e encerrar.
-
-Fonte: `launcher-distribuicao-client.md`.
+Executável Rust x64 pequeno/transitório, empacotado como `StepFlow.exe`. Valida manifest/deployment/release, prepara versão local em `%LOCALAPPDATA%`, valida hashes/recursos, inicia o Client local e encerra.
 
 ### Controller / Host
 
 **Rust + Tokio/Axum + `rusqlite` bundled.**
 
-O Controller inicia/controla o Host sob demanda na máquina central. O Host concentra autenticação/autorização, API, WebSocket, SQLite, concorrência, domínio, auditoria, Backup/Restore e geração documental.
+O Controller inicia/controla o Host sob demanda, garante exclusividade, aguarda readiness e coordena shutdown. O Host concentra autenticação/autorização, API, WebSocket, SQLite, concorrência, domínio, auditoria, Backup/Restore e geração documental.
 
-O Controller também pode:
-
-- coordenar relaunch **bounded** do Host quando Restore destrutivo exige fresh Host;
-- entrar em modo Recovery local/transitório quando o Host normal não consegue atingir readiness.
-
-Nenhum desses fluxos cria watchdog geral, Windows Service ou daemon.
-
-Fonte: `host-pocket.md`.
+Relaunch de Restore é bounded; Recovery é local/transitório. Nenhum fluxo cria watchdog geral, Windows Service ou daemon.
 
 ## Contrato Pocket
 
 - pasta pronta na máquina central;
-- zero instalador tradicional obrigatório por estação;
-- preparação local automática do Client;
+- zero instalador tradicional por estação;
+- Client preparado localmente de forma automática;
 - zero preparação manual de dependência;
 - zero elevação administrativa no uso normal;
 - nenhuma toolchain em produção;
 - nenhuma Internet obrigatória no uso normal;
 - Client não roda permanentemente do SMB;
 - sem serviço StepFlow persistente, scheduler, watchdog, tray ou daemon baseline;
-- Controller/Host sob demanda;
 - fechar Client individual não encerra Host;
-- encerrado o ciclo central, nenhum processo StepFlow permanece ativo.
+- encerrado o ciclo central, nenhum processo StepFlow permanece.
 
 WebView2 Evergreen compatível já presente é preferível. Fixed Version não roda por UNC/SMB; fallback autocontido local exige PoC sem instalação/admin/manualidade.
 
-Fontes: `implantacao-pocket.md`, `launcher-distribuicao-client.md`, `compatibilidade-windows-client.md`.
-
-## Domínio funcional
+## Domínio e persistência
 
 ```text
 Procedimento
@@ -83,236 +90,108 @@ Atendimento / Execução
 Equipamento
 ```
 
-- Procedimentos possuem revisões imutáveis;
+- Procedimentos usam revisões imutáveis;
 - categorias são configuráveis/múltiplas;
-- Atendimento é ocorrência real;
+- Atendimento preserva revisão exata usada;
 - Equipamento é opcional/reutilizável;
-- vínculo preserva revisão exata;
-- checklist persistente existe somente em Atendimento;
-- `Observação do serviço` por Etapa existe somente em Atendimento;
-- conclusão/reabertura precisa preservar reprodução histórica suficiente;
-- Ficha compacta pode existir com ou sem Equipamento.
+- checklist e `Observação do serviço` persistem somente em Atendimento;
+- histórico relevante precisa ser reproduzível.
 
-Fontes: `../01-produto/categorizacao-atendimentos-equipamentos.md` e `modelo-dados-schema-fase-1.md`.
-
-## Lifecycle operacional
-
-```text
-rascunho Client
-→ primeiro save Host
-→ Em andamento
-   ├─→ Concluído
-   └─→ Cancelado
-
-Concluído/Cancelado
-→ Reabrir
-→ Em andamento
-```
-
-Regras detalhadas ficam no Bloco 9 e nas Telas 05/08/09.
-
-## Persistência
-
-```text
-StepFlow\
-├── app\
-├── config\
-├── data\
-│   ├── stepflow.sqlite
-│   ├── company\
-│   └── avatars\
-├── logs\
-└── backups\
-```
-
-Princípios:
+Persistência central vive em `_internal/server/data/`:
 
 - SQLite local ao Host;
 - foreign keys + WAL;
-- migrations versionadas;
-- revisões imutáveis;
+- writer lógico coordenado + fila bounded;
+- migrations versionadas/imutáveis;
 - `revision_no` separado de `display_version`;
-- auditoria proporcional/append-only;
-- dados/config não são substituídos com binários;
-- backups e arquivos administrados permanecem separados dos artefatos substituíveis.
+- auditoria proporcional;
+- `config/`, `data/`, `logs/` e `backups/` não são substituídos com binários.
 
 ## Comunicação e concorrência
 
 - HTTP/JSON versionado, inicialmente `/api/v1`;
-- WebSocket autenticado para eventos;
-- `deployment.json` sem segredos;
+- WebSocket autenticado para eventos quando sessão existir;
+- `deployment.json` não contém segredo;
 - handshake de compatibilidade antes do login;
 - sem edição offline;
-- evento sinaliza mudança; Client reconsulta;
-- writer lógico coordenado;
-- fila bounded/backpressure;
+- eventos pós-commit sinalizam mudança e Client reconsulta;
 - revisão otimista por recurso;
-- `409` para base obsoleta;
-- constraints SQLite como última defesa;
-- eventos pós-commit;
-- timeout após mutação exige reconciliação, não retry cego;
-- manutenção de Restore pode encerrar WebSockets; desconexão nunca prova resultado;
-- após fresh Host de Restore, Client autentica novamente e reconsulta estado.
+- `409`/erro equivalente para base obsoleta;
+- timeout após mutação exige reconciliação, não retry cego.
 
-Fontes: `comunicacao-client-host.md` e `concorrencia-fila-conflitos-eventos.md`.
+Defaults D12 relevantes:
+
+```text
+connect_timeout = 5 s
+common_request_timeout = 30 s
+websocket_backoff = 1/2/4/8/15/30 s + jitter ±20%
+```
 
 ## Autenticação e autorização
 
-- Argon2id;
-- sessão opaca server-side;
-- token em memória;
+- Argon2id PHC: 64 MiB / 3 passes / 4 lanes, salt 16 bytes, output 32 bytes;
+- senha: 15–128 caracteres Unicode após NFKC, sem composition rule/rotação periódica;
+- blocklist offline ≥10.000 + throttling progressivo;
+- token opaco CSPRNG de 32 bytes, somente em memória no Client e digest server-side;
+- sessão: 30 min idle / 8 h absoluta;
 - autorização Host-side por capacidade;
 - ADM/Gerência/Funcionário como presets;
-- bootstrap do primeiro ADM local/controlado;
-- sessão expirada exige nova autenticação;
-- Backup = ADM/Gerência;
-- Restore = ADM-only;
-- Restore destrutivo invalida todas as sessões/tokens anteriores, inclusive em rollback;
-- conteúdo restaurado nunca ressuscita token antigo;
-- parâmetros numéricos finais permanecem pendentes.
-
-Fonte: `autenticacao-sessao-autorizacao.md`.
+- Gerência pode alterar configuração da empresa;
+- Backup = ADM/Gerência; Restore = ADM-only;
+- Restore destrutivo invalida sessões anteriores.
 
 ## Geração documental
 
-```text
-Client solicita fonte + revisão esperada
-→ Host autentica/autoriza
-→ captura snapshot consistente
-→ materializa DocumentModel
-→ encerra leitura/transação SQLite
-→ renderiza em capacidade bounded
-→ devolve bytes
-→ Client salva / pré-visualiza / imprime
-```
+Geração pertence ao Host por snapshot consistente + `DocumentModel`. PDF usa Typst embutido, DOCX usa OOXML direto em Rust e impressão Windows usa o mesmo PDF via WebView2. Ficha válida possui exatamente uma A4; `2+` páginas = `SHEET_OVERFLOW`.
 
-Contratos consolidados:
+## Backup / Restore — D11.1–D11.116 + parâmetros D12
 
-- PDF de Procedimentos via Typst embutido;
-- DOCX OOXML direto em Rust sob adaptador;
-- impressão Windows usa o mesmo PDF oficial via WebView2;
-- Procedimento físico A4 multipágina;
-- Ficha compacta deriva PDF + preview do mesmo `PagedDocument`;
-- Ficha válida possui exatamente uma A4; `2+` páginas = `SHEET_OVERFLOW`;
-- naming persistente e temporários têm lifecycles separados;
-- artefatos gerados não entram em histórico/backup por padrão.
-
-Fontes: Bloco 10 e Tela 14.
-
-## Backup / Restore — D11.1–D11.116
-
-UX: `../02-telas/13-backup-restauracao.md`.  
-Mapa técnico: `../04-planejamento/bloco-11-backup-restauracao.md`.
-
-### Estado e envelope
-
-- estado recuperável = `stepflow.sqlite + company/** + avatars/**`;
-- binários/config/logs/backups/exportações/temporários ficam fora;
-- pacote único imutável `.stepflow-backup`, ZIP `Stored`;
-- manifesto versionado + SHA-256 por entrada;
+- estado recuperável = `stepflow.sqlite + company/** + avatars/**` relativos à raiz `data/`;
+- pacote `.stepflow-backup`, ZIP `Stored`, manifesto versionado + SHA-256;
 - SQLite via Online Backup API;
-- staging antes da promoção;
-- pacote parcial nunca é válido.
+- Backup normal usa barrier curto e promoção same-volume/no-replace;
+- Restore revalida pacote/paths/provenance/banco, prepara `data-next/`, exige safety backup e troca `data/` logicamente;
+- journal fica fora de `data/`, fresh Host reconcilia antes de readiness;
+- disaster recovery é local/transitório pelo Controller;
+- `uncertain` bloqueia readiness/mutações/cleanup destrutivo.
 
-### Consistência
-
-Backup normal usa barrier curto:
+Parâmetros iniciais aprovados:
 
 ```text
-suspender/drain mutações
-→ capturar SQLite + arquivos administrados
-→ liberar mutações
-→ hash/ZIP/verificação/promoção
+retention_max_confirmed_backups = 20 (faixa configurável 5–100)
+max_entries = 10_000
+max_total_payload = 8 GiB
+max_managed_file = 16 MiB
+min_free_space_reserve = 1 GiB
+backup_capture_target <= 2 s
+backup_capture_hard_limit = 10 s
+pre_restore_no_progress = 120 s
+pre_restore_total_before_destructive = 10 min
+readiness_timeout_per_launch = 30 s
+restore_relaunch_attempts = 3
 ```
 
-`-wal`/`-shm` não entram no pacote; criação exige `quick_check = ok` + `foreign_key_check` vazio; promoção final é same-volume/no-replace.
+Paths usam semântica Windows estrita e manifesto inclui `source_deployment_id`. Baseline sem criptografia/assinatura application-level; SHA-256 é integridade, não autenticidade.
 
-### Catálogo/retention/coordinator
+## Fundação executável planejada — D12.80–D12.98
 
-- catálogo reconstruível sem depender do banco ativo;
-- `backup_id` é identidade;
-- Restore sempre revalida integralmente;
-- retenção sem scheduler e por quantidade;
-- lease exclusivo coordena Backup/Restore/Migration;
-- backups protegidos/`uncertain` não sofrem cleanup destrutivo.
+A Fase 2 segue:
 
-### Restore
+```text
+F2-T01 workspace/tooling + Host mínimo
+→ F2-T02 Host runtime/readiness
+→ F2-T03 SQLite + migrations runner
+→ F2-T04 Controller lifecycle
+→ F2-T05 Client Tauri + compatibilidade
+→ F2-T06 Launcher Pocket
+→ F2-T07 packaging Pocket
+→ F2-T08 smoke integrado + gates Windows/Pocket
+```
 
-- candidato em `data-next/` same-volume;
-- `integrity_check = ok` + `foreign_key_check` vazio;
-- schema antigo somente com migrations forward completas no staging;
-- schema novo/cadeia incompleta = incompatível;
-- sem down migration automática;
-- safety backup confirmado obrigatório;
-- ativação = `data → old`, `data-next → data`;
-- `old` permanece até validação;
-- rollback conhecido ou `uncertain`.
+Cada tarefa usa branch/PR próprios e não antecipa funcionalidades das fases posteriores.
 
-### Safety barrier final
+## Gates ainda reservados ao ambiente real
 
-No `pre_restore`, o barrier permanece desde a captura do safety backup até o primeiro rename. Nenhuma mutação em `data/` ocorre nesse intervalo; journal/admin-audit externos permanecem permitidos.
-
-Antes de `DESTRUCTIVE_STARTED`, o digest/schema/root de `data-next/` é revalidado.
-
-### Restart e recovery
-
-- journal vive fora de `data/`;
-- fresh Host reconcilia antes de migrations/readiness;
-- queda entre renames retorna para `old` quando comprovável;
-- estado ambíguo = `RECOVERY_REQUIRED/uncertain`;
-- relaunch de Restore é bounded;
-- fase destrutiva invalida sessões antigas;
-- `uncertain` bloqueia readiness/mutações/cleanup.
-
-### Disaster recovery
-
-- modo Recovery local/transitório do Controller;
-- sem listener HTTP/WebSocket normal;
-- exclusividade da implantação;
-- autoridade por acesso local/ACL quando o banco não autentica;
-- mesma integridade/compatibilidade do Restore normal;
-- ausência de safety backup só é aceita em disaster recovery real;
-- fresh Host normal precisa atingir readiness antes de retorno ao uso.
-
-### Auditoria
-
-- auditoria funcional quando possível;
-- trilha administrativa estruturada fora de `data/`, baseline `logs/admin-audit.jsonl`/equivalente;
-- journal, admin audit e logs técnicos são mecanismos distintos;
-- não registrar senha, token reutilizável, dump SQL ou conteúdo de negócio desnecessário.
-
-### Paths, provenance e limites
-
-- paths lógicos seguem canonicalização Windows estrita;
-- bloquear drive/UNC/device/ADS/reserved names/trailing dot-space/case collision/reparse/non-regular/escape do root;
-- criação do Backup aplica a mesma disciplina aos arquivos administrados;
-- manifesto inclui `source_deployment_id`;
-- pacote de deployment diferente é `source_mismatch` no baseline;
-- parser/extração são bounded e fazem preflight de espaço;
-- números finais ficam no Bloco 12.
-
-### Criptografia/autenticidade
-
-- baseline sem criptografia application-level;
-- baseline sem assinatura criptográfica application-level;
-- SHA-256 representa integridade, não autenticidade;
-- trust boundary = root administrado + ACLs + infraestrutura de volume + deployment ID + auditoria.
-
-### Limite operacional e gates
-
-Backup local não promete proteção contra perda física total/ransomware/site loss; offsite/cópia corporativa é responsabilidade operacional externa.
-
-Antes de produção são gates obrigatórios: adapter Win32, filesystem real, ACLs, EDR/antivírus, long paths, espaço, performance e crash injection.
-
-**Não existe bloqueador arquitetural conhecido para o Bloco 11.**
-
-## Pendências arquiteturais ainda abertas
-
-- parâmetros finais de autenticação;
-- Gerência × configuração da empresa;
-- regra editorial de categoria arquivada;
-- parâmetros numéricos reservados ao Bloco 12;
-- estrutura oficial da implementação e plano da Fase 2;
-- gates de ambiente real: Windows/WebView2, Launcher/SMB, Word, impressoras, filesystem/ACL/EDR.
+Windows/WebView2, Launcher pelo SMB, ACL/EDR/antivírus, filesystem/long paths, Word/impressoras, transporte e demais validações corporativas são executados no momento técnico apropriado. Fora do ambiente correspondente, registrar `NÃO APLICÁVEL NESTE AMBIENTE`, nunca PASS presumido.
 
 Nenhum runtime/código funcional oficial foi criado durante a Fase 1.
