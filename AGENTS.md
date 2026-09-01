@@ -11,7 +11,7 @@ Regras obrigatórias para agentes que atuem neste repositório. Este arquivo gov
 - Checkout local previsto: `C:\dev\StepFlow`.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–10 estão encerrados em seus escopos documentais.
-- Bloco 11 fecha Backup/Restore técnico.
+- Bloco 11 fecha Backup/Restore técnico e está em validação final.
 - Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 - Nenhuma implementação funcional oficial foi iniciada.
 
@@ -194,7 +194,10 @@ Fontes: `docs/03-arquitetura/implantacao-pocket.md`, `launcher-distribuicao-clie
 - PDF de Procedimentos usa Typst embutido; DOCX usa OOXML direto em Rust;
 - impressão Windows usa o mesmo PDF oficial via WebView2;
 - Ficha válida possui exatamente uma A4; `2+` páginas geram `SHEET_OVERFLOW`;
-- artefatos persistentes e temporários têm lifecycles separados.
+- artefatos persistentes e temporários têm lifecycles separados;
+- Backup pertence ao Host; ADM e Gerência podem consultar/criar Backup; Restore permanece ADM-only;
+- Restore normal exige safety backup confirmado antes da fase destrutiva;
+- disaster recovery é fluxo local/transitório do Controller, sem listener normal de rede e sem serviço/watchdog.
 
 Detalhes ficam nas fontes específicas; não ampliar estas invariantes por inferência.
 
@@ -202,11 +205,10 @@ Detalhes ficam nas fontes específicas; não ampliar estas invariantes por infer
 
 - parâmetros finais de Argon2id/senha/sessão/token;
 - Gerência × configuração da empresa;
-- Gerência × Backup;
 - regra editorial de categoria arquivada;
-- mecanismo técnico do Bloco 11;
+- validação final P11.104–P11.116 do Bloco 11;
 - estrutura oficial e plano da Fase 2 no Bloco 12;
-- gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/EDR.
+- gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/ACL/EDR e filesystem/crash do Backup/Restore.
 
 ## Gate de implementação
 
