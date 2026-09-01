@@ -11,14 +11,12 @@ Regras obrigatórias para agentes que atuem neste repositório. Este arquivo gov
 - Checkout local previsto: `C:\dev\StepFlow`.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
 - Blocos 0–11 estão encerrados.
-- Bloco 12 está em análise; D12.1–D12.79 estão aprovadas e o plano da Fase 2 permanece em revisão.
+- Bloco 12 está em validação final; D12.1–D12.98 estão aprovadas e P12.99–P12.108 permanecem em revisão.
 - Nenhuma implementação funcional oficial foi iniciada.
 
 Estado executivo corrente pertence ao `README.md` e ao plano da fase, não a documentos técnicos estáveis.
 
 ## Precedência
-
-Em caso de conflito:
 
 1. `AGENTS.md`;
 2. `docs/05-progresso/registro-de-decisoes.md`;
@@ -27,7 +25,7 @@ Em caso de conflito:
 5. tarefa, dentro das decisões vigentes;
 6. histórico Git.
 
-O enunciado autoriza trabalho, mas não revoga silenciosamente decisão consolidada. Se a tarefa contrariar decisão vigente, parar e retornar ao PO/Assistente. Ambiguidade nunca autoriza escolher a alternativa mais conveniente.
+O enunciado não revoga silenciosamente decisão consolidada. Se houver conflito ou ambiguidade material, parar e retornar ao PO/Assistente.
 
 ## Leitura por camadas
 
@@ -41,11 +39,11 @@ O enunciado autoriza trabalho, mas não revoga silenciosamente decisão consolid
 ### Conforme impacto
 
 - `docs/05-progresso/registro-de-decisoes.md`;
-- `docs/04-planejamento/plano-oficial-fase-1.md`;
+- plano/roadmap vigentes;
 - `docs/03-arquitetura/arquitetura-vigente.md`;
-- `docs/03-arquitetura/modelo-dados-schema-fase-1.md`;
-- `docs/00-governanca/contexto-ambientes.md`;
-- documento de Produto/Tela/Arquitetura diretamente afetado.
+- modelo de dados;
+- contexto de ambientes;
+- documento de Produto/Tela/Arquitetura afetado.
 
 ## Papéis
 
@@ -59,7 +57,7 @@ Antes de **cada nova tarefa Codex**, inclusive PoC:
 
 1. entregar `PRÉ-FLIGHT PARA O PO — NÃO ENVIAR AO CODEX`;
 2. entregar `PROMPT / ENUNCIADO PARA O CODEX` separado;
-3. usar o menor perfil de capacidade suficiente, conforme `docs/00-governanca/politica-capacidade-codex.md`.
+3. usar o menor perfil de capacidade suficiente conforme a política Codex.
 
 ## Base Git obrigatória
 
@@ -72,18 +70,16 @@ git rev-parse HEAD
 git status --short --branch
 ```
 
-Se `HEAD` divergir, não fazer `pull`, `merge`, `rebase`, `reset` ou checkout corretivo automaticamente. Parar e reportar.
+Se `HEAD` divergir, não fazer pull/merge/rebase/reset/checkout corretivo automaticamente. Parar e reportar.
 
 ## Proteção absoluta do working tree
 
-Alteração preexistente pertence ao PO/outro fluxo.
-
-Sem autorização explícita e específica do PO, é proibido:
+Alteração preexistente pertence ao PO/outro fluxo. Sem autorização explícita, é proibido:
 
 - `git reset --hard`;
 - `git clean`;
 - `git stash`;
-- descartar/restaurar alterações locais;
+- descartar/restaurar alteração local;
 - sobrescrever arquivo modificado preexistente;
 - trocar branch descartando trabalho;
 - incluir alteração preexistente no commit da tarefa.
@@ -103,33 +99,29 @@ Se arquivo necessário já estiver modificado, parar e reportar.
 → próximo trabalho
 ```
 
-- branch mergeada não está encerrada enquanto permanecer no remoto;
-- remoto é a fonte operacional;
-- durante o fechamento da Fase 1, sincronização do checkout local permanece adiada até antes do primeiro trabalho de implementação;
-- a proposta da Fase 2 mantém uma tarefa lógica por branch/PR; só vira contrato após aprovação do PO.
+Branch mergeada não está encerrada enquanto permanecer no remoto. Cada tarefa da Fase 2 seguirá branch/PR próprios conforme D12.81.
 
 ## Regras operacionais
 
 - uma tarefa lógica por vez;
 - não declarar parcial como concluído;
-- não criar funcionalidade, dependência ou estrutura fora do escopo;
+- não criar funcionalidade/dependência/estrutura fora do escopo;
 - não alterar UX/visual aprovado sem autorização;
 - não transformar proposta/exemplo/valor provisório em decisão;
 - manter documentação e implementação sincronizadas;
-- atualizar painel do `README.md` quando houver mudança real de fase/bloco;
-- preservar modularidade, responsabilidades claras e baixo acoplamento;
-- evitar monólito HTML/JS;
+- atualizar o painel quando houver mudança real de fase/bloco;
+- preservar modularidade e evitar monólito HTML/JS;
 - não versionar credenciais, segredos, banco real ou dados pessoais;
 - exemplos de IP/hostname/share/path nunca viram configuração oficial;
-- testes de LAN corporativa fora dela são `NÃO APLICÁVEIS NESTE AMBIENTE`;
+- teste corporativo impossível fora do ambiente correspondente = `NÃO APLICÁVEL NESTE AMBIENTE`, nunca PASS presumido;
 - PoC descartável não vira produção silenciosamente;
-- documento técnico estável não carrega “próximo bloco” nem gate Git histórico consumido.
+- documento técnico estável não carrega próximo bloco nem gate Git consumido.
 
 ## Ambiente Codex versus sessão normal do PO
 
-Limitação do sandbox não vira requisito do produto. Codex não repara o próprio ambiente alterando ACL, Schannel, registro, PATH global, políticas de segurança ou reinstalando ferramentas válidas.
+Limitação do sandbox não vira requisito do produto. Codex não altera ACL, Schannel, registro, PATH global, políticas de segurança ou reinstala ferramenta válida para “consertar” o sandbox.
 
-Operações que exijam credenciais, Internet confiável, elevação ou configuração global devem ser reportadas para execução apropriada na sessão Windows normal do PO.
+Operações que exijam credenciais, Internet confiável, elevação ou configuração global devem ser encaminhadas à sessão Windows normal do PO.
 
 ## Contrato Pocket obrigatório
 
@@ -142,95 +134,68 @@ pasta pronta publicada no servidor Windows
 → Launcher encerra
 ```
 
-`StepFlow.exe` é o Launcher com nome/ícone amigáveis e único ponto de entrada normal. Artefatos publicados ficam sob `_internal/`; `.lnk` não é requisito baseline.
+`StepFlow.exe` é o Launcher amigável e único ponto de entrada normal. Artefatos publicados ficam sob `_internal/`; `.lnk` não é requisito baseline.
 
-É obrigatório no uso normal:
+Obrigatório no uso normal:
 
 - zero instalador tradicional por estação;
 - zero configuração manual de dependência;
 - zero privilégio administrativo;
-- zero toolchain de desenvolvimento em produção;
+- zero toolchain em produção;
 - nenhuma Internet obrigatória;
-- Client operacional local, não permanentemente do SMB;
-- atualização central pela pasta publicada + versões locais validadas;
+- Client operacional local, não permanente em SMB;
+- atualização central + versões locais validadas;
 - Host/Controller sob demanda;
 - fechar Client individual não encerra Host;
-- encerrado o ciclo central, nenhum processo StepFlow permanece;
-- sem Windows Service persistente, auto-start, Task Scheduler, watchdog, tray agent ou daemon baseline.
+- nenhum processo residual após encerramento central;
+- sem Service/auto-start/Task Scheduler/watchdog/tray/daemon baseline.
 
-Se dependência exigir instalação/elevação/preparação manual por computador, a solução não atende ao Pocket e deve ser redesenhada ou tratada como bloqueador.
+Se dependência exigir instalação/elevação/preparação manual por computador, a solução não atende ao Pocket e deve ser redesenhada ou tratada como blocker.
 
 ### WebView2
 
-- Tauri usa WebView2 no Windows;
-- Evergreen compatível já presente é preferível;
-- disponibilidade real deve ser detectada;
-- não baixar/instalar runtime silenciosamente pela Internet em produção;
-- Fixed Version não pode executar de UNC/SMB;
-- fallback autocontido deve ser local e só entra após PoC provar `%LOCALAPPDATA%` sem instalação, elevação ou ação manual, inclusive no Windows 10 alvo;
-- falha dessa PoC em estação suportada é bloqueador, não autorização para enfraquecer o Pocket.
-
-Fontes: `docs/03-arquitetura/implantacao-pocket.md`, `launcher-distribuicao-client.md`, `compatibilidade-windows-client.md`.
+Evergreen compatível já presente é preferível. Fixed Version não pode executar de UNC/SMB; fallback autocontido deve ser local e só entra após PoC sem instalação, elevação ou ação manual. Falha em estação suportada é blocker, não autorização para enfraquecer Pocket.
 
 ## Invariantes técnicas consolidadas
 
-- Client: Tauri 2 + HTML/CSS/JavaScript modular;
+- Client: Tauri 2 + HTML/CSS/JavaScript modular, sem Node/bundler baseline;
 - Host: Rust + Tokio/Axum + `rusqlite` bundled;
-- HTTP/JSON + WebSocket;
+- HTTP/JSON + WebSocket autenticado quando sessão existir;
 - SQLite somente pelo Host;
-- WAL + writer lógico coordenado + fila bounded + revisão otimista;
-- nenhuma sobrescrita silenciosa;
-- sessão opaca e autorização Host-side;
+- WAL + writer lógico + fila bounded + revisão otimista;
 - Procedimentos usam revisões imutáveis;
-- `Procedimento`, `Atendimento/Execução` e `Equipamento` são domínios distintos;
-- Atendimento preserva revisão usada;
-- checklist persiste somente em Atendimento;
-- `Observação do serviço` persiste opcionalmente por Etapa somente em Atendimento;
-- histórico relevante precisa ser reproduzível;
-- Reader usa experiência livro/manual;
-- geração documental pertence ao Host e usa snapshot consistente + `DocumentModel`;
-- PDF usa Typst embutido; DOCX usa OOXML direto em Rust; impressão usa o mesmo PDF via WebView2;
-- Ficha válida possui exatamente uma A4; `2+` páginas = `SHEET_OVERFLOW`;
+- Atendimento preserva revisão usada; checklist/observação operacional persistem somente em Atendimento;
+- geração documental Host-side por snapshot + `DocumentModel`;
+- PDF Typst, DOCX OOXML Rust, impressão pelo mesmo PDF via WebView2;
+- Ficha válida = exatamente uma A4; `2+` = `SHEET_OVERFLOW`;
 - Backup/Restore segue D11.1–D11.116;
 - Backup = ADM/Gerência; Restore = ADM-only;
-- disaster recovery é local/transitório pelo Controller;
+- disaster recovery local/transitório;
 - Restore destrutivo invalida sessões antigas;
-- `uncertain` bloqueia readiness/mutações/cleanup destrutivo;
-- safety backup `pre_restore` mantém barrier até o primeiro rename;
-- paths Backup/Restore usam semântica Windows estrita e provenance por deployment;
-- D12.1–D12.18 definem ownership e publicação `StepFlow.exe + _internal/`;
-- D12.19–D12.34 definem toolchain/workspace/build/dependências;
-- D12.35–D12.55 definem migrations/testes/fixtures;
-- D12.56–D12.79 definem parâmetros iniciais de autenticação, empresa, categoria arquivada, Backup/Restore, reconexão e logs;
-- aprovação dessas decisões ainda não autoriza scaffold antes do gate final da Fase 1.
+- `uncertain` bloqueia readiness/mutações/cleanup;
+- safety backup mantém barrier até primeiro rename;
+- paths Backup/Restore usam semântica Windows estrita e provenance;
+- D12.1–D12.18: estrutura/publicação `StepFlow.exe + _internal/`;
+- D12.19–D12.34: toolchain/workspace/build/dependências;
+- D12.35–D12.55: migrations/testes/fixtures;
+- D12.56–D12.79: parâmetros iniciais;
+- D12.80–D12.98: sequência F2-T01…F2-T08 e gates da Fase 2.
 
-### Parâmetros D12 relevantes
-
-- Argon2id: 64 MiB / 3 passes / 4 lanes; senha 15–128 após NFKC;
-- token opaco 32 bytes; sessão 30 min idle / 8 h absoluta;
-- Gerência pode alterar configuração da empresa;
-- categoria arquivada herdada permanece com aviso, mas não pode ser adicionada novamente enquanto arquivada;
-- retenção de Backup default 20, faixa 5–100;
-- Backup capture hard limit 10 s; pre_restore 120 s sem progresso / 10 min pré-destrutivo;
-- readiness 30 s; relaunch Restore máximo 3 tentativas;
-- connect 5 s / request comum 30 s; WebSocket backoff bounded;
-- números ficam centralizados; configuração crítica inválida não cai silenciosamente em default inseguro.
-
-Detalhes pertencem às fontes específicas.
+Aprovação D12 não autoriza scaffold antes do gate final da Fase 1.
 
 ## Pendências ainda abertas
 
-- P12.80–P12.98: plano detalhado da Fase 2 e sequência de tarefas Codex;
-- validação final da Fase 1;
+- P12.99–P12.108 — validação final da Fase 1;
 - gate Git do Bloco 12;
-- sincronização segura do checkout local antes do primeiro trabalho executável;
-- gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR e adapters aplicáveis.
+- sincronização segura do checkout local;
+- autorização explícita de F2-T01;
+- gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR/adapters.
 
 ## Gate de implementação
 
-Na Fase 1, trabalho estrutural significa documentação ou PoC explicitamente descartável autorizada. Não criar scaffold oficial, módulos runtime definitivos, árvore final ou código de negócio antes do Bloco 12/Fase 2 autorizar.
+Não criar scaffold oficial, módulos runtime definitivos, migration oficial ou código de negócio antes do Bloco 12/Fase 1 ser encerrado.
 
-Antes do primeiro trabalho de implementação, sincronizar explicitamente o checkout local com o remoto **sem apagar, sobrescrever, descartar ou incorporar indevidamente** alterações preexistentes do PO.
+Antes do primeiro trabalho de implementação, o checkout local deve ser sincronizado explicitamente sem apagar, sobrescrever, descartar ou incorporar indevidamente alterações preexistentes do PO. A semântica positiva de sincronização permanece em revisão em P12.103–P12.104.
 
 ## Regra final
 
