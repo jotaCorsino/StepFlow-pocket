@@ -1,6 +1,6 @@
 # Bloco 12 — Estrutura oficial + plano da Fase 2
 
-**Status:** EM ANÁLISE — ANÁLISE 1 APROVADA  
+**Status:** EM ANÁLISE — ANÁLISES 1–2 APROVADAS  
 **Fase:** 1 — Fechamento arquitetural e especificação  
 **Abertura:** 2026-09-01
 
@@ -34,7 +34,7 @@ Continuam obrigatórias:
 
 # Análise 1 — árvore fonte e fronteiras de responsabilidade
 
-**Status:** APROVADA PELO PO EM 2026-09-01.
+**Status:** APROVADA PELO PO EM 2026-09-01 — D12.1–D12.18.
 
 ## Princípio
 
@@ -44,7 +44,7 @@ Direção aprovada:
 
 ```text
 StepFlow/
-├── Cargo.toml                  # workspace Rust
+├── Cargo.toml
 ├── apps/
 │   ├── client/
 │   │   ├── web/
@@ -73,92 +73,29 @@ StepFlow/
 └── README.md
 ```
 
-A árvore é uma **baseline de ownership**, não autorização para criar todos os diretórios imediatamente. Diretório/crate só entra no scaffold quando houver responsabilidade concreta na etapa correspondente da Fase 2.
+A árvore é uma baseline de ownership, não autorização para criar todos os diretórios imediatamente. Diretório/crate só entra no scaffold quando houver responsabilidade concreta na etapa correspondente da Fase 2.
 
 ## Fronteiras aprovadas
 
-### `apps/client`
+- `apps/client`: Tauri local, frontend HTML/CSS/JavaScript em ES modules, `src-tauri` fino e sem regra de negócio/autorização duplicada;
+- `apps/launcher`: manifest/deployment, preparação local, validação/ativação do Client e encerramento;
+- `apps/controller`: lifecycle central, exclusividade, readiness/shutdown, relaunch bounded e Recovery local;
+- `apps/host`: autoridade funcional, HTTP/JSON/WebSocket, auth, SQLite/migrations, domínio, documentos, Backup/Restore e auditoria;
+- `crates/protocol`: contratos/tipos realmente compartilhados;
+- `crates/domain`: invariantes puras com uso concreto;
+- `crates/documents`: pipeline documental Host-side isolável;
+- `crates/platform-windows`: adapters Win32 reutilizáveis/testáveis quando houver necessidade real.
 
-Aplicativo Tauri executado localmente na estação.
-
-- `web/` usa HTML/CSS/JavaScript com **ES modules**;
-- organização por features/componentes/serviços, evitando `index.html` ou `app.js` monolítico;
-- classes podem ser usadas quando houver estado/lifecycle claro, mas não são exigidas artificialmente onde funções/módulos simples forem melhores;
-- `src-tauri/` fica fino: bootstrap Tauri, comandos/adapters realmente locais e integração Windows necessária ao Client;
-- regra de negócio/autorização não migra para o shell Tauri.
-
-### `apps/launcher`
-
-Binário Rust responsável apenas por manifest/deployment, preparação local, validação, ativação de versão Client e encerramento.
-
-Não inicia Host remoto, não acessa SQLite e não vira updater residente.
-
-Na publicação Pocket, esse binário é o **único ponto de entrada destinado ao usuário comum** e pode ser exposto na raiz com o nome amigável `StepFlow.exe`, independentemente do nome técnico do crate/binário no source tree.
-
-### `apps/controller`
-
-Binário Rust da máquina central responsável pelo ciclo de vida do Host, exclusividade, readiness, shutdown, relaunch bounded de Restore e modo Recovery local/transitório.
-
-Não absorve regras de domínio que pertencem ao Host.
-
-### `apps/host`
-
-Servidor central e autoridade funcional.
-
-- HTTP/JSON + WebSocket;
-- autenticação/autorização;
-- SQLite/migrations;
-- writer/fila/conflitos/eventos;
-- domínio de Procedimentos/Atendimentos/Equipamentos;
-- documentos, Backup/Restore e auditoria conforme contratos vigentes.
-
-### `crates/protocol`
-
-Tipos/DTOs/envelopes/códigos compartilhados entre componentes Rust quando necessário. Não contém acesso ao banco nem regra de negócio que dependa do Host.
-
-### `crates/domain`
-
-Invariantes puras e tipos de domínio que realmente tenham reutilização/testabilidade independente de transporte/persistência.
-
-Evitar transformar `domain` em depósito genérico ou antecipar abstrações sem uso concreto.
-
-### `crates/documents`
-
-Pipeline documental compartilhável dentro do Host: `DocumentModel`, Typst/PDF, OOXML/DOCX e contratos de rendering. A existência do crate não muda a propriedade Host-side da geração.
-
-### `crates/platform-windows`
-
-Adapters Windows que mereçam isolamento/testes próprios: impressão, operações de filesystem/rename quando aplicável, integração WebView2/Win32 estritamente necessária.
-
-Não vira camada genérica para qualquer código específico do Windows sem necessidade real.
-
-## Migrations, scripts e testes
-
-Direção aprovada como ownership; detalhes permanecem para análises seguintes do Bloco 12:
-
-- migrations pertencem ao Host e devem ficar próximas da persistência que as executa;
-- scripts do root servem build/test/package/dev e **não** viram dependência operacional de produção;
-- unit tests ficam próximos ao módulo/crate;
-- integration tests ficam no componente proprietário;
-- `tests/e2e/` fica reservado a smoke/end-to-end entre binários quando a Fase 2 tiver fundação suficiente;
-- artefatos `target/`, `dist/`, pacote Pocket e dados reais não são versionados.
-
-## Código-fonte × publicação Pocket
-
-A saída de build/package deve separar claramente **superfície do usuário** e **estrutura interna**.
-
-Direção aprovada para a pasta publicada:
+## Publicação Pocket aprovada
 
 ```text
 StepFlow\
-├── StepFlow.exe                 # único ponto de entrada normal; Launcher com ícone do produto
+├── StepFlow.exe
 └── _internal\
     ├── client\
     │   ├── manifest.json
     │   ├── deployment.json
-    │   └── releases\
-    │       └── <versao>\
-    │           └── artefatos do Client
+    │   └── releases\<versao>\...
     └── server\
         ├── app\
         │   ├── StepFlowController.exe
@@ -169,65 +106,88 @@ StepFlow\
         └── backups\
 ```
 
-Experiência aprovada para o usuário:
+Experiência:
 
 ```text
-abrir a pasta StepFlow no compartilhamento
-→ ver StepFlow.exe como entrada evidente
-→ duplo clique
-→ Launcher prepara/valida o Client local
+abrir pasta StepFlow
+→ duplo clique em StepFlow.exe
+→ Launcher prepara/valida Client local
 → Client abre
 → Launcher encerra
 ```
 
-Regras dessa superfície:
+Regras:
 
-- não exigir que o usuário navegue por `client/`, `releases/`, `app/` ou outras pastas técnicas para iniciar o produto;
-- executáveis internos de Controller/Host não ficam apresentados como alternativas de início para o usuário comum;
-- a subpasta `_internal/` é encapsulamento organizacional; o funcionamento não depende de atributo Hidden/System do Windows;
-- packaging pode marcar `_internal/` como oculto apenas como acabamento visual, desde que isso não seja requisito funcional e não complique update/cópia/ACL;
-- não usar `.lnk` como baseline obrigatório: shortcut do Windows pode depender de target/path e ficar frágil quando a pasta/share for movido;
-- o próprio Launcher exposto como `StepFlow.exe` cumpre a função de “atalho” portátil e verificável;
-- o nome técnico do crate/binário de desenvolvimento pode continuar distinto (`launcher`/`stepflow-launcher`); o nome amigável é decisão de packaging;
-- source tree e publicação continuam estruturas diferentes.
-
-Essa pasta é **produto de packaging/deploy**, não a organização do source tree.
+- `StepFlow.exe` é o Launcher com nome/ícone amigáveis e único ponto de entrada normal;
+- usuário comum não precisa navegar na árvore técnica;
+- `.lnk` não é requisito baseline;
+- Hidden/System em `_internal/` é somente acabamento opcional;
+- source tree e publicação Pocket são estruturas diferentes.
 
 ## Decisões D12.1–D12.18
 
-- **D12.1:** repositório executável usa workspace Rust na raiz, com `apps/` para binários e `crates/` para bibliotecas reutilizáveis;
-- **D12.2:** binários oficiais são `client`, `launcher`, `controller` e `host`, preservando as responsabilidades já consolidadas;
-- **D12.3:** frontend do Client fica em `apps/client/web/` com ES modules organizados por feature/componente/serviço/shared, sem monólito HTML/JS;
-- **D12.4:** `apps/client/src-tauri/` permanece shell fino e não vira segunda camada de negócio/autorização;
-- **D12.5:** `launcher` permanece Rust self-contained e transitório; `controller` permanece lifecycle central; `host` permanece autoridade funcional/SQLite;
-- **D12.6:** `crates/protocol` só carrega contratos/tipos realmente compartilhados e nunca acesso ao banco;
-- **D12.7:** `crates/domain` contém somente invariantes puras com uso concreto; abstração antecipada e `utils` genérico não são baseline;
-- **D12.8:** geração documental pode ser isolada em `crates/documents`, mantendo execução/propriedade Host-side;
-- **D12.9:** integrações Win32 reutilizáveis/testáveis podem ser isoladas em `crates/platform-windows`;
-- **D12.10:** migrations pertencem ao Host e ficam próximas à persistência executora; naming/conteúdo inicial serão fechados em análise específica antes de criação;
-- **D12.11:** scripts do root são apenas tooling de desenvolvimento/build/test/package e não criam requisito de runtime em produção;
-- **D12.12:** unit/integration tests ficam próximos ao owner; `tests/e2e/` é reservado a testes entre componentes;
-- **D12.13:** source tree e pasta Pocket publicada são estruturas distintas; `dist/`, `target/`, dados reais e pacotes gerados não são versionados;
-- **D12.14:** aprovação desta árvore não autoriza scaffold imediato; implementação só começa após o gate final do Bloco 12 + sincronização segura do checkout local;
-- **D12.15:** a raiz da pasta Pocket publicada possui **um único ponto de entrada normal**, `StepFlow.exe`, que é o Launcher empacotado com nome/ícone amigáveis;
-- **D12.16:** artefatos técnicos da publicação ficam encapsulados sob `_internal/`, separando `client/` e `server/`; usuário comum não precisa navegar nessa árvore para iniciar o StepFlow;
-- **D12.17:** `.lnk` não é requisito baseline; o executável Launcher na raiz fornece a experiência de atalho portátil sem depender de target absoluto/UNC estável;
-- **D12.18:** atributo Hidden/System para `_internal/` pode existir apenas como acabamento opcional de packaging; integridade, atualização e execução nunca dependem dele.
+- **D12.1:** workspace Rust na raiz, `apps/` para binários e `crates/` para bibliotecas reutilizáveis;
+- **D12.2:** binários oficiais: `client`, `launcher`, `controller`, `host`;
+- **D12.3:** frontend em `apps/client/web/` com ES modules por feature/componente/serviço/shared, sem monólito;
+- **D12.4:** `src-tauri/` permanece shell fino;
+- **D12.5:** Launcher transitório, Controller lifecycle central, Host autoridade funcional/SQLite;
+- **D12.6:** `crates/protocol` somente para contratos/tipos compartilhados;
+- **D12.7:** `crates/domain` somente para invariantes puras com uso concreto;
+- **D12.8:** geração documental pode ficar em `crates/documents`, mantendo propriedade Host-side;
+- **D12.9:** adapters Win32 reutilizáveis podem ficar em `crates/platform-windows`;
+- **D12.10:** migrations pertencem ao Host;
+- **D12.11:** scripts root são tooling de dev/build/test/package, nunca runtime de produção;
+- **D12.12:** unit/integration junto ao owner; `tests/e2e/` para fluxos entre componentes;
+- **D12.13:** source tree e publicação são distintas; `dist/`, `target/`, dados reais e pacotes gerados não são versionados;
+- **D12.14:** estrutura aprovada não autoriza scaffold antes do gate final + sincronização segura do checkout;
+- **D12.15:** raiz publicada possui único ponto de entrada normal `StepFlow.exe`;
+- **D12.16:** artefatos técnicos ficam encapsulados sob `_internal/`;
+- **D12.17:** `.lnk` não é requisito baseline;
+- **D12.18:** Hidden/System em `_internal/` é acabamento opcional, nunca requisito funcional.
+
+---
+
+# Análise 2 — workspace, build, dependências e configuração
+
+**Status:** APROVADA PELO PO EM 2026-09-01 — D12.19–D12.34.
+
+Fonte detalhada: `bloco-12-analise-2-workspace-build-dependencias.md`.
+
+Contrato aprovado:
+
+- Rust `1.98.0`, target `x86_64-pc-windows-msvc`, rustup `minimal`, `rustfmt` e `clippy`;
+- Edition 2024 + Cargo resolver 3;
+- virtual workspace na raiz;
+- `rust-toolchain.toml` e `Cargo.lock` versionados;
+- builds/test/package lockfile-aware e sem `cargo update` incidental;
+- dependências só entram quando houver uso real;
+- baseline inicial: Tauri 2.11.x, tauri-build 2.6.x, Tauri CLI 2.11.x, Tokio ~1.51, Axum 0.8.9, rusqlite 0.40.2 bundled, Serde 1.0.229, serde_json 1.0.151, tracing 0.1.44 e tower-http 0.6.8, somente onde aplicável;
+- frontend vanilla modular sem Node/npm/pnpm/yarn/Vite/bundler/framework no baseline;
+- Tauri CLI apenas em desenvolvimento;
+- configuração separada entre build/dev, deployment e runtime central;
+- `target/`/`dist/` descartáveis e produção montada por packaging;
+- LTO/strip/panic/codegen tuning somente por benchmark;
+- scripts PowerShell finos, sem requisito para o usuário final.
+
+Decisões vigentes: **D12.19–D12.34** conforme fonte detalhada e registro de decisões.
+
+---
 
 ## Estado das análises
 
 1. Análise 1 — árvore fonte + publicação Pocket: **APROVADA** — D12.1–D12.18;
-2. Análise 2 — workspace/build/dependências/configuração: **EM REVISÃO** — P12.19–P12.34 em `bloco-12-analise-2-workspace-build-dependencias.md`;
-3. migrations/scripts/testes iniciais e fixtures: pendente;
+2. Análise 2 — workspace/build/dependências/configuração: **APROVADA** — D12.19–D12.34;
+3. Análise 3 — migrations/scripts/testes/fixtures: **EM REVISÃO** — P12.35–P12.55 em `bloco-12-analise-3-migrations-testes-fixtures.md`;
 4. parâmetros finais de autenticação + Backup/Restore + configuração da empresa/categoria arquivada: pendente;
 5. plano detalhado da Fase 2 e sequência de tarefas Codex: pendente;
 6. gate de encerramento da Fase 1 e autorização explícita do primeiro scaffold: pendente.
 
 ## Fora do escopo deste checkpoint
 
-- criar `Cargo.toml` oficial;
+- criar `Cargo.toml`, lockfile ou toolchain file oficiais;
 - criar app/crate vazio;
 - criar migration SQL oficial;
+- criar scripts/fixtures executáveis;
 - implementar UI, Host, Launcher ou Controller;
 - sincronizar/alterar o checkout local do PO;
 - criar task Codex executável antes do gate correspondente.
