@@ -82,7 +82,7 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — restart, sessões, reconexão e falhas;
 - `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — disaster recovery, capacidades e auditoria;
 - `bloco-11-analise-7-validacao-tecnica-final.md` — validação técnica final e D11.104–D11.116;
-- `bloco-12-estrutura-oficial-plano-fase-2.md` — proposta corrente para estrutura oficial, parâmetros finais e plano da Fase 2;
+- `bloco-12-estrutura-oficial-plano-fase-2.md` — Bloco 12 em análise; estrutura oficial, publicação Pocket, parâmetros e plano da Fase 2;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -100,6 +100,6 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 ## Estado atual
 
-A **Fase 1 permanece em andamento no Bloco 12**, seu último bloco. Blocos 0–11 estão encerrados em seus escopos documentais/técnicos.
+A **Fase 1 permanece em andamento**. Blocos 0–11 estão concluídos; o Bloco 12 está em análise e fecha estrutura oficial, parâmetros finais, superfície de publicação Pocket e plano da Fase 2.
 
-O Bloco 12 está em análise documental e ainda **não autoriza scaffold/runtime/migrations oficiais/código de negócio**. O primeiro trabalho executável da Fase 2 depende do gate explícito desse bloco e da sincronização segura do checkout local.
+Nenhuma implementação funcional oficial foi iniciada.
