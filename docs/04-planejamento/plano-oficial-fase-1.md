@@ -26,29 +26,48 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
 | 11 | Backup/restauração técnico | CONCLUÍDO | `bloco-11-backup-restauracao.md` |
-| 12 | Estrutura oficial + Fase 2 | EM ANÁLISE | `bloco-12-estrutura-oficial-plano-fase-2.md` |
+| 12 | Estrutura oficial + Fase 2 | EM ANÁLISE — ANÁLISE 1 APROVADA | `bloco-12-estrutura-oficial-plano-fase-2.md` |
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
 **EM ANÁLISE desde 2026-09-01.**
 
-A Análise 1 propõe P12.1–P12.18:
+### Análise 1 — aprovada
+
+Decisões **D12.1–D12.18**:
 
 - workspace Rust na raiz;
 - `apps/` para Client, Launcher, Controller e Host;
 - frontend Client modular em ES modules;
 - crates compartilhados somente para responsabilidades concretas;
 - source tree separado da publicação Pocket;
-- como refinamento ainda não consolidado, publicação Pocket com um único `StepFlow.exe` visível na raiz como Launcher amigável;
+- publicação com um único `StepFlow.exe` visível na raiz como Launcher amigável;
 - artefatos Client/Server encapsulados sob `_internal/`;
 - `.lnk` não é requisito baseline;
 - aprovação estrutural não autoriza scaffold antes do gate final.
 
-Fonte: `bloco-12-estrutura-oficial-plano-fase-2.md`.
+### Análise 2 — em revisão
+
+Proposta **P12.19–P12.34** cobre:
+
+- Rust/toolchain/workspace;
+- Edition 2024 + Cargo resolver 3;
+- `Cargo.lock` versionado e builds `--locked`;
+- política de dependências e atualizações;
+- baseline de crates da fundação;
+- Client vanilla sem Node/npm/Vite/bundler;
+- configuração build/dev × deployment × runtime;
+- saída `target/` × packaging `dist/`;
+- scripts PowerShell finos de desenvolvimento/build/test/package.
+
+Fontes:
+
+- `bloco-12-estrutura-oficial-plano-fase-2.md`;
+- `bloco-12-analise-2-workspace-build-dependencias.md`.
 
 ## O Bloco 12 ainda deve fechar
 
-1. workspace/build/dependências/configuração e versões pinadas;
+1. decisão da Análise 2;
 2. migrations/scripts/testes iniciais e fixtures;
 3. parâmetros finais ainda pendentes;
 4. plano detalhado da Fase 2 e sequência de tarefas Codex;
@@ -75,7 +94,7 @@ Fonte: `bloco-12-estrutura-oficial-plano-fase-2.md`.
 - duração alvo de barrier/manutenção;
 - backoff/reconexão;
 - rotação física de logs/admin audit;
-- versões pinadas de crates/adapters.
+- parâmetros de dependências/adapters não cobertos pela fundação inicial.
 
 ### Ambiente real
 
@@ -89,7 +108,7 @@ Fonte: `bloco-12-estrutura-oficial-plano-fase-2.md`.
 
 ## Gate atual
 
-1. concluir Análises 1–5 do Bloco 12;
+1. concluir Análises do Bloco 12;
 2. aprovar parâmetros/estrutura/plano;
 3. sincronizar documentação estável;
 4. realizar validação final da Fase 1;
