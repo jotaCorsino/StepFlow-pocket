@@ -82,8 +82,9 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 - `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — restart, sessões, reconexão e falhas;
 - `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — disaster recovery, capacidades e auditoria;
 - `bloco-11-analise-7-validacao-tecnica-final.md` — validação técnica final e D11.104–D11.116;
-- `bloco-12-estrutura-oficial-plano-fase-2.md` — mapa principal do Bloco 12; Análise 1 aprovada em D12.1–D12.18;
-- `bloco-12-analise-2-workspace-build-dependencias.md` — proposta P12.19–P12.34 para workspace, build, dependências e configuração;
+- `bloco-12-estrutura-oficial-plano-fase-2.md` — mapa principal do Bloco 12; D12.1–D12.34 aprovadas;
+- `bloco-12-analise-2-workspace-build-dependencias.md` — workspace, build, dependências e configuração consolidados em D12.19–D12.34;
+- `bloco-12-analise-3-migrations-testes-fixtures.md` — proposta P12.35–P12.55 para migrations, testes e fixtures;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -101,6 +102,6 @@ Conforme impacto, consultar também registro de decisões, plano da fase, arquit
 
 ## Estado atual
 
-A **Fase 1 permanece em andamento**. Blocos 0–11 estão concluídos; o Bloco 12 está em análise. A Análise 1 está aprovada em D12.1–D12.18 e a Análise 2 está em revisão como P12.19–P12.34.
+A **Fase 1 permanece em andamento**. Blocos 0–11 estão concluídos; o Bloco 12 está em análise. As Análises 1–2 estão aprovadas em D12.1–D12.34 e a Análise 3 está em revisão como P12.35–P12.55.
 
 Nenhuma implementação funcional oficial foi iniciada.
