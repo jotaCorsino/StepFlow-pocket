@@ -1,6 +1,6 @@
 # Roadmap — StepFlow Pocket
 
-**Status:** FASE 1 EM ANDAMENTO  
+**Status:** FASE 1 EM ANDAMENTO — BLOCO 12  
 **Atualização:** 2026-09-01
 
 O roadmap descreve **fases e resultados**, não PRs ou branches específicas. Gates operacionais correntes ficam no plano da fase e no `README.md`.
@@ -13,9 +13,9 @@ Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e
 
 ## Fase 1 — Fechamento arquitetural e especificação
 
-**EM ANDAMENTO.**
+**EM ANDAMENTO — ÚLTIMO BLOCO.**
 
-Consolidado até aqui:
+Consolidado:
 
 - Client Windows/Tauri;
 - Host Pocket sob demanda;
@@ -31,66 +31,45 @@ Consolidado até aqui:
 - checklist persistente e observação de serviço por Etapa;
 - códigos `AT-000001` / `EQP-000001`;
 - geração documental, exportação, impressão, Ficha compacta, naming e temporários;
-- validação técnica final do Bloco 10;
-- Backup/Restore técnico consolidado em D11.1–D11.116;
+- Backup/Restore técnico D11.1–D11.116;
 - contrato Pocket preservado como gate superior.
-
-### Bloco 11 — Backup / Restore técnico
-
-**TECNICAMENTE CONCLUÍDO em 2026-09-01.**
-
-Resultados:
-
-- estado recuperável e pacote `.stepflow-backup`;
-- snapshot SQLite via Online Backup API;
-- consistência conjunta entre banco e arquivos administrados;
-- staging/verificação/promoção no-replace;
-- catálogo reconstruível e retenção sem scheduler/por quantidade;
-- coordenação administrativa de Backup/Restore/migration;
-- Restore com revalidação integral, migrations forward, safety backup e troca lógica de `data/`;
-- safety barrier contínuo até o primeiro rename no `pre_restore`;
-- journal de Restore, reconciliação antes de readiness, rollback conhecido/`uncertain`;
-- fresh Host e invalidação de sessões após fase destrutiva;
-- disaster recovery local/transitório pelo Controller;
-- Backup permitido a ADM/Gerência e Restore restrito a ADM;
-- auditoria administrativa que atravessa Restore;
-- canonicalização Windows e bloqueio de paths ambíguos/perigosos;
-- provenance por `source_deployment_id`;
-- parser/extração bounded;
-- baseline sem criptografia ou assinatura application-level;
-- gates Win32/filesystem/ACL/EDR/long paths/crash antes de produção.
-
-Não há bloqueador arquitetural conhecido para o mecanismo. Parâmetros numéricos finais ficam no Bloco 12.
-
-Fonte: `bloco-11-backup-restauracao.md` e análises específicas 3–7.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
-**PENDENTE.**
+**EM ANÁLISE desde 2026-09-01.**
 
-Fechará:
+Resultado esperado:
 
-- parâmetros técnicos finais ainda abertos;
-- estrutura oficial do repositório;
-- migrations/scripts/testes iniciais;
-- configuração/defaults/fixtures mensuráveis;
-- sincronização segura do checkout local;
-- plano executável da Fase 2.
+- árvore oficial do source tree e ownership dos componentes;
+- workspace/build/configuração de desenvolvimento;
+- disciplina inicial de migrations/scripts/testes/fixtures;
+- fechamento dos parâmetros ainda pendentes;
+- mapeamento explícito dos gates corporativos para etapas executáveis;
+- procedimento seguro de sincronização do checkout local;
+- plano executável da Fase 2;
+- gate inequívoco que encerra a Fase 1 e autoriza o primeiro scaffold/runtime oficial.
+
+A Análise 1 propõe `apps/` para executáveis, `crates/` para bibliotecas com responsabilidade concreta, frontend Client modular em ES modules e separação formal entre source tree e pacote Pocket publicado.
+
+Fonte: `bloco-12-estrutura-oficial-plano-fase-2.md`.
 
 ## Fase 2 — Fundação técnica executável
 
-**PENDENTE.**
+**PENDENTE — SERÁ DETALHADA/ORDENADA NO BLOCO 12.**
 
-- árvore oficial Client/Launcher/Controller/Host;
+Resultado de fase esperado:
+
+- árvore oficial materializada;
 - builds reproduzíveis;
 - configuração de desenvolvimento;
 - comunicação mínima + health/readiness;
 - SQLite + migrations iniciais;
 - logging mínimo;
 - testes de fundação;
-- PoCs/gates técnicos exigidos pela Fase 1, incluindo fallback WebView2 Pocket quando necessário.
+- packaging inicial coerente com o contrato Pocket;
+- PoCs/gates técnicos exigidos pela Fase 1 no momento correspondente.
 
-Gate: Client abre sem instalação manual, Host inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build limpo passa.
+Gate esperado: Client abre sem instalação manual, Host inicia sob demanda, comunicação mínima funciona, banco inicializa deterministicamente e build/testes limpos passam.
 
 ## Fase 3 — Autenticação, usuários e shell
 
