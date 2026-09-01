@@ -2,6 +2,29 @@
 
 Este arquivo registra **marcos relevantes**, não cada commit ou conversa. O histórico operacional detalhado permanece no Git/PRs; decisões vigentes ficam em `registro-de-decisoes.md`.
 
+## 2026-09-01
+
+### Bloco 11 — Backup / Restauração técnico
+
+- contrato técnico consolidado em **D11.1–D11.116**;
+- estado recuperável definido como `stepflow.sqlite + company/** + avatars/**`;
+- pacote único `.stepflow-backup`, ZIP `Stored`, manifesto versionado, hashes SHA-256 e Online Backup API;
+- consistência conjunta de SQLite + arquivos administrados com barrier de mutações;
+- catálogo reconstruível, retenção sem scheduler/por quantidade e coordinator administrativo exclusivo;
+- Restore com revalidação integral, migrations somente forward, safety backup obrigatório e troca lógica de `data/`;
+- safety barrier `pre_restore` mantido desde a captura até o primeiro rename;
+- journal fora de `data/`, fresh Host, rollback conhecido/`uncertain` e invalidação de sessões após fase destrutiva;
+- disaster recovery local/transitório pelo Controller, sem listener normal da LAN;
+- Backup permitido a ADM/Gerência e Restore restrito a ADM;
+- auditoria administrativa estruturada fora de `data/`;
+- paths Windows endurecidos contra traversal/UNC/device/ADS/reserved names/case collision/reparse/non-regular;
+- manifesto passou a incluir `source_deployment_id` para provenance da implantação;
+- parser/extração definidos como bounded, com valores numéricos reservados ao Bloco 12;
+- baseline inicial sem criptografia ou assinatura application-level; SHA-256 permanece integridade, não autenticidade;
+- offsite/cópia corporativa de backups permanece responsabilidade operacional externa ao baseline;
+- adapter Win32, filesystem, ACLs, EDR/antivírus, long paths, espaço, performance e crash injection permanecem gates antes de produção;
+- validação técnica final concluiu **sem bloqueador arquitetural conhecido**.
+
 ## 2026-08-29
 
 ### Bloco 10 — geração documental, impressão e Ficha compacta
