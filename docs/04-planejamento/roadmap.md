@@ -32,36 +32,35 @@ Consolidado até aqui:
 - códigos `AT-000001` / `EQP-000001`;
 - geração documental, exportação, impressão, Ficha compacta, naming e temporários;
 - Backup/Restore técnico D11.1–D11.116;
-- estrutura/publicação do Bloco 12 D12.1–D12.18;
+- estrutura/publicação D12.1–D12.18;
 - workspace/build/dependências D12.19–D12.34;
+- migrations/scripts/testes/fixtures D12.35–D12.55;
 - contrato Pocket preservado como gate superior.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
 **EM ANÁLISE.**
 
-Análises 1–2 aprovadas — D12.1–D12.34:
+Análises 1–3 aprovadas — D12.1–D12.55:
 
-- workspace Rust modular;
-- `apps/` para executáveis e `crates/` somente para responsabilidades reutilizáveis concretas;
-- frontend Client em ES modules e sem Node/bundler no baseline;
-- source tree separado da publicação Pocket;
-- `StepFlow.exe` como único ponto de entrada normal e `_internal/` como área técnica publicada;
-- Rust 1.98.0, Edition 2024, resolver 3 e lockfile/toolchain versionados;
-- política explícita de dependências, configuração e packaging;
+- workspace Rust modular e publicação Pocket com `StepFlow.exe` como entrada única;
+- Client em ES modules e sem Node/bundler no baseline;
+- toolchain/lockfile/dependências/configuração/packaging reproduzíveis;
+- migrations Host-side imutáveis, embutidas e verificadas por checksum;
+- `pre_migration` backup + lote transacional + validação de integridade/FKs;
+- testes em SQLite temporário real e fixtures sintéticas;
+- scripts finos de check/test/build/package;
 - nenhuma autorização de scaffold antes do gate final do Bloco 12.
 
-Análise 3 em revisão — P12.35–P12.55:
+Análise 4 em revisão — P12.56–P12.79:
 
-- migrations Host-side versionadas/embutidas;
-- tracking/checksums e bloqueios de compatibilidade;
-- backup `pre_migration` em banco existente;
-- aplicação transacional e validação de integridade/FKs;
-- testes em SQLite temporário real;
-- fixtures sintéticas;
-- scripts finos de check/test/build/package.
+- segurança de senha/sessão;
+- configuração da empresa e categoria arquivada;
+- parâmetros numéricos de Backup/Restore;
+- timeouts/reconexão/readiness;
+- rotação de logs/admin audit.
 
-Ainda precisa fechar parâmetros finais, plano executável da Fase 2 e gate do primeiro scaffold.
+Depois dela, resta fechar o plano executável da Fase 2 e o gate final da Fase 1.
 
 ## Fase 2 — Fundação técnica executável
 
@@ -138,10 +137,7 @@ Segurança/autorização, recuperação de falha/banco, Backup/Restore, concorr�
 
 ## Pendências transversais
 
-- parâmetros finais Argon2/senha/sessão/token;
-- Gerência × configuração da empresa;
-- regra editorial de categoria arquivada;
-- parâmetros numéricos de retenção/tamanho/espaço/timeouts;
+- P12.56–P12.79 até decisão do PO;
 - inventário Windows/Office;
 - WebView2 real e fallback Pocket;
 - SMB/impressoras/filesystem/ACL/EDR corporativos;
