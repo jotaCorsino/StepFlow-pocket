@@ -2,7 +2,7 @@
 
 **Status:** EM ANDAMENTO  
 **Início:** 2026-08-19  
-**Atualização:** 2026-08-31
+**Atualização:** 2026-09-01
 
 ## Objetivo
 
@@ -25,7 +25,7 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 8 | UI/UX | CONCLUÍDO | `../02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
-| 11 | Backup/restauração técnico | EM ANÁLISE — ANÁLISE 6 | `bloco-11-backup-restauracao.md` |
+| 11 | Backup/restauração técnico | VALIDAÇÃO FINAL — ANÁLISE 7 | `bloco-11-backup-restauracao.md` |
 | 12 | Estrutura oficial + Fase 2 | PENDENTE | a abrir |
 
 ## Contrato Pocket da Fase 1
@@ -66,7 +66,7 @@ Geração Host-side, PDF Typst, DOCX OOXML Rust, impressão pelo mesmo PDF, Proc
 
 ## Bloco 11 — Backup / Restore técnico
 
-**EM ANÁLISE.**
+**EM VALIDAÇÃO FINAL.**
 
 Fontes:
 
@@ -74,8 +74,9 @@ Fontes:
 - `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — aprovada;
 - `bloco-11-analise-4-restore-safety-compatibilidade.md` — aprovada;
 - `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — aprovada;
-- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — proposta atual;
-- `../02-telas/13-backup-restauracao.md` — UX consolidada.
+- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — aprovada;
+- `bloco-11-analise-7-validacao-tecnica-final.md` — proposta atual;
+- `../02-telas/13-backup-restauracao.md` — UX consolidada/sincronizada.
 
 Estado das análises:
 
@@ -84,10 +85,10 @@ Estado das análises:
 - Análise 3 — catálogo + retenção + coordenação: **APROVADA**;
 - Análise 4 — Restore + safety backup + compatibilidade: **APROVADA**;
 - Análise 5 — restart + sessões + reconexão + falhas: **APROVADA**;
-- Análise 6 — disaster recovery + capacidades + auditoria: **EM REVISÃO**;
-- Análise 7 — validação técnica final: **PENDENTE**.
+- Análise 6 — disaster recovery + capacidades + auditoria: **APROVADA**;
+- Análise 7 — validação técnica final: **EM REVISÃO**.
 
-Já consolidado até D11.82:
+Consolidado até D11.103:
 
 - backup protege `stepflow.sqlite + company/** + avatars/**`;
 - pacote `.stepflow-backup`, manifesto, hashes e Online Backup API;
@@ -99,16 +100,23 @@ Já consolidado até D11.82:
 - troca lógica de `data/`, rollback conhecido ou `uncertain`;
 - journal fora de `data/`, recovery antes de readiness e fresh Host após fase destrutiva;
 - sessões anteriores invalidadas após Restore destrutivo;
+- disaster recovery local/transitório do Controller sem listener normal da LAN;
+- Backup para ADM/Gerência e Restore ADM-only;
+- auditoria administrativa fora de `data/`;
 - `uncertain` bloqueia readiness/mutações/cleanup destrutivo.
 
-Em revisão P11.83–P11.103:
+Em revisão P11.104–P11.116:
 
-- disaster recovery local do Controller;
-- autoridade local/ACL quando banco não autentica;
-- Gerência × Backup;
-- auditoria administrativa fora de `data/`.
+- safety barrier contínuo até o primeiro rename;
+- revalidação final do digest do candidato;
+- paths Windows canônicos/seguros;
+- `source_deployment_id` no manifesto;
+- limites estruturais de parser/extração;
+- política explícita de criptografia/assinatura no baseline;
+- limite do disaster recovery local versus perda física/offsite;
+- gates de adapter Win32/ACL/EDR/long paths/crash.
 
-Aprovação da Análise 6 não encerra o bloco: ainda é obrigatória a Análise 7 de validação técnica final.
+Aprovação da Análise 7 ainda exige sincronização final antes de declarar o bloco concluído.
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
@@ -131,15 +139,14 @@ Fechará:
 - duração/expiração de sessão;
 - entropia/tamanho final do token;
 - Gerência × configuração da empresa;
-- Gerência × Backup — proposta em revisão na Análise 6;
 - regra editorial de categoria arquivada;
 - valor/default final de `retention_max_confirmed_backups`.
 
 ### Bloco 11
 
-- revisão P11.83–P11.103;
-- validação técnica final;
-- sincronização documental final do bloco.
+- revisão P11.104–P11.116;
+- sincronização documental final do bloco;
+- gate Git do PR #26.
 
 ### Ambiente real
 
@@ -149,7 +156,8 @@ Fechará:
 - Word/impressoras;
 - SMB real;
 - ACL/filesystem de recovery;
-- EDR/firewall/políticas.
+- EDR/firewall/políticas;
+- testes de rename/journal/crash/long paths do Bloco 11.
 
 ## Regras finais
 
