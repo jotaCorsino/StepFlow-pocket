@@ -75,10 +75,10 @@ Pendente: regra editorial de nova revisão ainda referenciando categoria arquiva
 
 ## 5. Reader e direção visual
 
-- experiência de livro/manual;
+- experiência livro/manual;
 - `Visão geral` antes da Etapa 1;
 - uma Etapa por página lógica;
-- stepper horizontal compacto/navegável representa navegação, não conclusão;
+- stepper horizontal representa navegação, não conclusão;
 - comandos preservam whitespace e usam copiar icon-only acessível;
 - baixa densidade textual e informação secundária sob demanda;
 - Reader standalone não persiste execução;
@@ -126,10 +126,10 @@ Concluído/Cancelado
 
 Parâmetros finais pendentes: custo Argon2id, senha mínima, duração/expiração de sessão e tamanho/entropia numérica do token.
 
-### Restore e sessões — D11.74–D11.77
+### Restore e sessões
 
 - Restore que entra na fase destrutiva invalida todas as sessões/tokens anteriores;
-- isso vale também se o Restore terminar em rollback;
+- isso vale também em rollback;
 - backup restaurado nunca ressuscita token reutilizável antigo;
 - fresh Host exige novo login antes do uso normal.
 
@@ -159,135 +159,103 @@ Parâmetros finais pendentes: custo Argon2id, senha mínima, duração/expiraç�
 - Word/impressoras/SMB/Windows/WebView2/EDR são gates de ambiente real;
 - limites de performance ficam para benchmark.
 
-## 10. Backup / Restore — Bloco 11 em validação final
+## 10. Backup / Restore — Bloco 11 tecnicamente consolidado
 
-### D11.1–D11.10 — estado e envelope
+Decisões vigentes: **D11.1–D11.116**.
 
-- Backup normal protege `stepflow.sqlite + company/** + avatars/**`, não a implantação inteira;
+### Estado e envelope — D11.1–D11.10
+
+- Backup protege `stepflow.sqlite + company/** + avatars/**`, não a implantação inteira;
 - binários/config/logs/backups/exportações/temporários/Client local ficam fora;
-- pacote confirmado é único e imutável `.stepflow-backup`;
-- ZIP `Stored` no baseline;
+- pacote final único `.stepflow-backup`, ZIP `Stored`;
 - `manifest.json` versionado + SHA-256 por entrada;
-- paths lógicos allowlisted;
-- staging precede promoção;
-- SQLite usa Online Backup API.
+- staging antes da promoção;
+- SQLite via Online Backup API.
 
-### D11.11–D11.25 — consistência e promoção
+### Consistência e promoção — D11.11–D11.25
 
 - consistência = SQLite + arquivos administrados;
-- barrier curto sobre mutações até snapshot bruto completo do Backup normal;
-- `-wal`/`-shm` fora do pacote;
-- `quick_check = ok` + `foreign_key_check` vazio na criação;
-- hash/ZIP/verificação/promoção fora do barrier do Backup normal;
-- flush explícito;
-- promoção same-volume/no-replace;
-- sucesso só após reabertura/confirmação;
-- parcial/crash nunca vira backup válido;
-- números de performance/timeout/tamanho ficam para benchmark.
+- Backup normal usa barrier curto até snapshot bruto;
+- `-wal`/`-shm` ficam fora;
+- criação exige `quick_check = ok` + `foreign_key_check` vazio;
+- hash/ZIP/verificação/promoção fora do barrier normal;
+- flush + promoção same-volume/no-replace;
+- parcial/crash nunca vira backup válido.
 
-### D11.26–D11.42 — catálogo, retenção e coordenação
+### Catálogo, retenção e coordenação — D11.26–D11.42
 
-- catálogo reconstruído dos pacotes finais, sem depender do banco ativo;
-- `backup_id` é identidade; filename não é identidade canônica;
-- cache de verificação somente em memória; Restore sempre revalida integralmente;
+- catálogo reconstruível sem depender do banco ativo;
+- `backup_id` é identidade canônica;
+- Restore sempre revalida integralmente;
 - retenção sem scheduler e por quantidade;
-- `retention_max_confirmed_backups` terá valor/default final no Bloco 12;
-- nunca apagar backup antigo antes de confirmar o novo apenas para abrir espaço;
-- source/safety/pre-migration em uso e resultado incerto ficam protegidos;
-- pacote inválido/corrompido não é apagado silenciosamente;
-- lease exclusivo do Host coordena `BACKUP`, `RESTORE`, `MIGRATION`;
-- safety/pre-migration backup são suboperações do lease raiz;
+- `retention_max_confirmed_backups` terá valor final no Bloco 12;
+- backups em uso/resultado incerto ficam protegidos;
+- lease exclusivo coordena `BACKUP`, `RESTORE`, `MIGRATION`;
 - `uncertain` suspende retenção/cleanup destrutivo.
 
-### D11.43–D11.61 — Restore normal e compatibilidade
+### Restore e compatibilidade — D11.43–D11.61
 
-- Restore revalida envelope/hashes/banco;
-- extrai para `data-next/` same-volume;
-- pré-Restore exige `integrity_check = ok` + `foreign_key_check` vazio;
-- compatibilidade = `format_version + schema/migration path`;
-- schema mais antigo só com cadeia completa de migrations forward no staging;
-- schema mais novo/sem cadeia = incompatível;
+- Restore prepara `data-next/` same-volume e revalida pacote/banco;
+- exige `integrity_check = ok` + `foreign_key_check` vazio;
+- schema antigo somente com migrations forward completas no staging;
+- schema novo/cadeia incompleta = incompatível;
 - sem down migration automática;
-- safety backup confirmado antes da fase destrutiva;
-- cancelamento termina antes da primeira alteração física do `data/`;
-- ativação por troca lógica `data → old`, `data-next → data`;
-- `old` permanece até validação final;
-- rollback conhecido restaura estado anterior; impossibilidade de provar/reverter = `uncertain`.
+- safety backup confirmado obrigatório;
+- ativação troca logicamente `data/` e preserva `old`;
+- cancelamento termina antes do primeiro rename;
+- falha termina em rollback conhecido ou `uncertain`.
 
-### D11.62–D11.82 — restart, sessões, reconexão e falhas
+### Restart/recovery — D11.62–D11.82
 
-- Restore usa journal persistente fora de `data/` (`backups/.operations/restore-active.json` baseline);
-- journal registra fase/IDs/schema/digest sem segredos e é atualizado durable-before-action;
-- fresh Host reconcilia Restore antes de migrations/readiness;
-- digest determinístico identifica o candidato preparado;
-- queda antes da primeira troca preserva estado original;
-- queda entre os dois renames causa rollback para `old`, não conclusão automática;
-- estado não comprovável/journal inconsistente = `RECOVERY_REQUIRED/uncertain`;
-- Restore aplicado ou rollback após fase destrutiva exige fresh Host;
-- Controller pode realizar relaunch bounded de recovery, sem watchdog/loop infinito;
-- WebSocket de manutenção é best-effort e desconexão não indica resultado;
-- `restore-last.json`/equivalente preserva resultado terminal mínimo;
-- active journal só some depois de fresh Host provar estado conhecido;
-- `uncertain` bloqueia readiness, mutações, nova operação destrutiva, retenção e cleanup.
+- journal fora de `data/`;
+- fresh Host reconcilia antes de migrations/readiness;
+- queda entre renames causa rollback para `old`;
+- estado não comprovável = `RECOVERY_REQUIRED/uncertain`;
+- relaunch de Restore é bounded, sem watchdog geral;
+- fase destrutiva invalida sessões antigas;
+- `restore-last.json`/equivalente preserva resultado terminal;
+- `uncertain` bloqueia readiness/mutações/cleanup.
 
-### D11.83–D11.103 — disaster recovery, capacidades e auditoria
+### Disaster recovery, capacidades e auditoria — D11.83–D11.103
 
-- disaster recovery somente quando Restore normal seguro não está disponível;
-- Recovery é modo local/transitório do Controller na máquina central, sem listener normal da LAN;
-- Recovery exige exclusividade da implantação e usa acesso local/ACL quando o banco não autentica;
-- não há senha mestre paralela nem autoelevação silenciosa;
-- candidatos baseline vêm de `backups/*.stepflow-backup` e passam pela mesma validação/compatibilidade do Restore normal;
-- ausência de safety backup só é tolerada no disaster recovery real;
-- estado ativo é preservado como `.recovery-old-<id>` quando possível, sem ser declarado backup íntegro;
-- Recovery reutiliza staging/journal/troca same-volume/no-replace e fresh Host;
-- ADM/Gerência podem consultar/criar Backup; Restore continua ADM-only;
-- Backup/Restore/retention/Recovery registram trilha administrativa estruturada fora de `data/` quando aplicável;
-- `logs/admin-audit.jsonl`/equivalente é append-only pela aplicação e protegido por ACL, sem alegação de tamper-proof;
-- journal operacional, admin audit e log técnico são mecanismos distintos.
+- Recovery é excepcional, local/transitório pelo Controller e sem listener normal de rede;
+- autoridade local/ACL/exclusividade quando o banco não autentica;
+- mesma validação/compatibilidade/migrations forward do Restore normal;
+- ausência de safety backup só pode ser aceita em disaster recovery real;
+- Backup = ADM/Gerência; Restore = ADM-only;
+- trilha administrativa estruturada fora de `data/`;
+- journal, admin audit e logs técnicos têm finalidades/lifecycles distintos.
 
-Fontes detalhadas:
+### Validação técnica final — D11.104–D11.116
 
-- `docs/04-planejamento/bloco-11-backup-restauracao.md`;
-- `bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
-- `bloco-11-analise-4-restore-safety-compatibilidade.md`;
-- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
-- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`.
+- safety backup `pre_restore` mantém barrier desde a captura até o primeiro rename;
+- nenhuma mutação em `data/` ocorre após captura do safety snapshot;
+- digest de `data-next/` é revalidado antes de `DESTRUCTIVE_STARTED`;
+- paths seguem canonicalização Windows estrita e bloqueiam traversal/drive/UNC/device/ADS/reserved names/trailing dot-space/case collision/reparse/non-regular;
+- criação de Backup aplica a mesma disciplina aos arquivos administrados;
+- manifesto inclui `source_deployment_id` e bloqueia `source_mismatch` no baseline;
+- parser/extração são bounded e fazem preflight de espaço;
+- baseline sem criptografia nem assinatura application-level; SHA-256 é integridade, não autenticidade;
+- offsite/cópia corporativa é responsabilidade operacional externa ao baseline;
+- adapter Windows, ACL/EDR/long paths/crash injection são gates obrigatórios antes de produção;
+- não existe bloqueador arquitetural conhecido para o Bloco 11.
 
-### Análise 7 — proposta, não contrato
-
-P11.104–P11.116 propõem refinamentos finais de:
-
-- continuidade do barrier do safety backup até o primeiro rename;
-- revalidação do digest de `data-next/` imediatamente antes da fase destrutiva;
-- canonicalização/validação de paths conforme semântica Windows;
-- `source_deployment_id` no manifesto;
-- limites estruturais de parser/extração;
-- baseline sem criptografia/assinatura application-level, com trust boundary em ACL/deployment/auditoria;
-- explicitação de que offsite/physical-site protection pertence à infraestrutura corporativa;
-- gates Win32/ACL/EDR/long paths/crash antes de produção.
-
-Nada desta subseção vira decisão antes da aprovação explícita do PO.
+Fonte principal: `docs/04-planejamento/bloco-11-backup-restauracao.md`.
 
 ## 11. Pendências vigentes
-
-### Bloco 11
-
-- revisar P11.104–P11.116;
-- se aprovadas, sincronizar os refinamentos e concluir a validação técnica final;
-- executar gate normal do PR #26 antes de merge.
 
 ### Bloco 12
 
 - estrutura oficial do repositório;
 - migrations/scripts/testes iniciais;
-- parâmetros finais;
+- parâmetros numéricos finais, inclusive retenção/limites/timeouts;
 - plano da Fase 2;
 - sincronização segura do checkout local antes do primeiro trabalho de implementação.
 
-### Segurança/configuração fora do Bloco 11
+### Outras pendências funcionais/técnicas
 
-- Gerência × configuração da empresa;
 - parâmetros finais de Argon2id/senha/sessão/token;
+- Gerência × configuração da empresa;
 - regra editorial de categoria arquivada.
 
 ### Ambiente corporativo
@@ -296,9 +264,8 @@ Nada desta subseção vira decisão antes da aprovação explícita do PO.
 - Launcher pelo compartilhamento;
 - Word/impressoras;
 - SMB/permissões/falhas;
-- EDR/firewall/políticas;
-- long paths quando aplicável;
-- gates específicos de filesystem/ACL/crash para Backup/Restore.
+- filesystem/ACL/EDR/antivírus/long paths;
+- adapter Win32 e crash injection para Backup/Restore.
 
 ## 12. Precedência
 
@@ -311,4 +278,4 @@ Em divergência:
 5. tarefa dentro das decisões aprovadas;
 6. histórico Git.
 
-Nenhuma pendência pode ser convertida silenciosamente em decisão por executor.
+Nenhuma pendência pode ser convertida silenciosamente em decisão pelo executor.
