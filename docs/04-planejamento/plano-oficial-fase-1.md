@@ -25,8 +25,8 @@ A Fase 1 autoriza documentação, decisões técnicas e PoCs descartáveis quand
 | 8 | UI/UX | CONCLUÍDO | `../02-telas/README.md` |
 | 9 | Execução operacional/Atendimentos | CONCLUÍDO | `bloco-9-atendimentos-execucao-checklist.md` |
 | 10 | Exportação/impressão + Ficha compacta | CONCLUÍDO | `bloco-10-exportacao-impressao-ficha.md` |
-| 11 | Backup/restauração técnico | VALIDAÇÃO FINAL — ANÁLISE 7 | `bloco-11-backup-restauracao.md` |
-| 12 | Estrutura oficial + Fase 2 | PENDENTE | a abrir |
+| 11 | Backup/restauração técnico | TECNICAMENTE CONCLUÍDO / GATE GIT PENDENTE | `bloco-11-backup-restauracao.md` |
+| 12 | Estrutura oficial + Fase 2 | PENDENTE | a abrir após gate remoto limpo |
 
 ## Contrato Pocket da Fase 1
 
@@ -66,57 +66,38 @@ Geração Host-side, PDF Typst, DOCX OOXML Rust, impressão pelo mesmo PDF, Proc
 
 ## Bloco 11 — Backup / Restore técnico
 
-**EM VALIDAÇÃO FINAL.**
+**TECNICAMENTE CONCLUÍDO em 2026-09-01.** O PR #26 ainda precisa cumprir o gate Git antes da entrada em `main`.
 
 Fontes:
 
-- `bloco-11-backup-restauracao.md` — mapa principal;
-- `bloco-11-analise-3-catalogo-retencao-coordenacao.md` — aprovada;
-- `bloco-11-analise-4-restore-safety-compatibilidade.md` — aprovada;
-- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md` — aprovada;
-- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md` — aprovada;
-- `bloco-11-analise-7-validacao-tecnica-final.md` — proposta atual;
-- `../02-telas/13-backup-restauracao.md` — UX consolidada/sincronizada.
+- `bloco-11-backup-restauracao.md` — mapa principal consolidado;
+- `bloco-11-analise-3-catalogo-retencao-coordenacao.md`;
+- `bloco-11-analise-4-restore-safety-compatibilidade.md`;
+- `bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`;
+- `bloco-11-analise-6-disaster-recovery-capacidades-auditoria.md`;
+- `bloco-11-analise-7-validacao-tecnica-final.md`;
+- `../02-telas/13-backup-restauracao.md`.
 
-Estado das análises:
+Decisões aprovadas: **D11.1–D11.116**.
 
-- Análise 1 — estado recuperável + envelope: **APROVADA**;
-- Análise 2 — consistência + escrita/promoção/verificação: **APROVADA**;
-- Análise 3 — catálogo + retenção + coordenação: **APROVADA**;
-- Análise 4 — Restore + safety backup + compatibilidade: **APROVADA**;
-- Análise 5 — restart + sessões + reconexão + falhas: **APROVADA**;
-- Análise 6 — disaster recovery + capacidades + auditoria: **APROVADA**;
-- Análise 7 — validação técnica final: **EM REVISÃO**.
+Fechado:
 
-Consolidado até D11.103:
-
-- backup protege `stepflow.sqlite + company/** + avatars/**`;
-- pacote `.stepflow-backup`, manifesto, hashes e Online Backup API;
-- consistência conjunta de banco + arquivos e barrier curto de mutações;
-- staging/verificação/promoção same-volume/no-replace;
-- catálogo reconstruível e retenção sem scheduler/por quantidade;
-- coordinator administrativo para Backup/Restore/migration;
-- Restore revalidado em `data-next/`, migrations somente forward e safety backup obrigatório;
-- troca lógica de `data/`, rollback conhecido ou `uncertain`;
-- journal fora de `data/`, recovery antes de readiness e fresh Host após fase destrutiva;
-- sessões anteriores invalidadas após Restore destrutivo;
-- disaster recovery local/transitório do Controller sem listener normal da LAN;
-- Backup para ADM/Gerência e Restore ADM-only;
+- estado recuperável + `.stepflow-backup`;
+- Online Backup API e consistência SQLite + arquivos;
+- staging, verificação e promoção no-replace;
+- catálogo reconstruível, retenção e coordenação administrativa;
+- Restore com revalidação, migrations forward, safety backup e troca lógica de `data/`;
+- journal/restart/rollback/`uncertain`;
+- invalidação de sessões após fase destrutiva;
+- disaster recovery local/transitório;
+- Backup ADM/Gerência e Restore ADM-only;
 - auditoria administrativa fora de `data/`;
-- `uncertain` bloqueia readiness/mutações/cleanup destrutivo.
+- safety barrier contínuo do `pre_restore`;
+- canonicalização Windows, `source_deployment_id` e parser bounded;
+- baseline sem criptografia/assinatura application-level;
+- gates Win32/filesystem/ACL/EDR/long paths/crash antes de produção.
 
-Em revisão P11.104–P11.116:
-
-- safety barrier contínuo até o primeiro rename;
-- revalidação final do digest do candidato;
-- paths Windows canônicos/seguros;
-- `source_deployment_id` no manifesto;
-- limites estruturais de parser/extração;
-- política explícita de criptografia/assinatura no baseline;
-- limite do disaster recovery local versus perda física/offsite;
-- gates de adapter Win32/ACL/EDR/long paths/crash.
-
-Aprovação da Análise 7 ainda exige sincronização final antes de declarar o bloco concluído.
+Não existe bloqueador arquitetural conhecido para o Bloco 11.
 
 ## Bloco 12 — Estrutura oficial + Fase 2
 
@@ -127,6 +108,7 @@ Fechará:
 - estrutura oficial do repositório;
 - migrations/scripts/testes iniciais;
 - parâmetros finais ainda abertos;
+- configuração/defaults/fixtures mensuráveis para limites técnicos;
 - plano da Fase 2;
 - sincronização segura do checkout local antes do primeiro trabalho de implementação.
 
@@ -139,14 +121,18 @@ Fechará:
 - duração/expiração de sessão;
 - entropia/tamanho final do token;
 - Gerência × configuração da empresa;
-- regra editorial de categoria arquivada;
-- valor/default final de `retention_max_confirmed_backups`.
+- regra editorial de categoria arquivada.
 
-### Bloco 11
+### Parâmetros técnicos para Bloco 12
 
-- revisão P11.104–P11.116;
-- sincronização documental final do bloco;
-- gate Git do PR #26.
+- `retention_max_confirmed_backups`;
+- limites de pacote/entradas/path;
+- margem mínima de espaço;
+- timeouts;
+- duração alvo de barrier/manutenção;
+- backoff/reconexão;
+- rotação física de logs/admin audit;
+- versões pinadas de crates/adapters.
 
 ### Ambiente real
 
@@ -155,9 +141,17 @@ Fechará:
 - Launcher pelo share corporativo;
 - Word/impressoras;
 - SMB real;
-- ACL/filesystem de recovery;
-- EDR/firewall/políticas;
-- testes de rename/journal/crash/long paths do Bloco 11.
+- filesystem/ACL/EDR/antivírus/long paths;
+- adapter Windows e crash injection de Backup/Restore.
+
+## Gate atual
+
+1. concluir revisão final do PR #26;
+2. tornar PR ready;
+3. squash merge em `main`;
+4. remover branch remota;
+5. verificar somente `main` e zero PRs abertos;
+6. somente então abrir Bloco 12.
 
 ## Regras finais
 
