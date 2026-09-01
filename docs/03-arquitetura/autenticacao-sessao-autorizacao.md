@@ -1,6 +1,6 @@
 # Autenticação, Sessão e Autorização — StepFlow Pocket
 
-**Status:** NÚCLEO CONSOLIDADO PARA A FASE 1 / PARÂMETROS FINAIS PENDENTES  
+**Status:** CONSOLIDADO PARA A FASE 1  
 **Atualização:** 2026-09-01
 
 ## Princípios
@@ -8,11 +8,11 @@
 - autenticação e autorização ocorrem no Host;
 - Client nunca é fonte de verdade de permissão;
 - senha nunca é armazenada em texto puro;
-- sessão inicial é opaca/server-side, sem JWT;
-- token fica somente em memória do Client inicialmente;
+- sessão é opaca/server-side, sem JWT no baseline;
+- token fica somente em memória do Client;
 - sem `lembrar-me` persistente na primeira versão;
 - autorização real é por capacidade no Host;
-- `ADM`, `GERENCIA` e `FUNCIONARIO` são presets de capacidades;
+- `ADM`, `GERENCIA` e `FUNCIONARIO` são presets;
 - ocultar/desabilitar ação no Client é UX, não segurança.
 
 ## Usuário
@@ -35,19 +35,53 @@ updated_at
 
 `user_id` é identidade estável usada por relacionamentos/histórico.
 
-## Senhas
+## Senhas — D12.56–D12.59
 
-Consolidado:
+Baseline:
 
-- Argon2id em formato PHC;
-- salt aleatório;
-- parâmetros codificados no hash;
-- aceitar frases-senha;
-- nunca registrar senha em logs/auditoria.
+```text
+Argon2id
+memory = 65536 KiB
+passes = 3
+parallelism = 4
+salt = 16 bytes aleatórios
+output = 32 bytes
+encoding = PHC
 
-Parâmetros numéricos de custo e senha mínima permanecem **PENDENTES** e serão fechados antes da implementação correspondente. Valores históricos/provisórios não são contrato.
+senha = 15–128 caracteres Unicode após NFKC
+limite adicional = 512 bytes UTF-8 após normalização
+```
 
-## Login e sessão
+Regras:
+
+- aceitar espaços e frases-senha;
+- permitir copy/paste;
+- sem regra obrigatória de maiúscula/minúscula/número/símbolo;
+- sem rotação periódica obrigatória;
+- nunca truncar silenciosamente;
+- nunca registrar senha em logs/auditoria;
+- blocklist offline com pelo menos 10.000 senhas comuns/comprometidas;
+- nenhum login/criação de senha depende de Internet;
+- redução futura do custo Argon2id exige benchmark + decisão explícita;
+- hash PHC preserva parâmetros para rehash futuro quando aplicável.
+
+Throttling por conta:
+
+```text
+falhas 1–4 → resposta normal sanitizada
+falha 5    → atraso 2 s
+falha 6    → atraso 4 s
+falha 7    → atraso 8 s
+falha 8    → atraso 16 s
+falha 9    → atraso 30 s
+falha 10   → cooldown de 15 min
+```
+
+- login bem-sucedido zera contador;
+- não revelar se login existe;
+- não criar lockout permanente automático apenas por tentativas remotas.
+
+## Login e sessão — D12.60–D12.61
 
 ```text
 Client envia login + senha
@@ -57,30 +91,36 @@ Client envia login + senha
 → Host valida sessão + capacidade em cada operação protegida
 ```
 
-Consolidado:
+Token baseline:
 
-- token com alta entropia criptográfica;
-- logout revoga sessão;
-- desativação/reset/mudança administrativa relevante pode revogar sessões;
-- token reutilizável não é persistido em texto puro;
-- troca da própria senha mantém sessão atual e revoga demais sessões da conta;
+- 32 bytes/256 bits por CSPRNG;
+- opaco, sem user ID/role/timestamp embutido;
+- representação externa base64url sem padding ou equivalente;
+- persistência server-side guarda apenas digest do token, nunca bearer reutilizável em texto puro;
+- logout/expiração/revogação invalidam no Host.
+
+Sessão baseline:
+
+```text
+idle_timeout = 30 min
+absolute_timeout = 8 h
+```
+
+- idle renova apenas por atividade autenticada significativa do usuário;
+- ping/pong WebSocket, heartbeat, polling/refetch de background não renovam idle;
+- absolute timeout não é estendido por atividade comum;
 - sessão expirada exige nova autenticação;
+- troca da própria senha mantém sessão atual e revoga demais sessões da conta;
 - edição não salva pode permanecer somente em memória/oculta durante reautenticação do mesmo Client, sem virar draft persistente.
-
-Duração de sessão, inatividade, validade absoluta e tamanho/entropia numérica do token permanecem pendentes.
 
 ### Fronteira de sessão após Restore
 
-Consolidado no Bloco 11:
-
-- Restore que falha/cancela **antes** da fase destrutiva não exige revogação global apenas por ter preparado staging;
+- Restore que falha/cancela antes da fase destrutiva não exige revogação global apenas por staging;
 - qualquer Restore que entra na fase destrutiva invalida todas as sessões/tokens anteriores;
-- a invalidação vale tanto para Restore concluído quanto para rollback após a fase destrutiva;
-- conteúdo de backup restaurado nunca pode ressuscitar token reutilizável antigo;
-- após o fresh Host atingir readiness, Clients precisam autenticar novamente;
-- se a implementação futura persistir metadados de sessão, deve existir epoch/revogação/runtime equivalente que preserve essa regra.
-
-Fonte: `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.md`.
+- vale tanto para Restore concluído quanto rollback após fase destrutiva;
+- backup restaurado nunca ressuscita token reutilizável antigo;
+- fresh Host exige novo login;
+- implementação de sessão persistente deve preservar epoch/revogação equivalente.
 
 ## Capacidades documentais/administrativas
 
@@ -93,13 +133,13 @@ Fonte: `../04-planejamento/bloco-11-analise-5-restart-sessoes-reconexao-falhas.m
 | Ler/gerir usuários não-ADM | sim | sim | não |
 | Criar/promover/rebaixar ADM | sim | não | não |
 | Gerir categorias | sim | sim | não |
-| Alterar configuração da empresa | sim | **PENDENTE** | não |
+| Alterar configuração da empresa | sim | sim | não |
 | Backup | sim | sim | não |
 | Restore | sim | não | não |
 
-No Bloco 11, Backup foi fechado de forma granular: ADM e Gerência podem consultar catálogo/detalhes e criar Backup manual; Restore permanece ADM-only e nunca é concedido por consequência de Backup.
-
-Disaster recovery local não é capability de sessão, pois precisa continuar disponível quando o próprio banco não consegue autenticar. Ele é procedimento central/transitório protegido por acesso local, ACLs e exclusividade da implantação.
+- Gerência pode consultar/criar Backup manual, mas nunca recebe Restore por consequência;
+- D12.62 concede à Gerência alteração da identidade da empresa;
+- disaster recovery local não é capability de sessão; usa acesso local/ACL/exclusividade quando o banco não consegue autenticar.
 
 ## Capacidades operacionais
 
@@ -123,7 +163,7 @@ Disaster recovery local não é capability de sessão, pois precisa continuar di
 
 ### Responsabilidade do Funcionário
 
-`próprio Atendimento` significa inicialmente:
+`próprio Atendimento` significa:
 
 ```text
 service_record.responsible_user_id == session.user_id
@@ -137,7 +177,7 @@ service_record.responsible_user_id == session.user_id
 ## Revisões de Procedimento para execução
 
 - Funcionário seleciona normalmente somente revisão publicada que possa ler;
-- ADM/Gerência usam publicada por padrão e podem selecionar explicitamente revisão histórica/atual não publicada já autorizada;
+- ADM/Gerência usam publicada por padrão e podem selecionar explicitamente revisão histórica/atual não publicada autorizada;
 - revisão histórica/não publicada nunca é escolhida silenciosamente;
 - capacidade de vincular não substitui autorização de leitura.
 
@@ -161,26 +201,19 @@ Cancelado
 
 ## Ficha de Atendimento
 
-`Gerar/reimprimir Ficha de Atendimento acessível` é permitido pelos três presets, condicionado a:
-
-- sessão poder consultar o Atendimento;
-- estado confirmado do Host;
-- ausência de conflito/alteração local não salva;
-- lifecycle aplicável.
+`Gerar/reimprimir Ficha de Atendimento acessível` é permitido pelos três presets quando a sessão puder consultar o Atendimento e o estado confirmado permitir.
 
 - `Em andamento`: gera estado confirmado atual;
 - `Concluído`: reimprime estado histórico aplicável;
 - `Cancelado`: identifica claramente o estado.
 
-Tecnologia, template e política de overflow estão consolidados na Tela 14 e no Bloco 10; não são pendência deste documento.
+Tecnologia/template/overflow pertencem à Tela 14 e Bloco 10.
 
 ## Delegação e capacidades personalizadas
 
-Presets são defaults. Capacidades podem ser personalizadas dentro das regras de delegação.
-
 - Gerência nunca administra ADM;
 - Gerência não cria/promove/rebaixa ADM;
-- Gerência não pode conceder Restore a si ou a outro usuário;
+- Gerência não pode conceder Restore;
 - usuário não eleva a própria autoridade;
 - pelo menos um ADM ativo deve existir;
 - `is_primary_admin` não é toggle comum;
@@ -189,59 +222,30 @@ Presets são defaults. Capacidades podem ser personalizadas dentro das regras de
 
 ## Perfil próprio
 
-Usuário ativo pode alterar:
+Usuário ativo pode alterar avatar, nome de exibição, cargo e própria senha.
 
-- avatar;
-- nome de exibição;
-- cargo;
-- própria senha.
-
-Não altera por conta própria:
-
-- `user_id`;
-- perfil/capacidades;
-- estado ativo;
-- `is_primary_admin`;
-- login quando definido como identidade somente leitura.
+Não altera por conta própria `user_id`, perfil/capacidades, estado ativo, `is_primary_admin` ou login definido como identidade somente leitura.
 
 ## Bootstrap do primeiro ADM
 
-Primeiro ADM é criado por fluxo local/controlado na máquina central quando o banco não possui usuários.
-
-Nunca transformar `primeiro Client da rede` em ADM automaticamente. Após bootstrap bem-sucedido, o fluxo fica desabilitado para aquele banco.
+Primeiro ADM é criado por fluxo local/controlado na máquina central quando o banco não possui usuários. Nunca transformar `primeiro Client da rede` em ADM automaticamente. Após bootstrap, o fluxo fica desabilitado para aquele banco.
 
 ## Reset/desativação
 
 - reset administrativo nunca revela senha antiga;
-- define nova credencial/fluxo;
-- revoga sessões pertinentes;
+- define nova credencial/fluxo e revoga sessões pertinentes;
 - desativação é preferida à exclusão física para preservar histórico.
 
 ## Auditoria
 
-Registrar proporcionalmente:
+Registrar proporcionalmente criação/desativação de usuário, capacidades, reset, mudança de responsável, lifecycle de Atendimento e operações administrativas críticas. Nunca registrar senha, token reutilizável ou segredo.
 
-- criação/desativação de usuário;
-- mudança de perfil/capacidades;
-- reset de senha;
-- mudança relevante de responsável;
-- conclusão/cancelamento/reabertura de Atendimento;
-- operações administrativas críticas, incluindo Backup/Restore quando aplicável.
-
-Nunca registrar senha, token reutilizável ou segredo.
-
-Para Backup/Restore/Recovery, o Bloco 11 acrescenta uma trilha administrativa estruturada fora de `data/`, além da auditoria funcional quando o banco estiver disponível. Essa trilha não substitui autorização nem vira fonte de dados do produto.
+Backup/Restore/Recovery também emitem trilha administrativa estruturada fora de `data/` conforme D11.
 
 ## Transporte
 
-Credenciais e sessão usam o canal Client↔Host vigente. Proteção final de transporte na LAN depende da infraestrutura corporativa real.
+Credenciais e sessão usam o canal Client↔Host vigente. Proteção final de transporte na LAN depende da infraestrutura corporativa real e permanece gate de ambiente, sem hardcode de PKI/domínio.
 
-## Pendências vigentes
+## Estado
 
-- custo Argon2id final;
-- senha mínima final;
-- duração/expiração de sessão;
-- entropia/tamanho numérico do token;
-- Gerência × configuração da empresa.
-
-Nenhum valor marcado como pendente pode ser convertido silenciosamente em requisito definitivo pelo executor.
+Os parâmetros numéricos iniciais de senha/Argon2id/sessão/token e Gerência × configuração da empresa estão **consolidados em D12.56–D12.62**. Ajustes futuros exigem mudança explícita e não podem ser inferidos pelo executor.
