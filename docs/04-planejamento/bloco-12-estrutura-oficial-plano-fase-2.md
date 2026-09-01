@@ -93,6 +93,8 @@ Binário Rust responsável apenas por manifest/deployment, preparação local, v
 
 Não inicia Host remoto, não acessa SQLite e não vira updater residente.
 
+Na publicação Pocket, esse binário é o **único ponto de entrada destinado ao usuário comum** e pode ser exposto na raiz com o nome amigável `StepFlow.exe`, independentemente do nome técnico do crate/binário no source tree.
+
 ### `apps/controller`
 
 Binário Rust da máquina central responsável pelo ciclo de vida do Host, exclusividade, readiness, shutdown, relaunch bounded de Restore e modo Recovery local/transitório.
@@ -143,28 +145,55 @@ Direção para análise posterior do próprio Bloco 12:
 
 ## Código-fonte × publicação Pocket
 
-A saída de build/package futura deve produzir algo conceitualmente compatível com:
+A saída de build/package deve separar claramente **superfície do usuário** e **estrutura interna**.
+
+Direção proposta para a pasta publicada:
 
 ```text
-publicação/
-├── client/
-│   ├── StepFlowLauncher.exe
-│   ├── manifest.json
-│   ├── deployment.json
-│   └── releases/<versao>/...
-└── server/
-    ├── app/
-    │   ├── StepFlowController.exe
-    │   └── StepFlowHost.exe
-    ├── config/
-    ├── data/
-    ├── logs/
-    └── backups/
+StepFlow\
+├── StepFlow.exe                 # único ponto de entrada normal; Launcher com ícone do produto
+└── _internal\
+    ├── client\
+    │   ├── manifest.json
+    │   ├── deployment.json
+    │   └── releases\
+    │       └── <versao>\
+    │           └── artefatos do Client
+    └── server\
+        ├── app\
+        │   ├── StepFlowController.exe
+        │   └── StepFlowHost.exe
+        ├── config\
+        ├── data\
+        ├── logs\
+        └── backups\
 ```
+
+Experiência pretendida para o usuário:
+
+```text
+abrir a pasta StepFlow no compartilhamento
+→ ver StepFlow.exe como entrada evidente
+→ duplo clique
+→ Launcher prepara/valida o Client local
+→ Client abre
+→ Launcher encerra
+```
+
+Regras dessa superfície:
+
+- não exigir que o usuário navegue por `client/`, `releases/`, `app/` ou outras pastas técnicas para iniciar o produto;
+- executáveis internos de Controller/Host não ficam apresentados como alternativas de início para o usuário comum;
+- a subpasta `_internal/` é encapsulamento organizacional; o funcionamento não depende de atributo Hidden/System do Windows;
+- packaging pode marcar `_internal/` como oculto apenas como acabamento visual, desde que isso não seja requisito funcional e não complique update/cópia/ACL;
+- não usar `.lnk` como baseline obrigatório: shortcut do Windows pode depender de target/path e ficar frágil quando a pasta/share for movido;
+- o próprio Launcher exposto como `StepFlow.exe` cumpre a função de “atalho” portátil e verificável;
+- o nome técnico do crate/binário de desenvolvimento pode continuar distinto (`launcher`/`stepflow-launcher`); o nome amigável é decisão de packaging;
+- source tree e publicação continuam estruturas diferentes.
 
 Essa pasta é **produto de packaging/deploy**, não a organização do source tree.
 
-## Propostas P12.1–P12.14
+## Propostas P12.1–P12.18
 
 - **P12.1:** repositório executável usa workspace Rust na raiz, com `apps/` para binários e `crates/` para bibliotecas reutilizáveis;
 - **P12.2:** binários oficiais são `client`, `launcher`, `controller` e `host`, preservando as responsabilidades já consolidadas;
@@ -179,11 +208,15 @@ Essa pasta é **produto de packaging/deploy**, não a organização do source tr
 - **P12.11:** scripts do root são apenas tooling de desenvolvimento/build/test/package e não criam requisito de runtime em produção;
 - **P12.12:** unit/integration tests ficam próximos ao owner; `tests/e2e/` é reservado a testes entre componentes;
 - **P12.13:** source tree e pasta Pocket publicada são estruturas distintas; `dist/`, `target/`, dados reais e pacotes gerados não são versionados;
-- **P12.14:** aprovação desta árvore não autoriza scaffold imediato; implementação só começa após o gate final do Bloco 12 + sincronização segura do checkout local.
+- **P12.14:** aprovação desta árvore não autoriza scaffold imediato; implementação só começa após o gate final do Bloco 12 + sincronização segura do checkout local;
+- **P12.15:** a raiz da pasta Pocket publicada possui **um único ponto de entrada normal**, `StepFlow.exe`, que é o Launcher empacotado com nome/ícone amigáveis;
+- **P12.16:** artefatos técnicos da publicação ficam encapsulados sob `_internal/`, separando `client/` e `server/`; usuário comum não precisa navegar nessa árvore para iniciar o StepFlow;
+- **P12.17:** `.lnk` não é requisito baseline; o executável Launcher na raiz fornece a experiência de atalho portátil sem depender de target absoluto/UNC estável;
+- **P12.18:** atributo Hidden/System para `_internal/` pode existir apenas como acabamento opcional de packaging; integridade, atualização e execução nunca dependem dele.
 
 ## Próximas análises do Bloco 12
 
-Após decisão sobre P12.1–P12.14:
+Após decisão sobre P12.1–P12.18:
 
 1. workspace/build/dependências/configuração e versões pinadas;
 2. migrations/scripts/testes iniciais e fixtures;
