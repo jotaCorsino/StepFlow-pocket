@@ -136,11 +136,13 @@ Operações que realmente exijam credenciais, Internet confiável, elevação ou
 ```text
 pasta pronta publicada no servidor Windows
 → estação acessa o compartilhamento
-→ usuário executa StepFlowLauncher.exe
+→ usuário executa StepFlow.exe na raiz
 → Launcher prepara/valida o Client local automaticamente
 → Client abre de %LOCALAPPDATA%
 → Launcher encerra
 ```
+
+`StepFlow.exe` é o Launcher empacotado com nome/ícone amigáveis e é o único ponto de entrada normal do usuário. Artefatos técnicos publicados ficam encapsulados sob `_internal/`; `.lnk` não é requisito baseline.
 
 É obrigatório no uso normal:
 
@@ -198,7 +200,9 @@ Fontes: `docs/03-arquitetura/implantacao-pocket.md`, `launcher-distribuicao-clie
 - Restore destrutivo invalida sessões anteriores;
 - `uncertain` bloqueia readiness/mutações/cleanup destrutivo;
 - safety backup `pre_restore` mantém barrier até o primeiro rename;
-- paths de backup/restore usam semântica Windows estrita e provenance por deployment.
+- paths de backup/restore usam semântica Windows estrita e provenance por deployment;
+- D12.1–D12.18 definem ownership da futura árvore executável e a publicação Pocket com `StepFlow.exe` na raiz + `_internal/` técnico;
+- aprovação estrutural do Bloco 12 ainda não autoriza scaffold antes do gate final da Fase 1.
 
 Detalhes ficam nas fontes específicas; não ampliar estas invariantes por inferência.
 
@@ -208,7 +212,8 @@ Detalhes ficam nas fontes específicas; não ampliar estas invariantes por infer
 - Gerência × configuração da empresa;
 - regra editorial de categoria arquivada;
 - parâmetros numéricos de Backup/Restore reservados ao Bloco 12;
-- estrutura oficial e plano da Fase 2 no Bloco 12;
+- workspace/build/dependências e demais decisões do Bloco 12 ainda em análise;
+- plano da Fase 2 e gate do primeiro scaffold;
 - gates corporativos de Windows/WebView2/Launcher/SMB/Word/impressoras/filesystem/ACL/EDR.
 
 ## Gate de implementação
