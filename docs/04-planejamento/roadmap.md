@@ -32,22 +32,32 @@ Consolidado até aqui:
 - códigos `AT-000001` / `EQP-000001`;
 - geração documental, exportação, impressão, Ficha compacta, naming e temporários;
 - Backup/Restore técnico D11.1–D11.116;
+- estrutura/publicação do Bloco 12 D12.1–D12.18;
 - contrato Pocket preservado como gate superior.
 
 ### Bloco 12 — Estrutura oficial + Fase 2
 
 **EM ANÁLISE.**
 
-A Análise 1 propõe:
+Análise 1 aprovada — D12.1–D12.18:
 
 - workspace Rust modular;
 - `apps/` para executáveis e `crates/` somente para responsabilidades reutilizáveis concretas;
 - frontend Client organizado em ES modules;
 - source tree separado da publicação Pocket;
-- como refinamento ainda não consolidado, pasta Pocket publicada com `StepFlow.exe` como único ponto de entrada normal e artefatos técnicos encapsulados sob `_internal/`;
+- pasta Pocket publicada com `StepFlow.exe` como único ponto de entrada normal e artefatos técnicos encapsulados sob `_internal/`;
 - nenhuma autorização de scaffold antes do gate final do Bloco 12.
 
-Ainda precisa fechar dependências/versões, migrations/scripts/testes, parâmetros finais, plano executável da Fase 2 e gate do primeiro scaffold.
+Análise 2 em revisão — P12.19–P12.34:
+
+- toolchain/workspace/build reproduzível;
+- política de lockfile/dependências;
+- baseline de crates da fundação;
+- Client vanilla sem Node/bundler;
+- configuração e packaging;
+- scripts finos de desenvolvimento/build/test/package.
+
+Ainda precisa fechar migrations/scripts/testes/fixtures, parâmetros finais, plano executável da Fase 2 e gate do primeiro scaffold.
 
 ## Fase 2 — Fundação técnica executável
 
@@ -103,8 +113,10 @@ DOCX específico da Ficha não é requisito inicial.
 **PENDENTE.**
 
 - pacote central por pasta;
+- `StepFlow.exe` na raiz como Launcher amigável;
+- artefatos técnicos encapsulados sob `_internal/`;
 - Controller/Host sob demanda;
-- Launcher no share + Client local versionado;
+- Client local versionado;
 - zero instalação/manualidade por estação;
 - implementação dos contratos D11.1–D11.116 de Backup/Restore;
 - disaster recovery local;
