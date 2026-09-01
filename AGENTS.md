@@ -10,8 +10,8 @@ Regras obrigatórias para agentes que atuem neste repositório. Este arquivo gov
 - Branch principal: `main`.
 - Checkout local previsto: `C:\dev\StepFlow`.
 - Fase vigente: **Fase 1 — Fechamento arquitetural e especificação**.
-- Blocos 0–11 estão encerrados em seus escopos documentais/técnicos; o Bloco 11 ainda precisa cumprir o gate Git do PR ativo para entrar em `main`.
-- Bloco 12 fecha estrutura oficial, parâmetros finais e plano da Fase 2.
+- Blocos 0–11 estão encerrados em seus escopos documentais/técnicos.
+- Bloco 12 está em análise e fecha estrutura oficial, parâmetros finais e plano da Fase 2.
 - Nenhuma implementação funcional oficial foi iniciada.
 
 O estado executivo corrente deve ser lido no `README.md` e no plano da fase, não replicado em documentos técnicos estáveis.
