@@ -22,7 +22,7 @@ Proposta não aprovada não pode ser implementada como decisão.
 - **Planejamento** — fases, blocos, dependências e gates ativos;
 - **Progresso** — decisões vigentes e marcos históricos.
 
-Documento técnico estável não anuncia próximo bloco. Estado corrente pertence ao README raiz, plano da fase e roadmap.
+Documento técnico estável não anuncia próximo bloco. Estado corrente pertence ao README raiz, plano e roadmap.
 
 ## Leitura eficiente
 
@@ -62,19 +62,19 @@ Sempre: `AGENTS.md` → enunciado → este índice → documento específico. Co
 
 ### Planejamento — `04-planejamento`
 
-- `roadmap.md`;
-- `plano-oficial-fase-1.md`;
+- `roadmap.md` — fases;
+- `plano-oficial-fase-1.md` — encerramento da Fase 1 e gate de transição;
 - `bloco-9-atendimentos-execucao-checklist.md`;
 - `bloco-10-exportacao-impressao-ficha.md`;
 - `bloco-10-etapa-11-validacao-tecnica-final.md`;
 - `bloco-11-backup-restauracao.md` — D11.1–D11.116 + parâmetros D12 aplicáveis;
 - análises 3–7 do Bloco 11 — detalhes técnicos consolidados;
-- `bloco-12-estrutura-oficial-plano-fase-2.md` — mapa principal;
+- `bloco-12-estrutura-oficial-plano-fase-2.md` — mapa consolidado D12.1–D12.108;
 - `bloco-12-analise-2-workspace-build-dependencias.md` — D12.19–D12.34;
 - `bloco-12-analise-3-migrations-testes-fixtures.md` — D12.35–D12.55;
 - `bloco-12-analise-4-parametros-finais.md` — D12.56–D12.79;
 - `bloco-12-analise-5-plano-fase-2.md` — D12.80–D12.98;
-- `bloco-12-analise-6-validacao-final-fase-1.md` — proposta P12.99–P12.108;
+- `bloco-12-analise-6-validacao-final-fase-1.md` — D12.99–D12.108;
 - `tarefas-codex/README.md` — regra para tarefas Codex ativas.
 
 ### Progresso — `05-progresso`
@@ -92,6 +92,6 @@ Sempre: `AGENTS.md` → enunciado → este índice → documento específico. Co
 
 ## Estado atual
 
-A **Fase 1 permanece em andamento**. Blocos 0–11 estão concluídos; Bloco 12 está na validação final. D12.1–D12.98 estão aprovadas e P12.99–P12.108 permanecem em revisão.
+A **Fase 1 está documental e tecnicamente concluída** em D12.1–D12.108. Nenhuma implementação funcional oficial foi iniciada.
 
-Nenhuma implementação funcional oficial foi iniciada.
+A entrada na Fase 2 depende do fechamento Git do Bloco 12, remoto limpo, sincronização local segura e autorização explícita do PO para F2-T01.
