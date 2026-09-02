@@ -1,106 +1,76 @@
-# Roadmap — StepFlow Pocket
+# Roadmap — StepFlow
 
-**Status:** FASE 1 CONCLUÍDA / TRANSIÇÃO PARA FASE 2 PENDENTE  
-**Atualização:** 2026-09-01
+## R1 — Rebaseline documental
 
-O roadmap descreve fases e resultados. Gates operacionais correntes ficam no plano da fase e no README raiz.
+**EM ANDAMENTO.**
 
-## Fase 0 — Fundação documental e governança
+Eliminar contratos incompatíveis e fechar arquitetura web estática single-user.
 
-**CONCLUÍDA em 2026-08-19.**
+## W1 — Fundação web
 
-Fonte de verdade, governança, visão de produto, arquitetura inicial, roadmap e templates estabelecidos.
+- source modular HTML/CSS/JS;
+- build mínimo;
+- testes básicos;
+- dist estático.
 
-## Fase 1 — Fechamento arquitetural e especificação
+## W2 — Shell e navegação
 
-**CONCLUÍDA documental e tecnicamente em 2026-09-01.**
+- sidebar;
+- dashboard;
+- routing local;
+- componentes base;
+- estados transversais.
 
-Resultados consolidados:
+## W3 — Persistência local
 
-- Client Windows/Tauri;
-- Host Pocket sob demanda;
-- Launcher/distribuição Pocket;
-- comunicação HTTP/JSON + WebSocket;
-- autenticação/sessão/autorização;
-- modelo de dados/migrations/histórico conceitual;
-- concorrência/fila/conflitos/eventos;
-- domínio Procedimento × Atendimento × Equipamento;
-- Telas 01–15;
-- execução operacional/checklist;
-- geração documental/Ficha;
-- Backup/Restore D11.1–D11.116;
-- Bloco 12 D12.1–D12.108: estrutura/publicação, workspace/build, migrations/testes, parâmetros, plano da Fase 2 e validação final;
-- contrato Pocket preservado como gate superior.
+- IndexedDB;
+- schema/migrations;
+- camada repository/storage;
+- testes transacionais.
 
-Nenhum scaffold/runtime oficial, migration SQL ou código de negócio foi criado na Fase 1.
+## W4 — Procedimentos
 
-## Fase 2 — Fundação técnica executável
+- categorias;
+- responsáveis locais;
+- lista/busca;
+- editor;
+- revisões/histórico.
 
-**PENDENTE — depende de fechamento Git do Bloco 12 + remoto limpo + sync local seguro + autorização explícita do PO.**
+## W5 — Execução operacional
 
-Sequência aprovada:
+- Reader livro/manual;
+- Atendimentos;
+- checklist;
+- observações por Etapa;
+- Equipamentos.
 
-```text
-F2-T01 workspace/tooling + Host mínimo
-→ F2-T02 Host runtime/readiness
-→ F2-T03 SQLite + migrations runner
-→ F2-T04 Controller lifecycle
-→ F2-T05 Client Tauri + compatibilidade
-→ F2-T06 Launcher Pocket
-→ F2-T07 packaging Pocket
-→ F2-T08 smoke integrado + gates Windows/Pocket
-```
+## W6 — Exportação / Importação de dados
 
-Resultados esperados:
+- formato versionado;
+- validação;
+- exportação integral;
+- importação transacional.
 
-- build reproduzível `--locked`;
-- Host com config/logging/readiness;
-- SQLite e migrations determinísticos;
-- Controller lifecycle bounded;
-- Client Tauri vanilla integrado ao Host;
-- Launcher preparando Client local;
-- packaging `StepFlow.exe + _internal/`;
-- smoke integrado;
-- gates Pocket corporativos registrados como PASS, `NÃO APLICÁVEL NESTE AMBIENTE` ou blocker real conforme contexto.
+## W7 — Impressão e PDF
 
-Gate: nenhum processo residual, nenhuma dependência dev em produção e nenhum requisito Pocket enfraquecido.
+- layouts A4;
+- Procedimento;
+- Ficha;
+- browser print/Save as PDF.
 
-## Fase 3 — Autenticação, usuários e shell
+## W8 — Offline e portátil
 
-**PENDENTE.** Login/logout/sessão, bootstrap ADM, usuários/permissões, perfil/avatar, shell/sidebar, configuração básica da empresa e autorização Host-side.
+- manifest;
+- service worker;
+- PWA;
+- artefato `StepFlow.html` quando viável.
 
-## Fase 4 — Núcleo documental de Procedimentos
+## W9 — Hardening e publicação
 
-**PENDENTE.** Lista/pesquisa, categorias, criação/edição/arquivamento, Etapas, histórico/revisões, permissões e conflitos.
+- performance/bundle;
+- segurança/CSP;
+- compatibilidade de browser;
+- publicação cPanel;
+- documentação final.
 
-## Fase 5 — Execução e registro operacional
-
-**PENDENTE.** Reader, Atendimento, checklist, observação de serviço, lifecycle, Equipamento opcional, revisão exata, reprodução histórica, Ficha e estados transversais.
-
-## Fase 6 — Multiusuário em ambiente real
-
-**PENDENTE.** Múltiplos Clients, concorrência, eventos/reconexão, stress/tuning e validação LAN corporativa.
-
-## Fase 7 — Exportação e identidade
-
-**PENDENTE.** PDF/DOCX, impressão Windows, identidade, Ficha, naming/save/temporários e gates reais de Word/impressoras/SMB/EDR.
-
-## Fase 8 — Distribuição Pocket, backup e operação
-
-**PENDENTE.** Pacote central, Launcher/Client local, Controller/Host sob demanda, implementação D11, disaster recovery, logs/auditoria e validação sem Internet em PCs corporativos. Não inclui serviço persistente.
-
-## Fase 9 — Hardening e release interno
-
-**PENDENTE.** Segurança, recuperação, Backup/Restore, concorrência/performance, distribuição/update, smoke E2E, revisão documental e validação final do Pocket no parque corporativo.
-
-## Pendências transversais
-
-- gate operacional de entrada na Fase 2;
-- inventário Windows/Office;
-- WebView2 real e fallback Pocket;
-- SMB/impressoras/filesystem/ACL/EDR corporativos;
-- adapter Win32 e crash injection de Backup/Restore.
-
-## Regra do roadmap
-
-Fases dependem de gates, não de cronograma. Mudança de requisito atualiza a documentação vigente antes da implementação. Conclusão de uma fase não autoriza automaticamente a próxima tarefa.
+Cada etapa usa branch/PR próprio e depende do gate da anterior.

@@ -1,32 +1,26 @@
-# StepFlow Pocket
+# StepFlow
 
-Aplicação interna para documentar, consultar, versionar e executar procedimentos técnicos de forma guiada, com registro operacional de Atendimentos e Equipamentos quando aplicável.
+Aplicação web estática, single-user e local-first para documentar Procedimentos técnicos e registrar Atendimentos/Execuções de forma guiada.
 
-## Painel de acompanhamento
+## Estado atual
 
-**Atualização:** 2026-09-01  
-**Fase atual:** Fase 1 — documental e tecnicamente concluída  
-**Checkpoint atual:** Bloco 12 consolidado — D12.1–D12.108  
-**Transição pendente:** gate Git → remoto limpo → sync local seguro → autorização F2-T01  
-**Implementação funcional oficial:** ainda não iniciada
+**Rebaseline arquitetural em andamento — PR #28.**
 
-### Fase 1
+A nova arquitetura foi motivada pelo ambiente de hospedagem gerenciado por cPanel e pelo abandono do requisito multiusuário central.
 
-| Bloco | Tema | Estado |
-|---|---|---|
-| 0 | Bootstrap do ambiente | ✅ Concluído |
-| 1 | Client Windows / Tauri | ✅ Concluído |
-| 2 | Host Pocket | ✅ Concluído |
-| 3 | Launcher / distribuição | ✅ Concluído |
-| 4 | Comunicação Client ↔ Host | ✅ Concluído |
-| 5 | Autenticação / autorização | ✅ Concluído |
-| 6 | Dados / schema / migrations | ✅ Concluído |
-| 7 | Concorrência / fila / eventos | ✅ Concluído |
-| 8 | UI/UX | ✅ Concluído |
-| 9 | Atendimentos / execução / checklist | ✅ Concluído |
-| 10 | Exportação / impressão / Ficha compacta | ✅ Concluído |
-| 11 | Backup / restauração | ✅ Concluído |
-| 12 | Estrutura oficial + plano da Fase 2 | ✅ Concluído — D12.1–D12.108 |
+Nenhuma implementação da nova arquitetura foi iniciada.
+
+## Arquitetura
+
+```text
+cPanel / HTTPS
+→ HTML + CSS + JavaScript + assets
+→ navegador / PWA
+→ IndexedDB local
+→ Exportar / Importar dados
+```
+
+O servidor apenas entrega arquivos estáticos. O StepFlow não exige backend, banco remoto ou processo próprio no servidor.
 
 ## Produto
 
@@ -38,65 +32,50 @@ Atendimento / Execução
 Equipamento
 ```
 
-Procedimentos são documentação oficial versionada; Atendimentos registram trabalho real; Equipamento é opcional/reutilizável. Reader usa experiência de manual/livro, checklist persistente existe somente em Atendimento e a Ficha é prestação de contas resumida ao cliente.
+Procedimentos preservam revisões e histórico. O Reader mantém experiência de manual/livro, uma Etapa por página lógica, passos, observações, checklist e blocos de instrução/comando com ação de copiar por ícone.
 
-## Contrato Pocket
+Atendimentos registram o trabalho real, incluindo checklist operacional, observações por Etapa, revisão exata utilizada e Equipamento opcional.
 
-```text
-pasta publicada no servidor
-→ usuário acessa compartilhamento
-→ executa StepFlow.exe na raiz
-→ Launcher prepara/valida Client em %LOCALAPPDATA%
-→ Client abre localmente
-→ Launcher encerra
-```
+## Single-user
 
-`StepFlow.exe` é o único ponto de entrada normal. A árvore técnica publicada fica sob `_internal/`. Uso normal exige zero instalador por estação, zero preparação manual/admin/toolchain/Internet obrigatória e Client local em vez de execução permanente por SMB.
+Não existem no baseline:
 
-## Bloco 12 — contrato final
+- login;
+- usuários;
+- permissões;
+- sessões;
+- sincronização entre dispositivos;
+- concorrência distribuída.
 
-**D12.1–D12.108 aprovadas.**
+`Responsável` continua existindo como dado local de negócio.
 
-- source tree modular `apps/`/`crates/`;
-- publicação `StepFlow.exe + _internal/`;
-- Rust 1.98.0 + Edition 2024 + resolver 3;
-- toolchain/lockfile versionados;
-- Client vanilla sem Node/bundler;
-- migrations Host-side imutáveis/embutidas com checksum;
-- testes em SQLite temporário real e fixtures sintéticas;
-- parâmetros finais de autenticação, Empresa/Categorias e Backup/Restore fechados;
-- Fase 2 planejada em F2-T01…F2-T08, uma branch/PR por tarefa;
-- `deployment.json` de produção exige input explícito;
-- sync local usa fast-forward seguro e nunca descarte automático;
-- gates corporativos ficam para as etapas executáveis aplicáveis;
-- nenhum merge documental autoriza scaffold automaticamente.
+## Dados
 
-## Transição para Fase 2
+IndexedDB guarda o conjunto funcional no navegador. A portabilidade e preservação manual acontecem por **Exportar dados / Importar dados**.
 
-```text
-fechar PR/branch do Bloco 12
-→ verificar remoto limpo
-→ sincronizar C:\dev\StepFlow com segurança
-→ PO autoriza F2-T01
-→ pré-flight + prompt Codex F2-T01
-```
+## Offline
+
+A forma preferencial é PWA após primeiro acesso HTTPS. Uma variante `StepFlow.html` autocontida também pode ser gerada para uso portátil por duplo clique.
+
+## Consumo
+
+O projeto prioriza:
+
+- bundle pequeno;
+- Web Platform nativa;
+- poucas dependências;
+- zero processo de servidor;
+- zero banco no servidor;
+- zero conexão permanente;
+- fonte do sistema;
+- SVG local;
+- impressão/PDF pelos recursos do navegador.
 
 ## Fontes de verdade
 
-- `AGENTS.md` — governança;
-- `docs/README.md` — índice;
-- `docs/05-progresso/registro-de-decisoes.md` — decisões vigentes;
-- `docs/04-planejamento/plano-oficial-fase-1.md` — encerramento/gates;
-- `docs/04-planejamento/roadmap.md` — fases;
-- documentos específicos de Produto/Telas/Arquitetura — contratos detalhados.
-
-## Pendências operacionais
-
-- gate Git do Bloco 12 e remoção da branch;
-- sincronização segura do checkout local;
-- autorização explícita da F2-T01;
-- gates corporativos nas fases técnicas correspondentes.
-
-## Regra deste painel
-
-O README mostra somente estado executivo. Decisões detalhadas pertencem às fontes específicas.
+- `AGENTS.md`;
+- `docs/README.md`;
+- `docs/05-progresso/registro-de-decisoes.md`;
+- `docs/03-arquitetura/arquitetura-vigente.md`;
+- `docs/04-planejamento/rebaseline-web-estatico-single-user.md`;
+- `docs/04-planejamento/roadmap.md`.

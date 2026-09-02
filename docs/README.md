@@ -1,6 +1,6 @@
-# Documentação do StepFlow Pocket
+# Documentação do StepFlow
 
-Esta pasta contém a documentação ativa do projeto. O `README.md` da raiz é apenas o painel executivo.
+A documentação ativa representa somente a arquitetura web estática single-user vigente.
 
 ## Precedência
 
@@ -8,90 +8,52 @@ Esta pasta contém a documentação ativa do projeto. O `README.md` da raiz é a
 2. `05-progresso/registro-de-decisoes.md`;
 3. documento específico vigente;
 4. `01-produto/visao-geral.md`;
-5. tarefa dentro das decisões vigentes;
+5. tarefa aprovada;
 6. histórico Git.
 
-Proposta não aprovada não pode ser implementada como decisão.
+## Índice
 
-## Ownership documental
+### Governança
 
-- **Governança** — regras de trabalho, ambientes e execução assistida;
-- **Produto** — propósito, domínio, requisitos e limites;
-- **Telas** — comportamento e UX;
-- **Arquitetura** — mecanismos, componentes, persistência, segurança e restrições;
-- **Planejamento** — fases, blocos, dependências e gates ativos;
-- **Progresso** — decisões vigentes e marcos históricos.
+- `00-governanca/contexto-ambientes.md`
+- `00-governanca/metodo-padrao-trabalho-assistido.md`
+- `00-governanca/politica-capacidade-codex.md`
 
-Documento técnico estável não anuncia próximo bloco. Estado corrente pertence ao README raiz, plano e roadmap.
+### Produto
 
-## Leitura eficiente
+- `01-produto/visao-geral.md`
+- `01-produto/categorizacao-atendimentos-equipamentos.md`
 
-Sempre: `AGENTS.md` → enunciado → este índice → documento específico. Conforme impacto, consultar registro de decisões, plano, arquitetura e contexto de ambientes.
+### Telas
 
-## Índice vigente
+- `02-telas/README.md` e contratos 01–11.
 
-### Governança — `00-governanca`
+### Arquitetura
 
-- `contexto-ambientes.md` — ambientes/gates reais;
-- `metodo-padrao-trabalho-assistido.md` — processo PO + Assistente + Codex;
-- `politica-capacidade-codex.md` — seleção de capacidade.
+- `03-arquitetura/arquitetura-vigente.md`
+- `03-arquitetura/persistencia-local-indexeddb.md`
+- `03-arquitetura/distribuicao-web-offline.md`
+- `03-arquitetura/exportacao-importacao-dados.md`
+- `03-arquitetura/build-dependencias-performance.md`
+- `03-arquitetura/modelo-dados-local.md`
+- `03-arquitetura/seguranca-web-local.md`
 
-### Produto — `01-produto`
+### Planejamento
 
-- `visao-geral.md`;
-- `categorizacao-atendimentos-equipamentos.md`.
+- `04-planejamento/rebaseline-web-estatico-single-user.md`
+- `04-planejamento/roadmap.md`
+- `04-planejamento/plano-fase-web-estatica.md`
 
-### Telas — `02-telas`
+### Progresso
 
-- `README.md` — índice das superfícies;
-- `01-login.md` a `15-estados-transversais.md` — contratos UX;
-- `13-backup-restauracao.md` — UX de Backup/Restore;
-- `14-exportacao-impressao-ficha.md` — UX documental/Ficha.
+- `05-progresso/registro-de-decisoes.md`
+- `05-progresso/changelog-projeto.md`
 
-### Arquitetura — `03-arquitetura`
+### Templates
 
-- `arquitetura-vigente.md` — mapa arquitetural;
-- `modelo-dados-schema-fase-1.md` — modelo conceitual/histórico;
-- `concorrencia-fila-conflitos-eventos.md`;
-- `implantacao-pocket.md`;
-- `launcher-distribuicao-client.md`;
-- `compatibilidade-windows-client.md`;
-- `host-pocket.md`;
-- `comunicacao-client-host.md`;
-- `autenticacao-sessao-autorizacao.md`.
+- `templates/template-preflight-capacidade-codex.md`
+- `templates/template-tarefa-codex.md`
 
-### Planejamento — `04-planejamento`
+## Estado
 
-- `roadmap.md` — fases;
-- `plano-oficial-fase-1.md` — encerramento da Fase 1 e gate de transição;
-- `bloco-9-atendimentos-execucao-checklist.md`;
-- `bloco-10-exportacao-impressao-ficha.md`;
-- `bloco-10-etapa-11-validacao-tecnica-final.md`;
-- `bloco-11-backup-restauracao.md` — D11.1–D11.116 + parâmetros D12 aplicáveis;
-- análises 3–7 do Bloco 11 — detalhes técnicos consolidados;
-- `bloco-12-estrutura-oficial-plano-fase-2.md` — mapa consolidado D12.1–D12.108;
-- `bloco-12-analise-2-workspace-build-dependencias.md` — D12.19–D12.34;
-- `bloco-12-analise-3-migrations-testes-fixtures.md` — D12.35–D12.55;
-- `bloco-12-analise-4-parametros-finais.md` — D12.56–D12.79;
-- `bloco-12-analise-5-plano-fase-2.md` — D12.80–D12.98;
-- `bloco-12-analise-6-validacao-final-fase-1.md` — D12.99–D12.108;
-- `tarefas-codex/README.md` — regra para tarefas Codex ativas.
-
-### Progresso — `05-progresso`
-
-- `registro-de-decisoes.md` — decisões vigentes/gates;
-- `changelog-projeto.md` — marcos;
-- `diario-de-progresso.md` — histórico inicial congelado;
-- `revisao-cruzada-fase-0.md` — evidência histórica.
-
-### Templates — `templates`
-
-- `template-analise-de-tela.md`;
-- `template-preflight-capacidade-codex.md`;
-- `template-tarefa-codex.md`.
-
-## Estado atual
-
-A **Fase 1 está documental e tecnicamente concluída** em D12.1–D12.108. Nenhuma implementação funcional oficial foi iniciada.
-
-A entrada na Fase 2 depende do fechamento Git do Bloco 12, remoto limpo, sincronização local segura e autorização explícita do PO para F2-T01.
+Rebaseline arquitetural em revisão no PR #28. Nenhuma implementação da nova arquitetura foi iniciada.
